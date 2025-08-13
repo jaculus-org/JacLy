@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+out/
+
+# VS Code extension specific
+*.vsix
+.vscode-test*
+**/.vscode-test*
+.vscode-test/
+**/.vscode-test/
+
+# Generated files
+esbuild.js
