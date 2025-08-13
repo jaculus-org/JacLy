@@ -11,6 +11,7 @@
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
+  "browser": "./dist/web/extension.js",
   "contributes": {
     "commands": [
       {
@@ -36,9 +37,19 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "compile-web": "pnpm run check-types && pnpm run lint && node esbuild.js --web",
+    "watch-web": "npm-run-all -p watch-web:*",
+    "watch-web:esbuild": "node esbuild.js --watch --web",
+    "watch-web:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package-web": "pnpm run check-types && pnpm run lint && node esbuild.js --production --web",
+    "test-web": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/extensionTests.js",
+    "pretest-web": "pnpm run compile-web",
+    "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@types/assert": "^1.5.11",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "@types/vscode": "^1.102.0",
@@ -46,8 +57,12 @@
     "@typescript-eslint/parser": "^8.39.1",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/test-web": "^0.0.72",
+    "assert": "^2.1.0",
     "esbuild": "^0.25.9",
     "eslint": "^9.33.0",
+    "glob": "^11.0.3",
+    "mocha": "^11.7.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"

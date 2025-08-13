@@ -1,9 +1,9 @@
-import { useRef } from 'react'
-import * as Blockly from 'blockly'
-import { useBlocklyWorkspace } from '@kuband/react-blockly'
+import { useRef } from 'react';
+import * as Blockly from 'blockly';
+import { useBlocklyWorkspace } from '@kuband/react-blockly';
 
 export default function BlocklyEditor() {
-  const blocklyRef = useRef<HTMLDivElement>(null)
+  const blocklyRef = useRef<HTMLDivElement>(null);
 
   const toolbox = {
     kind: 'categoryToolbox',
@@ -37,7 +37,7 @@ export default function BlocklyEditor() {
         ],
       },
     ],
-  } as Blockly.utils.toolbox.ToolboxDefinition
+  } as Blockly.utils.toolbox.ToolboxDefinition;
 
   useBlocklyWorkspace({
     ref: blocklyRef,
@@ -63,7 +63,7 @@ export default function BlocklyEditor() {
     },
     onInject: ws => console.log('Injected workspace', ws),
     onDispose: ws => console.log('Disposed workspace', ws),
-  })
+  });
 
   return (
     <div
@@ -76,5 +76,5 @@ export default function BlocklyEditor() {
     >
       <div ref={blocklyRef} style={{ height: '100%', width: '100%' }} />
     </div>
-  )
+  );
 }

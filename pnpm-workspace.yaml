@@ -4,4 +4,5 @@ packages:
   - extensions/*
 
 ignoredBuiltDependencies:
+  - '@playwright/browser-chromium'
   - esbuild

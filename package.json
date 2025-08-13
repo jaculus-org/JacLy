@@ -16,7 +16,10 @@
 		"dev": "pnpm -r --parallel dev",
 		"deps:check": "ncu --deep",
 		"deps:update": "ncu -u --deep && pnpm install",
-		"deps:update-interactive": "ncu -i --deep"
+		"deps:update-interactive": "ncu -i --deep",
+		"extension:desktop": "cd extensions/vscode && pnpm compile && pnpm test",
+		"extension:web": "cd extensions/vscode && pnpm compile-web && pnpm test-web",
+		"extension:run-browser": "cd extensions/vscode && pnpm run-in-browser"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.1",
