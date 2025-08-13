@@ -76,55 +76,6 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(@types/node@24.2.1)(jiti@2.5.1)
 
-  extensions/jaclyweb:
-    dependencies:
-      playwright:
-        specifier: ^1.54.2
-        version: 1.54.2
-    devDependencies:
-      '@esbuild-plugins/node-globals-polyfill':
-        specifier: ^0.2.3
-        version: 0.2.3(esbuild@0.25.9)
-      '@types/assert':
-        specifier: ^1.5.11
-        version: 1.5.11
-      '@types/mocha':
-        specifier: ^10.0.10
-        version: 10.0.10
-      '@types/vscode':
-        specifier: ^1.102.0
-        version: 1.102.0
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^8.39.0
-        version: 8.39.1(@typescript-eslint/parser@8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
-      '@typescript-eslint/parser':
-        specifier: ^8.39.0
-        version: 8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
-      '@vscode/test-web':
-        specifier: ^0.0.72
-        version: 0.0.72
-      assert:
-        specifier: ^2.1.0
-        version: 2.1.0
-      esbuild:
-        specifier: ^0.25.8
-        version: 0.25.9
-      eslint:
-        specifier: ^9.32.0
-        version: 9.33.0(jiti@2.5.1)
-      glob:
-        specifier: ^11.0.3
-        version: 11.0.3
-      mocha:
-        specifier: ^11.7.1
-        version: 11.7.1
-      npm-run-all:
-        specifier: ^4.1.5
-        version: 4.1.5
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-
   extensions/vscode:
     dependencies:
       '@jacly/blockly-ui':
