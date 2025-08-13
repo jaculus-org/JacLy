@@ -94,6 +94,12 @@ importers:
       '@types/node':
         specifier: 24.x
         version: 24.2.1
+      '@types/react':
+        specifier: ^19.1.10
+        version: 19.1.10
+      '@types/react-dom':
+        specifier: ^19.1.7
+        version: 19.1.7(@types/react@19.1.10)
       '@types/vscode':
         specifier: ^1.102.0
         version: 1.102.0
@@ -133,6 +139,12 @@ importers:
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
+      react:
+        specifier: ^19.1.1
+        version: 19.1.1
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.1.1(react@19.1.1)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2

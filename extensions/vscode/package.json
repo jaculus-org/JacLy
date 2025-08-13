@@ -9,7 +9,10 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:jacly.helloWorld",
+    "onCommand:jacly.openBlockly"
+  ],
   "main": "./dist/extension.js",
   "browser": "./dist/web/extension.js",
   "contributes": {
@@ -17,6 +20,10 @@
       {
         "command": "jacly.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "jacly.openBlockly",
+        "title": "JacLy: Open Blockly"
       }
     ]
   },
@@ -48,6 +55,10 @@
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
   },
   "devDependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@types/assert": "^1.5.11",
     "@types/mocha": "^10.0.10",

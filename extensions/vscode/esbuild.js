@@ -20,7 +20,11 @@ const esbuildProblemMatcherPlugin = {
     build.onEnd((result) => {
       result.errors.forEach(({ text, location }) => {
         console.error(`✘ [ERROR] ${text}`);
-        console.error(`    ${location.file}:${location.line}:${location.column}:`);
+        if (location) {
+          console.error(
+            `    ${location.file}:${location.line}:${location.column}:`
+          );
+        }
       });
       console.log('[watch] build finished');
     });
@@ -63,7 +67,7 @@ const testBundlePlugin = {
 async function main() {
   if (web) {
     // Build for web extension
-    const ctx = await esbuild.context({
+    const webExtCtx = await esbuild.context({
       entryPoints: [
         'src/web/extension.ts',
         'src/web/test/suite/extensionTests.ts',
@@ -90,15 +94,34 @@ async function main() {
         esbuildProblemMatcherPlugin /* add to the end of plugins array */,
       ],
     });
+
+    // Build the webview (React) bundle
+    const webviewCtx = await esbuild.context({
+      entryPoints: ['src/webview/index.tsx'],
+      bundle: true,
+      format: 'esm',
+      minify: production,
+      sourcemap: !production,
+      sourcesContent: false,
+      platform: 'browser',
+      outdir: 'dist/webview',
+      logLevel: 'silent',
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [esbuildProblemMatcherPlugin],
+    });
     if (watch) {
-      await ctx.watch();
+      await Promise.all([webExtCtx.watch(), webviewCtx.watch()]);
     } else {
-      await ctx.rebuild();
-      await ctx.dispose();
+      await webExtCtx.rebuild();
+      await webviewCtx.rebuild();
+      await webExtCtx.dispose();
+      await webviewCtx.dispose();
     }
   } else {
     // Build for desktop extension
-    const ctx = await esbuild.context({
+    const desktopCtx = await esbuild.context({
       entryPoints: ['src/extension.ts'],
       bundle: true,
       format: 'cjs',
@@ -114,11 +137,29 @@ async function main() {
         esbuildProblemMatcherPlugin,
       ],
     });
+    // Build the webview (React) bundle used by the desktop extension's WebviewPanel
+    const webviewCtx = await esbuild.context({
+      entryPoints: ['src/webview/index.tsx'],
+      bundle: true,
+      format: 'esm',
+      minify: production,
+      sourcemap: !production,
+      sourcesContent: false,
+      platform: 'browser',
+      outdir: 'dist/webview',
+      logLevel: 'silent',
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [esbuildProblemMatcherPlugin],
+    });
     if (watch) {
-      await ctx.watch();
+      await Promise.all([desktopCtx.watch(), webviewCtx.watch()]);
     } else {
-      await ctx.rebuild();
-      await ctx.dispose();
+      await desktopCtx.rebuild();
+      await webviewCtx.rebuild();
+      await desktopCtx.dispose();
+      await webviewCtx.dispose();
     }
   }
 }

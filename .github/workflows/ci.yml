@@ -82,3 +82,6 @@ jobs:
 
       - name: Run comprehensive CI check
         run: pnpm check-all
+
+      - name: Run tests
+        run: pnpm test
