@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🚀 Running pre-commit checks..."
 
 # Run comprehensive checks including format, lint, type-check, build, and test
