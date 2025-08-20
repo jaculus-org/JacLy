@@ -1,5 +1,5 @@
 {
-  "name": "@jacly/vscode",
+  "name": "@jaculus/jacly-vscode",
   "displayName": "JacLy",
   "description": "",
   "version": "0.0.1",
@@ -79,6 +79,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@jacly/blockly-ui": "workspace:*"
+    "@jaculus/blockly-ui": "workspace:*"
   }
 }

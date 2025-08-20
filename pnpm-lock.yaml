@@ -29,7 +29,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@jacly/blockly-ui':
+      '@jaculus/blockly-ui':
         specifier: workspace:*
         version: link:../../packages/blockly-ui
       react:
@@ -78,7 +78,7 @@ importers:
 
   extensions/vscode:
     dependencies:
-      '@jacly/blockly-ui':
+      '@jaculus/blockly-ui':
         specifier: workspace:*
         version: link:../../packages/blockly-ui
     devDependencies:

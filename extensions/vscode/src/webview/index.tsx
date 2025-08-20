@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import BlocklyEditor from '@jacly/blockly-ui';
+import BlocklyEditor from '@jaculus/blockly-ui';
 
 function App() {
   return (
