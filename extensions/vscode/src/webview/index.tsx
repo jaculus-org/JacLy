@@ -1,12 +1,12 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import BlocklyEditor from '@jaculus/blockly-ui';
+import { JaclyEditor } from '@jaculus/jacly/ui';
 
 function App() {
   return (
     <div style={{ padding: 8 }}>
       <h2>JacLy Blockly</h2>
-      <BlocklyEditor />
+      <JaclyEditor />
     </div>
   );
 }

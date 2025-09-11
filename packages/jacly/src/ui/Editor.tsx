@@ -1,11 +1,13 @@
 import { useRef } from 'react';
-import * as Blockly from 'blockly';
+import 'blockly/blocks';
+import { javascriptGenerator } from 'blockly/javascript';
 import { useBlocklyWorkspace } from '@kuband/react-blockly';
+import * as Blockly from 'blockly/core';
 
-export default function BlocklyEditor() {
+export function JaclyEditor() {
   const blocklyRef = useRef<HTMLDivElement>(null);
 
-  const toolbox = {
+  const toolbox: Blockly.utils.toolbox.ToolboxDefinition = {
     kind: 'categoryToolbox',
     contents: [
       {
@@ -25,6 +27,7 @@ export default function BlocklyEditor() {
         contents: [
           { kind: 'block', type: 'math_number' },
           { kind: 'block', type: 'math_arithmetic' },
+          { kind: 'block', type: 'math_round' },
         ],
       },
       {
@@ -33,19 +36,26 @@ export default function BlocklyEditor() {
         colour: '#5CA6A6',
         contents: [
           { kind: 'block', type: 'text' },
-          { kind: 'block', type: 'text_print' },
+          // { kind: 'block', type: 'text_print' },
         ],
       },
+      {
+        kind: 'sep',
+        gap: 16,
+      },
     ],
-  } as Blockly.utils.toolbox.ToolboxDefinition;
+  };
 
   useBlocklyWorkspace({
     ref: blocklyRef,
     toolboxConfiguration: toolbox,
-    initialXml: '<xml></xml>',
+    initialJson: {},
     workspaceConfiguration: {
       grid: { spacing: 25, length: 3, colour: '#ccc', snap: true },
+      comments: true,
+      sounds: false,
       trashcan: true,
+      renderer: 'zelos',
       zoom: {
         controls: true,
         wheel: true,
@@ -55,11 +65,15 @@ export default function BlocklyEditor() {
         scaleSpeed: 1.2,
       },
     },
-    onWorkspaceChange: () => {
-      // try {
-      //   const code = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(ws))
-      //   console.log('Workspace changed XML:', code)
-      // } catch {}
+    onWorkspaceChange: ws => {
+      try {
+        // generate js to console
+        const code = javascriptGenerator.workspaceToCode(ws);
+        console.log('Generated JavaScript code:');
+        console.log(code);
+      } catch (error) {
+        console.error('Error generating JavaScript code:', error);
+      }
     },
     onInject: ws => console.log('Injected workspace', ws),
     onDispose: ws => console.log('Disposed workspace', ws),

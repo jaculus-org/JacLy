@@ -9,10 +9,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:jacly.helloWorld",
-    "onCommand:jacly.openBlockly"
-  ],
   "main": "./dist/extension.js",
   "browser": "./dist/web/extension.js",
   "contributes": {
@@ -38,12 +34,15 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "build": "pnpm run package",
+    "build:watch": "npm-run-all -p watch:*",
     "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch --project tsconfig.json",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "clean": "rm -rf dist out",
     "test": "vscode-test",
     "compile-web": "pnpm run check-types && pnpm run lint && node esbuild.js --web",
     "watch-web": "npm-run-all -p watch-web:*",
@@ -79,6 +78,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@jaculus/blockly-ui": "workspace:*"
+    "@jaculus/jacly": "workspace:*"
   }
 }

@@ -5,21 +5,18 @@
 	"scripts": {
 		"prepare": "husky",
 		"build": "pnpm -r build",
+		"build:watch": "pnpm -r --parallel build:watch",
 		"test": "pnpm -r test",
 		"lint": "pnpm -r lint",
 		"lint:fix": "pnpm -r lint --fix",
 		"format": "pnpm -r format",
 		"format:check": "pnpm -r format:check",
-		"type-check": "pnpm run build && pnpm -r type-check",
-		"check": "pnpm run format:check && pnpm run lint && pnpm run type-check",
-		"check-all": "pnpm run check",
-		"dev": "pnpm -r --parallel dev",
+		"type-check": "pnpm -r type-check",
+		"check-all": "pnpm run format:check && pnpm run lint && pnpm run build",
+		"clean": "pnpm -r clean",
 		"deps:check": "ncu --deep",
 		"deps:update": "ncu -u --deep && pnpm install",
-		"deps:update-interactive": "ncu -i --deep",
-		"extension:desktop": "cd extensions/vscode && pnpm compile && pnpm test",
-		"extension:web": "cd extensions/vscode && pnpm compile-web && pnpm test-web",
-		"extension:run-browser": "cd extensions/vscode && pnpm run-in-browser"
+		"deps:update-interactive": "ncu -i --deep"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.1",
