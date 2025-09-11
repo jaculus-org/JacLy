@@ -43,6 +43,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "rm -rf dist out",
+    "clean-node": "rm -rf node_modules",
     "test": "vscode-test",
     "compile-web": "pnpm run check-types && pnpm run lint && node esbuild.js --web",
     "watch-web": "npm-run-all -p watch-web:*",

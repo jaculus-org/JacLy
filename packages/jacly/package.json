@@ -45,7 +45,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "schema:gen": "tsx src/config/generate-schema.ts",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "clean-node": "rm -rf node_modules"
   },
   "dependencies": {
     "@kuband/react-blockly": "^10.0.0",

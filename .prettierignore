@@ -32,3 +32,5 @@ Thumbs.db
 
 # Git
 .git/
+
+routeTree.gen.ts

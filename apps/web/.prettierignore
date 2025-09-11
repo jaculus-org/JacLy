@@ -7,3 +7,5 @@ build/
 
 # Development
 .vite/
+
+routeTree.gen.ts
