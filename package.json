@@ -12,6 +12,7 @@
 		"format": "pnpm -r format",
 		"format:check": "pnpm -r format:check",
 		"type-check": "pnpm -r type-check",
+		"fix-all": "pnpm -r lint:fix && pnpm -r format",
 		"check-all": "pnpm run format:check && pnpm run lint && pnpm run build",
 		"clean": "pnpm -r clean",
 		"clean-node" : "pnpm -r clean-node && rm -rf node_modules",

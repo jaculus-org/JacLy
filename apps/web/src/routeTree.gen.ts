@@ -9,12 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as BlocksRouteImport } from './routes/blocks'
+import { Route as TarRouteImport } from './routes/tar'
+import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as BlocksIndexRouteImport } from './routes/blocks/index'
+import { Route as EditorNewRouteImport } from './routes/editor/new'
 
-const BlocksRoute = BlocksRouteImport.update({
-  id: '/blocks',
-  path: '/blocks',
+const TarRoute = TarRouteImport.update({
+  id: '/tar',
+  path: '/tar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,40 +31,78 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlocksIndexRoute = BlocksIndexRouteImport.update({
+  id: '/blocks/',
+  path: '/blocks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorNewRoute = EditorNewRouteImport.update({
+  id: '/editor/new',
+  path: '/editor/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/blocks': typeof BlocksRoute
+  '/404': typeof R404Route
+  '/tar': typeof TarRoute
+  '/editor/new': typeof EditorNewRoute
+  '/blocks': typeof BlocksIndexRoute
+  '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/blocks': typeof BlocksRoute
+  '/404': typeof R404Route
+  '/tar': typeof TarRoute
+  '/editor/new': typeof EditorNewRoute
+  '/blocks': typeof BlocksIndexRoute
+  '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/blocks': typeof BlocksRoute
+  '/404': typeof R404Route
+  '/tar': typeof TarRoute
+  '/editor/new': typeof EditorNewRoute
+  '/blocks/': typeof BlocksIndexRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/blocks'
+  fullPaths: '/' | '/404' | '/tar' | '/editor/new' | '/blocks' | '/docs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/blocks'
-  id: '__root__' | '/' | '/blocks'
+  to: '/' | '/404' | '/tar' | '/editor/new' | '/blocks' | '/docs'
+  id: '__root__' | '/' | '/404' | '/tar' | '/editor/new' | '/blocks/' | '/docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BlocksRoute: typeof BlocksRoute
+  R404Route: typeof R404Route
+  TarRoute: typeof TarRoute
+  EditorNewRoute: typeof EditorNewRoute
+  BlocksIndexRoute: typeof BlocksIndexRoute
+  DocsIndexRoute: typeof DocsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/blocks': {
-      id: '/blocks'
-      path: '/blocks'
-      fullPath: '/blocks'
-      preLoaderRoute: typeof BlocksRouteImport
+    '/tar': {
+      id: '/tar'
+      path: '/tar'
+      fullPath: '/tar'
+      preLoaderRoute: typeof TarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -65,12 +112,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blocks/': {
+      id: '/blocks/'
+      path: '/blocks'
+      fullPath: '/blocks'
+      preLoaderRoute: typeof BlocksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editor/new': {
+      id: '/editor/new'
+      path: '/editor/new'
+      fullPath: '/editor/new'
+      preLoaderRoute: typeof EditorNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BlocksRoute: BlocksRoute,
+  R404Route: R404Route,
+  TarRoute: TarRoute,
+  EditorNewRoute: EditorNewRoute,
+  BlocksIndexRoute: BlocksIndexRoute,
+  DocsIndexRoute: DocsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

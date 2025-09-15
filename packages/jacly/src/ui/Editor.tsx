@@ -1,11 +1,35 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
 import { useBlocklyWorkspace } from '@kuband/react-blockly';
 import * as Blockly from 'blockly/core';
 
-export function JaclyEditor() {
+const darkTheme = Blockly.Theme.defineTheme('dark', {
+  name: 'dark',
+  base: Blockly.Themes.Zelos,
+  componentStyles: {
+    workspaceBackgroundColour: '#1e1e1e',
+    toolboxBackgroundColour: '#252526',
+    toolboxForegroundColour: '#cccccc',
+    flyoutBackgroundColour: '#252526',
+    flyoutForegroundColour: '#cccccc',
+    scrollbarColour: '#797979',
+    insertionMarkerColour: '#ffffff',
+    markerColour: '#4285f4',
+    cursorColour: '#ffffff',
+  },
+});
+
+interface EditorProps {
+  theme: Theme;
+  onCodeChange?: (code: string) => void;
+}
+
+export function JaclyEditor({ theme, onCodeChange }: EditorProps) {
   const blocklyRef = useRef<HTMLDivElement>(null);
+  const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
+
+  const isDark = theme === 'dark';
 
   const toolbox: Blockly.utils.toolbox.ToolboxDefinition = {
     kind: 'categoryToolbox',
@@ -51,6 +75,7 @@ export function JaclyEditor() {
     toolboxConfiguration: toolbox,
     initialJson: {},
     workspaceConfiguration: {
+      theme: isDark ? darkTheme : Blockly.Themes.Zelos,
       grid: { spacing: 25, length: 3, colour: '#ccc', snap: true },
       comments: true,
       sounds: false,
@@ -71,21 +96,29 @@ export function JaclyEditor() {
         const code = javascriptGenerator.workspaceToCode(ws);
         console.log('Generated JavaScript code:');
         console.log(code);
-      } catch (error) {
-        console.error('Error generating JavaScript code:', error);
+        onCodeChange?.(code);
+      } catch (_error) {
+        console.error('Error generating JavaScript code:', _error);
       }
     },
-    onInject: ws => console.log('Injected workspace', ws),
+    onInject: ws => {
+      workspaceRef.current = ws;
+      console.log('Injected workspace', ws);
+    },
     onDispose: ws => console.log('Disposed workspace', ws),
   });
+
+  useEffect(() => {
+    if (workspaceRef.current) {
+      workspaceRef.current.setTheme(isDark ? darkTheme : Blockly.Themes.Zelos);
+    }
+  }, [isDark]);
 
   return (
     <div
       style={{
-        height: '600px',
+        height: '100%',
         width: '100%',
-        border: '1px solid #333',
-        background: '#1e1e1e',
       }}
     >
       <div ref={blocklyRef} style={{ height: '100%', width: '100%' }} />

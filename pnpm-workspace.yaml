@@ -6,3 +6,6 @@ packages:
 ignoredBuiltDependencies:
   - '@playwright/browser-chromium'
   - esbuild
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'

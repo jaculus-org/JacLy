@@ -15,6 +15,11 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./web": {
+      "types": "./dist/web.d.ts",
+      "import": "./dist/web.js",
+      "default": "./dist/web.js"
+    },
     "./ui": {
       "types": "./dist/ui/index.d.ts",
       "import": "./dist/ui/index.js",
@@ -50,22 +55,26 @@
   },
   "dependencies": {
     "@kuband/react-blockly": "^10.0.0",
-    "blockly": "^12.2.0",
+    "@obsidize/tar-browserify": "^6.0.1",
+    "@zenfs/core": "^2.4.0",
+    "@zenfs/dom": "^1.2.5",
+    "blockly": "^12.3.0",
+    "fflate": "^0.8.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "zod": "^4.1.4"
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@finom/zod-to-json-schema": "^3.24.11",
-    "@types/node": "^24.3.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.2",
     "node:path": "link:@types/node:path",
     "prettier": "^3.6.2",
     "tsx": "^4.20.5",
     "typescript": "~5.9.2",
-    "vite": "^7.1.2"
+    "vite": "^7.1.5"
   },
   "peerDependencies": {
     "react": "^19.1.1",
