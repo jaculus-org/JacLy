@@ -5,7 +5,10 @@ function App() {
   return (
     <div style={{ padding: 8 }}>
       <h2>JacLy Blockly</h2>
-      <JaclyEditor theme="dark" onCodeChange={code => console.log(code)} />
+      <JaclyEditor
+        theme="dark"
+        onCodeChange={(code: string) => console.log(code)}
+      />
     </div>
   );
 }
