@@ -1,6 +1,6 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { Route404 } from './404';
-import { Header, Links } from '../components/header/Header';
+import { Header, Links } from '@/components/layout/header';
 // import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 function RootLayout() {

@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TarRouteImport } from './routes/tar'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EditorIndexRouteImport } from './routes/editor/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
-import { Route as BlocksIndexRouteImport } from './routes/blocks/index'
 import { Route as EditorNewRouteImport } from './routes/editor/new'
 
 const TarRoute = TarRouteImport.update({
@@ -31,14 +31,14 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorIndexRoute = EditorIndexRouteImport.update({
+  id: '/editor/',
+  path: '/editor/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/docs/',
   path: '/docs/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlocksIndexRoute = BlocksIndexRouteImport.update({
-  id: '/blocks/',
-  path: '/blocks/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorNewRoute = EditorNewRouteImport.update({
@@ -52,16 +52,16 @@ export interface FileRoutesByFullPath {
   '/404': typeof R404Route
   '/tar': typeof TarRoute
   '/editor/new': typeof EditorNewRoute
-  '/blocks': typeof BlocksIndexRoute
   '/docs': typeof DocsIndexRoute
+  '/editor': typeof EditorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/404': typeof R404Route
   '/tar': typeof TarRoute
   '/editor/new': typeof EditorNewRoute
-  '/blocks': typeof BlocksIndexRoute
   '/docs': typeof DocsIndexRoute
+  '/editor': typeof EditorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,15 +69,15 @@ export interface FileRoutesById {
   '/404': typeof R404Route
   '/tar': typeof TarRoute
   '/editor/new': typeof EditorNewRoute
-  '/blocks/': typeof BlocksIndexRoute
   '/docs/': typeof DocsIndexRoute
+  '/editor/': typeof EditorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/404' | '/tar' | '/editor/new' | '/blocks' | '/docs'
+  fullPaths: '/' | '/404' | '/tar' | '/editor/new' | '/docs' | '/editor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/404' | '/tar' | '/editor/new' | '/blocks' | '/docs'
-  id: '__root__' | '/' | '/404' | '/tar' | '/editor/new' | '/blocks/' | '/docs/'
+  to: '/' | '/404' | '/tar' | '/editor/new' | '/docs' | '/editor'
+  id: '__root__' | '/' | '/404' | '/tar' | '/editor/new' | '/docs/' | '/editor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -85,8 +85,8 @@ export interface RootRouteChildren {
   R404Route: typeof R404Route
   TarRoute: typeof TarRoute
   EditorNewRoute: typeof EditorNewRoute
-  BlocksIndexRoute: typeof BlocksIndexRoute
   DocsIndexRoute: typeof DocsIndexRoute
+  EditorIndexRoute: typeof EditorIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -112,18 +112,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editor/': {
+      id: '/editor/'
+      path: '/editor'
+      fullPath: '/editor'
+      preLoaderRoute: typeof EditorIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/': {
       id: '/docs/'
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blocks/': {
-      id: '/blocks/'
-      path: '/blocks'
-      fullPath: '/blocks'
-      preLoaderRoute: typeof BlocksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editor/new': {
@@ -141,8 +141,8 @@ const rootRouteChildren: RootRouteChildren = {
   R404Route: R404Route,
   TarRoute: TarRoute,
   EditorNewRoute: EditorNewRoute,
-  BlocksIndexRoute: BlocksIndexRoute,
   DocsIndexRoute: DocsIndexRoute,
+  EditorIndexRoute: EditorIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

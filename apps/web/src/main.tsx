@@ -5,9 +5,9 @@ import './index.css';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
-import { ThemeProvider } from './components/theme-provider';
-import { JaclyProvider } from './components/jacly-provider';
-import SnackbarProviderCustom from './components/providers/snackbar-provider';
+import { ThemeProvider } from './providers/theme-provider';
+import { JacProvider } from './jaculus/provider/jac-context';
+import SnackbarProviderCustom from './providers/snackbar-provider';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -27,9 +27,9 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <SnackbarProviderCustom>
         <ThemeProvider>
-          <JaclyProvider>
+          <JacProvider>
             <RouterProvider router={router} />
-          </JaclyProvider>
+          </JacProvider>
         </ThemeProvider>
       </SnackbarProviderCustom>
     </StrictMode>

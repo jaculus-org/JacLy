@@ -54,6 +54,8 @@
     "clean-node": "rm -rf node_modules"
   },
   "dependencies": {
+    "@jaculus/device": "^0.0.1",
+    "@jaculus/project": "^0.0.1",
     "@kuband/react-blockly": "^10.0.0",
     "@obsidize/tar-browserify": "^6.0.1",
     "@zenfs/core": "^2.4.0",

@@ -60,7 +60,7 @@
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.85 0.025 244.8); /* Light blue border */
-  --input: oklch(0.85 0.025 244.8); /* Light blue input */
+  --input: oklch(0.95 0.01 244.8); /* Very light input background */
   --ring: oklch(0.704 0.04 256.788);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -95,8 +95,10 @@
   --accent: oklch(0.35 0.1 260); /* Accent blue */
   --accent-foreground: oklch(0.95 0.01 260); /* Light text on accent */
   --destructive: oklch(0.65 0.2 20); /* Red for destructive actions */
-  --border: oklch(0.3 0.08 260); /* Blue border */
-  --input: oklch(0.25 0.07 260); /* Input background */
+  --border: oklch(0.4 0.06 260); /* Lighter border for better visibility */
+  --input: oklch(
+    0.35 0.05 260
+  ); /* Lighter input background for better contrast */
   --ring: oklch(0.65 0.15 245); /* Focus ring matching primary */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);

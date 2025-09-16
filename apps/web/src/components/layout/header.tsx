@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ModeToggle } from '../mode-toggle';
-// import { ThemeSwitcher } from '../ThemeSwitcher';
+import { ModeToggle } from './theme/mode-toggle';
 
 export interface Links {
   [key: string]: string;

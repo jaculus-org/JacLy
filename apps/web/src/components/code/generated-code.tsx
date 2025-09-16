@@ -1,8 +1,8 @@
 import { CodeEditor } from '@/components/code/code-editor';
-import { useJacly } from '@/components/jacly-provider';
+import { useJac } from '@/jaculus/provider/jac-context';
 
 export function GeneratedCode() {
-  const { generatedCode } = useJacly();
+  const { generatedCode } = useJac();
 
   return (
     <div className="h-full w-full flex flex-col">

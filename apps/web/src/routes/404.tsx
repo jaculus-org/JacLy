@@ -53,7 +53,7 @@ export function Route404() {
                 size="lg"
                 className="w-full sm:w-auto"
               >
-                <Link to="/blocks">
+                <Link to="/editor/new">
                   <Blocks className="mr-2 h-4 w-4" />
                   Start Building
                 </Link>
