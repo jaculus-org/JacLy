@@ -1,44 +1,25 @@
-import { useIntlayer, useLocale } from 'react-intlayer';
-import { Locales } from 'intlayer';
+import { useIntlayer } from 'react-intlayer';
 import { ArrowRight, Blocks, Code, Link, Terminal } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FC } from 'react';
-
-const LocaleSwitcher: FC = () => {
-  const { setLocale } = useLocale();
-
-  return (
-    <>
-      <button onClick={() => setLocale(Locales.CZECH)}>
-        Change Language to Czech
-      </button>
-
-      <button onClick={() => setLocale(Locales.ENGLISH)}>
-        Change Language to English
-      </button>
-    </>
-  );
-};
 
 export function Homepage() {
   const content = useIntlayer('app');
 
   const features = [
     {
-      title: 'Visual Programming',
-      description: 'Build programs using intuitive drag-and-drop blocks',
+      title: content.visualProgrammingTitle as string,
+      description: content.visualProgrammingDescription as string,
       icon: Blocks,
     },
     {
-      title: 'Code Generation',
-      description:
-        'Automatically generate clean, syntactically correct code from your block designs',
+      title: content.codeGenerationTitle as string,
+      description: content.codeGenerationDescription as string,
       icon: Code,
     },
     {
-      title: 'Integrated Terminal',
-      description: 'Test and debug your code directly within the app',
+      title: content.integratedTerminalTitle as string,
+      description: content.integratedTerminalDescription as string,
       icon: Terminal,
     },
   ];
@@ -52,8 +33,7 @@ export function Homepage() {
             {content.title}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Your visual programming environment for creating amazing projects
-            with blocks
+            {content.subtitle}
           </p>
         </div>
 
@@ -79,13 +59,11 @@ export function Homepage() {
           ))}
         </div>
 
-        <LocaleSwitcher />
-
         {/* Call to Action */}
         <div className="text-center">
           <Button asChild size="sm" className="text-lg px-8 py-6 h-auto">
             <Link to="/editor/new">
-              Start Building
+              {content.getStarted}
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
           </Button>

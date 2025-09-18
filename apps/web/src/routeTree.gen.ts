@@ -17,6 +17,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EditorIndexRouteImport } from './routes/editor/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as EditorNewRouteImport } from './routes/editor/new'
+import { Route as EditorDemoRouteImport } from './routes/editor/demo'
+import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
 
 const TarRoute = TarRouteImport.update({
   id: '/tar',
@@ -58,6 +60,16 @@ const EditorNewRoute = EditorNewRouteImport.update({
   path: '/editor/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorDemoRoute = EditorDemoRouteImport.update({
+  id: '/editor/demo',
+  path: '/editor/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorProjectIdRoute = EditorProjectIdRouteImport.update({
+  id: '/editor/$projectId',
+  path: '/editor/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,6 +77,8 @@ export interface FileRoutesByFullPath {
   '/cs': typeof CsRoute
   '/en': typeof EnRoute
   '/tar': typeof TarRoute
+  '/editor/$projectId': typeof EditorProjectIdRoute
+  '/editor/demo': typeof EditorDemoRoute
   '/editor/new': typeof EditorNewRoute
   '/docs': typeof DocsIndexRoute
   '/editor': typeof EditorIndexRoute
@@ -75,6 +89,8 @@ export interface FileRoutesByTo {
   '/cs': typeof CsRoute
   '/en': typeof EnRoute
   '/tar': typeof TarRoute
+  '/editor/$projectId': typeof EditorProjectIdRoute
+  '/editor/demo': typeof EditorDemoRoute
   '/editor/new': typeof EditorNewRoute
   '/docs': typeof DocsIndexRoute
   '/editor': typeof EditorIndexRoute
@@ -86,6 +102,8 @@ export interface FileRoutesById {
   '/cs': typeof CsRoute
   '/en': typeof EnRoute
   '/tar': typeof TarRoute
+  '/editor/$projectId': typeof EditorProjectIdRoute
+  '/editor/demo': typeof EditorDemoRoute
   '/editor/new': typeof EditorNewRoute
   '/docs/': typeof DocsIndexRoute
   '/editor/': typeof EditorIndexRoute
@@ -98,6 +116,8 @@ export interface FileRouteTypes {
     | '/cs'
     | '/en'
     | '/tar'
+    | '/editor/$projectId'
+    | '/editor/demo'
     | '/editor/new'
     | '/docs'
     | '/editor'
@@ -108,6 +128,8 @@ export interface FileRouteTypes {
     | '/cs'
     | '/en'
     | '/tar'
+    | '/editor/$projectId'
+    | '/editor/demo'
     | '/editor/new'
     | '/docs'
     | '/editor'
@@ -118,6 +140,8 @@ export interface FileRouteTypes {
     | '/cs'
     | '/en'
     | '/tar'
+    | '/editor/$projectId'
+    | '/editor/demo'
     | '/editor/new'
     | '/docs/'
     | '/editor/'
@@ -129,6 +153,8 @@ export interface RootRouteChildren {
   CsRoute: typeof CsRoute
   EnRoute: typeof EnRoute
   TarRoute: typeof TarRoute
+  EditorProjectIdRoute: typeof EditorProjectIdRoute
+  EditorDemoRoute: typeof EditorDemoRoute
   EditorNewRoute: typeof EditorNewRoute
   DocsIndexRoute: typeof DocsIndexRoute
   EditorIndexRoute: typeof EditorIndexRoute
@@ -192,6 +218,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editor/demo': {
+      id: '/editor/demo'
+      path: '/editor/demo'
+      fullPath: '/editor/demo'
+      preLoaderRoute: typeof EditorDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editor/$projectId': {
+      id: '/editor/$projectId'
+      path: '/editor/$projectId'
+      fullPath: '/editor/$projectId'
+      preLoaderRoute: typeof EditorProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -201,6 +241,8 @@ const rootRouteChildren: RootRouteChildren = {
   CsRoute: CsRoute,
   EnRoute: EnRoute,
   TarRoute: TarRoute,
+  EditorProjectIdRoute: EditorProjectIdRoute,
+  EditorDemoRoute: EditorDemoRoute,
   EditorNewRoute: EditorNewRoute,
   DocsIndexRoute: DocsIndexRoute,
   EditorIndexRoute: EditorIndexRoute,

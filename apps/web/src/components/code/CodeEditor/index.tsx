@@ -1,5 +1,5 @@
 import MonacoEditor, { monaco } from 'react-monaco-editor';
-import { useTheme } from '../../providers/theme-provider';
+import { useTheme } from '../../../providers/theme-provider';
 
 interface CodeEditorProps {
   options?: monaco.editor.IStandaloneEditorConstructionOptions;

@@ -1,4 +1,4 @@
-import { CodeEditor } from '@/components/code/code-editor';
+import { CodeEditor } from '@/components/code/CodeEditor';
 import { useJac } from '@/jaculus/provider/jac-context';
 
 export function GeneratedCodePanel() {

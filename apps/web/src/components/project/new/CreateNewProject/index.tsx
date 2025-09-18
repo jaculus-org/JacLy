@@ -10,14 +10,15 @@ import { useJac } from '@/jaculus/provider/jac-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectionCard } from '@/components/ui/selection-card';
+import { useIntlayer } from 'react-intlayer';
 
 export function SelectNewProject() {
   const navigate = useNavigate();
   const { setProject } = useJac();
   const [projectName, setProjectName] = useState('');
   const [projectType, setProjectType] = useState<JacProjectType>('jacly');
-  const [connectionType, setConnectionType] =
-    useState<ConnectionType>('web-serial');
+  const [connectionType] = useState<ConnectionType>('web-serial');
+  const content = useIntlayer('newProject');
 
   const handleCreateProject = () => {
     const newProjectConfig: JacProjectConfig = {
@@ -36,7 +37,7 @@ export function SelectNewProject() {
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">Create New Project</h1>
+      <h1 className="text-2xl font-bold mb-4">{content.createNewProject}</h1>
 
       <div className="space-y-6">
         <div>
@@ -44,35 +45,35 @@ export function SelectNewProject() {
             htmlFor="projectName"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Project Name
+            {content.projectName}
           </label>
           <Input
             id="projectName"
             value={projectName}
             onChange={e => setProjectName(e.target.value)}
-            placeholder="My awesome project"
+            placeholder={content.myAwesomeProject.value}
           />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-2">Project Type</h2>
+          <h2 className="text-lg font-semibold mb-2">{content.projectType}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectionCard
-              title="Jacly Project"
-              description="Visual programming with blocks."
+              title={content.jaclyProject as string}
+              description={content.jaclyProjectDescription.value}
               isSelected={projectType === 'jacly'}
               onSelect={() => setProjectType('jacly')}
             />
             <SelectionCard
-              title="Code Project"
-              description="Write code in TypeScript."
+              title={content.jaculusProject as string}
+              description={content.jaculusProjectDescription.value}
               isSelected={projectType === 'code'}
               onSelect={() => setProjectType('code')}
             />
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <h2 className="text-lg font-semibold mb-2">
             Default Connection Method
           </h2>
@@ -96,10 +97,10 @@ export function SelectNewProject() {
               onSelect={() => setConnectionType('wokwi')}
             />
           </div>
-        </div>
+        </div> */}
 
         <Button onClick={handleCreateProject} className="w-full">
-          Create Project
+          {content.createProject}
         </Button>
       </div>
     </div>
