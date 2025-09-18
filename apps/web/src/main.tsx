@@ -8,6 +8,7 @@ import { routeTree } from './routeTree.gen';
 import { ThemeProvider } from './providers/theme-provider';
 import { JacProvider } from './jaculus/provider/jac-context';
 import SnackbarProviderCustom from './providers/snackbar-provider';
+import { IntlayerProvider } from 'react-intlayer';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -25,13 +26,15 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <SnackbarProviderCustom>
-        <ThemeProvider>
-          <JacProvider>
-            <RouterProvider router={router} />
-          </JacProvider>
-        </ThemeProvider>
-      </SnackbarProviderCustom>
+      <IntlayerProvider>
+        <SnackbarProviderCustom>
+          <ThemeProvider>
+            <JacProvider>
+              <RouterProvider router={router} />
+            </JacProvider>
+          </ThemeProvider>
+        </SnackbarProviderCustom>
+      </IntlayerProvider>
     </StrictMode>
   );
 }

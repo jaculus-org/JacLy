@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import tailwindcss from '@tailwindcss/vite';
+import { intlayerPlugin } from 'vite-intlayer';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,6 +14,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
+    intlayerPlugin(),
     tailwindcss(),
     {
       name: 'github-pages-setup',

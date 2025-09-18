@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { ModeToggle } from './theme/mode-toggle';
+import { LocaleSwitcher } from '../locale/locale-switcher';
 
 export interface Links {
   [key: string]: string;
@@ -30,6 +31,7 @@ export function Header({ links }: HeaderProps) {
           {/* Theme switcher */}
           <div className="flex items-center gap-4">
             <ModeToggle />
+            <LocaleSwitcher />
           </div>
         </div>
       </div>
