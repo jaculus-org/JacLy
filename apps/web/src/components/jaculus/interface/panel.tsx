@@ -1,7 +1,7 @@
 import { useJac } from '@/jaculus/provider/jac-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SelectConnection } from '@/components/jaculus/connect/SelectConnection';
+import { SelectConnection } from '@/components/jaculus/connect/select-connection';
 import {
   Usb,
   Unplug,

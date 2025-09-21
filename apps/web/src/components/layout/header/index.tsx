@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ModeToggle } from '../theme/ModeToggle';
+import { ModeToggle } from '../theme/mode-toggle';
 import { LocaleSwitcher } from '../../locale/locale-switcher';
 import { useIntlayer, useLocale } from 'react-intlayer';
 import { Button } from '@/components/ui/button';

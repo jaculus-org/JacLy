@@ -1,6 +1,6 @@
-import { CodeEditor } from '@/components/code/CodeEditor';
 import { useJac } from '@/jaculus/provider/jac-context';
 import { useIntlayer } from 'react-intlayer';
+import { CodeEditor } from '../code-editor';
 
 export function GeneratedCode() {
   const { generatedCode } = useJac();

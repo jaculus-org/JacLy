@@ -13,24 +13,9 @@ import { PanelWrapper } from '@/panels/wrapper';
 import { BlocklyEditorPanel } from '@/panels/blockly-editor';
 import { TerminalPanel } from '@/panels/terminal';
 import { useIntlayer } from 'react-intlayer';
+import { IJsonRowNode, IJsonTabNode, IJsonTabSetNode } from 'flexlayout-react';
 
-// Helper function to update layout JSON with translated names
-
-// type FlexContent = {
-//   jaculusTab: { value: string };
-//   generatedCodeTab: { value: string };
-//   terminalTab: { value: string };
-//   blocklyEditorTab: { value: string };
-//   unknownComponent: { value: string };
-// };
-
-type FlexContent = {
-  jaculusTab: { value: string };
-  generatedCodeTab: { value: string };
-  terminalTab: { value: string };
-  blocklyEditorTab: { value: string };
-  unknownComponent: { value: string };
-};
+type FlexContent = ReturnType<typeof useIntlayer<'flexlayout'>>;
 
 function updateLayoutJson(json: FlexLayout.IJsonModel, content: FlexContent) {
   if (json.borders) {
@@ -55,24 +40,23 @@ function updateLayoutJson(json: FlexLayout.IJsonModel, content: FlexContent) {
   }
 }
 
-type TabNode = {
-  type?: string;
-  component?: string;
-  name?: string;
-  children?: TabNode[];
-};
-
-function updateTabset(node: TabNode, content: FlexContent) {
+function updateTabset(
+  node: IJsonRowNode | IJsonTabSetNode,
+  content: FlexContent
+) {
   if (node.children) {
-    node.children.forEach((child: TabNode) => {
-      if (child.type === 'tab') {
-        if (child.component === 'blockly') {
-          child.name = content.blocklyEditorTab.value;
+    node.children.forEach(
+      (child: IJsonTabNode | IJsonTabSetNode | IJsonRowNode) => {
+        if (child.type === 'tab') {
+          const tabChild = child as IJsonTabNode;
+          if (tabChild.component === 'blockly') {
+            tabChild.name = content.blocklyEditorTab.value;
+          }
+        } else if (child.type === 'tabset') {
+          updateTabset(child as IJsonTabSetNode, content);
         }
-      } else if (child.type === 'tabset') {
-        updateTabset(child, content);
       }
-    });
+    );
   }
 }
 
@@ -83,10 +67,8 @@ function BlocksLayout() {
   // FlexLayout model configuration
   const defaultJson: FlexLayout.IJsonModel = {
     global: {
-      // Remove close buttons from all tabs
       tabEnableClose: false,
       tabEnableRename: false,
-      // Other global settings
       tabSetEnableMaximize: true,
       tabSetEnableDrop: true,
       tabSetEnableDrag: true,
@@ -96,7 +78,7 @@ function BlocksLayout() {
       {
         type: 'border',
         location: 'left',
-        size: 0, // Hidden by default
+        size: 0,
         selected: 0,
         children: [
           {
@@ -180,7 +162,6 @@ function BlocksLayout() {
       const layoutJson = newModel.toJson();
       storage.set(STORAGE_KEYS.LAYOUT_MODEL, layoutJson, true);
     } catch (_error) {
-      // Handle error if needed
       console.error('Error saving layout model:', _error);
     }
   };
@@ -188,6 +169,7 @@ function BlocksLayout() {
   const factory = (node: FlexLayout.TabNode) => {
     const component = node.getComponent();
     const tabName = node.getName();
+    const isInBorder = node.getParent() instanceof FlexLayout.BorderNode;
 
     const wrapComponent = (
       children: React.ReactNode,
@@ -200,13 +182,13 @@ function BlocksLayout() {
 
     switch (component) {
       case 'blockly':
-        return wrapComponent(<BlocklyEditorPanel />);
+        return wrapComponent(<BlocklyEditorPanel />, isInBorder);
       case 'code':
-        return wrapComponent(<GeneratedCodePanel />, true);
+        return wrapComponent(<GeneratedCodePanel />, isInBorder);
       case 'terminal':
-        return wrapComponent(<TerminalPanel />, true);
+        return wrapComponent(<TerminalPanel />, isInBorder);
       case 'jaculus':
-        return wrapComponent(<JaculusPanel />, true);
+        return wrapComponent(<JaculusPanel />, isInBorder);
       default:
         return wrapComponent(
           <div>
@@ -214,7 +196,8 @@ function BlocksLayout() {
               '{component}',
               component ?? 'unknown'
             )}
-          </div>
+          </div>,
+          false
         );
     }
   };

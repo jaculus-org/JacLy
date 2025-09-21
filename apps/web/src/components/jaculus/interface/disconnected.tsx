@@ -1,5 +1,5 @@
 import { Unplug } from 'lucide-react';
-import { SelectConnection } from '../connect/SelectConnection';
+import { SelectConnection } from '../connect/select-connection';
 
 export function JaculusDisconnected() {
   return (

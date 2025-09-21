@@ -34,3 +34,5 @@ Thumbs.db
 .git/
 
 routeTree.gen.ts
+.intlayer/
+.tanstack/

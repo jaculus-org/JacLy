@@ -1,4 +1,4 @@
-import { FlexLayoutEditor } from '@/components/layout/Flexlayout';
+import { FlexLayoutEditor } from '@/components/layout/flexlayout';
 import { getProjectById } from '@/lib/project/projects';
 import { createFileRoute } from '@tanstack/react-router';
 
