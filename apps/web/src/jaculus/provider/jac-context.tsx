@@ -1,7 +1,13 @@
-import { storage, STORAGE_KEYS } from '@/utils/storage';
+import { storage, STORAGE_KEYS } from '@/lib/storage';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { JacDevice } from '@jaculus/device';
-import { JacProject } from '@/lib/project/project';
+import {
+  deleteProject,
+  JacProject,
+  JacProjectMap,
+  loadProjects,
+  saveProject,
+} from '@/lib/project/jacProject.ts';
 
 type JacProviderProps = {
   children: React.ReactNode;
@@ -10,10 +16,14 @@ type JacProviderProps = {
 
 type JacProviderState = {
   device: JacDevice | null;
+  // connect and disconnect device
   setDevice: (device: JacDevice | null) => void;
 
-  project: JacProject | null;
-  setProject: (project: JacProject | null) => void;
+  projects: JacProjectMap;
+
+  activeProject: JacProject | null;
+  setActiveProject: (project: JacProject | null) => void;
+  deleteProject: (id: string) => void;
 
   setGeneratedCode: (code: string) => void;
   generatedCode: string;
@@ -23,9 +33,11 @@ const initialState: JacProviderState = {
   setGeneratedCode: () => null,
   generatedCode: '',
   device: null,
-  project: null,
+  projects: {},
+  activeProject: null,
+  setActiveProject: () => null,
+  deleteProject: () => null,
   setDevice: () => null,
-  setProject: () => null,
 };
 
 const JacProviderContext = createContext<JacProviderState>(initialState);
@@ -39,7 +51,15 @@ export function JacProvider({
     storage.get(storageKey, '')
   );
   const [device, setDevice] = useState<JacDevice | null>(null);
-  const [project, setProject] = useState<JacProject | null>(null);
+  const [activeProject, setActiveProject] = useState<JacProject | null>(
+    storage.get(STORAGE_KEYS.ACTIVE_PROJECT, null)
+  );
+  const [projects, setProjects] = useState<JacProjectMap>(
+    loadProjects().reduce((map, project) => {
+      map[project.id] = project;
+      return map;
+    }, {} as JacProjectMap)
+  );
 
   useEffect(() => {
     storage.set(storageKey, generatedCode);
@@ -54,8 +74,38 @@ export function JacProvider({
       setDevice(newDevice);
     },
 
-    project,
-    setProject,
+    projects: projects,
+    activeProject: activeProject,
+    setActiveProject: (project: JacProject | null) => {
+      setActiveProject(project);
+      if (project) {
+        const existingProject = projects[project.id];
+        if (!existingProject) {
+          setProjects(prevProjects => ({
+            ...prevProjects,
+            [project.id]: project,
+          }));
+          saveProject(project);
+        }
+      }
+      storage.set(STORAGE_KEYS.ACTIVE_PROJECT, project);
+    },
+
+    deleteProject: (id: string) => {
+      setProjects(prevProjects => {
+        const updatedProjects = { ...prevProjects };
+        delete updatedProjects[id];
+        return updatedProjects;
+      });
+      if (activeProject?.id === id) {
+        setActiveProject(null);
+        storage.remove(STORAGE_KEYS.ACTIVE_PROJECT);
+      }
+      const existingProject = projects[id];
+      if (existingProject) {
+        deleteProject(id);
+      }
+    },
 
     setGeneratedCode: (code: string) => {
       storage.set(storageKey, code);

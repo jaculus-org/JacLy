@@ -1,4 +1,8 @@
-import { getProjectById, Project, saveProject } from '@/lib/project/projects';
+import {
+  getProjectById,
+  JacProject,
+  saveProject,
+} from '@/lib/project/jacProject.ts';
 import FS from '@isomorphic-git/lightning-fs';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
@@ -30,7 +34,7 @@ function PostComponent() {
   }, [projectId]);
 
   function addProjectDataNew() {
-    const project: Project = {
+    const project: JacProject = {
       name: 'New Project' + projectId,
       id: projectId!,
       createdAt: new Date(),
@@ -38,6 +42,7 @@ function PostComponent() {
       isStarred: false,
       archived: null,
       jaculusVersion: '0.1.0',
+      type: 'jacly',
     };
 
     saveProject(project);

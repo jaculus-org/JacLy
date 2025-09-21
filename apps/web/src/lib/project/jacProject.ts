@@ -1,4 +1,8 @@
-export type Project = {
+import { storage } from '@/lib/storage';
+
+export type JaclyProjectType = 'jacly' | 'code';
+
+export type JacProject = {
   name: string;
   id: string;
   createdAt: Date;
@@ -6,12 +10,15 @@ export type Project = {
   isStarred: boolean;
   archived: Date | null;
   jaculusVersion: string;
+  type: JaclyProjectType;
 };
+
+export type JacProjectMap = Record<string, JacProject>;
 
 // use a local storage for now
 const PROJECTS_STORAGE_KEY = 'jaculus_projects';
 
-export function saveProject(project: Project) {
+export function saveProject(project: JacProject): JacProject {
   const projects = loadProjects();
   const existingIndex = projects.findIndex(p => p.id === project.id);
   if (existingIndex !== -1) {
@@ -19,15 +26,15 @@ export function saveProject(project: Project) {
   } else {
     projects.push(project);
   }
-  localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+  storage.set(PROJECTS_STORAGE_KEY, projects);
+  return project;
 }
 
-export function loadProjects(): Project[] {
-  const projectsJson = localStorage.getItem(PROJECTS_STORAGE_KEY);
-  return projectsJson ? JSON.parse(projectsJson) : [];
+export function loadProjects(): JacProject[] {
+  return storage.get(PROJECTS_STORAGE_KEY, []);
 }
 
-export function getProjectById(id: string): Project | undefined {
+export function getProjectById(id: string): JacProject | undefined {
   const projects = loadProjects();
   return projects.find(p => p.id === id);
 }
@@ -35,5 +42,5 @@ export function getProjectById(id: string): Project | undefined {
 export function deleteProject(id: string) {
   const projects = loadProjects();
   const updatedProjects = projects.filter(p => p.id !== id);
-  localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(updatedProjects));
+  storage.set(PROJECTS_STORAGE_KEY, updatedProjects);
 }

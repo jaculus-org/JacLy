@@ -1,7 +1,7 @@
 import { t, type Dictionary } from 'intlayer';
 
 const componentContent = {
-  key: 'newProject',
+  key: 'create-new-project',
   content: {
     createNewProject: t({
       en: 'Create New Project',
@@ -20,16 +20,16 @@ const componentContent = {
       cs: 'Typ projektu',
     }),
     jaclyProject: t({
-      en: 'Jacly Project',
-      cs: 'Jacly projekt',
+      en: 'Jacly Project (blocks)',
+      cs: 'Jacly projekt (bloky)',
     }),
     jaclyProjectDescription: t({
       en: 'Visual programming with blocks.',
       cs: 'Vizuální programování s bloky.',
     }),
     jaculusProject: t({
-      en: 'Jaculus Project',
-      cs: 'Jaculus projekt',
+      en: 'Jaculus Project (code)',
+      cs: 'Jaculus projekt (kód)',
     }),
     jaculusProjectDescription: t({
       en: 'Text-based programming with Jaculus in TS.',

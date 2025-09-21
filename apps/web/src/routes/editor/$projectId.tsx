@@ -1,5 +1,5 @@
 import { FlexLayoutEditor } from '@/components/layout/flexlayout';
-import { getProjectById } from '@/lib/project/projects';
+import { getProjectById } from '@/lib/project/jacProject.ts';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/editor/$projectId')({
@@ -10,8 +10,7 @@ export const Route = createFileRoute('/editor/$projectId')({
 });
 
 function PostComponent() {
-  // const { projectId } = Route.useParams();
-  // const data = Route.useLoaderData();
+  const project = Route.useLoaderData();
 
-  return <FlexLayoutEditor />;
+  return <FlexLayoutEditor project={project} />;
 }

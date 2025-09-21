@@ -1,39 +1,47 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { JacProject } from '@/lib/project/project';
-import {
-  JacProjectConfig,
-  JacProjectType,
-  ConnectionType,
-} from '@/lib/project/external/project-config';
 import { useJac } from '@/jaculus/provider/jac-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectionCard } from '@/components/ui/selection-card';
 import { useIntlayer } from 'react-intlayer';
+import { JaclyProjectType, JacProject } from '@/lib/project/jacProject.ts';
+import FS from '@isomorphic-git/lightning-fs';
+import { enqueueSnackbar } from 'notistack';
+import { generateProjectName } from '@/lib/utils';
 
 export function SelectNewProject() {
+  const content = useIntlayer('create-new-project');
   const navigate = useNavigate();
-  const { setProject } = useJac();
+  const { setActiveProject } = useJac();
   const [projectName, setProjectName] = useState('');
-  const [projectType, setProjectType] = useState<JacProjectType>('jacly');
-  const [connectionType] = useState<ConnectionType>('web-serial');
-  const content = useIntlayer('newProject');
+  const [projectType, setProjectType] = useState<JaclyProjectType>('jacly');
 
-  const handleCreateProject = () => {
-    const newProjectConfig: JacProjectConfig = {
+  async function createProject() {
+    const newProject: JacProject = {
       name: projectName || 'New Project',
-      uuid: crypto.randomUUID(),
-      created: new Date(),
-      lastModified: new Date(),
+      id: generateProjectName(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isStarred: false,
+      archived: null,
       jaculusVersion: '0.1.0',
-      projectType,
-      connectionType,
+      type: projectType,
     };
-    const newProject = new JacProject(newProjectConfig);
-    setProject(newProject);
-    navigate({ to: '/editor', search: { connection: connectionType } });
-  };
+
+    const fs = new FS(newProject.id).promises;
+    await fs.mkdir('/src');
+    await fs.writeFile('/src/index.ts', '');
+
+    setActiveProject(newProject);
+
+    enqueueSnackbar('Project created successfully!', { variant: 'success' });
+
+    navigate({
+      to: '/editor/$projectId',
+      params: { projectId: newProject.id },
+    });
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
@@ -99,7 +107,7 @@ export function SelectNewProject() {
           </div>
         </div> */}
 
-        <Button onClick={handleCreateProject} className="w-full">
+        <Button onClick={createProject} className="w-full">
           {content.createProject}
         </Button>
       </div>

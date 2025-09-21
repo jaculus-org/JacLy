@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import './styles/flexlayout.css';
 
-import { storage, STORAGE_KEYS } from '@/utils/storage';
+import { storage, STORAGE_KEYS } from '@/lib/storage';
 import { GeneratedCodePanel } from '@/panels/generated-code';
 import { JaculusPanel } from '@/panels/jaculus';
 import {
@@ -14,6 +14,10 @@ import { BlocklyEditorPanel } from '@/panels/blockly-editor';
 import { TerminalPanel } from '@/panels/terminal';
 import { useIntlayer } from 'react-intlayer';
 import { IJsonRowNode, IJsonTabNode, IJsonTabSetNode } from 'flexlayout-react';
+import { JacProject } from '@/lib/project/jacProject';
+import { enqueueSnackbar } from 'notistack';
+import { useNavigate } from '@tanstack/react-router';
+import { FileExplorerPanel } from '@/panels/file-explorer';
 
 type FlexContent = ReturnType<typeof useIntlayer<'flexlayout'>>;
 
@@ -30,6 +34,9 @@ function updateLayoutJson(json: FlexLayout.IJsonModel, content: FlexContent) {
             break;
           case 'terminal':
             tab.name = content.terminalTab.value;
+            break;
+          case 'file-explorer':
+            tab.name = content.fileExplorerTab.value;
             break;
         }
       });
@@ -60,7 +67,12 @@ function updateTabset(
   }
 }
 
-function BlocksLayout() {
+interface BlocksLayoutProps {
+  project: JacProject;
+}
+
+function BlocksLayout({ project }: BlocksLayoutProps) {
+  console.log('Rendering BlocksLayout for project:', project);
   const content = useIntlayer('flexlayout');
   const { modelRef } = useFlexLayout();
 
@@ -78,14 +90,21 @@ function BlocksLayout() {
       {
         type: 'border',
         location: 'left',
-        size: 0,
-        selected: 0,
+        size: 250,
+        selected: -1,
         children: [
           {
             type: 'tab',
             name: content.jaculusTab.value,
             component: 'jaculus',
             id: 'jaculus',
+            enableClose: false,
+          },
+          {
+            type: 'tab',
+            name: content.fileExplorerTab.value,
+            component: 'file-explorer',
+            id: 'file-explorer',
             enableClose: false,
           },
         ],
@@ -189,6 +208,8 @@ function BlocksLayout() {
         return wrapComponent(<TerminalPanel />, isInBorder);
       case 'jaculus':
         return wrapComponent(<JaculusPanel />, isInBorder);
+      case 'file-explorer':
+        return wrapComponent(<FileExplorerPanel />, isInBorder);
       default:
         return wrapComponent(
           <div>
@@ -213,10 +234,23 @@ function BlocksLayout() {
   );
 }
 
-export function FlexLayoutEditor() {
+interface FlexLayoutEditorProps {
+  project: JacProject | undefined;
+}
+
+export function FlexLayoutEditor({ project }: FlexLayoutEditorProps) {
+  const content = useIntlayer('flexlayout');
+  const navigate = useNavigate();
+
+  if (!project) {
+    enqueueSnackbar(content.projectNotFound.value, { variant: 'error' });
+    navigate({ to: '/editor' });
+    return null;
+  }
+
   return (
     <FlexLayoutProvider>
-      <BlocksLayout />
+      <BlocksLayout project={project} />
     </FlexLayoutProvider>
   );
 }

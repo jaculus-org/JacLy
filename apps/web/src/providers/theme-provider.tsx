@@ -1,4 +1,4 @@
-import { storage, STORAGE_KEYS } from '@/utils/storage';
+import { storage, STORAGE_KEYS } from '@/lib/storage';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type ThemeNormalized = 'dark' | 'light';

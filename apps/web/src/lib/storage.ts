@@ -47,4 +47,6 @@ export const STORAGE_KEYS = {
   USER_PREFERENCES: 'jacly-user-preferences',
   BLOCKLY_WORKSPACE: 'jacly-blockly-workspace',
   JACLY: 'jacly-config',
+  PROJECTS: 'jacly-projects',
+  ACTIVE_PROJECT: 'jacly-active-project',
 } as const;
