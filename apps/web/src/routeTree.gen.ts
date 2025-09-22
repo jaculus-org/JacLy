@@ -14,6 +14,7 @@ import { Route as EnRouteImport } from './routes/en'
 import { Route as CsRouteImport } from './routes/cs'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as EditorIndexRouteImport } from './routes/editor/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as EditorNewRouteImport } from './routes/editor/new'
@@ -43,6 +44,11 @@ const R404Route = R404RouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorIndexRoute = EditorIndexRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/editor/new': typeof EditorNewRoute
   '/docs': typeof DocsIndexRoute
   '/editor': typeof EditorIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/editor/new': typeof EditorNewRoute
   '/docs': typeof DocsIndexRoute
   '/editor': typeof EditorIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/editor/new': typeof EditorNewRoute
   '/docs/': typeof DocsIndexRoute
   '/editor/': typeof EditorIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/editor/new'
     | '/docs'
     | '/editor'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/editor/new'
     | '/docs'
     | '/editor'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/editor/new'
     | '/docs/'
     | '/editor/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   EditorNewRoute: typeof EditorNewRoute
   DocsIndexRoute: typeof DocsIndexRoute
   EditorIndexRoute: typeof EditorIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editor/': {
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorNewRoute: EditorNewRoute,
   DocsIndexRoute: DocsIndexRoute,
   EditorIndexRoute: EditorIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export function Homepage() {
-  const content = useIntlayer('app');
+  const content = useIntlayer('homepage');
 
   const features = [
     {

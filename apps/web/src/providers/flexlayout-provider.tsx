@@ -3,6 +3,7 @@ import * as FlexLayout from 'flexlayout-react';
 
 interface FlexLayoutContextType {
   modelRef: React.MutableRefObject<FlexLayout.Model | null>;
+  resetLayout: () => void;
   showJaculusPanel: () => void;
   hideJaculusPanel: () => void;
   toggleJaculusPanel: () => void;
@@ -20,6 +21,22 @@ interface FlexLayoutProviderProps {
 
 export function FlexLayoutProvider({ children }: FlexLayoutProviderProps) {
   const modelRef = useRef<FlexLayout.Model | null>(null);
+
+  function resetLayout(jsonOverride?: FlexLayout.IJsonModel) {
+    const model = jsonOverride
+      ? FlexLayout.Model.fromJson(jsonOverride)
+      : getDefaultModel();
+    modelRef.current = model;
+  }
+
+  function getDefaultModel() {
+    const json: FlexLayout.IJsonModel = {
+      global: {},
+      borders: [],
+      layout: { type: 'row', children: [] },
+    };
+    return FlexLayout.Model.fromJson(json);
+  }
 
   const showJaculusPanel = () => {
     if (modelRef.current) {
@@ -116,6 +133,7 @@ export function FlexLayoutProvider({ children }: FlexLayoutProviderProps) {
 
   const value: FlexLayoutContextType = {
     modelRef,
+    resetLayout,
     showJaculusPanel,
     hideJaculusPanel,
     toggleJaculusPanel,
