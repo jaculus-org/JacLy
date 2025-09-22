@@ -94,8 +94,8 @@ export function JaclyEditor({ theme, onCodeChange }: EditorProps) {
       try {
         // generate js to console
         const code = javascriptGenerator.workspaceToCode(ws);
-        console.log('Generated JavaScript code:');
-        console.log(code);
+        // console.log('Generated JavaScript code:');
+        // console.log(code);
         onCodeChange?.(code);
       } catch (_error) {
         console.error('Error generating JavaScript code:', _error);

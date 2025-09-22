@@ -15,7 +15,7 @@ export function BlocklyEditor() {
   const fs = new FS(activeProject.id).promises;
 
   async function onCodeChange(code: string) {
-    await fs.writeFile('main.js', code);
+    await fs.writeFile('/src/main.js', code);
     setGeneratedCode(code);
   }
 

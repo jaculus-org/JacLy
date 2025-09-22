@@ -14,9 +14,9 @@ import { Route as EnRouteImport } from './routes/en'
 import { Route as CsRouteImport } from './routes/cs'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as EditorIndexRouteImport } from './routes/editor/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as EditorSettingsRouteImport } from './routes/editor/settings'
 import { Route as EditorNewRouteImport } from './routes/editor/new'
 import { Route as EditorDemoRouteImport } from './routes/editor/demo'
 import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
@@ -46,11 +46,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EditorIndexRoute = EditorIndexRouteImport.update({
   id: '/editor/',
   path: '/editor/',
@@ -59,6 +54,11 @@ const EditorIndexRoute = EditorIndexRouteImport.update({
 const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/docs/',
   path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditorSettingsRoute = EditorSettingsRouteImport.update({
+  id: '/editor/settings',
+  path: '/editor/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorNewRoute = EditorNewRouteImport.update({
@@ -86,9 +86,9 @@ export interface FileRoutesByFullPath {
   '/editor/$projectId': typeof EditorProjectIdRoute
   '/editor/demo': typeof EditorDemoRoute
   '/editor/new': typeof EditorNewRoute
+  '/editor/settings': typeof EditorSettingsRoute
   '/docs': typeof DocsIndexRoute
   '/editor': typeof EditorIndexRoute
-  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,9 +99,9 @@ export interface FileRoutesByTo {
   '/editor/$projectId': typeof EditorProjectIdRoute
   '/editor/demo': typeof EditorDemoRoute
   '/editor/new': typeof EditorNewRoute
+  '/editor/settings': typeof EditorSettingsRoute
   '/docs': typeof DocsIndexRoute
   '/editor': typeof EditorIndexRoute
-  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,9 +113,9 @@ export interface FileRoutesById {
   '/editor/$projectId': typeof EditorProjectIdRoute
   '/editor/demo': typeof EditorDemoRoute
   '/editor/new': typeof EditorNewRoute
+  '/editor/settings': typeof EditorSettingsRoute
   '/docs/': typeof DocsIndexRoute
   '/editor/': typeof EditorIndexRoute
-  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,9 +128,9 @@ export interface FileRouteTypes {
     | '/editor/$projectId'
     | '/editor/demo'
     | '/editor/new'
+    | '/editor/settings'
     | '/docs'
     | '/editor'
-    | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,9 +141,9 @@ export interface FileRouteTypes {
     | '/editor/$projectId'
     | '/editor/demo'
     | '/editor/new'
+    | '/editor/settings'
     | '/docs'
     | '/editor'
-    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -154,9 +154,9 @@ export interface FileRouteTypes {
     | '/editor/$projectId'
     | '/editor/demo'
     | '/editor/new'
+    | '/editor/settings'
     | '/docs/'
     | '/editor/'
-    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -168,9 +168,9 @@ export interface RootRouteChildren {
   EditorProjectIdRoute: typeof EditorProjectIdRoute
   EditorDemoRoute: typeof EditorDemoRoute
   EditorNewRoute: typeof EditorNewRoute
+  EditorSettingsRoute: typeof EditorSettingsRoute
   DocsIndexRoute: typeof DocsIndexRoute
   EditorIndexRoute: typeof EditorIndexRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -210,13 +210,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/': {
-      id: '/settings/'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/editor/': {
       id: '/editor/'
       path: '/editor'
@@ -229,6 +222,13 @@ declare module '@tanstack/react-router' {
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editor/settings': {
+      id: '/editor/settings'
+      path: '/editor/settings'
+      fullPath: '/editor/settings'
+      preLoaderRoute: typeof EditorSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editor/new': {
@@ -264,9 +264,9 @@ const rootRouteChildren: RootRouteChildren = {
   EditorProjectIdRoute: EditorProjectIdRoute,
   EditorDemoRoute: EditorDemoRoute,
   EditorNewRoute: EditorNewRoute,
+  EditorSettingsRoute: EditorSettingsRoute,
   DocsIndexRoute: DocsIndexRoute,
   EditorIndexRoute: EditorIndexRoute,
-  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

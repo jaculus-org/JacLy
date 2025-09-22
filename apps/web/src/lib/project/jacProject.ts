@@ -11,6 +11,7 @@ export type JacProject = {
   archived: Date | null;
   jaculusVersion: string;
   type: JaclyProjectType;
+  folderStructure?: Record<string, boolean>;
 };
 
 export type JacProjectMap = Record<string, JacProject>;
@@ -43,4 +44,23 @@ export function deleteProject(id: string) {
   const projects = loadProjects();
   const updatedProjects = projects.filter(p => p.id !== id);
   storage.set(PROJECTS_STORAGE_KEY, updatedProjects);
+}
+
+export function updateProjectFolderStructure(
+  projectId: string,
+  folderStructure: Record<string, boolean>
+) {
+  const projects = loadProjects();
+  const projectIndex = projects.findIndex(p => p.id === projectId);
+  if (projectIndex !== -1) {
+    const updatedProject = {
+      ...projects[projectIndex],
+      folderStructure,
+      updatedAt: new Date(),
+    };
+    projects[projectIndex] = updatedProject;
+    storage.set(PROJECTS_STORAGE_KEY, projects);
+    return updatedProject;
+  }
+  return null;
 }

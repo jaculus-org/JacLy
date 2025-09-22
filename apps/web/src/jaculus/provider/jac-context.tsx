@@ -7,6 +7,7 @@ import {
   JacProjectMap,
   loadProjects,
   saveProject,
+  getProjectById,
 } from '@/lib/project/jacProject.ts';
 
 type JacProviderProps = {
@@ -23,6 +24,7 @@ type JacProviderState = {
 
   activeProject: JacProject | null;
   setActiveProject: (project: JacProject | null) => void;
+  refreshActiveProject: () => void;
   deleteProject: (id: string) => void;
 
   setGeneratedCode: (code: string) => void;
@@ -36,6 +38,7 @@ const initialState: JacProviderState = {
   projects: {},
   activeProject: null,
   setActiveProject: () => null,
+  refreshActiveProject: () => null,
   deleteProject: () => null,
   setDevice: () => null,
 };
@@ -104,6 +107,19 @@ export function JacProvider({
       const existingProject = projects[id];
       if (existingProject) {
         deleteProject(id);
+      }
+    },
+
+    refreshActiveProject: () => {
+      if (activeProject) {
+        const updatedProject = getProjectById(activeProject.id);
+        if (updatedProject) {
+          setActiveProject(updatedProject);
+          setProjects(prevProjects => ({
+            ...prevProjects,
+            [updatedProject.id]: updatedProject,
+          }));
+        }
       }
     },
 

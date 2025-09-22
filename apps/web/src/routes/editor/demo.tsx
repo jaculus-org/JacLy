@@ -31,7 +31,7 @@ function PostComponent() {
       }
     };
     loadReadme();
-  }, [projectId]);
+  }, [fs.promises]);
 
   function addProjectDataNew() {
     const project: JacProject = {
