@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { intlayerPlugin } from 'vite-intlayer';
 import fs from 'fs';
 import path from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -44,6 +45,7 @@ export default defineConfig({
         fs.writeFileSync(nojekyllFile, '');
       },
     },
+    nodePolyfills(),
   ],
   resolve: {
     alias: {

@@ -59,7 +59,7 @@ export function JaculusInterface() {
             <SelectConnection oneLine={true} />
 
             {device && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="destructive"
                   size="sm"
@@ -88,7 +88,7 @@ export function JaculusInterface() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="default" size="sm" className="gap-2">
               <Upload className="h-4 w-4" />
               Build
@@ -114,7 +114,7 @@ export function JaculusInterface() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" className="gap-2">
               <Play className="h-4 w-4" />
               Start Program
@@ -157,7 +157,7 @@ export function JaculusInterface() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" className="gap-2">
               <Wifi className="h-4 w-4" />
               Configure WiFi
@@ -179,7 +179,7 @@ export function JaculusInterface() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="ghost" size="sm" className="gap-2">
               <Settings className="h-4 w-4" />
               Check for Jac Updates
@@ -205,7 +205,7 @@ export function JaculusInterface() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" className="gap-2">
               <FolderPlus className="h-4 w-4" />
               Create New Project

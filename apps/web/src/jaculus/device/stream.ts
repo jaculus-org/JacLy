@@ -1,5 +1,6 @@
 import { Duplex } from '@jaculus/link/stream';
 import { Logger } from '@jaculus/common';
+import { Buffer } from 'buffer';
 
 class WebSerialError extends Error {
   constructor(message: string) {
