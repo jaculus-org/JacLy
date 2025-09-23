@@ -31,6 +31,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useFlexLayout } from '@/providers/flexlayout-provider';
 // const { setGeneratedCode } = useJac();
 
 interface FileSystemItem {
@@ -54,6 +55,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
   const [renameValue, setRenameValue] = useState('');
   const [contextItem, setContextItem] = useState<FileSystemItem | null>(null);
   const initialLoadRef = useRef(true);
+  const { addGeneratedCodeTabLive } = useFlexLayout();
 
   const fs = useMemo(
     () => {
@@ -400,10 +402,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
       console.log(`Opening file: ${item.path}`);
       onFileSelect?.(item.path);
 
-      const content =
-        (await fs?.readFile(item.path, { encoding: 'utf8' })) || '';
-      // setGeneratedCode(content);
-      console.log(`File content: ${content}`);
+      addGeneratedCodeTabLive(item.path);
     }
   };
 

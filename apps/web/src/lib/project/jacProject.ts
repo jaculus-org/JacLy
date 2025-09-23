@@ -1,4 +1,5 @@
 import { storage } from '@/lib/storage';
+import { deleteIndexedDB } from '../utils';
 
 export type JaclyProjectType = 'jacly' | 'code';
 
@@ -44,6 +45,7 @@ export function deleteProject(id: string) {
   const projects = loadProjects();
   const updatedProjects = projects.filter(p => p.id !== id);
   storage.set(PROJECTS_STORAGE_KEY, updatedProjects);
+  deleteIndexedDB(id);
 }
 
 export function updateProjectFolderStructure(

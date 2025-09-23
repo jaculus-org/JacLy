@@ -31,7 +31,6 @@ export function SelectNewProject() {
 
     const fs = new FS(newProject.id).promises;
     await fs.mkdir('/src');
-    await fs.writeFile('/src/index.ts', '');
 
     setActiveProject(newProject);
 

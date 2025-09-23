@@ -22,3 +22,26 @@ export function generateProjectName() {
   const id = generateNanoId();
   return id.match(/.{1,5}/g)?.join('-') ?? id;
 }
+
+/**
+ * Remove IndexedDB with the given name.
+ */
+export function deleteIndexedDB(dbName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const deleteRequest = indexedDB.deleteDatabase(dbName);
+
+    deleteRequest.onsuccess = () => {
+      console.log(`IndexedDB database "${dbName}" deleted successfully.`);
+      resolve();
+    };
+
+    deleteRequest.onerror = event => {
+      console.error(`Error deleting IndexedDB database "${dbName}":`, event);
+      reject(event);
+    };
+
+    deleteRequest.onblocked = () => {
+      console.warn(`Deletion of IndexedDB database "${dbName}" is blocked.`);
+    };
+  });
+}
