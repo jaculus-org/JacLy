@@ -9,6 +9,18 @@ import { JaclyProjectType, JacProject } from '@/lib/project/jacProject.ts';
 import FS from '@isomorphic-git/lightning-fs';
 import { enqueueSnackbar } from 'notistack';
 import { generateProjectName } from '@/lib/utils';
+import { extractPackageFromUri } from '@/lib/project/test';
+// import { createProject, loadPackageUri } from '@/lib/project/process';
+
+import { Buffer } from 'buffer';
+
+// export interface Package {
+//     dirs: string[];
+//     files: Record<string, Buffer>;
+// }
+
+// import { logger } from '@/jaculus/log/logger';
+// import { createProject, loadPackageUri } from "@jaculus/project/project";
 
 export function SelectNewProject() {
   const content = useIntlayer('create-new-project');
@@ -17,7 +29,7 @@ export function SelectNewProject() {
   const [projectName, setProjectName] = useState('');
   const [projectType, setProjectType] = useState<JaclyProjectType>('jacly');
 
-  async function createProject() {
+  async function createProjectHelper() {
     const newProject: JacProject = {
       name: projectName || 'New Project',
       id: generateProjectName(),
@@ -29,8 +41,18 @@ export function SelectNewProject() {
       type: projectType,
     };
 
-    const fs = new FS(newProject.id).promises;
-    await fs.mkdir('/src');
+    const fs = new FS(newProject.id);
+
+    fs.mkdir('/src', undefined, () => {});
+
+    Buffer.alloc(0);
+
+    // const pkg = await loadPackageUri("https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz");
+    // await createProject("/", pkg, true, fs, logger);
+
+    extractPackageFromUri(
+      'https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz'
+    );
 
     setActiveProject(newProject);
 
@@ -106,7 +128,7 @@ export function SelectNewProject() {
           </div>
         </div> */}
 
-        <Button onClick={createProject} className="w-full">
+        <Button onClick={createProjectHelper} className="w-full">
           {content.createProject}
         </Button>
       </div>

@@ -2,6 +2,7 @@ packages:
   - apps/*
   - packages/*
   - extensions/*
+  - ../Jaculus-tools/packages/*
 
 ignoredBuiltDependencies:
   - '@playwright/browser-chromium'
@@ -9,4 +10,5 @@ ignoredBuiltDependencies:
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
+  - '@serialport/bindings-cpp'
   - '@tailwindcss/oxide'

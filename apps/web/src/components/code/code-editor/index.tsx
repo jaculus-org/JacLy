@@ -1,8 +1,9 @@
-import MonacoEditor, { monaco } from 'react-monaco-editor';
-import { useTheme } from '../../../providers/theme-provider';
+import { useTheme } from '@/providers/theme-provider';
+import Editor from '@monaco-editor/react';
+import { editor } from 'monaco-editor';
 
 interface CodeEditorProps {
-  options?: monaco.editor.IStandaloneEditorConstructionOptions;
+  options?: editor.IStandaloneEditorConstructionOptions;
   editable?: boolean;
   language?: string;
   value?: string;
@@ -21,10 +22,11 @@ export function CodeEditor({
     minimap: { enabled: false },
     fontSize: 13,
     automaticLayout: true,
+    contextmenu: true,
   };
 
   return (
-    <MonacoEditor
+    <Editor
       width="100%"
       height="100%"
       language={language}
