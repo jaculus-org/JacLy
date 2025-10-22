@@ -21,9 +21,11 @@ export function JaculusBuild() {
 
     const basePath = `/${activeProject.id}`;
 
-    await compile(fs, basePath, 'build', jacErr, logger, '/tsLibs');
-
-    enqueueSnackbar('Compilation finished', { variant: 'success' });
+    if (await compile(fs, basePath, 'build', jacErr, logger, '/tsLibs')) {
+      enqueueSnackbar('Compilation successful', { variant: 'success' });
+    } else {
+      enqueueSnackbar('Compilation failed', { variant: 'error' });
+    }
   }
 
   return (

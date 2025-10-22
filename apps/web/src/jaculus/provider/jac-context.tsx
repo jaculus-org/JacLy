@@ -76,6 +76,12 @@ export function JacProvider({
         setFs(null);
         return;
       }
+
+      // already initialized and mounted
+      if (fs && fs.promises) {
+        return;
+      }
+
       setFs(await getFs(activeProject.id));
     };
 

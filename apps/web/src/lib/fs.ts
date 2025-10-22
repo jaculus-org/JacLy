@@ -9,7 +9,7 @@ export type FSInterface = typeof import('fs');
 
 export async function getFs(projectId: string): Promise<FSInterface> {
   try {
-    const res = await fetch('/lib.zip');
+    const res = await fetch('/tsLibs.zip');
     await configure({
       mounts: {
         [`/${projectId}/`]: {

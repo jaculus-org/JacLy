@@ -532,7 +532,24 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
             No files found
           </div>
         ) : (
-          renderFileTree(fileTree)
+          <>
+            <Button
+              size="sm"
+              className="mb-2"
+              onClick={() => {
+                // Reload file tree
+                initialLoadRef.current = true;
+                setLoading(true);
+                buildFileTree(`/${activeProject.id}`).then(tree => {
+                  setFileTree(tree);
+                  setLoading(false);
+                });
+              }}
+            >
+              Reload
+            </Button>
+            {renderFileTree(fileTree)}
+          </>
         )}
       </div>
 
