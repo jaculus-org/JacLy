@@ -1,23 +1,23 @@
-import { Logger } from '@jaculus/common';
+import { type Logger } from '@jaculus/common';
 
 export class JacLogger implements Logger {
   error(message?: string): void {
-    console.error(message);
+    console.error(message + '\n');
   }
   warn(message?: string): void {
-    console.warn(message);
+    console.warn(message + '\n');
   }
   info(message?: string): void {
-    console.info(message);
+    console.info(message + '\n');
   }
   verbose(message?: string): void {
-    console.log('[VERBOSE]', message);
+    console.log('[VERBOSE]', message + '\n');
   }
   debug(message?: string): void {
-    console.debug(message);
+    console.debug(message + '\n');
   }
   silly(message?: string): void {
-    console.log('[SILLY]', message);
+    console.log('[SILLY]', message + '\n');
   }
 }
 

@@ -21,11 +21,11 @@
 		"deps:update-interactive": "ncu -i --deep"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^19.8.1",
-		"@commitlint/config-conventional": "^19.8.1",
-		"@commitlint/types": "^19.8.1",
+		"@commitlint/cli": "^20.1.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"@commitlint/types": "^20.0.0",
 		"husky": "^9.1.7",
-		"npm-check-updates": "^18.0.2",
+		"npm-check-updates": "^19.1.1",
 		"prettier": "^3.6.2"
 	}
 }

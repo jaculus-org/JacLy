@@ -7,6 +7,10 @@ interface CodeEditorProps {
   editable?: boolean;
   language?: string;
   value?: string;
+  onChange?: (
+    value: string | undefined,
+    ev: editor.IModelContentChangedEvent
+  ) => void;
 }
 
 export function CodeEditor({
@@ -14,6 +18,7 @@ export function CodeEditor({
   editable = true,
   language = 'javascript',
   value,
+  onChange,
 }: CodeEditorProps) {
   const { themeNormalized } = useTheme();
   options = {
@@ -33,6 +38,7 @@ export function CodeEditor({
       theme={themeNormalized === 'dark' ? 'vs-dark' : 'vs-light'}
       value={value}
       options={options}
+      onChange={onChange}
     />
   );
 }

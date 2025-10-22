@@ -4,12 +4,16 @@ import {
   useRef,
   useState,
   useEffect,
-  RefObject,
+  type RefObject,
 } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { useIntlayer } from 'react-intlayer';
-import { IJsonRowNode, IJsonTabNode, IJsonTabSetNode } from 'flexlayout-react';
-import { JacProject } from '@/lib/project/jacProject';
+import {
+  type IJsonRowNode,
+  type IJsonTabNode,
+  type IJsonTabSetNode,
+} from 'flexlayout-react';
+import { type JacProject } from '@/lib/project/jacProject';
 import { storage, STORAGE_KEYS } from '@/lib/storage';
 import { GeneratedCodePanel } from '@/panels/generated-code';
 import { JaculusPanel } from '@/panels/jaculus';
@@ -18,6 +22,7 @@ import { BlocklyEditorPanel } from '@/panels/blockly-editor';
 import { TerminalPanel } from '@/panels/terminal';
 import { FileExplorerPanel } from '@/panels/file-explorer';
 import './styles/flexlayout.css';
+import { CodePanelFs } from '@/panels/fs-code';
 
 type FlexLayoutContent = ReturnType<typeof useIntlayer<'flexlayout'>>;
 
@@ -30,7 +35,7 @@ interface FlexLayoutContextType {
   resetLayout: () => void;
   controlPanel: (type: PanelType, action: PanelAction) => void;
   addGeneratedCodeTab: (tabName: string, code: string) => void;
-  addGeneratedCodeTabLive: (fileName: string) => void;
+  addCodeTab: (fileName: string) => void;
   highlightTab: (tabId: string) => void;
 }
 
@@ -180,6 +185,9 @@ export function FlexLayoutInstantiation({
     layout: layout ?? defaultLayout,
   };
 
+  const modelRef = useRef<FlexLayout.Model | null>(null);
+  const counterRef = useRef(0);
+
   const [model, setModel] = useState<FlexLayout.Model>(() => {
     return FlexLayout.Model.fromJson(
       storage.get<FlexLayout.IJsonModel>(STORAGE_KEYS.LAYOUT_MODEL, defaultJson)
@@ -195,7 +203,9 @@ export function FlexLayoutInstantiation({
     setModel(prevModel => {
       const json = prevModel.toJson();
       updateLayoutJson(json, content);
-      return FlexLayout.Model.fromJson(json);
+      const newModel = FlexLayout.Model.fromJson(json);
+      modelRef.current = newModel;
+      return newModel;
     });
   }, [content]);
 
@@ -207,7 +217,6 @@ export function FlexLayoutInstantiation({
   // Save layout changes to localStorage
   const handleModelChange = (newModel: FlexLayout.Model) => {
     setModel(newModel);
-    modelRef.current = newModel;
     try {
       const layoutJson = newModel.toJson();
       storage.set(STORAGE_KEYS.LAYOUT_MODEL, layoutJson, true);
@@ -240,7 +249,16 @@ export function FlexLayoutInstantiation({
       case 'blockly':
         return wrapComponent(<BlocklyEditorPanel />, isInBorder, isHighlighted);
       case 'code':
-        return wrapComponent(<GeneratedCodePanel />, isInBorder, isHighlighted);
+        return wrapComponent(
+          <CodePanelFs
+            code={config?.code}
+            filePath={config?.filePath}
+            editable={true}
+            live={config?.live}
+          />,
+          isInBorder,
+          isHighlighted
+        );
       case 'terminal':
         return wrapComponent(<TerminalPanel />, isInBorder, isHighlighted);
       case 'jaculus':
@@ -252,7 +270,7 @@ export function FlexLayoutInstantiation({
           <GeneratedCodePanel
             code={config?.code}
             filePath={config?.filePath}
-            editable={false}
+            editable={true}
             live={config?.live}
           />,
           isInBorder,
@@ -272,14 +290,11 @@ export function FlexLayoutInstantiation({
     }
   };
 
-  const modelRef = useRef<FlexLayout.Model | null>(null);
-
   function resetLayout(jsonOverride?: FlexLayout.IJsonModel) {
     const newModel = jsonOverride
       ? FlexLayout.Model.fromJson(jsonOverride)
       : FlexLayout.Model.fromJson(defaultJson);
     setModel(newModel);
-    modelRef.current = newModel;
   }
 
   const controlPanel = (type: PanelType, action: PanelAction) => {
@@ -358,7 +373,7 @@ export function FlexLayoutInstantiation({
           type: 'tab',
           name: tabName,
           component: 'generated-code',
-          id: `generated-code-${Date.now()}`,
+          id: `generated-code-${counterRef.current++}`,
           enableClose: true,
           config: { code },
         };
@@ -374,15 +389,15 @@ export function FlexLayoutInstantiation({
     }
   };
 
-  const addGeneratedCodeTabLive = (fileName: string) => {
+  const addCodeTab = (fileName: string) => {
     if (model) {
       const tabset = model.getNodeById('main-tabset') as FlexLayout.TabSetNode;
       if (tabset) {
         const toNode = {
           type: 'tab',
           name: fileName.split('/').pop() || fileName,
-          component: 'generated-code',
-          id: `generated-code-live-${Date.now()}`,
+          component: 'code',
+          id: `generated-code-live-${counterRef.current++}`,
           enableClose: true,
           config: { filePath: fileName, live: true },
         };
@@ -417,7 +432,7 @@ export function FlexLayoutInstantiation({
     resetLayout,
     controlPanel,
     addGeneratedCodeTab,
-    addGeneratedCodeTabLive,
+    addCodeTab,
     highlightTab,
   };
 

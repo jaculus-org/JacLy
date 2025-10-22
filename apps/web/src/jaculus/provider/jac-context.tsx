@@ -3,12 +3,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { JacDevice } from '@jaculus/device';
 import {
   deleteProject,
-  JacProject,
-  JacProjectMap,
+  type JacProject,
+  type JacProjectMap,
   loadProjects,
   saveProject,
   getProjectById,
 } from '@/lib/project/jacProject.ts';
+import { type FSInterface, type FSPromisesInterface, getFs } from '@/lib/fs';
 
 type JacProviderProps = {
   children: React.ReactNode;
@@ -29,6 +30,8 @@ type JacProviderState = {
 
   setGeneratedCode: (code: string) => void;
   generatedCode: string;
+  fs: FSInterface | null;
+  fsp: FSPromisesInterface | null;
 };
 
 const initialState: JacProviderState = {
@@ -41,6 +44,8 @@ const initialState: JacProviderState = {
   refreshActiveProject: () => null,
   deleteProject: () => null,
   setDevice: () => null,
+  fs: null,
+  fsp: null,
 };
 
 const JacProviderContext = createContext<JacProviderState>(initialState);
@@ -63,6 +68,19 @@ export function JacProvider({
       return map;
     }, {} as JacProjectMap)
   );
+
+  const [fs, setFs] = useState<FSInterface | null>(null);
+  useEffect(() => {
+    const initFs = async () => {
+      if (!activeProject) {
+        setFs(null);
+        return;
+      }
+      setFs(await getFs(activeProject.id));
+    };
+
+    initFs();
+  }, [activeProject]);
 
   useEffect(() => {
     storage.set(storageKey, generatedCode);
@@ -128,6 +146,8 @@ export function JacProvider({
       setGeneratedCode(code);
     },
     generatedCode,
+    fs,
+    fsp: fs ? fs.promises : null,
   };
 
   return (

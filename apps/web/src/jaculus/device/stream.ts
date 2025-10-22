@@ -1,5 +1,5 @@
-import { Duplex } from '@jaculus/link/stream';
-import { Logger } from '@jaculus/common';
+import { type Duplex } from '@jaculus/link/stream';
+import { type Logger } from '@jaculus/common';
 import { Buffer } from 'buffer';
 
 class WebSerialError extends Error {
@@ -22,12 +22,11 @@ export class JacStreamSerial implements Duplex {
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
   private isDestroyed = false;
   private readingPromise: Promise<void> | null = null;
+  private logger: Logger;
 
-  constructor(
-    port: SerialPort,
-    private logger: Logger
-  ) {
+  constructor(port: SerialPort, logger: Logger) {
     this.port = port;
+    this.logger = logger;
     this.initializeStreams();
   }
 

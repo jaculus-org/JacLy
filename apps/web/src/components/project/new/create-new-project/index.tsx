@@ -5,22 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectionCard } from '@/components/ui/selection-card';
 import { useIntlayer } from 'react-intlayer';
-import { JaclyProjectType, JacProject } from '@/lib/project/jacProject.ts';
-import FS from '@isomorphic-git/lightning-fs';
+import {
+  type JaclyProjectType,
+  type JacProject,
+} from '@/lib/project/jacProject.ts';
 import { enqueueSnackbar } from 'notistack';
 import { generateProjectName } from '@/lib/utils';
-import { extractPackageFromUri } from '@/lib/project/test';
-// import { createProject, loadPackageUri } from '@/lib/project/process';
-
-import { Buffer } from 'buffer';
-
-// export interface Package {
-//     dirs: string[];
-//     files: Record<string, Buffer>;
-// }
-
-// import { logger } from '@/jaculus/log/logger';
-// import { createProject, loadPackageUri } from "@jaculus/project/project";
+import { logger } from '@/jaculus/log/logger';
+import { getFs, unmountFs } from '@/lib/fs';
+import { createProject } from '@jaculus/project';
+import { loadPackageUri } from '@/lib/project/request';
+import { Writable } from 'stream';
 
 export function SelectNewProject() {
   const content = useIntlayer('create-new-project');
@@ -41,21 +36,32 @@ export function SelectNewProject() {
       type: projectType,
     };
 
-    const fs = new FS(newProject.id);
+    const fs = await getFs(newProject.id);
+    if (!fs) {
+      enqueueSnackbar('Filesystem not ready', { variant: 'error' });
+      return;
+    }
 
-    fs.mkdir('/src', undefined, () => {});
-
-    Buffer.alloc(0);
-
-    // const pkg = await loadPackageUri("https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz");
-    // await createProject("/", pkg, true, fs, logger);
-
-    extractPackageFromUri(
+    const pkg = await loadPackageUri(
       'https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz'
     );
 
-    setActiveProject(newProject);
+    function writableErr(): Writable {
+      const stream = new Writable({
+        write(chunk, _encoding, callback) {
+          logger?.error(chunk.toString());
+          // enqueueSnackbar(chunk.toString(), { variant: 'error' });
+          callback();
+        },
+      });
+      return stream;
+    }
 
+    console.log('Package loaded:', pkg);
+    await createProject(fs, `/${newProject.id}/`, pkg, writableErr(), false);
+    unmountFs(newProject.id);
+
+    setActiveProject(newProject);
     enqueueSnackbar('Project created successfully!', { variant: 'success' });
 
     navigate({

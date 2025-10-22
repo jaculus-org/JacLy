@@ -1,6 +1,6 @@
 import { FlexLayoutInstantiation } from '@/providers/flexlayout-provider';
 import { useIntlayer } from 'react-intlayer';
-import { JacProject } from '@/lib/project/jacProject';
+import { type JacProject } from '@/lib/project/jacProject';
 import { enqueueSnackbar } from 'notistack';
 import { useNavigate } from '@tanstack/react-router';
 

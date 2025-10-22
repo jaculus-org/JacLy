@@ -1,7 +1,6 @@
 import { CodeEditor } from '@/components/code/code-editor';
 import { useJac } from '@/jaculus/provider/jac-context';
-import FS from '@isomorphic-git/lightning-fs';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 interface GeneratedCodePanelProps {
   code?: string;
@@ -16,21 +15,13 @@ export function GeneratedCodePanel({
   editable = true,
   live = false,
 }: GeneratedCodePanelProps) {
-  const { generatedCode, activeProject } = useJac();
+  const { generatedCode, fsp } = useJac();
   const [fileContent, setFileContent] = useState<string>('');
 
-  const fs = useMemo(
-    () => {
-      return activeProject ? new FS(activeProject.id).promises : null;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeProject?.id]
-  );
-
   const readFile = async () => {
-    if (!fs || !filePath) return;
+    if (!fsp || !filePath) return;
     try {
-      const content = await fs.readFile(filePath, { encoding: 'utf8' });
+      const content = await fsp.readFile(filePath, 'utf8');
       setFileContent(content);
     } catch (error) {
       console.error(`Error reading file ${filePath}:`, error);
@@ -49,7 +40,7 @@ export function GeneratedCodePanel({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filePath, live, fs]
+    [filePath, live, fsp]
   );
 
   const displayCode = filePath ? fileContent : (code ?? generatedCode);

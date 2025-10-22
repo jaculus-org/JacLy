@@ -21,10 +21,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Checkout Jaculus-tools
+        run: git clone https://github.com/jaculus-org/Jaculus-tools.git --branch feat/project ../Jaculus-tools
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: latest
+
+      - name: Build Jaculus-tools
+        run: cd ../Jaculus-tools && pnpm install --frozen-lockfile && pnpm -r build
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

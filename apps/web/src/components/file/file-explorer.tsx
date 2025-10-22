@@ -1,7 +1,6 @@
 import { useJac } from '@/jaculus/provider/jac-context';
 import { updateProjectFolderStructure } from '@/lib/project/jacProject';
-import FS from '@isomorphic-git/lightning-fs';
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, type JSX } from 'react';
 import {
   Folder,
   FolderOpen,
@@ -31,8 +30,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { useFlexLayout } from '@/providers/flexlayout-provider';
-// const { setGeneratedCode } = useJac();
+import { enqueueSnackbar } from 'notistack';
+import path from 'path';
 
 interface FileSystemItem {
   name: string;
@@ -47,7 +46,7 @@ interface FileExplorerProps {
 }
 
 export function FileExplorer({ onFileSelect }: FileExplorerProps) {
-  const { activeProject } = useJac();
+  const { activeProject, fsp } = useJac();
   const [fileTree, setFileTree] = useState<FileSystemItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -55,15 +54,6 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
   const [renameValue, setRenameValue] = useState('');
   const [contextItem, setContextItem] = useState<FileSystemItem | null>(null);
   const initialLoadRef = useRef(true);
-  const { addGeneratedCodeTabLive } = useFlexLayout();
-
-  const fs = useMemo(
-    () => {
-      return activeProject ? new FS(activeProject.id).promises : null;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeProject?.id]
-  );
 
   // Get file icon based on extension
   const getFileIcon = (fileName: string, isDirectory: boolean) => {
@@ -111,18 +101,17 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
   // Recursively build file tree
   const buildFileTree = useCallback(
     async (dirPath: string): Promise<FileSystemItem[]> => {
-      if (!fs) return [];
+      if (!fsp) return [];
 
       try {
-        const items = await fs.readdir(dirPath);
+        const items = await fsp.readdir(dirPath);
         const treeItems: FileSystemItem[] = [];
 
         for (const item of items) {
-          const itemPath = dirPath === '/' ? `/${item}` : `${dirPath}/${item}`;
+          const itemPath = `${dirPath}/${item}`;
 
           try {
-            const stat = await fs.stat(itemPath);
-            const isDirectory = stat.type === 'dir';
+            const isDirectory = (await fsp.stat(itemPath)).isDirectory();
 
             treeItems.push({
               name: item,
@@ -147,13 +136,13 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
         return [];
       }
     },
-    [fs]
+    [fsp]
   );
 
   // Load initial file tree
   useEffect(
     () => {
-      if (!activeProject || !fs) {
+      if (!activeProject || !fsp) {
         setFileTree([]);
         setLoading(false);
         return;
@@ -163,19 +152,18 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
       const buildFileTreeForEffect = async (
         dirPath: string
       ): Promise<FileSystemItem[]> => {
-        if (!fs) return [];
+        if (!fsp) return [];
 
         try {
-          const items = await fs.readdir(dirPath);
+          const items = await fsp.readdir(dirPath);
           const treeItems: FileSystemItem[] = [];
 
           for (const item of items) {
-            const itemPath =
-              dirPath === '/' ? `/${item}` : `${dirPath}/${item}`;
+            const itemPath = `${dirPath}/${item}`;
 
             try {
-              const stat = await fs.stat(itemPath);
-              const isDirectory = stat.type === 'dir';
+              const stat = await fsp.stat(itemPath);
+              const isDirectory = stat.isDirectory();
 
               treeItems.push({
                 name: item,
@@ -216,7 +204,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
           };
 
           // If this directory should be expanded, load its children
-          if (item.isDirectory && isExpanded && fs) {
+          if (item.isDirectory && isExpanded && fsp) {
             try {
               const children = await buildFileTreeForEffect(item.path);
               processedItem.children = await applyFolderStructure(
@@ -242,7 +230,8 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
       const loadFileTree = async () => {
         setLoading(true);
         try {
-          const tree = await buildFileTreeForEffect('/');
+          const projectRoot = `/${activeProject.id}`;
+          const tree = await buildFileTreeForEffect(projectRoot);
 
           // Apply saved folder structure if available and this is initial load
           if (activeProject.folderStructure && initialLoadRef.current) {
@@ -267,7 +256,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
       loadFileTree();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeProject?.id, fs]
+    [activeProject?.id, fsp]
   );
 
   // Toggle directory expansion
@@ -376,20 +365,23 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
   };
 
   const handleDelete = async () => {
-    if (!contextItem || !fs) return;
+    if (!contextItem || !fsp || !activeProject) return;
 
     try {
       if (contextItem.isDirectory) {
-        await fs.rmdir(contextItem.path);
+        await fsp.rmdir(contextItem.path, { recursive: true });
       } else {
-        await fs.unlink(contextItem.path);
+        await fsp.unlink(contextItem.path);
       }
 
       // Refresh the parent directory
-      const tree = await buildFileTree('/');
+      const tree = await buildFileTree(`/${activeProject.id}`);
       setFileTree(tree);
 
-      console.log(`Deleted: ${contextItem.path}`);
+      enqueueSnackbar(
+        `${contextItem.isDirectory ? 'Folder' : 'File'} deleted successfully`,
+        { variant: 'success' }
+      );
     } catch (error) {
       console.error(`Error deleting ${contextItem.path}:`, error);
     }
@@ -399,10 +391,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
     if (item.isDirectory) {
       toggleDirectory(item);
     } else {
-      console.log(`Opening file: ${item.path}`);
       onFileSelect?.(item.path);
-
-      addGeneratedCodeTabLive(item.path);
     }
   };
 
@@ -412,38 +401,33 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
   };
 
   const confirmRename = async () => {
-    if (!contextItem || !fs || !renameValue.trim()) return;
+    const renameValueTrimmed = renameValue.trim();
+
+    if (!contextItem || !fsp || !activeProject || !renameValueTrimmed) return;
 
     try {
-      const parentPath =
-        contextItem.path.split('/').slice(0, -1).join('/') || '/';
-      const newPath = `${parentPath}/${renameValue.trim()}`;
+      const newPath = path.join(
+        path.dirname(contextItem.path),
+        renameValueTrimmed
+      );
+      await fsp.rename(contextItem.path, newPath);
 
-      // For files, we need to read and write the content
-      if (!contextItem.isDirectory) {
-        const content = await fs.readFile(contextItem.path);
-        await fs.writeFile(newPath, content);
-        await fs.unlink(contextItem.path);
-      } else {
-        // Directory renaming is more complex - for now just log
-        console.log(
-          `Would rename directory from ${contextItem.path} to ${newPath}`
-        );
-      }
-
-      // Refresh tree
-      const tree = await buildFileTree('/');
+      // Refresh the parent directory
+      const tree = await buildFileTree(`/${activeProject.id}`);
       setFileTree(tree);
 
       setRenameDialogOpen(false);
-      setRenameValue('');
+      enqueueSnackbar(
+        `${contextItem.isDirectory ? 'Folder' : 'File'} renamed to ${renameValueTrimmed}`,
+        { variant: 'success' }
+      );
     } catch (error) {
       console.error(`Error renaming ${contextItem.path}:`, error);
     }
   };
 
   // Render file tree recursively
-  const renderFileTree = (items: FileSystemItem[], depth = 0) => {
+  function renderFileTree(items: FileSystemItem[], depth = 0): JSX.Element[] {
     return items.map(item => (
       <div key={item.path}>
         <ContextMenu>
@@ -522,7 +506,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
         )}
       </div>
     ));
-  };
+  }
 
   if (!activeProject) {
     return (

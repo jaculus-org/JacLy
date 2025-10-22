@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { intlayerPlugin } from 'vite-intlayer';
+import { intlayer } from 'vite-intlayer';
 import fs from 'fs';
 import path from 'path';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
@@ -15,7 +15,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    intlayerPlugin(),
+    intlayer(),
     tailwindcss(),
     {
       name: 'github-pages-setup',
@@ -49,7 +49,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
 });

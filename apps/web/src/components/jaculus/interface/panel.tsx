@@ -18,6 +18,7 @@ import {
   Wifi,
 } from 'lucide-react';
 import { JaculusDisconnected } from './disconnected';
+import { JaculusBuild } from './build';
 
 export function JaculusInterface() {
   const { device, setDevice } = useJac();
@@ -89,10 +90,7 @@ export function JaculusInterface() {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex flex-wrap gap-2">
-            <Button variant="default" size="sm" className="gap-2">
-              <Upload className="h-4 w-4" />
-              Build
-            </Button>
+            <JaculusBuild />
             <Button variant="default" size="sm" className="gap-2">
               <Zap className="h-4 w-4" />
               Flash
