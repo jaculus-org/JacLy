@@ -1,20 +1,70 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import {
+  Link,
+  Outlet,
+  createRootRoute,
+  redirect,
+} from '@tanstack/react-router';
+import {
+  getLocale,
+  locales,
+  setLocale,
+  shouldRedirect,
+} from '@/paraglide/runtime';
+import { m } from '@/paraglide/messages';
 
-const RootLayout = () => (
-  <>
-    <div className="p-2 flex gap-2">
-      <Link to="/" className="[&.active]:font-bold">
-        Home
-      </Link>{' '}
-      <Link to="/about" className="[&.active]:font-bold">
-        About
-      </Link>
-    </div>
-    <hr />
-    <Outlet />
-    <TanStackRouterDevtools />
-  </>
-);
+export const Route = createRootRoute({
+  beforeLoad: async () => {
+    document.documentElement.setAttribute('lang', getLocale());
 
-export const Route = createRootRoute({ component: RootLayout });
+    const decision = await shouldRedirect({ url: window.location.href });
+
+    if (decision.redirectUrl) {
+      throw redirect({ href: decision.redirectUrl.href });
+    }
+  },
+  component: () => (
+    <>
+      <div className="p-2 flex gap-2 text-lg justify-between">
+        <div className="flex gap-2 text-lg">
+          <Link
+            to="/"
+            activeProps={{
+              className: 'font-bold',
+            }}
+            activeOptions={{ exact: true }}
+          >
+            {m.routes_home()}
+          </Link>
+
+          <Link
+            to="/editor"
+            activeProps={{
+              className: 'font-bold',
+            }}
+          >
+            {m.routes_editor()}
+          </Link>
+        </div>
+
+        <div className="flex gap-2 text-lg">
+          {locales.map(locale => (
+            <button
+              key={locale}
+              onClick={() => setLocale(locale)}
+              data-active-locale={locale === getLocale()}
+              className="rounded p-1 px-2 border border-gray-300 cursor-pointer [&[data-active-locale=true]]:bg-gray-500 [&[data-active-locale=true]]:text-white"
+            >
+              {locale}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <hr />
+
+      <div className="p-2">
+        <Outlet />
+      </div>
+    </>
+  ),
+});

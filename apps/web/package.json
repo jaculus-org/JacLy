@@ -15,7 +15,8 @@
     "test": "echo 'No tests configured for this package'",
     "preview": "vite preview",
     "clean": "rm -rf dist *.tsbuildinfo .intlayer",
-    "clean-node": "rm -rf node_modules"
+    "clean-node": "rm -rf node_modules",
+    "machine-translate": "inlang machine translate --project project.inlang"
   },
   "dependencies": {
     "@jaculus/common": "workspace:*",
@@ -24,6 +25,7 @@
     "@jaculus/link": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@obsidize/tar-browserify": "^6.3.2",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.16",
     "@tanstack/react-router": "^1.134.4",
     "@tanstack/react-router-devtools": "^1.134.4",
@@ -44,6 +46,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
+    "@inlang/cli": "^3.0.0",
+    "@inlang/paraglide-js": "2.4.0",
     "@tanstack/router-plugin": "^1.134.6",
     "@types/archiver": "^7.0.0",
     "@types/node": "^24.9.2",

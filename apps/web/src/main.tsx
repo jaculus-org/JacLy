@@ -1,12 +1,24 @@
-import './i18n/config';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import SnackbarProviderCustom from './providers/snackbar-provider';
 import { ThemeProvider } from './providers/theme-provider';
 import { routeTree } from './routeTree.gen';
+import { deLocalizeUrl, localizeUrl } from './paraglide/runtime.js';
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: {},
+  defaultPreload: 'intent',
+  scrollRestoration: true,
+  defaultStructuralSharing: true,
+  defaultPreloadStaleTime: 0,
+
+  rewrite: {
+    input: ({ url }) => deLocalizeUrl(url),
+    output: ({ url }) => localizeUrl(url),
+  },
+});
 
 declare module '@tanstack/react-router' {
   interface Register {

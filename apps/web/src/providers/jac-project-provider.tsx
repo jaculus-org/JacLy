@@ -5,8 +5,8 @@ type JacProjectProviderProps = {
 };
 
 type JacProjectState = {
-	sourceCode: string;
-	setSourceCode: (code: string) => void;
+  sourceCode: string;
+  setSourceCode: (code: string) => void;
 };
 
 const initialState: JacProjectState = {
@@ -16,10 +16,8 @@ const initialState: JacProjectState = {
 
 const JacProjectContext = createContext<JacProjectState>(initialState);
 
-export function JacProjectProvider(
-	  { children }: JacProjectProviderProps,
-) {
-  const [state, setState] = useState<JacProjectState>(initialState);
+export function JacProjectProvider({ children }: JacProjectProviderProps) {
+  const [state] = useState<JacProjectState>(initialState);
 
   return (
     <JacProjectContext.Provider value={state}>
@@ -31,7 +29,7 @@ export function JacProjectProvider(
 export function useJacProject() {
   const context = useContext(JacProjectContext);
   if (context === undefined) {
-	throw new Error('useJacProject must be used within a JacProjectProvider');
+    throw new Error('useJacProject must be used within a JacProjectProvider');
   }
   return context;
 }

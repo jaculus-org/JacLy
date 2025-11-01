@@ -9,6 +9,7 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
     "baseUrl": ".",
+    "allowJs": true,
     "paths": {
       "@/*": ["./src/*"]
     },
