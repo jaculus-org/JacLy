@@ -58,8 +58,8 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@obsidize/tar-browserify':
-        specifier: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz
-        version: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz
+        specifier: ^6.3.2
+        version: 6.3.2
       cli-progress:
         specifier: ^3.12.0
         version: 3.12.0
@@ -154,8 +154,8 @@ importers:
         specifier: workspace:*
         version: link:../project
       '@obsidize/tar-browserify':
-        specifier: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz
-        version: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz
+        specifier: ^6.3.2
+        version: 6.3.2
       chalk:
         specifier: ^5.4.1
         version: 5.5.0
@@ -406,8 +406,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@obsidize/tar-browserify':
-        specifier: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz
-        version: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz
+        specifier: ^6.3.2
+        version: 6.3.2
       '@zenfs/core':
         specifier: ^2.4.2
         version: 2.4.2
@@ -1237,10 +1237,6 @@ packages:
 
   '@obsidize/tar-browserify@6.3.2':
     resolution: {integrity: sha512-HN3ZSiXdJUNCbPqxaiA1l9Gxh0/fpAEvRK3qKxj5F1IkDo0DyuNltX0QV/IRtET/rQ+ikgaGre90anyR0ZGRGA==}
-
-  '@obsidize/tar-browserify@https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz':
-    resolution: {tarball: https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz}
-    version: 6.3.1
 
   '@oxc-project/runtime@0.95.0':
     resolution: {integrity: sha512-qJS5pNepwMGnafO9ayKGz7rfPQgUBuunHpnP1//9Qa0zK3oT3t1EhT+I+pV9MUA+ZKez//OFqxCxf1vijCKb2Q==}
@@ -5727,8 +5723,6 @@ snapshots:
       fastq: 1.19.1
 
   '@obsidize/tar-browserify@6.3.2': {}
-
-  '@obsidize/tar-browserify@https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz': {}
 
   '@oxc-project/runtime@0.95.0': {}
 
