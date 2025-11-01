@@ -1,8 +1,0 @@
-{
-  "recommendations": [
-    "bradlc.vscode-tailwindcss",
-    "csstools.postcss",
-    "ms-vscode.vscode-css-peek"
-  ],
-  "unwantedRecommendations": []
-}
