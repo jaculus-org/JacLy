@@ -28,7 +28,7 @@ function Index() {
           Čeština
         </button>
       </div>
-      <p>{t($ => $.description.part2)}</p>
+      <p>{t($ => $.description.part1)}</p>
     </div>
   );
 }
