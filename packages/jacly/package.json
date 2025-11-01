@@ -51,13 +51,13 @@
     "format:check": "prettier --check .",
     "schema:gen": "tsx src/config/generate-schema.ts",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "clean-node": "rm -rf node_modules"
+    "clean-node": "pnpm clean && rm -rf node_modules"
   },
   "dependencies": {
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
-    "@obsidize/tar-browserify": "^6.3.0",
+    "@obsidize/tar-browserify": "https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz",
     "@zenfs/core": "^2.4.2",
     "@zenfs/dom": "^1.2.5",
     "blockly": "^12.3.1",
@@ -68,14 +68,14 @@
   },
   "devDependencies": {
     "@finom/zod-to-json-schema": "^3.24.11",
-    "@types/node": "^24.9.1",
+    "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react": "^5.1.0",
     "prettier": "^3.6.2",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
-    "vite": "^7.1.11"
+    "vite": "^7.1.12"
   },
   "peerDependencies": {
     "react": "^19.1.1",

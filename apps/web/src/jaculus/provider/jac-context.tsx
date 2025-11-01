@@ -86,7 +86,7 @@ export function JacProvider({
     };
 
     initFs();
-  }, [activeProject]);
+  }, [activeProject, fs]);
 
   useEffect(() => {
     storage.set(storageKey, generatedCode);

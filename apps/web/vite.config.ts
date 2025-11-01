@@ -41,7 +41,14 @@ export default defineConfig({
         }
 
         // Create .nojekyll file to prevent Jekyll processing
-        const nojekyllFile = path.resolve(__dirname, 'dist/.nojekyll');
+        const distDir = path.resolve(__dirname, 'dist');
+        const nojekyllFile = path.resolve(distDir, '.nojekyll');
+
+        // Ensure dist directory exists
+        if (!fs.existsSync(distDir)) {
+          fs.mkdirSync(distDir, { recursive: true });
+        }
+
         fs.writeFileSync(nojekyllFile, '');
       },
     },
@@ -51,5 +58,20 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+  },
+  build: {
+    rollupOptions: {
+      external: id => {
+        // External modules that should not be bundled for browser
+        if (id === 'module' || id === 'node:module') {
+          return true;
+        }
+        return false;
+      },
+    },
+  },
+  define: {
+    // Provide browser-compatible alternatives for Node.js APIs
+    'import.meta.require': 'undefined',
   },
 });

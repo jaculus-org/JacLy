@@ -13,9 +13,9 @@ import { enqueueSnackbar } from 'notistack';
 import { generateProjectName } from '@/lib/utils';
 import { logger } from '@/jaculus/log/logger';
 import { getFs, unmountFs } from '@/lib/fs';
-import { createProject } from '@jaculus/project';
+import { Project } from '@jaculus/project';
 import { loadPackageUri } from '@/lib/project/request';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 export function SelectNewProject() {
   const content = useIntlayer('create-new-project');
@@ -58,7 +58,13 @@ export function SelectNewProject() {
     }
 
     console.log('Package loaded:', pkg);
-    await createProject(fs, `/${newProject.id}/`, pkg, writableErr(), false);
+    const project = new Project(
+      fs,
+      `/${newProject.id}/`,
+      writableErr(),
+      writableErr()
+    );
+    await project.createFromPackage(pkg, false);
     unmountFs(newProject.id);
 
     setActiveProject(newProject);
