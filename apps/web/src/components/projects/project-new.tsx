@@ -1,23 +1,95 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { JaclyProjectType } from './projects-list';
-import { createNewProject } from '@/lib/projects/project-manager';
+import {
+  createNewProject,
+  saveProject,
+  type JaclyProject,
+} from '@/lib/projects/project-manager';
 import { enqueueSnackbar } from 'notistack';
 import { loadPackageUri } from '@/lib/projects/request';
 import { Writable } from 'node:stream';
 import logger from '@/lib/logger';
 import { Project } from '@jaculus/project';
-import { configure, fs as fsVirtual, umount } from '@zenfs/core';
+import { configure, fs as fsVirtual } from '@zenfs/core';
 import type { FSInterface } from '@jaculus/project/fs';
-import { IndexedDB } from '@zenfs/dom/IndexedDB.js';
 import { ProjectCard } from './project-card';
+import { IndexedDB } from '@zenfs/dom';
 
 export function NewProject() {
   const navigate = useNavigate();
   const [projectName, setProjectName] = useState('');
   const [projectType, setProjectType] = useState<JaclyProjectType>('jacly');
+  const [newProjectConf, setNewProjectConf] = useState<JaclyProject | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!newProjectConf) return;
+
+    async function finishCreation(projectConf: JaclyProject) {
+      const pkg = await loadPackageUri(
+        'https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz'
+      );
+
+      function writableErr(): Writable {
+        const stream = new Writable({
+          write(chunk, _encoding, callback) {
+            logger?.error(chunk.toString());
+            callback();
+          },
+        });
+        return stream;
+      }
+
+      function writableOut(): Writable {
+        const stream = new Writable({
+          write(chunk, _encoding, callback) {
+            logger?.info(chunk.toString());
+            callback();
+          },
+        });
+        return stream;
+      }
+
+      try {
+        await configure({
+          mounts: {
+            [`/${projectConf.id}`]: {
+              backend: IndexedDB,
+              storeName: `jaculus-${projectConf.id}`,
+            },
+          },
+        });
+
+        const project = new Project(
+          fsVirtual as unknown as FSInterface,
+          `/${projectConf.id}`,
+          writableOut(),
+          writableErr()
+        );
+        await project.createFromPackage(pkg, true);
+
+        saveProject(newProjectConf as JaclyProject);
+        enqueueSnackbar('Project created successfully!', {
+          variant: 'success',
+        });
+        navigate({
+          to: '/editor/$projectId',
+          params: { projectId: projectConf.id! },
+        });
+      } catch (err) {
+        logger?.error('Error creating project from package:' + err);
+        enqueueSnackbar(`Error creating project: ${(err as Error).message}`, {
+          variant: 'error',
+        });
+      }
+    }
+
+    finishCreation(newProjectConf);
+  }, [newProjectConf, navigate]);
 
   async function createProjectHelper() {
     const newProject = createNewProject(projectName, projectType);
@@ -29,57 +101,7 @@ export function NewProject() {
       return;
     }
 
-    const pkg = await loadPackageUri(
-      'https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz'
-    );
-
-    function writableErr(): Writable {
-      const stream = new Writable({
-        write(chunk, _encoding, callback) {
-          logger?.error(chunk.toString());
-          // enqueueSnackbar(chunk.toString(), { variant: 'error' });
-          callback();
-        },
-      });
-      return stream;
-    }
-
-    console.log('Package loaded:', pkg);
-
-    try {
-      await configure({
-        mounts: {
-          [`/${newProject.id}/`]: {
-            backend: IndexedDB,
-            storeName: `jaculus-${newProject.id}`,
-          },
-        },
-      });
-
-      const project = new Project(
-        fsVirtual as unknown as FSInterface,
-        `/${newProject.id}/`,
-        writableErr(),
-        writableErr()
-      );
-      await project.createFromPackage(pkg, false);
-    } catch (err) {
-      logger?.error('Error creating project from package:' + err);
-      enqueueSnackbar(`Error creating project: ${(err as Error).message}`, {
-        variant: 'error',
-      });
-      return;
-    } finally {
-      // Clean up
-      umount(`/${newProject.id}/`);
-    }
-
-    enqueueSnackbar('Project created successfully!', { variant: 'success' });
-
-    navigate({
-      to: '/editor/$projectId',
-      params: { projectId: newProject.id },
-    });
+    setNewProjectConf(newProject);
   }
 
   return (

@@ -41,8 +41,8 @@ export const defaultJson: FlexLayout.IJsonModel = {
         {
           type: 'tab',
           name: 'Jaculus',
-          component: 'jaculus',
-          id: 'jaculus',
+          component: 'jac-config',
+          id: 'jac-config',
           enableClose: false,
         },
         {
@@ -63,8 +63,8 @@ export const defaultJson: FlexLayout.IJsonModel = {
         {
           type: 'tab',
           name: 'Generated Code',
-          component: 'code',
-          id: 'code',
+          component: 'generated-code',
+          id: 'generated-code',
           enableClose: false,
         },
         {

@@ -1,52 +1,80 @@
-import { configure, umount } from '@zenfs/core';
+import { configure, umount, fs, mounts } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
-import { Zip } from '@zenfs/archives';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect } from 'react';
 import type { FSPromisesInterface, FSInterface } from '@jaculus/project/fs';
 
+const mountedProjects = new Set<string>();
+const mountingInProgress = new Set<string>();
+
 export function useWebFs(projectId: string) {
   useEffect(() => {
-    async function setupFs() {
-      try {
-        const res = await fetch('/tsLibs.zip');
-        await configure({
-          mounts: {
-            [`/${projectId}/`]: {
-              backend: IndexedDB,
-              storeName: `jaculus-${projectId}`,
-            },
-            '/tsLibs/': { backend: Zip, data: await res.arrayBuffer() },
-          },
-        });
-      } catch (e) {
-        enqueueSnackbar(`Failed to load project filesystem: ${e}`, {
-          variant: 'error',
-        });
+    async function fsMount() {
+      if (mounts.has(`/${projectId}`)) {
+        return;
+      }
+      if (mountingInProgress.has(projectId)) {
         return;
       }
 
       try {
-        // Expose fs and fsp to window for easier debugging
-        const { fs } = await import('@zenfs/core');
-        window.fs = fs as unknown as FSInterface;
-        window.fsp = fs.promises as unknown as FSPromisesInterface;
-      } catch (error) {
-        enqueueSnackbar(`Failed to initialize filesystem: ${error}`, {
-          variant: 'error',
+        mountingInProgress.add(projectId);
+        await configure({
+          mounts: {
+            [`/${projectId}`]: {
+              backend: IndexedDB,
+              storeName: `jaculus-${projectId}`,
+            },
+          },
         });
+
+        // read dirs in root /
+        const rootDirs = await fs.promises.readdir('/');
+        console.log('Root directories:', rootDirs);
+
+        const rootDirs2 = fs.readdirSync('/');
+        console.log('Root directories:', rootDirs2);
+
+        window.fs = fs as unknown as FSInterface; // for debugging
+        window.fsp = fs.promises as unknown as FSPromisesInterface; // for debugging
+
+        mountedProjects.add(projectId);
+        console.log('Filesystem mounted for project:', projectId);
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.includes('Mount point is already in use')
+        ) {
+          mountedProjects.add(projectId);
+        } else {
+          console.error('Failed to mount filesystem:', error);
+          enqueueSnackbar(
+            `Failed to mount filesystem: ${(error as Error).message}`,
+            {
+              variant: 'error',
+            }
+          );
+        }
+      } finally {
+        mountingInProgress.delete(projectId);
       }
     }
-    setupFs();
 
+    // Mount filesystem when hook is used
+    fsMount();
+
+    // Cleanup function to unmount when component unmounts
     return () => {
       try {
-        umount(`/${projectId}/`);
-        umount('/tsLibs/');
+        // Check if mount exists before trying to unmount
+        if (mountedProjects.has(projectId)) {
+          umount(`/${projectId}`);
+          console.log('Filesystem unmounted for project:', projectId);
+        }
       } catch (error) {
-        enqueueSnackbar(`Failed to unmount filesystem: ${error}`, {
-          variant: 'error',
-        });
+        console.error('Failed to unmount filesystem:', error);
+      } finally {
+        mountedProjects.delete(projectId);
       }
     };
   }, [projectId]);

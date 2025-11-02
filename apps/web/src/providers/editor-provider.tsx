@@ -4,9 +4,10 @@ import { storage, STORAGE_KEYS } from '@/lib/storage';
 import { defaultJson } from '@/lib/editor/flex-layout/default';
 import { PanelWrapper } from '@/components/editor/panels/wrapper';
 import { BlocklyEditorPanel } from '@/components/editor/panels/blockly';
-import JacTerminalPanel from '@/components/editor/panels/jac-terminal';
+import TerminalPanel from '@/components/editor/panels/terminal';
 import JacConfigPanel from '@/components/editor/panels/jac-config';
 import FileExplorerPanel from '@/components/editor/panels/file-explorer';
+import '@/components/editor/flex-layout/flexlayout.css';
 
 type EditorState = {
   sourceCode: string;
@@ -60,8 +61,8 @@ export function EditorProvider() {
     switch (component) {
       case 'blockly':
         return wrapComponent(<BlocklyEditorPanel />, isInBorder, isHighlighted);
-      case 'jac-terminal':
-        return wrapComponent(<JacTerminalPanel />, isInBorder, isHighlighted);
+      case 'terminal':
+        return wrapComponent(<TerminalPanel />, isInBorder, isHighlighted);
       case 'jac-config':
         return wrapComponent(<JacConfigPanel />, isInBorder, isHighlighted);
       case 'file-explorer':

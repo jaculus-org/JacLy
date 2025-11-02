@@ -1,7 +1,13 @@
 import { useWebFs } from '@/hooks/fs-hook';
 import type { JaclyProject } from '@/lib/projects/project-manager';
-import { createContext, useContext } from 'react';
-// import { JacDevice } from '@jaculus/device';
+import { createContext, useContext, useState, useMemo } from 'react';
+import { JacDevice } from '@jaculus/device';
+import { Project } from '@jaculus/project';
+import { fs } from '@zenfs/core';
+import type { FSInterface } from '@jaculus/project/fs';
+import type { Writable } from 'node:stream';
+import { useTerminal } from '@/hooks/terminal-store';
+import { createStdoutStream, createStderrStream } from '@/lib/streams';
 
 type JacProjectProviderProps = {
   children: React.ReactNode;
@@ -10,14 +16,20 @@ type JacProjectProviderProps = {
 
 type JacProjectState = {
   readonly project: JaclyProject;
-  // device: JacDevice | null;
-  // setDevice: (device: JacDevice | null) => void;
+  readonly projectInstance: Project;
+  readonly out: Writable;
+  readonly err: Writable;
+  device: JacDevice | null;
+  setDevice: (device: JacDevice | null) => void;
 };
 
 const initialState: JacProjectState = {
   project: {} as JaclyProject,
-  // device: null,
-  // setDevice: () => {},
+  projectInstance: {} as Project,
+  out: {} as Writable,
+  err: {} as Writable,
+  device: null,
+  setDevice: () => {},
 };
 
 const JacProjectContext = createContext<JacProjectState>(initialState);
@@ -27,17 +39,44 @@ export function JacProjectProvider({
   project,
 }: JacProjectProviderProps) {
   useWebFs(project.id);
-  // const [device, setDevice] = useState<JacDevice | null>(null);
+  const [device, setDevice] = useState<JacDevice | null>(null);
+  const terminal = useTerminal();
 
-  const value = {
+  // Create streams that output to terminal
+  const {
+    out,
+    err,
+    project: projectInstance,
+  } = useMemo(() => {
+    const outStream = createStdoutStream(terminal.addEntry);
+    const errStream = createStderrStream(terminal.addEntry);
+
+    const projectInstance = new Project(
+      fs as unknown as FSInterface,
+      `/${project.id}`,
+      outStream,
+      errStream
+    );
+
+    return {
+      out: outStream,
+      err: errStream,
+      project: projectInstance,
+    };
+  }, [project.id, terminal.addEntry]);
+
+  const value: JacProjectState = {
     project,
-    // device,
-    // setDevice: (newDevice: JacDevice | null) => {
-    //   if (newDevice) {
-    //     newDevice.destroy();
-    //   }
-    //   setDevice(newDevice);
-    // }
+    projectInstance,
+    out,
+    err,
+    device,
+    setDevice: (newDevice: JacDevice | null) => {
+      if (device) {
+        device.destroy();
+      }
+      setDevice(newDevice);
+    },
   };
 
   return (
