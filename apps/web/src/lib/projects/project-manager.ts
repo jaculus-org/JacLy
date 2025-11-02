@@ -15,6 +15,10 @@ export type JaclyProject = {
   folderStructure?: Record<string, boolean>;
 };
 
+export function getProjectsFsName(projectId: string): string {
+  return `jacly-${projectId}`;
+}
+
 export function getProjects(): JaclyProject[] {
   return storage.get(STORAGE_KEYS.PROJECTS, []);
 }
@@ -24,10 +28,12 @@ export function getProjectById(projectId: string): JaclyProject | null {
   return projects.find(project => project.id === projectId) || null;
 }
 
-export function deleteProject(projectId: string): boolean {
+export async function deleteProject(projectId: string): Promise<boolean> {
   const projects = getProjects();
   const index = projects.findIndex(project => project.id === projectId);
   if (index >= 0) {
+    const fsProjectName = getProjectsFsName(projectId);
+    await deleteIndexedDB(fsProjectName);
     projects.splice(index, 1);
     storage.set(STORAGE_KEYS.PROJECTS, projects);
     return true;
@@ -73,4 +79,13 @@ export function createNewProject(
 export function generateProjectName() {
   const id = generateNanoId();
   return id.match(/.{1,5}/g)?.join('-') ?? id;
+}
+
+export function deleteIndexedDB(dbName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(dbName);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => reject(new Error('blocked'));
+  });
 }

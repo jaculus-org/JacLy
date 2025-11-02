@@ -40,26 +40,42 @@ export function ListProjects() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
-  const handleDelete = (id: string) => {
+  function handleDelete(id: string) {
     setProjectToDelete(id);
     setDeleteDialogOpen(true);
-  };
+  }
 
-  const confirmDelete = () => {
+  async function confirmDelete() {
     if (projectToDelete) {
-      if (deleteProject(projectToDelete)) {
-        enqueueSnackbar(`Project has been deleted.`, {
-          variant: 'success',
-        });
-      } else {
-        enqueueSnackbar(`Failed to delete project.`, {
-          variant: 'error',
-        });
+      try {
+        const result = await deleteProject(projectToDelete);
+        if (result) {
+          enqueueSnackbar(`Project has been deleted.`, {
+            variant: 'success',
+          });
+        } else {
+          enqueueSnackbar(`Failed to delete project.`, {
+            variant: 'error',
+          });
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === 'blocked') {
+          enqueueSnackbar(
+            'Database deletion blocked. Please reload the window.',
+            {
+              variant: 'warning',
+            }
+          );
+        } else {
+          enqueueSnackbar(`Failed to delete project.`, {
+            variant: 'error',
+          });
+        }
       }
     }
     setDeleteDialogOpen(false);
     setProjectToDelete(null);
-  };
+  }
 
   return (
     <div>
@@ -75,42 +91,45 @@ export function ListProjects() {
             {projects.map(project => {
               const Icon = project.type === 'jacly' ? Blocks : Code;
               return (
-                <Card
+                <Link
                   key={project.id}
-                  className={`transition-all duration-300 hover:shadow-lg`}
+                  to="/editor/$projectId"
+                  params={{ projectId: project.id }}
+                  className="block"
                 >
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Icon className="w-5 h-5" />
-                        <CardTitle className="text-lg">
-                          {project.name}
-                        </CardTitle>
+                  <Card
+                    className={`transition-all duration-300 hover:shadow-lg`}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Icon className="w-5 h-5" />
+                          <CardTitle className="text-lg">
+                            {project.name}
+                          </CardTitle>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleDelete(project.id);
+                              }}
+                              className="text-red-600"
+                            >
+                              <Trash className="w-4 h-4 mr-2" />
+                              Delete Project
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(project.id)}
-                            className="text-red-600"
-                          >
-                            <Trash className="w-4 h-4 mr-2" />
-                            Delete Project
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Link
-                      to="/editor/$projectId"
-                      params={{ projectId: project.id }}
-                      className="block"
-                    >
+                    </CardHeader>
+                    <CardContent>
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">
                           Created At:{' '}
@@ -124,9 +143,9 @@ export function ListProjects() {
                           Version: {project.jaculusVersion}
                         </p>
                       </div>
-                    </Link>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>

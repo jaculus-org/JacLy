@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import type { JaclyProjectType } from './projects-list';
 import {
   createNewProject,
+  getProjectsFsName,
   saveProject,
   type JaclyProject,
 } from '@/lib/projects/project-manager';
@@ -13,7 +14,7 @@ import { loadPackageUri } from '@/lib/projects/request';
 import { Writable } from 'node:stream';
 import logger from '@/lib/logger';
 import { Project } from '@jaculus/project';
-import { configure, fs as fsVirtual } from '@zenfs/core';
+import { configure, fs as fs } from '@zenfs/core';
 import type { FSInterface } from '@jaculus/project/fs';
 import { ProjectCard } from './project-card';
 import { IndexedDB } from '@zenfs/dom';
@@ -33,6 +34,8 @@ export function NewProject() {
       const pkg = await loadPackageUri(
         'https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz'
       );
+
+      logger?.info(`Pkg loaded with ${Object.keys(pkg.files).length} files`);
 
       function writableErr(): Writable {
         const stream = new Writable({
@@ -59,18 +62,21 @@ export function NewProject() {
           mounts: {
             [`/${projectConf.id}`]: {
               backend: IndexedDB,
-              storeName: `jaculus-${projectConf.id}`,
+              storeName: getProjectsFsName(projectConf.id),
             },
           },
         });
 
         const project = new Project(
-          fsVirtual as unknown as FSInterface,
+          fs as unknown as FSInterface,
           `/${projectConf.id}`,
           writableOut(),
           writableErr()
         );
-        await project.createFromPackage(pkg, true);
+        await project.createFromPackage(pkg, false);
+
+        const rootDirs = await fs.promises.readdir('/' + projectConf.id);
+        logger?.info('Project root directories:' + rootDirs);
 
         saveProject(newProjectConf as JaclyProject);
         enqueueSnackbar('Project created successfully!', {

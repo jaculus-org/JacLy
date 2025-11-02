@@ -8,6 +8,8 @@ const mountedProjects = new Set<string>();
 const mountingInProgress = new Set<string>();
 
 export function useWebFs(projectId: string) {
+  console.log('useWebFs started for projectId:', projectId);
+
   useEffect(() => {
     async function fsMount() {
       if (mounts.has(`/${projectId}`)) {
@@ -29,11 +31,8 @@ export function useWebFs(projectId: string) {
         });
 
         // read dirs in root /
-        const rootDirs = await fs.promises.readdir('/');
+        const rootDirs = await fs.promises.readdir('/' + projectId);
         console.log('Root directories:', rootDirs);
-
-        const rootDirs2 = fs.readdirSync('/');
-        console.log('Root directories:', rootDirs2);
 
         window.fs = fs as unknown as FSInterface; // for debugging
         window.fsp = fs.promises as unknown as FSPromisesInterface; // for debugging
@@ -62,6 +61,7 @@ export function useWebFs(projectId: string) {
 
     // Mount filesystem when hook is used
     fsMount();
+    console.log('fsMount mounted called for projectId:', projectId);
 
     // Cleanup function to unmount when component unmounts
     return () => {
@@ -76,6 +76,7 @@ export function useWebFs(projectId: string) {
       } finally {
         mountedProjects.delete(projectId);
       }
+      console.log('useWebFs cleanup called for projectId:', projectId);
     };
   }, [projectId]);
 }

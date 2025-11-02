@@ -38,6 +38,8 @@ export function JacProjectProvider({
   children,
   project,
 }: JacProjectProviderProps) {
+  console.log('JacProjectProvider start for projectId:', project.id);
+
   useWebFs(project.id);
   const [device, setDevice] = useState<JacDevice | null>(null);
   const terminal = useTerminal();
