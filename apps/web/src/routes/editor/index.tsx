@@ -1,10 +1,10 @@
-import { ListProjects } from '@/components/project/list/list-projects';
+import { ListProjects } from '@/components/projects/projects-list';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/editor/')({
-  component: RouteComponent,
+  component: EditorRoot,
 });
 
-function RouteComponent() {
+function EditorRoot() {
   return <ListProjects />;
 }

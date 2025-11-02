@@ -6,6 +6,7 @@
 		"prepare": "husky",
 		"build": "pnpm -r build",
 		"build:watch": "pnpm -r --parallel build:watch",
+		"rebuild": "pnpm clean && pnpm i && pnpm build",
 		"test": "pnpm -r test",
 		"lint": "pnpm -r lint",
 		"lint:fix": "pnpm -r lint --fix",

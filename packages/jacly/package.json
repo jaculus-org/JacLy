@@ -57,7 +57,7 @@
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
-    "@obsidize/tar-browserify": "https://github.com/jospete/obsidize-tar-browserify/raw/refs/heads/fix/module-declarations/packed/obsidize-tar-browserify.tgz",
+    "@obsidize/tar-browserify": "^6.3.2",
     "@zenfs/core": "^2.4.2",
     "@zenfs/dom": "^1.2.5",
     "blockly": "^12.3.1",
