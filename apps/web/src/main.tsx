@@ -4,21 +4,9 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import SnackbarProviderCustom from './providers/snackbar-provider';
 import { ThemeProvider } from './providers/theme-provider';
 import { routeTree } from './routeTree.gen';
-import { deLocalizeUrl, localizeUrl } from './paraglide/runtime.js';
+import './index.css';
 
-const router = createRouter({
-  routeTree,
-  context: {},
-  defaultPreload: 'intent',
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
-  defaultPreloadStaleTime: 0,
-
-  rewrite: {
-    input: ({ url }) => deLocalizeUrl(url),
-    output: ({ url }) => localizeUrl(url),
-  },
-});
+const router = createRouter({ routeTree });
 
 declare module '@tanstack/react-router' {
   interface Register {

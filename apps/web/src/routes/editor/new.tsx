@@ -1,9 +1,10 @@
+import { NewProject } from '@/components/projects/project-new';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/editor/new')({
-  component: RouteComponent,
+  component: NewProjectRoute,
 });
 
-function RouteComponent() {
-  return <div>Hello "/editor/new"!</div>;
+function NewProjectRoute() {
+  return <NewProject />;
 }

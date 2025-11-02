@@ -10,13 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EditorIndexRouteImport } from './routes/editor/index'
 import { Route as EditorNewRouteImport } from './routes/editor/new'
+import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,37 +41,63 @@ const EditorNewRoute = EditorNewRouteImport.update({
   path: '/editor/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditorProjectIdRoute = EditorProjectIdRouteImport.update({
+  id: '/editor/$projectId',
+  path: '/editor/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/about': typeof AboutRoute
+  '/editor/$projectId': typeof EditorProjectIdRoute
   '/editor/new': typeof EditorNewRoute
   '/editor': typeof EditorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/about': typeof AboutRoute
+  '/editor/$projectId': typeof EditorProjectIdRoute
   '/editor/new': typeof EditorNewRoute
   '/editor': typeof EditorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/about': typeof AboutRoute
+  '/editor/$projectId': typeof EditorProjectIdRoute
   '/editor/new': typeof EditorNewRoute
   '/editor/': typeof EditorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/editor/new' | '/editor'
+  fullPaths:
+    | '/'
+    | '/404'
+    | '/about'
+    | '/editor/$projectId'
+    | '/editor/new'
+    | '/editor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/editor/new' | '/editor'
-  id: '__root__' | '/' | '/about' | '/editor/new' | '/editor/'
+  to: '/' | '/404' | '/about' | '/editor/$projectId' | '/editor/new' | '/editor'
+  id:
+    | '__root__'
+    | '/'
+    | '/404'
+    | '/about'
+    | '/editor/$projectId'
+    | '/editor/new'
+    | '/editor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R404Route: typeof R404Route
   AboutRoute: typeof AboutRoute
+  EditorProjectIdRoute: typeof EditorProjectIdRoute
   EditorNewRoute: typeof EditorNewRoute
   EditorIndexRoute: typeof EditorIndexRoute
 }
@@ -76,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,12 +139,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditorNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editor/$projectId': {
+      id: '/editor/$projectId'
+      path: '/editor/$projectId'
+      fullPath: '/editor/$projectId'
+      preLoaderRoute: typeof EditorProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R404Route: R404Route,
   AboutRoute: AboutRoute,
+  EditorProjectIdRoute: EditorProjectIdRoute,
   EditorNewRoute: EditorNewRoute,
   EditorIndexRoute: EditorIndexRoute,
 }

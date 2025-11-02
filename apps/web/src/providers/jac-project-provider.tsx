@@ -1,26 +1,46 @@
-import { createContext, useContext, useState } from 'react';
+import { useWebFs } from '@/hooks/fs-hook';
+import { createContext, useContext } from 'react';
+// import { JacDevice } from '@jaculus/device';
 
 type JacProjectProviderProps = {
   children: React.ReactNode;
+  projectId: string;
 };
 
 type JacProjectState = {
-  sourceCode: string;
-  setSourceCode: (code: string) => void;
+  readonly projectId: string;
+  // device: JacDevice | null;
+  // setDevice: (device: JacDevice | null) => void;
 };
 
 const initialState: JacProjectState = {
-  sourceCode: '',
-  setSourceCode: () => {},
+  projectId: '',
+  // device: null,
+  // setDevice: () => {},
 };
 
 const JacProjectContext = createContext<JacProjectState>(initialState);
 
-export function JacProjectProvider({ children }: JacProjectProviderProps) {
-  const [state] = useState<JacProjectState>(initialState);
+export function JacProjectProvider({
+  children,
+  projectId,
+}: JacProjectProviderProps) {
+  useWebFs(projectId);
+  // const [device, setDevice] = useState<JacDevice | null>(null);
+
+  const value = {
+    projectId,
+    // device,
+    // setDevice: (newDevice: JacDevice | null) => {
+    //   if (newDevice) {
+    //     newDevice.destroy();
+    //   }
+    //   setDevice(newDevice);
+    // }
+  };
 
   return (
-    <JacProjectContext.Provider value={state}>
+    <JacProjectContext.Provider value={value}>
       {children}
     </JacProjectContext.Provider>
   );

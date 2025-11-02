@@ -1,70 +1,23 @@
-import {
-  Link,
-  Outlet,
-  createRootRoute,
-  redirect,
-} from '@tanstack/react-router';
-import {
-  getLocale,
-  locales,
-  setLocale,
-  shouldRedirect,
-} from '@/paraglide/runtime';
-import { m } from '@/paraglide/messages';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { Header } from '@/components/layout/header';
+import { Page404 } from '@/components/404/404';
+// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+
+function RootLayout() {
+  return (
+    <div className="min-h-screen bg-blue-50 text-blue-900 transition-colors duration-300 ease-in-out dark:bg-slate-900 dark:text-slate-100">
+      <Header />
+
+      <main>
+        <Outlet />
+      </main>
+
+      {/* <TanStackRouterDevtools /> */}
+    </div>
+  );
+}
 
 export const Route = createRootRoute({
-  beforeLoad: async () => {
-    document.documentElement.setAttribute('lang', getLocale());
-
-    const decision = await shouldRedirect({ url: window.location.href });
-
-    if (decision.redirectUrl) {
-      throw redirect({ href: decision.redirectUrl.href });
-    }
-  },
-  component: () => (
-    <>
-      <div className="p-2 flex gap-2 text-lg justify-between">
-        <div className="flex gap-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            {m.routes_home()}
-          </Link>
-
-          <Link
-            to="/editor"
-            activeProps={{
-              className: 'font-bold',
-            }}
-          >
-            {m.routes_editor()}
-          </Link>
-        </div>
-
-        <div className="flex gap-2 text-lg">
-          {locales.map(locale => (
-            <button
-              key={locale}
-              onClick={() => setLocale(locale)}
-              data-active-locale={locale === getLocale()}
-              className="rounded p-1 px-2 border border-gray-300 cursor-pointer [&[data-active-locale=true]]:bg-gray-500 [&[data-active-locale=true]]:text-white"
-            >
-              {locale}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <hr />
-
-      <div className="p-2">
-        <Outlet />
-      </div>
-    </>
-  ),
+  component: RootLayout,
+  notFoundComponent: Page404,
 });

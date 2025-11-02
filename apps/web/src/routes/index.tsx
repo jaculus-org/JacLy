@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { m } from '@/paraglide/messages';
 import { ArrowRight, Blocks, Code, Terminal } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,18 +10,18 @@ export const Route = createFileRoute('/')({
 function App() {
   const features = [
     {
-      title: m.index_features_visual_programming_title(),
-      description: m.index_features_visual_programming_description(),
+      title: 'Visual Programming',
+      description: 'Create visual programming interfaces with ease.',
       icon: Blocks,
     },
     {
-      title: m.index_features_code_generation_title(),
-      description: m.index_features_code_generation_description(),
+      title: 'Code Generation',
+      description: 'Generate code from visual blocks effortlessly.',
       icon: Code,
     },
     {
-      title: m.index_features_integrated_terminal_title(),
-      description: m.index_features_integrated_terminal_description(),
+      title: 'Integrated Terminal',
+      description: 'Access a powerful terminal directly within the editor.',
       icon: Terminal,
     },
   ];
@@ -33,10 +32,11 @@ function App() {
         {/* Hero Section */}
         <div className="text-center mb-12 space-y-4">
           <h1 className="text-5xl font-bold text-foreground mb-4 leading-tight">
-            {m.index_title()}
+            Welcome to JacLy
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {m.index_description()}
+            Your visual programming environment for creating amazing projects
+            with blocks
           </p>
         </div>
 
@@ -66,7 +66,7 @@ function App() {
         <div className="text-center">
           <Button asChild size="sm" className="text-lg px-8 py-6 h-auto">
             <Link to="/editor/new">
-              {m.index_get_started()}
+              Get Started
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
           </Button>
