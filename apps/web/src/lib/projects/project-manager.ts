@@ -59,7 +59,8 @@ export function createNewProject(
 ): JaclyProject | null {
   const newProject: JaclyProject = {
     name: name,
-    id: generateProjectName(),
+    // id: generateProjectName(),
+    id: 'demo',
     createdAt: new Date(),
     updatedAt: new Date(),
     isStarred: false,

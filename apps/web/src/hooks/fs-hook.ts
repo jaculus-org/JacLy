@@ -2,7 +2,9 @@ import { configure, umount, fs, mounts } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect } from 'react';
+import { Zip } from '@zenfs/archives';
 import type { FSPromisesInterface, FSInterface } from '@jaculus/project/fs';
+import { getProjectsFsName } from '@/lib/projects/project-manager';
 
 const mountedProjects = new Set<string>();
 const mountingInProgress = new Set<string>();
@@ -21,12 +23,14 @@ export function useWebFs(projectId: string) {
 
       try {
         mountingInProgress.add(projectId);
+        const res = await fetch('/tsLibs.zip');
         await configure({
           mounts: {
             [`/${projectId}`]: {
               backend: IndexedDB,
-              storeName: `jaculus-${projectId}`,
+              storeName: getProjectsFsName(projectId),
             },
+            '/tsLibs': { backend: Zip, data: await res.arrayBuffer() },
           },
         });
 
