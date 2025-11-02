@@ -1,20 +1,21 @@
 import { useWebFs } from '@/hooks/fs-hook';
+import type { JaclyProject } from '@/lib/projects/project-manager';
 import { createContext, useContext } from 'react';
 // import { JacDevice } from '@jaculus/device';
 
 type JacProjectProviderProps = {
   children: React.ReactNode;
-  projectId: string;
+  project: JaclyProject;
 };
 
 type JacProjectState = {
-  readonly projectId: string;
+  readonly project: JaclyProject;
   // device: JacDevice | null;
   // setDevice: (device: JacDevice | null) => void;
 };
 
 const initialState: JacProjectState = {
-  projectId: '',
+  project: {} as JaclyProject,
   // device: null,
   // setDevice: () => {},
 };
@@ -23,13 +24,13 @@ const JacProjectContext = createContext<JacProjectState>(initialState);
 
 export function JacProjectProvider({
   children,
-  projectId,
+  project,
 }: JacProjectProviderProps) {
-  useWebFs(projectId);
+  useWebFs(project.id);
   // const [device, setDevice] = useState<JacDevice | null>(null);
 
   const value = {
-    projectId,
+    project,
     // device,
     // setDevice: (newDevice: JacDevice | null) => {
     //   if (newDevice) {

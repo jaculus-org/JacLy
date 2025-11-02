@@ -4,10 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/')({
-  component: App,
+  component: Root,
 });
 
-function App() {
+function Root() {
   const features = [
     {
       title: 'Visual Programming',
@@ -27,7 +27,7 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
+    <div className="min-h-screen bg-linear-to-br from-background to-secondary/20">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12 space-y-4">
@@ -47,7 +47,7 @@ function App() {
               key={title}
               className="transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg"
             >
-              <CardContent className="p-6">
+              <CardContent>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Icon className="w-6 h-6 text-primary" />
                 </div>
@@ -64,9 +64,9 @@ function App() {
 
         {/* Call to Action */}
         <div className="text-center">
-          <Button asChild size="sm" className="text-lg px-8 py-6 h-auto">
+          <Button asChild size="sm" className="text-lg px-8 py-3 h-auto">
             <Link to="/editor/new">
-              Get Started
+              Create Your First Project
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
           </Button>

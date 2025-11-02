@@ -1,17 +1,24 @@
+import { getProjectById } from '@/lib/projects/project-manager';
 import { EditorProvider } from '@/providers/editor-provider';
 import { JacProjectProvider } from '@/providers/jac-project-provider';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/editor/$projectId')({
-  loader: ({ params }) => params.projectId,
+  loader: ({ params }) => {
+    const project = getProjectById(params.projectId);
+    if (!project) {
+      throw redirect({ to: '/editor' });
+    }
+    return project;
+  },
   component: EditorProject,
 });
 
 function EditorProject() {
-  const projectId = Route.useLoaderData();
+  const project = Route.useLoaderData();
 
   return (
-    <JacProjectProvider projectId={projectId}>
+    <JacProjectProvider project={project}>
       <EditorProvider />
     </JacProjectProvider>
   );
