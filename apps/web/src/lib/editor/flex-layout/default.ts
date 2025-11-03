@@ -41,8 +41,8 @@ export const defaultJson: FlexLayout.IJsonModel = {
         {
           type: 'tab',
           name: 'Jaculus',
-          component: 'jac-config',
-          id: 'jac-config',
+          component: 'jaculus',
+          id: 'jaculus',
           enableClose: false,
         },
         {

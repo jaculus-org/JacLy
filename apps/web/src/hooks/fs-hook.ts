@@ -4,7 +4,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useEffect } from 'react';
 import { Zip } from '@zenfs/archives';
 import type { FSPromisesInterface, FSInterface } from '@jaculus/project/fs';
-import { getProjectsFsName } from '@/lib/projects/project-manager';
+import { getProjectDbName } from '@/lib/projects/project-manager';
 
 const mountedProjects = new Set<string>();
 const mountingInProgress = new Set<string>();
@@ -28,7 +28,7 @@ export function useWebFs(projectId: string) {
           mounts: {
             [`/${projectId}`]: {
               backend: IndexedDB,
-              storeName: getProjectsFsName(projectId),
+              storeName: getProjectDbName(projectId),
             },
             '/tsLibs': { backend: Zip, data: await res.arrayBuffer() },
           },

@@ -1,5 +1,6 @@
 import { storage, STORAGE_KEYS } from '@/lib/storage';
 import { generateNanoId } from '../utils';
+import path from 'path';
 
 export type JaclyProjectType = 'jacly' | 'code';
 
@@ -15,8 +16,12 @@ export type JaclyProject = {
   folderStructure?: Record<string, boolean>;
 };
 
-export function getProjectsFsName(projectId: string): string {
+export function getProjectDbName(projectId: string): string {
   return `jacly-${projectId}`;
+}
+
+export function getProjectFsRoot(projectId: string): string {
+  return path.join('/', projectId);
 }
 
 export function getProjects(): JaclyProject[] {
@@ -32,7 +37,7 @@ export async function deleteProject(projectId: string): Promise<boolean> {
   const projects = getProjects();
   const index = projects.findIndex(project => project.id === projectId);
   if (index >= 0) {
-    const fsProjectName = getProjectsFsName(projectId);
+    const fsProjectName = getProjectDbName(projectId);
     await deleteIndexedDB(fsProjectName);
     projects.splice(index, 1);
     storage.set(STORAGE_KEYS.PROJECTS, projects);

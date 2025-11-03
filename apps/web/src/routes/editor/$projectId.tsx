@@ -25,7 +25,7 @@ function EditorProject() {
   return (
     <TerminalProvider>
       <JacProjectProvider project={project}>
-        <EditorProvider />
+        <EditorProvider project={project} />
       </JacProjectProvider>
     </TerminalProvider>
   );

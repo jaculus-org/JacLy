@@ -5,9 +5,14 @@ import { defaultJson } from '@/lib/editor/flex-layout/default';
 import { PanelWrapper } from '@/components/editor/panels/wrapper';
 import { BlocklyEditorPanel } from '@/components/editor/panels/blockly';
 import TerminalPanel from '@/components/editor/panels/terminal';
-import JacConfigPanel from '@/components/editor/panels/jac-config';
-import FileExplorerPanel from '@/components/editor/panels/file-explorer';
 import '@/components/editor/flex-layout/flexlayout.css';
+import type { JaclyProject } from '@/lib/projects/project-manager';
+import { FileExplorerPanel } from '@/components/editor/panels/file-explorer';
+import { JaculusPanel } from '@/components/editor/panels/jaculus';
+
+type EditorProviderProps = {
+  project: JaclyProject;
+};
 
 type EditorState = {
   sourceCode: string;
@@ -21,7 +26,7 @@ const initialState: EditorState = {
 
 const EditorContext = createContext<EditorState>(initialState);
 
-export function EditorProvider() {
+export function EditorProvider({ project }: EditorProviderProps) {
   const [model, setModel] = useState<FlexLayout.Model>(() => {
     return FlexLayout.Model.fromJson(
       storage.get<FlexLayout.IJsonModel>(STORAGE_KEYS.LAYOUT_MODEL, defaultJson)
@@ -63,10 +68,18 @@ export function EditorProvider() {
         return wrapComponent(<BlocklyEditorPanel />, isInBorder, isHighlighted);
       case 'terminal':
         return wrapComponent(<TerminalPanel />, isInBorder, isHighlighted);
-      case 'jac-config':
-        return wrapComponent(<JacConfigPanel />, isInBorder, isHighlighted);
+      case 'jaculus':
+        return wrapComponent(
+          <JaculusPanel project={project} />,
+          isInBorder,
+          isHighlighted
+        );
       case 'file-explorer':
-        return wrapComponent(<FileExplorerPanel />, isInBorder, isHighlighted);
+        return wrapComponent(
+          <FileExplorerPanel project={project} onFileSelect={() => {}} />,
+          isInBorder,
+          isHighlighted
+        );
       case 'generated-code':
         return wrapComponent(
           // <GeneratedCodePanel

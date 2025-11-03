@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import type { JaclyProjectType } from './projects-list';
 import {
   createNewProject,
-  getProjectsFsName,
+  getProjectDbName,
   saveProject,
   type JaclyProject,
 } from '@/lib/projects/project-manager';
@@ -14,7 +14,7 @@ import { loadPackageUri } from '@/lib/projects/request';
 import { Writable } from 'node:stream';
 import logger from '@/lib/logger';
 import { Project } from '@jaculus/project';
-import { configure, fs as fs } from '@zenfs/core';
+import { configure, fs } from '@zenfs/core';
 import type { FSInterface } from '@jaculus/project/fs';
 import { ProjectCard } from './project-card';
 import { IndexedDB } from '@zenfs/dom';
@@ -62,7 +62,7 @@ export function NewProject() {
           mounts: {
             [`/${projectConf.id}`]: {
               backend: IndexedDB,
-              storeName: getProjectsFsName(projectConf.id),
+              storeName: getProjectDbName(projectConf.id),
             },
           },
         });
