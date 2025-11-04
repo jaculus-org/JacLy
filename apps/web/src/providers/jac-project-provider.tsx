@@ -19,6 +19,7 @@ type JacProjectState = {
   readonly projectInstance: Project;
   readonly out: Writable;
   readonly err: Writable;
+  readonly fsMounted: boolean;
   device: JacDevice | null;
   setDevice: (device: JacDevice | null) => void;
 };
@@ -28,6 +29,7 @@ const initialState: JacProjectState = {
   projectInstance: {} as Project,
   out: {} as Writable,
   err: {} as Writable,
+  fsMounted: false,
   device: null,
   setDevice: () => {},
 };
@@ -40,7 +42,7 @@ export function JacProjectProvider({
 }: JacProjectProviderProps) {
   console.log('JacProjectProvider start for projectId:', project.id);
 
-  useWebFs(project.id);
+  const { mounted } = useWebFs(project.id);
   const [device, setDevice] = useState<JacDevice | null>(null);
   const terminal = useTerminal();
 
@@ -72,6 +74,7 @@ export function JacProjectProvider({
     projectInstance,
     out,
     err,
+    fsMounted: mounted,
     device,
     setDevice: (newDevice: JacDevice | null) => {
       if (device) {

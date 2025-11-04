@@ -1,15 +1,14 @@
 import { configure, umount, fs, mounts } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import { enqueueSnackbar } from 'notistack';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Zip } from '@zenfs/archives';
 import type { FSPromisesInterface, FSInterface } from '@jaculus/project/fs';
 import { getProjectDbName } from '@/lib/projects/project-manager';
 
-const mountedProjects = new Set<string>();
-const mountingInProgress = new Set<string>();
-
 export function useWebFs(projectId: string) {
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [inProgress, setInProgress] = useState<boolean>(false);
   console.log('useWebFs started for projectId:', projectId);
 
   useEffect(() => {
@@ -17,12 +16,12 @@ export function useWebFs(projectId: string) {
       if (mounts.has(`/${projectId}`)) {
         return;
       }
-      if (mountingInProgress.has(projectId)) {
+      if (inProgress) {
         return;
       }
 
       try {
-        mountingInProgress.add(projectId);
+        setInProgress(true);
         const res = await fetch('/tsLibs.zip');
         await configure({
           mounts: {
@@ -41,14 +40,15 @@ export function useWebFs(projectId: string) {
         window.fs = fs as unknown as FSInterface; // for debugging
         window.fsp = fs.promises as unknown as FSPromisesInterface; // for debugging
 
-        mountedProjects.add(projectId);
+        setMounted(true);
         console.log('Filesystem mounted for project:', projectId);
       } catch (error) {
         if (
           error instanceof Error &&
           error.message.includes('Mount point is already in use')
         ) {
-          mountedProjects.add(projectId);
+          console.warn('Filesystem already mounted for project:', projectId);
+          setMounted(true);
         } else {
           console.error('Failed to mount filesystem:', error);
           enqueueSnackbar(
@@ -59,7 +59,7 @@ export function useWebFs(projectId: string) {
           );
         }
       } finally {
-        mountingInProgress.delete(projectId);
+        setInProgress(false);
       }
     }
 
@@ -71,18 +71,21 @@ export function useWebFs(projectId: string) {
     return () => {
       try {
         // Check if mount exists before trying to unmount
-        if (mountedProjects.has(projectId)) {
+        if (mounts.has(`/${projectId}`)) {
           umount(`/${projectId}`);
           console.log('Filesystem unmounted for project:', projectId);
         }
       } catch (error) {
         console.error('Failed to unmount filesystem:', error);
       } finally {
-        mountedProjects.delete(projectId);
+        setMounted(false);
+        setInProgress(false);
       }
       console.log('useWebFs cleanup called for projectId:', projectId);
     };
   }, [projectId]);
+
+  return { mounted };
 }
 
 declare global {

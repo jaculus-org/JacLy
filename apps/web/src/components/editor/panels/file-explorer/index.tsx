@@ -22,6 +22,7 @@ import path from 'path';
 import type { JaclyProject } from '@/lib/projects/project-manager';
 import { fs } from '@zenfs/core';
 import { getFileIcon } from './file-helper';
+import logger from '@/lib/logger';
 
 const fsp = fs.promises;
 
@@ -30,7 +31,6 @@ export interface FileSystemItem {
   path: string;
   isDirectory: boolean;
   children?: FileSystemItem[];
-  expanded?: boolean;
 }
 
 interface FileExplorerProps {
@@ -48,7 +48,102 @@ export function FileExplorerPanel({
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [contextItem, setContextItem] = useState<FileSystemItem | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set()
+  );
   const initialLoadRef = useRef(true);
+
+  const sortItems = (items: FileSystemItem[]): FileSystemItem[] => {
+    return items.sort((a, b) => {
+      if (a.isDirectory && !b.isDirectory) return -1;
+      if (!a.isDirectory && b.isDirectory) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  };
+
+  const waitForDirectory = async (
+    dirPath: string,
+    maxAttempts = 10,
+    delayMs = 100
+  ): Promise<boolean> => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        await fsp.stat(dirPath);
+        return true;
+      } catch {
+        if (attempt < maxAttempts - 1) {
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+        }
+      }
+    }
+    return false;
+  };
+
+  const buildFileTreeForEffect = async (
+    dirPath: string
+  ): Promise<FileSystemItem[]> => {
+    if (!fsp) return [];
+
+    try {
+      const items = await fsp.readdir(dirPath);
+      const treeItems: FileSystemItem[] = [];
+
+      for (const item of items) {
+        const itemPath = `${dirPath}/${item}`;
+
+        try {
+          const stat = await fsp.stat(itemPath);
+          const isDirectory = stat.isDirectory();
+
+          treeItems.push({
+            name: item,
+            path: itemPath,
+            isDirectory,
+            children: isDirectory ? [] : undefined,
+          });
+        } catch (error) {
+          console.warn(`Error checking ${itemPath}:`, error);
+        }
+      }
+
+      return sortItems(treeItems);
+    } catch (error) {
+      console.error(`Error reading directory ${dirPath}:`, error);
+      return [];
+    }
+  };
+
+  const applyFolderStructure = async (
+    items: FileSystemItem[],
+    expandedSet: Set<string>
+  ): Promise<FileSystemItem[]> => {
+    const processedItems: FileSystemItem[] = [];
+
+    for (const item of items) {
+      const processedItem: FileSystemItem = {
+        ...item,
+      };
+
+      if (item.isDirectory && expandedSet.has(item.path) && fsp) {
+        try {
+          const children = await buildFileTreeForEffect(item.path);
+          processedItem.children = await applyFolderStructure(
+            children,
+            expandedSet
+          );
+        } catch (error) {
+          console.error(`Error loading children for ${item.path}:`, error);
+          processedItem.children = [];
+        }
+      } else if (item.isDirectory) {
+        processedItem.children = [];
+      }
+
+      processedItems.push(processedItem);
+    }
+
+    return processedItems;
+  };
 
   const buildFileTree = useCallback(
     async (dirPath: string): Promise<FileSystemItem[]> => {
@@ -61,12 +156,10 @@ export function FileExplorerPanel({
 
           try {
             const isDirectory = (await fsp.stat(itemPath)).isDirectory();
-
             treeItems.push({
               name: item,
               path: itemPath,
               isDirectory,
-              expanded: false,
               children: isDirectory ? [] : undefined,
             });
           } catch (error) {
@@ -74,12 +167,7 @@ export function FileExplorerPanel({
           }
         }
 
-        // Sort: directories first, then files
-        return treeItems.sort((a, b) => {
-          if (a.isDirectory && !b.isDirectory) return -1;
-          if (!a.isDirectory && b.isDirectory) return 1;
-          return a.name.localeCompare(b.name);
-        });
+        return sortItems(treeItems);
       } catch (error) {
         console.error(`Error reading directory ${dirPath}:`, error);
         return [];
@@ -89,207 +177,121 @@ export function FileExplorerPanel({
   );
 
   // Load initial file tree
-  useEffect(
-    () => {
-      // Build file tree function (moved inside effect)
-      const buildFileTreeForEffect = async (
-        dirPath: string
-      ): Promise<FileSystemItem[]> => {
-        if (!fsp) return [];
+  useEffect(() => {
+    const loadFileTree = async () => {
+      setLoading(true);
+      try {
+        const projectRoot = `/${project.id}`;
 
-        try {
-          const items = await fsp.readdir(dirPath);
-          const treeItems: FileSystemItem[] = [];
-
-          for (const item of items) {
-            const itemPath = `${dirPath}/${item}`;
-
-            try {
-              const stat = await fsp.stat(itemPath);
-              const isDirectory = stat.isDirectory();
-
-              treeItems.push({
-                name: item,
-                path: itemPath,
-                isDirectory,
-                expanded: false,
-                children: isDirectory ? [] : undefined,
-              });
-            } catch (error) {
-              console.warn(`Error checking ${itemPath}:`, error);
-            }
-          }
-
-          // Sort: directories first, then files
-          return treeItems.sort((a, b) => {
-            if (a.isDirectory && !b.isDirectory) return -1;
-            if (!a.isDirectory && b.isDirectory) return 1;
-            return a.name.localeCompare(b.name);
-          });
-        } catch (error) {
-          console.error(`Error reading directory ${dirPath}:`, error);
-          return [];
-        }
-      };
-
-      // Apply saved folder structure to restore expanded states (moved inside effect)
-      const applyFolderStructure = async (
-        items: FileSystemItem[],
-        savedStructure: Record<string, boolean>
-      ): Promise<FileSystemItem[]> => {
-        const processedItems: FileSystemItem[] = [];
-
-        for (const item of items) {
-          const isExpanded = savedStructure[item.path] === true; // Explicit check for true
-          const processedItem: FileSystemItem = {
-            ...item,
-            expanded: isExpanded,
-          };
-
-          // If this directory should be expanded, load its children
-          if (item.isDirectory && isExpanded && fsp) {
-            try {
-              const children = await buildFileTreeForEffect(item.path);
-              processedItem.children = await applyFolderStructure(
-                children,
-                savedStructure
-              );
-            } catch (error) {
-              console.error(`Error loading children for ${item.path}:`, error);
-              processedItem.children = [];
-              // Keep the item expanded even if children failed to load
-            }
-          } else if (item.isDirectory) {
-            // For non-expanded directories, ensure children is empty array
-            processedItem.children = [];
-          }
-
-          processedItems.push(processedItem);
+        const isReady = await waitForDirectory(projectRoot);
+        if (!isReady) {
+          logger.error(`Directory ${projectRoot} not ready after retries`);
+          setLoading(false);
+          return;
         }
 
-        return processedItems;
-      };
+        const tree = await buildFileTreeForEffect(projectRoot);
 
-      const loadFileTree = async () => {
-        setLoading(true);
-        try {
-          const projectRoot = `/${project.id}`;
-          const tree = await buildFileTreeForEffect(projectRoot);
-
-          // Apply saved folder structure if available and this is initial load
-          if (project.folderStructure && initialLoadRef.current) {
-            const restoredTree = await applyFolderStructure(
-              tree,
-              project.folderStructure
-            );
-            setFileTree(restoredTree);
-            initialLoadRef.current = false;
-          } else {
-            setFileTree(tree);
-            if (initialLoadRef.current) {
-              initialLoadRef.current = false;
+        // Initialize expandedSet from project.folderStructure or existing expandedFolders
+        let expandedSet = expandedFolders;
+        if (project.folderStructure && initialLoadRef.current) {
+          // Convert folderStructure Record to Set
+          expandedSet = new Set<string>();
+          Object.entries(project.folderStructure).forEach(
+            ([path, isExpanded]) => {
+              if (isExpanded) {
+                expandedSet.add(path);
+              }
             }
-          }
-        } catch (error) {
-          console.error('Error loading file tree:', error);
+          );
         }
-        setLoading(false);
-      }; // Reset initial load flag when project changes
-      initialLoadRef.current = true;
-      loadFileTree();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fsp]
-  );
+
+        const restoredTree = await applyFolderStructure(tree, expandedSet);
+        setFileTree(restoredTree);
+        setExpandedFolders(expandedSet);
+        initialLoadRef.current = false;
+      } catch (error) {
+        console.error('Error loading file tree:', error);
+      }
+      setLoading(false);
+    };
+
+    initialLoadRef.current = true;
+    loadFileTree();
+  }, [fsp]);
+
+  const updateTreeItemExpanded = (
+    items: FileSystemItem[],
+    targetPath: string
+  ): FileSystemItem[] => {
+    return items.map(treeItem => {
+      if (treeItem.path === targetPath) {
+        return {
+          ...treeItem,
+          children:
+            !expandedFolders.has(targetPath) &&
+            (!treeItem.children || treeItem.children.length === 0)
+              ? []
+              : treeItem.children,
+        };
+      }
+      if (treeItem.children) {
+        return {
+          ...treeItem,
+          children: updateTreeItemExpanded(treeItem.children, targetPath),
+        };
+      }
+      return treeItem;
+    });
+  };
+
+  const addChildrenToTreeItem = (
+    items: FileSystemItem[],
+    targetPath: string,
+    children: FileSystemItem[]
+  ): FileSystemItem[] => {
+    return items.map(treeItem => {
+      if (treeItem.path === targetPath) {
+        return { ...treeItem, children };
+      }
+      if (treeItem.children) {
+        return {
+          ...treeItem,
+          children: addChildrenToTreeItem(
+            treeItem.children,
+            targetPath,
+            children
+          ),
+        };
+      }
+      return treeItem;
+    });
+  };
 
   // Toggle directory expansion
   const toggleDirectory = async (item: FileSystemItem) => {
     if (!item.isDirectory) return;
 
-    const updateTree = (items: FileSystemItem[]): FileSystemItem[] => {
-      return items.map(treeItem => {
-        if (treeItem.path === item.path) {
-          const expanded = !treeItem.expanded;
-          return {
-            ...treeItem,
-            expanded,
-            children:
-              expanded && (!treeItem.children || treeItem.children.length === 0)
-                ? [] // Will be loaded below
-                : treeItem.children,
-          };
-        }
-        if (treeItem.children) {
-          return {
-            ...treeItem,
-            children: updateTree(treeItem.children),
-          };
-        }
-        return treeItem;
-      });
-    };
-
-    const newTree = updateTree(fileTree);
+    const newTree = updateTreeItemExpanded(fileTree, item.path);
     setFileTree(newTree);
 
-    const folderStructure: Record<string, boolean> = {};
-    const collectExpandedStates = (items: FileSystemItem[]) => {
-      items.forEach(treeItem => {
-        if (treeItem.isDirectory) {
-          // Explicitly save true for expanded, false for collapsed
-          folderStructure[treeItem.path] = treeItem.expanded === true;
-          if (treeItem.children) {
-            collectExpandedStates(treeItem.children);
-          }
-        }
-      });
-    };
-    collectExpandedStates(newTree);
-    // updateProjectFolderStructure(activeProject.id, folderStructure);
+    // Update expanded folders set
+    const newExpandedFolders = new Set(expandedFolders);
+    if (expandedFolders.has(item.path)) {
+      newExpandedFolders.delete(item.path);
+    } else {
+      newExpandedFolders.add(item.path);
+    }
+    setExpandedFolders(newExpandedFolders);
 
     // Load children if expanding and not loaded yet
-    if (!item.expanded && (!item.children || item.children.length === 0)) {
+    if (
+      !expandedFolders.has(item.path) &&
+      (!item.children || item.children.length === 0)
+    ) {
       const children = await buildFileTree(item.path);
-
-      const updateTreeWithChildren = (
-        items: FileSystemItem[]
-      ): FileSystemItem[] => {
-        return items.map(treeItem => {
-          if (treeItem.path === item.path) {
-            return {
-              ...treeItem,
-              children,
-            };
-          }
-          if (treeItem.children) {
-            return {
-              ...treeItem,
-              children: updateTreeWithChildren(treeItem.children),
-            };
-          }
-          return treeItem;
-        });
-      };
-
-      const finalTree = updateTreeWithChildren(newTree);
+      const finalTree = addChildrenToTreeItem(newTree, item.path, children);
       setFileTree(finalTree);
-
-      // Update folder structure again after loading children
-      const folderStructure: Record<string, boolean> = {};
-      const collectExpandedStates = (items: FileSystemItem[]) => {
-        items.forEach(treeItem => {
-          if (treeItem.isDirectory) {
-            // Explicitly save true for expanded, false for collapsed
-            folderStructure[treeItem.path] = treeItem.expanded === true;
-            if (treeItem.children) {
-              collectExpandedStates(treeItem.children);
-            }
-          }
-        });
-      };
-      collectExpandedStates(finalTree);
-      // updateProjectFolderStructure(activeProject.id, folderStructure);
-      // Removed refreshActiveProject() to prevent re-renders
     }
   };
 
@@ -308,7 +310,7 @@ export function FileExplorerPanel({
       if (contextItem.isDirectory) {
         await fsp.rmdir(contextItem.path);
       } else {
-        await fsp.unlink(contextItem.path);
+        await fsp.rm(contextItem.path);
       }
 
       // Refresh the parent directory
@@ -371,8 +373,10 @@ export function FileExplorerPanel({
           <ContextMenuTrigger asChild>
             <div
               className={cn(
-                'flex items-center gap-1 px-2 py-1 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded',
-                selectedItem === item.path && 'bg-slate-200 dark:bg-slate-700'
+                'flex items-center gap-1 px-2 py-1 text-sm cursor-pointer rounded transition-colors',
+                selectedItem === item.path
+                  ? 'bg-slate-200 dark:bg-slate-700'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800'
               )}
               style={{ paddingLeft: `${depth * 16 + 8}px` }}
               onClick={async () => {
@@ -388,7 +392,7 @@ export function FileExplorerPanel({
                     toggleDirectory(item);
                   }}
                 >
-                  {item.expanded ? (
+                  {expandedFolders.has(item.path) ? (
                     <ChevronDown size={12} />
                   ) : (
                     <ChevronRight size={12} />
@@ -397,7 +401,7 @@ export function FileExplorerPanel({
               )}
 
               {item.isDirectory ? (
-                item.expanded ? (
+                expandedFolders.has(item.path) ? (
                   <FolderOpen size={16} className="text-blue-500" />
                 ) : (
                   <Folder size={16} className="text-blue-500" />
@@ -438,9 +442,11 @@ export function FileExplorerPanel({
           </ContextMenuContent>
         </ContextMenu>
 
-        {item.isDirectory && item.expanded && item.children && (
-          <div>{renderFileTree(item.children, depth + 1)}</div>
-        )}
+        {item.isDirectory &&
+          expandedFolders.has(item.path) &&
+          item.children && (
+            <div>{renderFileTree(item.children, depth + 1)}</div>
+          )}
       </div>
     ));
   }
@@ -465,14 +471,15 @@ export function FileExplorerPanel({
             <Button
               size="sm"
               className="mb-2"
-              onClick={() => {
-                // Reload file tree
-                initialLoadRef.current = true;
+              onClick={async () => {
                 setLoading(true);
-                buildFileTree(`/${project.id}`).then(tree => {
-                  setFileTree(tree);
-                  setLoading(false);
-                });
+                const tree = await buildFileTree(`/${project.id}`);
+                const restoredTree = await applyFolderStructure(
+                  tree,
+                  expandedFolders
+                );
+                setFileTree(restoredTree);
+                setLoading(false);
               }}
             >
               Reload
