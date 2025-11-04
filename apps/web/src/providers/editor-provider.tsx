@@ -9,6 +9,10 @@ import '@/components/editor/flex-layout/flexlayout.css';
 import type { JaclyProject } from '@/lib/projects/project-manager';
 import { FileExplorerPanel } from '@/components/editor/panels/file-explorer';
 import { JaculusPanel } from '@/components/editor/panels/jaculus';
+import { CodePanel } from '@/components/editor/panels/code';
+import { GeneratedCodePanel } from '@/components/editor/panels/generated-code';
+import { useJacProject } from '@/providers/jac-project-provider';
+import { LoadingEditor } from '@/components/editor/loading';
 
 type EditorProviderProps = {
   project: JaclyProject;
@@ -17,16 +21,30 @@ type EditorProviderProps = {
 type EditorState = {
   sourceCode: string;
   setSourceCode: (code: string) => void;
+  controlPanel: (type: PanelType, action: PanelAction) => void;
+  addPanelSourceCode: (filePath: string) => void;
 };
+
+type PanelType =
+  | 'blockly'
+  | 'terminal'
+  | 'jaculus'
+  | 'file-explorer'
+  | 'source-code'
+  | 'generated-code';
+type PanelAction = 'close' | 'expand' | 'collapse' | 'focus';
 
 const initialState: EditorState = {
   sourceCode: '',
   setSourceCode: () => {},
+  controlPanel: () => {},
+  addPanelSourceCode: () => {},
 };
 
 const EditorContext = createContext<EditorState>(initialState);
 
 export function EditorProvider({ project }: EditorProviderProps) {
+  const { fsMounted } = useJacProject();
   const [model, setModel] = useState<FlexLayout.Model>(() => {
     return FlexLayout.Model.fromJson(
       storage.get<FlexLayout.IJsonModel>(STORAGE_KEYS.LAYOUT_MODEL, defaultJson)
@@ -43,7 +61,85 @@ export function EditorProvider({ project }: EditorProviderProps) {
     }
   }
 
-  const factory = (node: FlexLayout.TabNode) => {
+  function getDefaultSize(type: PanelType): number {
+    switch (type) {
+      case 'jaculus':
+        return 350;
+      case 'terminal':
+        return 400;
+      case 'generated-code':
+        return 400;
+      case 'file-explorer':
+        return 250;
+      case 'source-code':
+        return 300;
+      default:
+        return 300;
+    }
+  }
+
+  function controlPanel(type: PanelType, action: PanelAction) {
+    const node = model.getNodeById(type) as FlexLayout.TabNode;
+    if (!node) return;
+
+    switch (action) {
+      case 'close':
+        node.getParent()?.removeChild(node);
+        break;
+      case 'expand':
+        model.doAction(FlexLayout.Actions.selectTab(node.getId()));
+
+        model.doAction(
+          FlexLayout.Actions.updateNodeAttributes(node.getId(), {
+            size: getDefaultSize(type),
+          })
+        );
+        break;
+      case 'collapse':
+        model.doAction(
+          FlexLayout.Actions.updateNodeAttributes(node.getId(), {
+            size: 0,
+          })
+        );
+        break;
+      case 'focus':
+        model.doAction(FlexLayout.Actions.selectTab(node.getId()));
+        break;
+    }
+  }
+
+  function addPanelSourceCode(filePath: string) {
+    const panelId = `generated-code-${filePath}`;
+    const existingNode = model.getNodeById(panelId) as FlexLayout.TabNode;
+
+    if (existingNode) {
+      // Panel already exists, just focus it
+      model.doAction(FlexLayout.Actions.selectTab(panelId));
+      return;
+    }
+
+    const tabset = model.getNodeById('main-tabset') as FlexLayout.TabSetNode;
+    if (tabset) {
+      const toNode = {
+        type: 'tab',
+        name: filePath.split('/').pop() || filePath,
+        component: 'code',
+        id: panelId,
+        enableClose: true,
+        config: { filePath: filePath },
+      };
+      model.doAction(
+        FlexLayout.Actions.addNode(
+          toNode,
+          tabset.getId(),
+          FlexLayout.DockLocation.CENTER,
+          -1
+        )
+      );
+    }
+  }
+
+  function factory(node: FlexLayout.TabNode) {
     const component = node.getComponent();
     const tabName = node.getName();
     const isInBorder = node.getParent() instanceof FlexLayout.BorderNode;
@@ -62,7 +158,7 @@ export function EditorProvider({ project }: EditorProviderProps) {
       </PanelWrapper>
     );
 
-    // const config = node.getConfig();
+    const config = node.getConfig();
     switch (component) {
       case 'blockly':
         return wrapComponent(<BlocklyEditorPanel />, isInBorder, isHighlighted);
@@ -76,21 +172,20 @@ export function EditorProvider({ project }: EditorProviderProps) {
         );
       case 'file-explorer':
         return wrapComponent(
-          <FileExplorerPanel project={project} onFileSelect={() => {}} />,
+          <FileExplorerPanel project={project} />,
           isInBorder,
           isHighlighted
         );
+      case 'code':
+        return wrapComponent(
+          <CodePanel filePath={config?.filePath} ifNotExists="create" />,
+          isInBorder,
+          isHighlighted
+        );
+
       case 'generated-code':
         return wrapComponent(
-          // <GeneratedCodePanel
-          //   code={config?.code}
-          //   filePath={config?.filePath}
-          //   editable={true}
-          //   live={config?.live}
-          // />,
-          <>
-            <div>Generated Code Panel Placeholder</div>
-          </>,
+          <GeneratedCodePanel project={project} />,
           isInBorder,
           isHighlighted
         );
@@ -101,14 +196,20 @@ export function EditorProvider({ project }: EditorProviderProps) {
           isHighlighted
         );
     }
-  };
+  }
 
   const value: EditorState = {
     sourceCode: initialState.sourceCode,
     setSourceCode: (code: string) => {
       value.sourceCode = code;
     },
+    controlPanel,
+    addPanelSourceCode,
   };
+
+  if (!fsMounted) {
+    return <LoadingEditor />;
+  }
 
   return (
     <EditorContext.Provider value={value}>

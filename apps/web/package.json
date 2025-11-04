@@ -25,6 +25,7 @@
     "@jaculus/jacly": "workspace:*",
     "@jaculus/link": "workspace:*",
     "@jaculus/project": "workspace:*",
+    "@monaco-editor/react": "^4.7.0",
     "@obsidize/tar-browserify": "^6.3.2",
     "@radix-ui/react-context-menu": "^2.2.16",
     "@radix-ui/react-dialog": "^1.1.15",

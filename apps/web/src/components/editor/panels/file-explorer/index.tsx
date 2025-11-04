@@ -23,6 +23,7 @@ import type { JaclyProject } from '@/lib/projects/project-manager';
 import { fs } from '@zenfs/core';
 import { getFileIcon } from './file-helper';
 import logger from '@/lib/logger';
+import { useEditor } from '@/providers/editor-provider';
 
 const fsp = fs.promises;
 
@@ -35,13 +36,9 @@ export interface FileSystemItem {
 
 interface FileExplorerProps {
   project: JaclyProject;
-  onFileSelect?: (filePath: string) => void;
 }
 
-export function FileExplorerPanel({
-  project,
-  onFileSelect,
-}: FileExplorerProps) {
+export function FileExplorerPanel({ project }: FileExplorerProps) {
   const [fileTree, setFileTree] = useState<FileSystemItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -52,6 +49,7 @@ export function FileExplorerPanel({
     new Set()
   );
   const initialLoadRef = useRef(true);
+  const { addPanelSourceCode } = useEditor();
 
   const sortItems = (items: FileSystemItem[]): FileSystemItem[] => {
     return items.sort((a, b) => {
@@ -330,7 +328,7 @@ export function FileExplorerPanel({
     if (item.isDirectory) {
       toggleDirectory(item);
     } else {
-      onFileSelect?.(item.path);
+      addPanelSourceCode(item.path);
     }
   };
 

@@ -1,6 +1,6 @@
 import { JacDevice } from '@jaculus/device';
 import { Usb, Bluetooth, Monitor } from 'lucide-react';
-import { JacStreamSerial } from './stream';
+import { JacStreamSerial } from './jac-stream';
 import logger from '../logger';
 
 export type ConnectionType = 'serial' | 'ble' | 'wokwi';
