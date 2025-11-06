@@ -1,7 +1,10 @@
 import { Link } from '@tanstack/react-router';
 import { ModeToggle } from '@/components/theme/mode-toggle';
+import { useHeaderActions } from '@/providers/header-provider';
 
 export function Header() {
+  const { actions } = useHeaderActions();
+
   const links = [
     { name: 'Home' as string, path: '/' },
     { name: 'Editor' as string, path: '/editor/' },
@@ -23,6 +26,9 @@ export function Header() {
               </Link>
             ))}
           </nav>
+
+          {/* Dynamic actions injected from current page */}
+          {actions && <div className="flex items-center gap-4">{actions}</div>}
 
           {/* Theme switcher */}
           <div className="flex items-center gap-4">

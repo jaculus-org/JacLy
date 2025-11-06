@@ -17,8 +17,8 @@ import {
   Eye,
   Wifi,
 } from 'lucide-react';
-import { jacCompile } from './jaculus-helper';
 import type { JaclyProject } from '@/lib/projects/project-manager';
+import { jacCompile } from '@/lib/device/jaculus';
 
 interface JaculusPanelProps {
   project: JaclyProject;

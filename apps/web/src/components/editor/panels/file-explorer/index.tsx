@@ -51,13 +51,13 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
   const initialLoadRef = useRef(true);
   const { addPanelSourceCode } = useEditor();
 
-  const sortItems = (items: FileSystemItem[]): FileSystemItem[] => {
+  const sortItems = useCallback((items: FileSystemItem[]): FileSystemItem[] => {
     return items.sort((a, b) => {
       if (a.isDirectory && !b.isDirectory) return -1;
       if (!a.isDirectory && b.isDirectory) return 1;
       return a.name.localeCompare(b.name);
     });
-  };
+  }, []);
 
   const waitForDirectory = async (
     dirPath: string,
@@ -77,71 +77,82 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
     return false;
   };
 
-  const buildFileTreeForEffect = async (
-    dirPath: string
-  ): Promise<FileSystemItem[]> => {
-    if (!fsp) return [];
+  const buildFileTreeForEffect = useCallback(
+    async (dirPath: string): Promise<FileSystemItem[]> => {
+      if (!fsp) return [];
 
-    try {
-      const items = await fsp.readdir(dirPath);
-      const treeItems: FileSystemItem[] = [];
+      try {
+        const items = await fsp.readdir(dirPath);
+        const treeItems: FileSystemItem[] = [];
 
-      for (const item of items) {
-        const itemPath = `${dirPath}/${item}`;
+        for (const item of items) {
+          const itemPath = `${dirPath}/${item}`;
 
-        try {
-          const stat = await fsp.stat(itemPath);
-          const isDirectory = stat.isDirectory();
+          try {
+            const stat = await fsp.stat(itemPath);
+            const isDirectory = stat.isDirectory();
 
-          treeItems.push({
-            name: item,
-            path: itemPath,
-            isDirectory,
-            children: isDirectory ? [] : undefined,
-          });
-        } catch (error) {
-          console.warn(`Error checking ${itemPath}:`, error);
+            treeItems.push({
+              name: item,
+              path: itemPath,
+              isDirectory,
+              children: isDirectory ? [] : undefined,
+            });
+          } catch (error) {
+            console.warn(`Error checking ${itemPath}:`, error);
+          }
         }
+
+        return sortItems(treeItems);
+      } catch (error) {
+        console.error(`Error reading directory ${dirPath}:`, error);
+        return [];
       }
+    },
+    [sortItems]
+  );
 
-      return sortItems(treeItems);
-    } catch (error) {
-      console.error(`Error reading directory ${dirPath}:`, error);
-      return [];
-    }
-  };
+  const applyFolderStructure = useCallback(
+    (
+      items: FileSystemItem[],
+      expandedSet: Set<string>
+    ): Promise<FileSystemItem[]> => {
+      // Use an inner recursive function so we don't reference the outer
+      // `applyFolderStructure` variable while it's being defined (avoids
+      // "accessed before it is declared" errors).
+      const inner = async (
+        currentItems: FileSystemItem[],
+        set: Set<string>
+      ): Promise<FileSystemItem[]> => {
+        const processedItems: FileSystemItem[] = [];
 
-  const applyFolderStructure = async (
-    items: FileSystemItem[],
-    expandedSet: Set<string>
-  ): Promise<FileSystemItem[]> => {
-    const processedItems: FileSystemItem[] = [];
+        for (const item of currentItems) {
+          const processedItem: FileSystemItem = {
+            ...item,
+          };
 
-    for (const item of items) {
-      const processedItem: FileSystemItem = {
-        ...item,
+          if (item.isDirectory && set.has(item.path) && fsp) {
+            try {
+              const children = await buildFileTreeForEffect(item.path);
+              processedItem.children = await inner(children, set);
+            } catch (error) {
+              console.error(`Error loading children for ${item.path}:`, error);
+              processedItem.children = [];
+            }
+          } else if (item.isDirectory) {
+            processedItem.children = [];
+          }
+
+          processedItems.push(processedItem);
+        }
+
+        return processedItems;
       };
 
-      if (item.isDirectory && expandedSet.has(item.path) && fsp) {
-        try {
-          const children = await buildFileTreeForEffect(item.path);
-          processedItem.children = await applyFolderStructure(
-            children,
-            expandedSet
-          );
-        } catch (error) {
-          console.error(`Error loading children for ${item.path}:`, error);
-          processedItem.children = [];
-        }
-      } else if (item.isDirectory) {
-        processedItem.children = [];
-      }
-
-      processedItems.push(processedItem);
-    }
-
-    return processedItems;
-  };
+      return inner(items, expandedSet);
+    },
+    [buildFileTreeForEffect]
+  );
 
   const buildFileTree = useCallback(
     async (dirPath: string): Promise<FileSystemItem[]> => {
@@ -171,7 +182,7 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
         return [];
       }
     },
-    []
+    [sortItems]
   );
 
   // Load initial file tree
@@ -216,7 +227,13 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
 
     initialLoadRef.current = true;
     loadFileTree();
-  }, [fsp]);
+  }, [
+    applyFolderStructure,
+    buildFileTreeForEffect,
+    expandedFolders,
+    project.folderStructure,
+    project.id,
+  ]);
 
   const updateTreeItemExpanded = (
     items: FileSystemItem[],

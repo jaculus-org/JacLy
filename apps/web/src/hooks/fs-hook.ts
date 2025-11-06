@@ -79,7 +79,6 @@ export function useWebFs(projectId: string) {
         console.error('Failed to unmount filesystem:', error);
       } finally {
         setMounted(false);
-        setInProgress(false);
       }
       console.log('useWebFs cleanup called for projectId:', projectId);
     };

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import SnackbarProviderCustom from './providers/snackbar-provider';
 import { ThemeProvider } from './providers/theme-provider';
+import { HeaderProvider } from './providers/header-provider';
 import { routeTree } from './routeTree.gen';
 import './index.css';
 
@@ -21,9 +22,9 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <SnackbarProviderCustom>
         <ThemeProvider>
-          {/* <JacProvider> */}
-          <RouterProvider router={router} />
-          {/* </JacProvider> */}
+          <HeaderProvider>
+            <RouterProvider router={router} />
+          </HeaderProvider>
         </ThemeProvider>
       </SnackbarProviderCustom>
     </StrictMode>

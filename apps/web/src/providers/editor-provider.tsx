@@ -6,17 +6,12 @@ import { PanelWrapper } from '@/components/editor/panels/wrapper';
 import { BlocklyEditorPanel } from '@/components/editor/panels/blockly';
 import TerminalPanel from '@/components/editor/panels/terminal';
 import '@/components/editor/flex-layout/flexlayout.css';
-import type { JaclyProject } from '@/lib/projects/project-manager';
 import { FileExplorerPanel } from '@/components/editor/panels/file-explorer';
 import { JaculusPanel } from '@/components/editor/panels/jaculus';
 import { CodePanel } from '@/components/editor/panels/code';
 import { GeneratedCodePanel } from '@/components/editor/panels/generated-code';
 import { useJacProject } from '@/providers/jac-project-provider';
 import { LoadingEditor } from '@/components/editor/loading';
-
-type EditorProviderProps = {
-  project: JaclyProject;
-};
 
 type EditorState = {
   sourceCode: string;
@@ -43,8 +38,8 @@ const initialState: EditorState = {
 
 const EditorContext = createContext<EditorState>(initialState);
 
-export function EditorProvider({ project }: EditorProviderProps) {
-  const { fsMounted } = useJacProject();
+export function EditorProvider() {
+  const { project, fsMounted } = useJacProject();
   const [model, setModel] = useState<FlexLayout.Model>(() => {
     return FlexLayout.Model.fromJson(
       storage.get<FlexLayout.IJsonModel>(STORAGE_KEYS.LAYOUT_MODEL, defaultJson)
