@@ -2,6 +2,8 @@ import { JacDevice } from '@jaculus/device';
 import { Usb, Bluetooth, Monitor } from 'lucide-react';
 import { JacStreamSerial } from './jac-stream';
 import logger from '../logger';
+import type { AddToTerminal, TerminalStreamType } from '@/hooks/terminal-store';
+import { Buffer } from 'buffer';
 
 export type ConnectionType = 'serial' | 'ble' | 'wokwi';
 
@@ -25,10 +27,13 @@ export function getAvailableConnectionTypes(): ConnectionInfo[] {
   return types;
 }
 
-export async function connectDevice(type: ConnectionType): Promise<JacDevice> {
+export async function connectDevice(
+  type: ConnectionType,
+  addToTerminal: AddToTerminal
+): Promise<JacDevice> {
   switch (type) {
     case 'serial':
-      return connectDeviceWebSerial();
+      return connectDeviceWebSerial(addToTerminal);
     case 'ble':
       return connectDeviceWebBLE();
     case 'wokwi':
@@ -44,11 +49,77 @@ export function isWebSerialAvailable(): boolean {
   return 'serial' in navigator;
 }
 
-export async function connectDeviceWebSerial(): Promise<JacDevice> {
+// function convertDataToString(data: any): string {
+//   try {
+//     if (Buffer.isBuffer(data)) {
+//       return data.toString('utf8');
+//     }
+//     if (data instanceof Uint8Array) {
+//       return String.fromCharCode(...data);
+//     }
+//     if (Array.isArray(data)) {
+//       return String.fromCharCode(...data);
+//     }
+//     if (typeof data === 'string') {
+//       return data;
+//     }
+//     // Fallback: try to convert to Uint8Array first
+//     return String.fromCharCode(...new Uint8Array(data));
+//   } catch (error) {
+//     logger.warn(`Failed to convert data to string: ${error}`);
+//     return String(data);
+//   }
+// }
+
+export function setupDeviceTerminalStreams(
+  device: JacDevice,
+  addToTerminal: (type: TerminalStreamType, content: string) => void
+): void {
+  // Connect program output to runtime stdout
+  device.programOutput.onData(data => {
+    addToTerminal('runtime-stdout', String.fromCharCode(...data));
+  });
+
+  // Connect program error to runtime stderr
+  device.programError.onData(data => {
+    addToTerminal('runtime-stderr', String.fromCharCode(...data));
+  });
+
+  // Connect error output to system
+  device.errorOutput.onData(data => {
+    addToTerminal('system', String.fromCharCode(...data));
+  });
+
+  // Connect log output to system
+  device.logOutput.onData(data => {
+    addToTerminal('system', String.fromCharCode(...data));
+  });
+
+  // Connect debug output to debug
+  device.debugOutput.onData(data => {
+    addToTerminal('debug', String.fromCharCode(...data));
+  });
+}
+
+// Helper function to send input to device from terminal
+export function sendToDevice(device: JacDevice, input: string): void {
+  device.programInput.write(Buffer.from(input));
+}
+
+export async function connectDeviceWebSerial(
+  addToTerminal: AddToTerminal
+): Promise<JacDevice> {
   const port = await navigator.serial.requestPort();
   await port.open({ baudRate: 921600 });
   const stream = new JacStreamSerial(port, logger);
-  return new JacDevice(stream, logger);
+  const device = new JacDevice(stream, logger);
+
+  // Connect device streams to terminal if addToTerminal is provided
+  if (addToTerminal) {
+    setupDeviceTerminalStreams(device, addToTerminal);
+  }
+
+  return device;
 }
 
 // WEB BLE

@@ -10,6 +10,7 @@ export function GeneratedCodePanel({ project }: { project: JacProject }) {
       filePath={generatedCodePath}
       readOnly={true}
       ifNotExists="loading"
+      loadingMessage="Waiting for generated code..."
     />
   );
 }

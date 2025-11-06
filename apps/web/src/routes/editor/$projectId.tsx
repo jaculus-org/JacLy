@@ -11,7 +11,7 @@ import { EditorHeaderActions } from '@/components/editor/header-actions';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 import { useTerminal } from '@/hooks/terminal-store';
-import { jacCompile } from '@/lib/device/jaculus';
+import { jacBuildFlash } from '@/lib/device/jaculus';
 
 export const Route = createFileRoute('/editor/$projectId')({
   loader: ({ params }) => {
@@ -30,16 +30,25 @@ export const Route = createFileRoute('/editor/$projectId')({
 function EditorProjectContent() {
   const { setActions } = useHeaderActions();
   const terminal = useTerminal();
-  const { project } = useJacProject();
+  const { project, device } = useJacProject();
 
-  const handleBuild = useCallback(() => {
-    jacCompile(project, terminal.addEntry);
-  }, [project, terminal.addEntry]);
+  const onBuildFlashMonitor = useCallback(() => {
+    if (!device) {
+      enqueueSnackbar('No device connected.', { variant: 'error' });
+      return;
+    }
+    jacBuildFlash(project, device, terminal.addEntry);
+  }, [project, device, terminal.addEntry]);
 
   useEffect(() => {
-    setActions(<EditorHeaderActions onBuild={handleBuild} />);
+    setActions(
+      <EditorHeaderActions
+        onBuildFlashMonitor={onBuildFlashMonitor}
+        addToTerminal={terminal.addEntry}
+      />
+    );
     return () => setActions(null);
-  }, [setActions, handleBuild]);
+  }, [setActions, onBuildFlashMonitor]);
 
   return <EditorProvider />;
 }

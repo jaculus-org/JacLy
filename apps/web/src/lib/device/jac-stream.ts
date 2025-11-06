@@ -62,8 +62,12 @@ export class JacStreamSerial implements Duplex {
           break;
         }
 
-        if (value && this.callbacks.data) {
-          this.callbacks.data(Buffer.from(value));
+        if (value) {
+          const buffer = Buffer.from(value);
+
+          if (this.callbacks.data) {
+            this.callbacks.data(buffer);
+          }
         }
       }
     } catch (error) {
@@ -93,7 +97,8 @@ export class JacStreamSerial implements Duplex {
     }
 
     try {
-      await this.writer.write(new Uint8Array([c]));
+      const data = new Uint8Array([c]);
+      await this.writer.write(data);
     } catch (error) {
       this.handleError(error as Error);
       throw error;

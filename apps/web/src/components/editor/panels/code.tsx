@@ -7,11 +7,11 @@ const fsp = fs.promises;
 interface CodePanelProps {
   readonly filePath: string;
   readonly readOnly?: boolean;
-  /// enum create|loading|error
-  ifNotExists: 'create' | 'loading' | 'error';
+  readonly ifNotExists: 'create' | 'loading' | 'error';
+  readonly loadingMessage?: string;
 }
 
-function CodeLoadingSpinner() {
+function CodeLoadingSpinner({ loadingMessage }: { loadingMessage?: string }) {
   return (
     <div className="h-full w-full bg-slate-900 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
@@ -20,7 +20,7 @@ function CodeLoadingSpinner() {
           <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-blue-500 border-r-blue-400 animate-spin" />
           <div className="absolute inset-2 rounded-full border-3 border-transparent border-b-purple-500 border-l-purple-400 animate-spin-reverse" />
         </div>
-        <p className="text-slate-300 text-sm">Loading file...</p>
+        <p className="text-slate-300 text-sm">{loadingMessage}</p>
       </div>
     </div>
   );
@@ -30,6 +30,7 @@ export function CodePanel({
   filePath,
   readOnly = false,
   ifNotExists,
+  loadingMessage = 'Loading file...',
 }: CodePanelProps) {
   const [code, setCode] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -87,7 +88,7 @@ export function CodePanel({
 
   // Show loading spinner when code is undefined or still loading
   if (code === undefined || loading) {
-    return <CodeLoadingSpinner />;
+    return <CodeLoadingSpinner loadingMessage={loadingMessage} />;
   }
 
   // Show error state if there's an error and ifNotExists is 'error'

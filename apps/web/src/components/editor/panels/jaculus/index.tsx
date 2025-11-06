@@ -62,7 +62,10 @@ export function JaculusPanel({ project }: JaculusPanelProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="space-y-3">
-            <ConnectionSelector oneLine={true} />
+            <ConnectionSelector
+              oneLine={true}
+              addToTerminal={terminal.addEntry}
+            />
 
             {device && (
               <div className="flex flex-wrap gap-2">

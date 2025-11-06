@@ -1,7 +1,10 @@
 import { Unplug } from 'lucide-react';
 import { ConnectionSelector } from './connection-selector';
+import { useTerminal } from '@/hooks/terminal-store';
 
 export function JacConnection() {
+  const terminal = useTerminal();
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center p-6">
       <div className="text-center space-y-4">
@@ -12,7 +15,11 @@ export function JacConnection() {
             Connect your Jaculus device to get started
           </p>
         </div>
-        <ConnectionSelector oneLine={false} className="justify-center" />
+        <ConnectionSelector
+          oneLine={false}
+          className="justify-center"
+          addToTerminal={terminal.addEntry}
+        />
       </div>
     </div>
   );

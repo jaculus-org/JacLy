@@ -35,13 +35,15 @@ export interface TerminalFilter {
   debug: boolean;
 }
 
+export type AddToTerminal = (type: TerminalStreamType, content: string) => void;
+
 interface TerminalState {
   entries: TerminalEntry[];
   visibleTypes: TerminalFilter;
   maxEntries: number;
 
   // Actions
-  addEntry: (type: TerminalStreamType, content: string) => void;
+  addEntry: AddToTerminal;
   toggleType: (type: TerminalStreamType) => void;
   setTypeVisible: (type: TerminalStreamType, visible: boolean) => void;
   clear: () => void;

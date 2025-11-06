@@ -16,12 +16,14 @@ import {
   getAvailableConnectionTypes,
   type ConnectionType,
 } from '@/lib/device/connection';
+import { type AddToTerminal } from '@/hooks/terminal-store';
 
 interface ConnectionSelectorProps {
   onConnect?: () => void;
   className?: string;
   oneLine?: boolean;
   defaultConnection?: ConnectionType;
+  addToTerminal: AddToTerminal;
 }
 
 export function ConnectionSelector({
@@ -29,6 +31,7 @@ export function ConnectionSelector({
   className,
   oneLine = true,
   defaultConnection = 'serial',
+  addToTerminal,
 }: ConnectionSelectorProps) {
   const { device, setDevice } = useJacProject();
 
@@ -107,7 +110,7 @@ export function ConnectionSelector({
     setError(null);
 
     try {
-      const newDevice = await connectDevice(selectedConnection);
+      const newDevice = await connectDevice(selectedConnection, addToTerminal);
       setDevice(newDevice);
       onConnect?.();
       enqueueSnackbar('Device connected successfully', { variant: 'success' });

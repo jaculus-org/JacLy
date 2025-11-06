@@ -1,4 +1,4 @@
-import { configure, umount, fs, mounts } from '@zenfs/core';
+import { configure, fs, mounts } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
@@ -8,7 +8,6 @@ import { getProjectDbName } from '@/lib/projects/project-manager';
 
 export function useWebFs(projectId: string) {
   const [mounted, setMounted] = useState<boolean>(false);
-  const [inProgress, setInProgress] = useState<boolean>(false);
   console.log('useWebFs started for projectId:', projectId);
 
   useEffect(() => {
@@ -16,12 +15,8 @@ export function useWebFs(projectId: string) {
       if (mounts.has(`/${projectId}`)) {
         return;
       }
-      if (inProgress) {
-        return;
-      }
 
       try {
-        setInProgress(true);
         const res = await fetch('/tsLibs.zip');
         await configure({
           mounts: {
@@ -58,8 +53,6 @@ export function useWebFs(projectId: string) {
             }
           );
         }
-      } finally {
-        setInProgress(false);
       }
     }
 
@@ -68,20 +61,20 @@ export function useWebFs(projectId: string) {
     console.log('fsMount mounted called for projectId:', projectId);
 
     // Cleanup function to unmount when component unmounts
-    return () => {
-      try {
-        // Check if mount exists before trying to unmount
-        if (mounts.has(`/${projectId}`)) {
-          umount(`/${projectId}`);
-          console.log('Filesystem unmounted for project:', projectId);
-        }
-      } catch (error) {
-        console.error('Failed to unmount filesystem:', error);
-      } finally {
-        setMounted(false);
-      }
-      console.log('useWebFs cleanup called for projectId:', projectId);
-    };
+    // return () => {
+    //   try {
+    //     // Check if mount exists before trying to unmount
+    //     if (mounts.has(`/${projectId}`)) {
+    //       umount(`/${projectId}`);
+    //       console.log('Filesystem unmounted for project:', projectId);
+    //     }
+    //   } catch (error) {
+    //     console.error('Failed to unmount filesystem:', error);
+    //   } finally {
+    //     setMounted(false);
+    //   }
+    //   console.log('useWebFs cleanup called for projectId:', projectId);
+    // };
   }, [projectId]);
 
   return { mounted };
