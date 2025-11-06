@@ -17,6 +17,7 @@ import {
   type ConnectionType,
 } from '@/lib/device/connection';
 import { type AddToTerminal } from '@/hooks/terminal-store';
+import type { JacDevice } from '@jaculus/device';
 
 interface ConnectionSelectorProps {
   onConnect?: () => void;
@@ -24,6 +25,8 @@ interface ConnectionSelectorProps {
   oneLine?: boolean;
   defaultConnection?: ConnectionType;
   addToTerminal: AddToTerminal;
+  device: JacDevice | null;
+  setDevice: (device: JacDevice | null) => void;
 }
 
 export function ConnectionSelector({
@@ -32,8 +35,9 @@ export function ConnectionSelector({
   oneLine = true,
   defaultConnection = 'serial',
   addToTerminal,
+  setDevice,
 }: ConnectionSelectorProps) {
-  const { device, setDevice } = useJacProject();
+  const { device } = useJacProject();
 
   const availableConnections = getAvailableConnectionTypes();
 

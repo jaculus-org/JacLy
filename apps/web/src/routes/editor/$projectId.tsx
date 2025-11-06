@@ -30,7 +30,7 @@ export const Route = createFileRoute('/editor/$projectId')({
 function EditorProjectContent() {
   const { setActions } = useHeaderActions();
   const terminal = useTerminal();
-  const { project, device } = useJacProject();
+  const { project, device, setDevice } = useJacProject();
 
   const onBuildFlashMonitor = useCallback(() => {
     if (!device) {
@@ -45,6 +45,8 @@ function EditorProjectContent() {
       <EditorHeaderActions
         onBuildFlashMonitor={onBuildFlashMonitor}
         addToTerminal={terminal.addEntry}
+        device={device}
+        setDevice={setDevice}
       />
     );
     return () => setActions(null);

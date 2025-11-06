@@ -73,7 +73,7 @@ export function NewProject() {
           writableOut(),
           writableErr()
         );
-        await project.createFromPackage(pkg, false);
+        await project.createFromPackage(pkg, false, false);
 
         const rootDirs = await fs.promises.readdir('/' + projectConf.id);
         logger?.info('Project root directories:' + rootDirs);

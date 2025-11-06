@@ -65,6 +65,8 @@ export function JaculusPanel({ project }: JaculusPanelProps) {
             <ConnectionSelector
               oneLine={true}
               addToTerminal={terminal.addEntry}
+              device={device}
+              setDevice={setDevice}
             />
 
             {device && (

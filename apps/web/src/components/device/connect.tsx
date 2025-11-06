@@ -1,9 +1,11 @@
 import { Unplug } from 'lucide-react';
 import { ConnectionSelector } from './connection-selector';
 import { useTerminal } from '@/hooks/terminal-store';
+import { useJacProject } from '@/providers/jac-project-provider';
 
 export function JacConnection() {
   const terminal = useTerminal();
+  const { device, setDevice } = useJacProject();
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center p-6">
@@ -19,6 +21,8 @@ export function JacConnection() {
           oneLine={false}
           className="justify-center"
           addToTerminal={terminal.addEntry}
+          device={device}
+          setDevice={setDevice}
         />
       </div>
     </div>
