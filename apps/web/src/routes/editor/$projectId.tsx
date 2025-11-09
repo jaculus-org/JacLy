@@ -50,7 +50,7 @@ function EditorProjectContent() {
       />
     );
     return () => setActions(null);
-  }, [setActions, onBuildFlashMonitor]);
+  }, [setActions, onBuildFlashMonitor, device, setDevice, terminal.addEntry]);
 
   return <EditorProvider />;
 }

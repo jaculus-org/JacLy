@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "prebuild": "node --experimental-strip-types scripts/generateTsLibsZip.ts",
+    "prebuild": "node --experimental-strip-types scripts/runTsScripts.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

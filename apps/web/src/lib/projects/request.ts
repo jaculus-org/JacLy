@@ -15,7 +15,11 @@ export async function loadPackageUri(
   fsp?: FSPromisesInterface
 ): Promise<ProjectPackage> {
   let gz: Uint8Array;
-  if (pkgUri.startsWith('http://') || pkgUri.startsWith('https://')) {
+  if (
+    pkgUri.startsWith('http://') ||
+    pkgUri.startsWith('https://') ||
+    pkgUri.startsWith('/')
+  ) {
     const res = await fetch(pkgUri);
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${pkgUri}`);
     gz = new Uint8Array(await res.arrayBuffer());
@@ -25,6 +29,8 @@ export async function loadPackageUri(
   } else {
     throw new Error(`Unsupported URI scheme or missing fs for ${pkgUri}`);
   }
+
+  console.log(gz);
 
   const dirs: string[] = [];
   const files: Record<string, Uint8Array> = {};

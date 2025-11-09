@@ -51,7 +51,7 @@ function createZipArchive(outPath: string, files: FileEntry[]): Promise<void> {
   });
 }
 
-async function main(): Promise<void> {
+export async function generateTsLibsZip(): Promise<void> {
   const workspaceRoot = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     '..'
@@ -62,8 +62,3 @@ async function main(): Promise<void> {
   const files = getTypescriptLibFiles(typescriptLibPath);
   await createZipArchive(outZip, files);
 }
-
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});

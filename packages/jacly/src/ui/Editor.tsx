@@ -3,22 +3,7 @@ import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
 import { useBlocklyWorkspace } from '@kuband/react-blockly';
 import * as Blockly from 'blockly/core';
-
-const darkTheme = Blockly.Theme.defineTheme('dark', {
-  name: 'dark',
-  base: Blockly.Themes.Zelos,
-  componentStyles: {
-    workspaceBackgroundColour: '#1e1e1e',
-    toolboxBackgroundColour: '#252526',
-    toolboxForegroundColour: '#cccccc',
-    flyoutBackgroundColour: '#252526',
-    flyoutForegroundColour: '#cccccc',
-    scrollbarColour: '#797979',
-    insertionMarkerColour: '#ffffff',
-    markerColour: '#4285f4',
-    cursorColour: '#ffffff',
-  },
-});
+import { darkTheme, lightTheme } from './theme-config';
 
 interface EditorProps {
   theme: Theme;
@@ -75,7 +60,7 @@ export function JaclyEditor({ theme, onCodeChange }: EditorProps) {
     toolboxConfiguration: toolbox,
     initialJson: {},
     workspaceConfiguration: {
-      theme: isDark ? darkTheme : Blockly.Themes.Zelos,
+      theme: isDark ? darkTheme : lightTheme,
       grid: { spacing: 25, length: 3, colour: '#ccc', snap: true },
       comments: true,
       sounds: false,

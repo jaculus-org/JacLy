@@ -123,6 +123,9 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
+      '@alcyone-labs/zod-to-json-schema':
+        specifier: ^4.0.10
+        version: 4.0.10(zod@4.1.12)
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.23
@@ -477,6 +480,11 @@ packages:
 
   '@adobe/css-tools@4.3.3':
     resolution: {integrity: sha512-rE0Pygv0sEZ4vBWHlAgJLGDU7Pm8xoO6p3wsEceb7GYAjScrOHpEo8KK/eVkAcnSM+slAEtXjA2JpdjLp4fJQQ==}
+
+  '@alcyone-labs/zod-to-json-schema@4.0.10':
+    resolution: {integrity: sha512-TFsSpAPToqmqmT85SGHXuxoCwEeK9zUDvn512O9aBVvWRhSuy+VvAXZkifzsdllD3ncF0ZjUrf4MpBwIEixdWQ==}
+    peerDependencies:
+      zod: ^4.0.5
 
   '@asamuzakjp/css-color@3.2.0':
     resolution: {integrity: sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==}
@@ -5235,6 +5243,10 @@ snapshots:
 
   '@adobe/css-tools@4.3.3':
     optional: true
+
+  '@alcyone-labs/zod-to-json-schema@4.0.10(zod@4.1.12)':
+    dependencies:
+      zod: 4.1.12
 
   '@asamuzakjp/css-color@3.2.0':
     dependencies:

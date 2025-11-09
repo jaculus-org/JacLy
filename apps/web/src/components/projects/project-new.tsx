@@ -31,10 +31,7 @@ export function NewProject() {
     if (!newProjectConf) return;
 
     async function finishCreation(projectConf: JaclyProject) {
-      const pkg = await loadPackageUri(
-        'https://robutek.robotikabrno.cz/v2/robot/lekce1/example1.tar.gz'
-      );
-
+      const pkg = await loadPackageUri('/project.tar.gz');
       logger?.info(`Pkg loaded with ${Object.keys(pkg.files).length} files`);
 
       function writableErr(): Writable {

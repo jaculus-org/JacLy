@@ -1,0 +1,8 @@
+{
+    "dependencies": {
+        "core": "0.0.24"
+    },
+    "registry": [
+        "file:///Users/kuba/Documents/git/jaculus/JacLy/test/data/test-registry"
+    ]
+}
