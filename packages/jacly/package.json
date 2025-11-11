@@ -29,6 +29,11 @@
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.js",
       "default": "./dist/storage/index.js"
+    },
+    "./project": {
+      "types": "./dist/project/index.d.ts",
+      "import": "./dist/project/index.js",
+      "default": "./dist/project/index.js"
     }
   },
   "typesVersions": {

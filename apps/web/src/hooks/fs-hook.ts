@@ -13,6 +13,8 @@ export function useWebFs(projectId: string) {
   useEffect(() => {
     async function fsMount() {
       if (mounts.has(`/${projectId}`)) {
+        console.log('Filesystem already mounted for project:', projectId);
+        setMounted(true);
         return;
       }
 
@@ -59,22 +61,6 @@ export function useWebFs(projectId: string) {
     // Mount filesystem when hook is used
     fsMount();
     console.log('fsMount mounted called for projectId:', projectId);
-
-    // Cleanup function to unmount when component unmounts
-    // return () => {
-    //   try {
-    //     // Check if mount exists before trying to unmount
-    //     if (mounts.has(`/${projectId}`)) {
-    //       umount(`/${projectId}`);
-    //       console.log('Filesystem unmounted for project:', projectId);
-    //     }
-    //   } catch (error) {
-    //     console.error('Failed to unmount filesystem:', error);
-    //   } finally {
-    //     setMounted(false);
-    //   }
-    //   console.log('useWebFs cleanup called for projectId:', projectId);
-    // };
   }, [projectId]);
 
   return { mounted };

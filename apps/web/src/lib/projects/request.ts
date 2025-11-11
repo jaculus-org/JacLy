@@ -1,7 +1,7 @@
 import { type ProjectPackage } from '@jaculus/project';
 import type { FSPromisesInterface } from '@jaculus/project/fs';
 import { Archive } from '@obsidize/tar-browserify';
-import pako from 'pako';
+// import pako from 'pako';
 
 /**
  * Load a package from a URI - Web/Node implementation
@@ -20,7 +20,8 @@ export async function loadPackageUri(
     pkgUri.startsWith('https://') ||
     pkgUri.startsWith('/')
   ) {
-    const res = await fetch(pkgUri);
+    // not cached fetch
+    const res = await fetch(pkgUri, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${pkgUri}`);
     gz = new Uint8Array(await res.arrayBuffer());
   } else if (pkgUri.startsWith('file://') && fsp) {
@@ -35,7 +36,8 @@ export async function loadPackageUri(
   const dirs: string[] = [];
   const files: Record<string, Uint8Array> = {};
 
-  for await (const entry of Archive.read(pako.ungzip(gz))) {
+  // for await (const entry of Archive.read(pako.ungzip(gz))) {
+  for await (const entry of Archive.read(gz)) {
     if (entry.isDirectory()) {
       dirs.push(entry.fileName);
     } else if (entry.isFile()) {

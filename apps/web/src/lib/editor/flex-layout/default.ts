@@ -35,9 +35,16 @@ export const defaultJson: FlexLayout.IJsonModel = {
     {
       type: 'border',
       location: 'left',
-      size: 250,
-      selected: -1,
+      size: 200,
+      selected: 0,
       children: [
+        {
+          type: 'tab',
+          name: 'File Explorer',
+          component: 'file-explorer',
+          id: 'file-explorer',
+          enableClose: false,
+        },
         {
           type: 'tab',
           name: 'Jaculus',
@@ -47,9 +54,9 @@ export const defaultJson: FlexLayout.IJsonModel = {
         },
         {
           type: 'tab',
-          name: 'File Explorer',
-          component: 'file-explorer',
-          id: 'file-explorer',
+          name: 'Packages',
+          component: 'packages',
+          id: 'packages',
           enableClose: false,
         },
       ],
@@ -58,7 +65,7 @@ export const defaultJson: FlexLayout.IJsonModel = {
       type: 'border',
       location: 'right',
       size: 400,
-      selected: 0,
+      selected: -1,
       children: [
         {
           type: 'tab',

@@ -12,6 +12,7 @@ import { CodePanel } from '@/components/editor/panels/code';
 import { GeneratedCodePanel } from '@/components/editor/panels/generated-code';
 import { useJacProject } from '@/providers/jac-project-provider';
 import { LoadingEditor } from '@/components/editor/loading';
+import { PackagesPanel } from '@/components/editor/panels/packages';
 
 type EditorState = {
   sourceCode: string;
@@ -26,6 +27,7 @@ type PanelType =
   | 'jaculus'
   | 'file-explorer'
   | 'source-code'
+  | 'packages'
   | 'generated-code';
 type PanelAction = 'close' | 'expand' | 'collapse' | 'focus';
 
@@ -68,6 +70,8 @@ export function EditorProvider() {
         return 250;
       case 'source-code':
         return 300;
+      case 'packages':
+        return 400;
       default:
         return 300;
     }
@@ -184,6 +188,8 @@ export function EditorProvider() {
           isInBorder,
           isHighlighted
         );
+      case 'packages':
+        return wrapComponent(<PackagesPanel />, isInBorder, isHighlighted);
       default:
         return wrapComponent(
           <div>Unknown component: {component}</div>,

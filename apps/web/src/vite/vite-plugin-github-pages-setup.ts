@@ -1,9 +1,9 @@
 import path from 'path';
 import fs from 'fs';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 
 export function githubPagesSetup(): Plugin {
-  let config: any;
+  let config: ResolvedConfig;
 
   return {
     name: 'github-pages-setup',

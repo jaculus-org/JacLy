@@ -16,17 +16,21 @@
 		"fix-all": "pnpm -r lint:fix && pnpm -r format",
 		"check-all": "pnpm run format:check && pnpm run lint && pnpm run build",
 		"clean": "pnpm -r clean",
-		"clean-node" : "pnpm -r clean-node && rm -rf node_modules",
-		"deps:check": "ncu --deep",
-		"deps:update": "ncu -u --deep && pnpm install",
-		"deps:update-interactive": "ncu -i --deep"
+		"clean-node": "pnpm -r clean-node && rm -rf node_modules",
+		"test:prepare-registry": "node --experimental-strip-types test/data/runTsScriptTest.ts"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"@commitlint/types": "^20.0.0",
+		"@jaculus/project": "^0.0.2",
+		"@obsidize/tar-browserify": "^6.3.2",
+		"@types/node": "^24.10.0",
+		"@types/pako": "^2.0.4",
+		"chai": "^6.2.0",
 		"husky": "^9.1.7",
 		"npm-check-updates": "^19.1.2",
+		"pako": "^2.1.0",
 		"prettier": "^3.6.2"
 	}
 }

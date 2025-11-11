@@ -2,12 +2,14 @@ import { useWebFs } from '@/hooks/fs-hook';
 import type { JaclyProject } from '@/lib/projects/project-manager';
 import { createContext, useContext, useState, useMemo } from 'react';
 import { JacDevice } from '@jaculus/device';
-import { Project } from '@jaculus/project';
+import { loadPackageJsonSync, Project, Registry } from '@jaculus/project';
 import { fs } from '@zenfs/core';
+import { getRequest } from '@jaculus/jacly/project';
 import type { FSInterface } from '@jaculus/project/fs';
 import type { Writable } from 'node:stream';
 import { useTerminal } from '@/hooks/terminal-store';
 import { createStdoutStream, createStderrStream } from '@/lib/streams';
+import path from 'path';
 
 type JacProjectProviderProps = {
   children: React.ReactNode;
@@ -54,12 +56,30 @@ export function JacProjectProvider({
   } = useMemo(() => {
     const outStream = createStdoutStream(terminal.addEntry);
     const errStream = createStderrStream(terminal.addEntry);
+    const fsInterface = fs as unknown as FSInterface;
+    const fsPath = `/${project.id}`;
+
+    // Only create project instance after filesystem is mounted
+    if (!mounted) {
+      return {
+        out: outStream,
+        err: errStream,
+        project: {} as Project,
+      };
+    }
+
+    const pkg = loadPackageJsonSync(
+      fsInterface,
+      path.join(fsPath, 'package.json')
+    );
+    const registry = new Registry(pkg.registry, getRequest);
 
     const projectInstance = new Project(
       fs as unknown as FSInterface,
       `/${project.id}`,
       outStream,
-      errStream
+      errStream,
+      registry
     );
 
     return {
@@ -67,7 +87,7 @@ export function JacProjectProvider({
       err: errStream,
       project: projectInstance,
     };
-  }, [project.id, terminal.addEntry]);
+  }, [project.id, terminal.addEntry, mounted]);
 
   const value: JacProjectState = {
     project,

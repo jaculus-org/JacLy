@@ -49,6 +49,7 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
     new Set()
   );
   const initialLoadRef = useRef(true);
+  const watchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { addPanelSourceCode } = useEditor();
 
   const sortItems = useCallback((items: FileSystemItem[]): FileSystemItem[] => {
@@ -225,8 +226,42 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
       setLoading(false);
     };
 
+    const watchFileSystem = async () => {
+      try {
+        const projectRoot = `/${project.id}`;
+        for await (const change of fsp.watch(projectRoot, {
+          recursive: true,
+        })) {
+          if (change.eventType === 'change' || change.eventType === 'rename') {
+            // File system has changed, refresh the tree with debounce
+            if (watchTimeoutRef.current) {
+              clearTimeout(watchTimeoutRef.current);
+            }
+
+            watchTimeoutRef.current = setTimeout(async () => {
+              const tree = await buildFileTreeForEffect(projectRoot);
+              const restoredTree = await applyFolderStructure(
+                tree,
+                expandedFolders
+              );
+              setFileTree(restoredTree);
+            }, 300); // Debounce for 300ms
+          }
+        }
+      } catch (error) {
+        console.error('Error watching file system:', error);
+      }
+    };
+
     initialLoadRef.current = true;
     loadFileTree();
+    watchFileSystem();
+
+    return () => {
+      if (watchTimeoutRef.current) {
+        clearTimeout(watchTimeoutRef.current);
+      }
+    };
   }, [
     applyFolderStructure,
     buildFileTreeForEffect,
