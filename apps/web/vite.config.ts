@@ -21,12 +21,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      'vite-plugin-node-polyfills/shims/buffer': 'buffer',
-    },
-  },
-  build: {
-    rollupOptions: {
-      external: ['vite-plugin-node-polyfills/shims/buffer'],
     },
   },
 });

@@ -139,22 +139,24 @@ export async function connectDeviceWebBLE(): Promise<JacDevice> {
 // WOKWI SIMULATOR
 
 export function isWokwiAvailable(): boolean {
-  return true;
+  return false;
 }
 
 export async function connectDeviceWokwiSimulator(
   project: JaclyProject,
   addToTerminal: AddToTerminal
 ): Promise<JacDevice> {
-  // Dynamically import to avoid bundling the module during build
-  const { JacSerialWokwi } = await import('./jac-wokwi');
-  const stream = new JacSerialWokwi(project, logger);
-  const device = new JacDevice(stream, logger);
+  // // Dynamically import to avoid bundling the module during build
+  // const { JacSerialWokwi } = await import('./jac-wokwi');
+  // const stream = new JacSerialWokwi(project, logger);
+  // const device = new JacDevice(stream, logger);
 
-  // Connect device streams to terminal if addToTerminal is provided
-  if (addToTerminal) {
-    setupDeviceTerminalStreams(device, addToTerminal);
-  }
+  // // Connect device streams to terminal if addToTerminal is provided
+  // if (addToTerminal) {
+  //   setupDeviceTerminalStreams(device, addToTerminal);
+  // }
 
-  return device;
+  // return device;
+  console.log(project, addToTerminal);
+  return Promise.reject(new Error('Wokwi not implemented'));
 }
