@@ -66,8 +66,19 @@ jobs:
       - name: Build packages
         run: pnpm build
 
-      - name: Run tests
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+        # Playwright tests
+      - name: Run tests (also Playwright)
         run: pnpm test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-web
+          path: apps/web/playwright-report/
+          retention-days: 30
 
   pre-commit:
     runs-on: ubuntu-latest

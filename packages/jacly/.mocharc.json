@@ -1,0 +1,5 @@
+{
+  "require": ["tsx/cjs"],
+  "spec": ["tests/mocha/**/*.test.ts"],
+  "extension": ["ts"]
+}
