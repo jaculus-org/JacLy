@@ -1,7 +1,7 @@
 import { type ProjectPackage } from '@jaculus/project';
 import type { FSPromisesInterface } from '@jaculus/project/fs';
 import { Archive } from '@obsidize/tar-browserify';
-// import pako from 'pako';
+import pako from 'pako';
 
 /**
  * Load a package from a URI - Web/Node implementation
@@ -36,8 +36,11 @@ export async function loadPackageUri(
   const dirs: string[] = [];
   const files: Record<string, Uint8Array> = {};
 
-  // for await (const entry of Archive.read(pako.ungzip(gz))) {
-  for await (const entry of Archive.read(gz)) {
+  // Determine if the data is gzipped based on magic bytes (0x1f 0x8b)
+  const isGzipped = gz.length >= 2 && gz[0] === 0x1f && gz[1] === 0x8b;
+  const archiveData = isGzipped ? pako.ungzip(gz) : gz;
+
+  for await (const entry of Archive.read(archiveData)) {
     if (entry.isDirectory()) {
       dirs.push(entry.fileName);
     } else if (entry.isFile()) {

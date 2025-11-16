@@ -67,7 +67,7 @@ jobs:
         run: pnpm build
 
       - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
+        run: pnpm --filter "@jaculus/jacly-web" exec playwright install --with-deps
 
         # Playwright tests
       - name: Run tests (also Playwright)
@@ -76,7 +76,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-web
+          name: playwright-report-web-${{ matrix.node-version }}-${{ github.run_number }}
           path: apps/web/playwright-report/
           retention-days: 30
 
@@ -117,6 +117,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter "@jaculus/jacly-web" exec playwright install --with-deps
 
       - name: Run comprehensive CI check
         run: pnpm check-all
