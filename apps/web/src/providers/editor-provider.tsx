@@ -11,8 +11,9 @@ import { JaculusPanel } from '@/components/editor/panels/jaculus';
 import { CodePanel } from '@/components/editor/panels/code';
 import { GeneratedCodePanel } from '@/components/editor/panels/generated-code';
 import { useJacProject } from '@/providers/jac-project-provider';
-import { LoadingEditor } from '@/components/editor/loading';
 import { PackagesPanel } from '@/components/editor/panels/packages';
+import { WokwiPanel } from '@/components/editor/panels/wokwi';
+import { LoadingEditor } from '@jaculus/jacly/editor';
 
 type EditorState = {
   sourceCode: string;
@@ -28,6 +29,7 @@ type PanelType =
   | 'file-explorer'
   | 'source-code'
   | 'packages'
+  | 'wokwi'
   | 'generated-code';
 type PanelAction = 'close' | 'expand' | 'collapse' | 'focus';
 
@@ -71,6 +73,8 @@ export function EditorProvider() {
       case 'source-code':
         return 300;
       case 'packages':
+        return 400;
+      case 'wokwi':
         return 400;
       default:
         return 300;
@@ -188,6 +192,8 @@ export function EditorProvider() {
           isInBorder,
           isHighlighted
         );
+      case 'wokwi':
+        return wrapComponent(<WokwiPanel />, isInBorder, isHighlighted);
       case 'packages':
         return wrapComponent(<PackagesPanel />, isInBorder, isHighlighted);
       default:

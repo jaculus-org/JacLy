@@ -37,7 +37,7 @@ export function ConnectionSelector({
   addToTerminal,
   setDevice,
 }: ConnectionSelectorProps) {
-  const { device } = useJacProject();
+  const { device, project } = useJacProject();
 
   const availableConnections = getAvailableConnectionTypes();
 
@@ -114,7 +114,11 @@ export function ConnectionSelector({
     setError(null);
 
     try {
-      const newDevice = await connectDevice(selectedConnection, addToTerminal);
+      const newDevice = await connectDevice(
+        selectedConnection,
+        project,
+        addToTerminal
+      );
       setDevice(newDevice);
       onConnect?.();
       enqueueSnackbar('Device connected successfully', { variant: 'success' });

@@ -1,6 +1,6 @@
 export function LoadingEditor() {
   return (
-    <div className="h-[calc(100vh-3.5rem)] w-full bg-linear-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+    <div className="h-full w-full bg-linear-to-br from-slate-900 to-slate-800 flex items-center justify-center">
       {/* Main container */}
       <div className="flex flex-col items-center gap-8">
         {/* Animated logo/icon */}

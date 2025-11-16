@@ -307,6 +307,9 @@ importers:
       vite:
         specifier: ^7.1.12
         version: 7.1.12(@types/node@24.9.2)(jiti@2.6.1)(less@4.4.1)(lightningcss@1.30.2)(sass@1.92.1)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
+      wokwi-client-js:
+        specifier: ../../../wokwi-cli/packages/wokwi-client-js/
+        version: link:../../../wokwi-cli/packages/wokwi-client-js
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.0
@@ -438,6 +441,9 @@ importers:
 
   packages/jacly:
     dependencies:
+      '@alcyone-labs/zod-to-json-schema':
+        specifier: ^4.0.10
+        version: 4.0.10(zod@4.1.12)
       '@jaculus/device':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/device
@@ -472,9 +478,6 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
-      '@finom/zod-to-json-schema':
-        specifier: ^3.24.11
-        version: 3.24.11(zod@4.1.12)
       '@types/node':
         specifier: ^24.9.2
         version: 24.9.2
@@ -1178,11 +1181,6 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@finom/zod-to-json-schema@3.24.11':
-    resolution: {integrity: sha512-fL656yBPiWebtfGItvtXLWrFNGlF1NcDFS0WdMQXMs9LluVg0CfT5E2oXYp0pidl0vVG53XkW55ysijNkU5/hA==}
-    peerDependencies:
-      zod: ^4.0.14
 
   '@floating-ui/core@1.7.3':
     resolution: {integrity: sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==}
@@ -5926,10 +5924,6 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
       levn: 0.4.1
-
-  '@finom/zod-to-json-schema@3.24.11(zod@4.1.12)':
-    dependencies:
-      zod: 4.1.12
 
   '@floating-ui/core@1.7.3':
     dependencies:

@@ -6,48 +6,39 @@
   "type": "module",
   "files": [
     "dist",
+    "src/blocks/meta-blocks",
     "README.md",
     "LICENSE"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+    "./editor": {
+      "types": "./dist/editor/index.d.ts",
+      "import": "./dist/editor/index.js",
+      "default": "./dist/editor/index.js"
     },
-    "./web": {
-      "types": "./dist/web.d.ts",
-      "import": "./dist/web.js",
-      "default": "./dist/web.js"
+    "./blocks": {
+      "types": "./dist/blocks/index.d.ts",
+      "import": "./dist/blocks/index.js",
+      "default": "./dist/blocks/index.js"
     },
-    "./ui": {
-      "types": "./dist/ui/index.d.ts",
-      "import": "./dist/ui/index.js",
-      "default": "./dist/ui/index.js"
-    },
-    "./storage": {
-      "types": "./dist/storage/index.d.ts",
-      "import": "./dist/storage/index.js",
-      "default": "./dist/storage/index.js"
+    "./blocks/meta-blocks": {
+      "types": "./dist/blocks/meta-blocks/index.d.ts",
+      "import": "./dist/blocks/meta-blocks/index.js",
+      "default": "./dist/blocks/meta-blocks/index.js"
     },
     "./project": {
       "types": "./dist/project/index.d.ts",
       "import": "./dist/project/index.js",
       "default": "./dist/project/index.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "react": [
-        "dist/react/index.d.ts"
-      ],
-      "storage": [
-        "dist/storage/index.d.ts"
-      ]
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.js",
+      "default": "./dist/config/index.js"
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/blocks/meta-blocks dist/blocks/meta-blocks",
     "build:watch": "tsc --watch",
     "type-check": "tsc --noEmit",
     "lint": "echo 'No linting configured for this package'",
@@ -59,6 +50,7 @@
     "clean-node": "pnpm clean && rm -rf node_modules"
   },
   "dependencies": {
+    "@alcyone-labs/zod-to-json-schema": "^4.0.10",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
@@ -72,7 +64,6 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@finom/zod-to-json-schema": "^3.24.11",
     "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

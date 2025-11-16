@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "author": "Jakub Andrysek",
+  "github": "https://github.com/JakubAndrysek",
+  "license": "MIT",
+
+  "type": "logic",
+  "name": "Logic",
+  "description": "Logic control blocks for making decisions and comparisons.",
+  "docs": "/docs/blocks/logic",
+  "color": "#FF6B35",
+  "categorystyle": "logic_category",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "controls_if"
+    },
+    {
+      "kind": "block",
+      "type": "logic_compare"
+    },
+    {
+      "kind": "block",
+      "type": "logic_operation"
+    },
+    {
+      "kind": "block",
+      "type": "logic_negate"
+    },
+    {
+      "kind": "block",
+      "type": "logic_boolean"
+    },
+    {
+      "kind": "block",
+      "type": "logic_ternary"
+    }
+  ]
+}

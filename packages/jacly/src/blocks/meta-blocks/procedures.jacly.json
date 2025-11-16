@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "author": "Jakub Andrysek",
+  "github": "https://github.com/JakubAndrysek",
+  "license": "MIT",
+
+  "type": "functions",
+  "name": "Functions",
+  "description": "Procedure blocks for defining and calling functions.",
+  "docs": "/docs/blocks/functions",
+  "color": "#FF6B35",
+  "categorystyle": "procedure_category",
+  "custom": "PROCEDURE"
+}

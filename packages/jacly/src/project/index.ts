@@ -1,3 +1,1 @@
-import { getRequest } from '../project/util.js';
-
-export { getRequest };
+export { getRequest } from './request';

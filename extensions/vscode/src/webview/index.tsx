@@ -1,14 +1,13 @@
 import { createRoot } from 'react-dom/client';
-import { JaclyEditor } from '@jaculus/jacly/ui';
+// import { JaclyEditor } from '@jaculus/jacly/editor';
 
 function App() {
   return (
     <div style={{ padding: 8 }}>
       <h2>JacLy Blockly</h2>
-      <JaclyEditor
+      {/* <JaclyEditor
         theme="dark"
-        onCodeChange={(code: string) => console.log(code)}
-      />
+      /> */}
     </div>
   );
 }

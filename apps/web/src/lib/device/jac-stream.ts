@@ -1,6 +1,5 @@
 import { type Duplex } from '@jaculus/link/stream';
 import { type Logger } from '@jaculus/common';
-import { Buffer } from 'buffer';
 
 class WebSerialError extends Error {
   constructor(message: string) {
@@ -10,12 +9,12 @@ class WebSerialError extends Error {
 }
 
 type StreamCallbacks = {
-  data?: (data: Buffer) => void;
+  data?: (data: Uint8Array) => void;
   error?: (err: Error) => void;
   end?: () => void;
 };
 
-export class JacStreamSerial implements Duplex {
+export class JacSerialStream implements Duplex {
   private callbacks: StreamCallbacks = {};
   private port: SerialPort;
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
@@ -63,10 +62,8 @@ export class JacStreamSerial implements Duplex {
         }
 
         if (value) {
-          const buffer = Buffer.from(value);
-
           if (this.callbacks.data) {
-            this.callbacks.data(buffer);
+            this.callbacks.data(value);
           }
         }
       }
@@ -105,20 +102,20 @@ export class JacStreamSerial implements Duplex {
     }
   }
 
-  public async write(buf: Buffer): Promise<void> {
+  public async write(buf: Uint8Array): Promise<void> {
     if (this.isDestroyed || !this.writer) {
       throw new WebSerialError('Stream is destroyed');
     }
 
     try {
-      await this.writer.write(new Uint8Array(buf));
+      await this.writer.write(buf);
     } catch (error) {
       this.handleError(error as Error);
       throw error;
     }
   }
 
-  public onData(callback?: (data: Buffer) => void): void {
+  public onData(callback?: (data: Uint8Array) => void): void {
     this.callbacks.data = callback;
   }
 

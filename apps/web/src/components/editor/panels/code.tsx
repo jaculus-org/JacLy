@@ -1,6 +1,7 @@
 import { fs } from '@zenfs/core';
 import { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
+import { useTheme } from '@/providers/theme-provider';
 
 const fsp = fs.promises;
 
@@ -32,6 +33,7 @@ export function CodePanel({
   ifNotExists,
   loadingMessage = 'Loading file...',
 }: CodePanelProps) {
+  const { themeNormalized } = useTheme();
   const [code, setCode] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,11 +109,13 @@ export function CodePanel({
     <Editor
       height="100%"
       language="typescript"
-      theme="vs-dark"
+      // theme="vs-dark"
+      theme={themeNormalized === 'dark' ? 'vs-dark' : 'light'}
       value={code}
       options={{
         readOnly: readOnly ?? false,
         renderValidationDecorations: 'off',
+        minimap: { enabled: false },
       }}
       onChange={handleEditorChange}
     />

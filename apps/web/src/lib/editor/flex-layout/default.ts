@@ -81,6 +81,13 @@ export const defaultJson: FlexLayout.IJsonModel = {
           id: 'terminal',
           enableClose: false,
         },
+        {
+          type: 'tab',
+          name: 'Wokwi Simulator',
+          component: 'wokwi',
+          id: 'wokwi',
+          enableClose: false,
+        },
       ],
     },
   ],

@@ -1,5 +1,9 @@
 import * as Blockly from 'blockly/core';
 
+export type Theme = 'light' | 'dark';
+
+export const lightTheme = Blockly.Themes.Zelos;
+
 export const darkTheme = Blockly.Theme.defineTheme('dark', {
   name: 'dark',
   base: Blockly.Themes.Zelos,
@@ -15,5 +19,3 @@ export const darkTheme = Blockly.Theme.defineTheme('dark', {
     cursorColour: '#ffffff',
   },
 });
-
-export const lightTheme = Blockly.Themes.Zelos;

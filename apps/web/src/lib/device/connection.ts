@@ -1,9 +1,10 @@
 import { JacDevice } from '@jaculus/device';
 import { Usb, Bluetooth, Monitor } from 'lucide-react';
-import { JacStreamSerial } from './jac-stream';
+import { JacSerialStream } from './jac-stream';
 import logger from '../logger';
 import type { AddToTerminal, TerminalStreamType } from '@/hooks/terminal-store';
 import { Buffer } from 'buffer';
+import type { JaclyProject } from '../projects/project-manager';
 
 export type ConnectionType = 'serial' | 'ble' | 'wokwi';
 
@@ -29,6 +30,7 @@ export function getAvailableConnectionTypes(): ConnectionInfo[] {
 
 export async function connectDevice(
   type: ConnectionType,
+  project: JaclyProject,
   addToTerminal: AddToTerminal
 ): Promise<JacDevice> {
   switch (type) {
@@ -37,7 +39,7 @@ export async function connectDevice(
     case 'ble':
       return connectDeviceWebBLE();
     case 'wokwi':
-      return connectDeviceWokwiSimulator();
+      return connectDeviceWokwiSimulator(project, addToTerminal);
     default:
       return Promise.reject(new Error(`Unknown connection type: ${type}`));
   }
@@ -77,11 +79,13 @@ export function setupDeviceTerminalStreams(
 ): void {
   // Connect program output to runtime stdout
   device.programOutput.onData(data => {
+    console.log('Program output data:', data);
     addToTerminal('runtime-stdout', String.fromCharCode(...data));
   });
 
   // Connect program error to runtime stderr
   device.programError.onData(data => {
+    console.log('Program error data:', data);
     addToTerminal('runtime-stderr', String.fromCharCode(...data));
   });
 
@@ -111,7 +115,7 @@ export async function connectDeviceWebSerial(
 ): Promise<JacDevice> {
   const port = await navigator.serial.requestPort();
   await port.open({ baudRate: 921600 });
-  const stream = new JacStreamSerial(port, logger);
+  const stream = new JacSerialStream(port, logger);
   const device = new JacDevice(stream, logger);
 
   // Connect device streams to terminal if addToTerminal is provided
@@ -135,9 +139,22 @@ export async function connectDeviceWebBLE(): Promise<JacDevice> {
 // WOKWI SIMULATOR
 
 export function isWokwiAvailable(): boolean {
-  return false;
+  return true;
 }
 
-export async function connectDeviceWokwiSimulator(): Promise<JacDevice> {
-  return Promise.reject(new Error('Wokwi Simulator not implemented'));
+export async function connectDeviceWokwiSimulator(
+  project: JaclyProject,
+  addToTerminal: AddToTerminal
+): Promise<JacDevice> {
+  // Dynamically import to avoid bundling the module during build
+  const { JacSerialWokwi } = await import('./jac-wokwi');
+  const stream = new JacSerialWokwi(project, logger);
+  const device = new JacDevice(stream, logger);
+
+  // Connect device streams to terminal if addToTerminal is provided
+  if (addToTerminal) {
+    setupDeviceTerminalStreams(device, addToTerminal);
+  }
+
+  return device;
 }

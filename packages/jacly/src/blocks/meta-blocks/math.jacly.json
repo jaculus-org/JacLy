@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "author": "Jakub Andrysek",
+  "github": "https://github.com/JakubAndrysek",
+  "license": "MIT",
+  "type": "Math",
+  "name": "Math",
+  "description": "Math blocks for performing calculations and operations.",
+  "docs": "/docs/blocks/math",
+  "color": "#FF6B35",
+  "categorystyle": "math_category",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "math_number",
+      "gap": "32"
+    },
+    {
+      "kind": "block",
+      "type": "math_arithmetic"
+    },
+    {
+      "kind": "block",
+      "type": "math_single"
+    },
+    {
+      "kind": "block",
+      "type": "math_trig"
+    },
+    {
+      "kind": "block",
+      "type": "math_constant"
+    },
+    {
+      "kind": "block",
+      "type": "math_number_property"
+    },
+    {
+      "kind": "block",
+      "type": "math_change"
+    },
+    {
+      "kind": "block",
+      "type": "math_round"
+    },
+    {
+      "kind": "block",
+      "type": "math_on_list"
+    },
+    {
+      "kind": "block",
+      "type": "math_modulo"
+    },
+    {
+      "kind": "block",
+      "type": "math_constrain"
+    },
+    {
+      "kind": "block",
+      "type": "math_random_int"
+    },
+    {
+      "kind": "block",
+      "type": "math_random_float"
+    },
+    {
+      "kind": "block",
+      "type": "math_atan2"
+    }
+  ]
+}
