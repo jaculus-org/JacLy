@@ -44,42 +44,57 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.97 0.013 244.8); /* Light blue background */
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(0.99 0.008 244.8); /* Very light blue card */
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(0.99 0.008 244.8); /* Very light blue popover */
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.5 0.15 244.8); /* Medium blue primary */
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.92 0.02 244.8); /* Light blue secondary */
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.92 0.02 244.8); /* Light blue muted */
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.88 0.03 244.8); /* Slightly darker blue accent */
-  --accent-foreground: oklch(0.208 0.042 265.755);
+
+  /* Light theme: neutral cool grey with subtle blue tint */
+  --background: oklch(0.95 0.015 250); /* soft off-white, slightly cool */
+  --foreground: oklch(0.22 0.03 252); /* dark neutral text */
+
+  --card: oklch(0.99 0.005 250); /* almost white card */
+  --card-foreground: oklch(0.22 0.03 252);
+
+  --popover: oklch(0.98 0.01 250);
+  --popover-foreground: oklch(0.22 0.03 252);
+
+  /* Keep blue only for actions, not whole UI */
+  --primary: oklch(0.67 0.15 245); /* matches dark theme’s blue */
+  --primary-foreground: oklch(0.99 0.01 252);
+
+  --secondary: oklch(0.92 0.02 250);
+  --secondary-foreground: oklch(0.28 0.03 252);
+
+  --muted: oklch(0.93 0.015 250);
+  --muted-foreground: oklch(0.55 0.02 252);
+
+  --accent: oklch(0.94 0.03 245); /* subtle highlight, not full blue panel */
+  --accent-foreground: oklch(0.25 0.03 252);
+
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.85 0.025 244.8); /* Light blue border */
-  --input: oklch(0.95 0.01 244.8); /* Very light input background */
-  --ring: oklch(0.704 0.04 256.788);
+
+  --border: oklch(0.86 0.02 250); /* neutral grey border */
+  --input: oklch(0.98 0.01 250);
+  --ring: oklch(0.75 0.1 245);
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.99 0.008 244.8); /* Very light blue sidebar */
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.5 0.15 244.8); /* Medium blue sidebar primary */
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(
-    0.88 0.03 244.8
-  ); /* Slightly darker blue sidebar accent */
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.85 0.025 244.8); /* Light blue sidebar border */
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* Sidebar: same neutral base, blue only for active / primary */
+  --sidebar: oklch(0.93 0.02 250);
+  --sidebar-foreground: oklch(0.22 0.03 252);
+
+  --sidebar-primary: oklch(0.67 0.15 245);
+  --sidebar-primary-foreground: oklch(0.99 0.01 252);
+
+  --sidebar-accent: oklch(0.94 0.03 245);
+  --sidebar-accent-foreground: oklch(0.25 0.03 252);
+
+  --sidebar-border: oklch(0.86 0.02 250);
+  --sidebar-ring: oklch(0.75 0.1 245);
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --background: oklch(0.15 0.05 260); /* Dark blue background */
   --foreground: oklch(0.95 0.01 260); /* Light text */
   --card: oklch(0.2 0.06 260); /* Slightly lighter dark blue for cards */
