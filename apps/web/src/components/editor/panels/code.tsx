@@ -14,14 +14,16 @@ interface CodePanelProps {
 
 function CodeLoadingSpinner({ loadingMessage }: { loadingMessage?: string }) {
   return (
-    <div className="h-full w-full bg-slate-900 flex items-center justify-center">
+    <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         {/* Animated spinner */}
         <div className="relative w-12 h-12">
-          <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-blue-500 border-r-blue-400 animate-spin" />
-          <div className="absolute inset-2 rounded-full border-3 border-transparent border-b-purple-500 border-l-purple-400 animate-spin-reverse" />
+          <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-blue-600 border-r-blue-500 dark:border-t-blue-500 dark:border-r-blue-400 animate-spin" />
+          <div className="absolute inset-2 rounded-full border-3 border-transparent border-b-purple-600 border-l-purple-500 dark:border-b-purple-500 dark:border-l-purple-400 animate-spin-reverse" />
         </div>
-        <p className="text-slate-300 text-sm">{loadingMessage}</p>
+        <p className="text-slate-700 dark:text-slate-300 text-sm">
+          {loadingMessage}
+        </p>
       </div>
     </div>
   );
@@ -96,10 +98,12 @@ export function CodePanel({
   // Show error state if there's an error and ifNotExists is 'error'
   if (error && ifNotExists === 'error') {
     return (
-      <div className="h-full w-full bg-slate-900 flex items-center justify-center">
+      <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400 text-sm mb-2">Error loading file</p>
-          <p className="text-slate-400 text-xs">{error}</p>
+          <p className="text-red-600 dark:text-red-400 text-sm mb-2">
+            Error loading file
+          </p>
+          <p className="text-slate-600 dark:text-slate-400 text-xs">{error}</p>
         </div>
       </div>
     );

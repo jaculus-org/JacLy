@@ -98,7 +98,7 @@ export function WokwiPanel() {
 
   if (!device) {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-900 text-gray-100">
+      <div className="flex items-center justify-center h-full bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">
         <p>
           No device connected. Please connect a Wokwi ESP32 device to use the
           simulator.
@@ -108,7 +108,7 @@ export function WokwiPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-gray-100">
+    <div className="flex flex-col h-full bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">
       <iframe
         ref={iframeRef}
         src="https://wokwi.com/experimental/embed"

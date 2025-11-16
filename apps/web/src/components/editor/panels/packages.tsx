@@ -177,12 +177,14 @@ export function PackagesPanel() {
     : [];
 
   return (
-    <div className="h-full w-full flex flex-col bg-linear-to-br from-slate-950 to-slate-900">
+    <div className="h-full w-full flex flex-col bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       {/* Header */}
-      <div className="p-4 border-b border-slate-700">
+      <div className="p-4 border-b border-slate-300 dark:border-slate-700">
         <div className="flex items-center gap-2 mb-3">
-          <Package className="w-5 h-5 text-blue-400" />
-          <h2 className="text-lg font-semibold text-slate-100">Packages</h2>
+          <Package className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Packages
+          </h2>
         </div>
 
         {/* Install/Update Button */}
@@ -208,7 +210,7 @@ export function PackagesPanel() {
 
       {/* Error Message */}
       {error && (
-        <div className="mx-4 mt-3 p-3 rounded-md bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+        <div className="mx-4 mt-3 p-3 rounded-md bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 text-sm">
           {error}
         </div>
       )}
@@ -218,8 +220,8 @@ export function PackagesPanel() {
         {/* Add New Package Section */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Plus className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-semibold text-slate-200">
+            <Plus className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               Add New Package
             </h3>
           </div>
@@ -227,7 +229,7 @@ export function PackagesPanel() {
           <div className="space-y-2">
             {/* Library Combobox */}
             <div>
-              <label className="text-xs text-slate-400 block mb-1.5">
+              <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1.5">
                 Select Package
               </label>
               <Popover
@@ -239,20 +241,20 @@ export function PackagesPanel() {
                     variant="outline"
                     role="combobox"
                     aria-expanded={openLibraryCombo}
-                    className="w-full justify-between bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600"
+                    className="w-full justify-between bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-600"
                   >
                     {selectedLibrary ? selectedLibrary : 'Choose package...'}
                     <ChevronsUpDown className="w-4 h-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0 bg-slate-800 border-slate-600">
+                <PopoverContent className="w-full p-0 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600">
                   <Command>
                     <CommandInput
                       placeholder="Search packages..."
-                      className="bg-slate-700 border-slate-600 text-slate-100"
+                      className="bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100"
                     />
                     <CommandList>
-                      <CommandEmpty className="text-slate-400 py-3 text-center text-sm">
+                      <CommandEmpty className="text-slate-500 dark:text-slate-400 py-3 text-center text-sm">
                         No packages found
                       </CommandEmpty>
                       <CommandGroup>
@@ -269,7 +271,7 @@ export function PackagesPanel() {
                               setSelectedVersion('latest');
                               setOpenLibraryCombo(false);
                             }}
-                            className="text-slate-100 hover:bg-slate-700"
+                            className="text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
                             <Check
                               className={cn(
@@ -291,7 +293,7 @@ export function PackagesPanel() {
 
             {/* Version Combobox */}
             <div>
-              <label className="text-xs text-slate-400 block mb-1.5">
+              <label className="text-xs text-slate-600 dark:text-slate-400 block mb-1.5">
                 Select Version
               </label>
               <Popover
@@ -304,20 +306,20 @@ export function PackagesPanel() {
                     role="combobox"
                     aria-expanded={openVersionCombo}
                     disabled={!selectedLibrary}
-                    className="w-full justify-between bg-slate-700 border-slate-600 text-slate-100 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full justify-between bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {selectedVersion || 'Choose version...'}
                     <ChevronsUpDown className="w-4 h-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0 bg-slate-800 border-slate-600">
+                <PopoverContent className="w-full p-0 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600">
                   <Command>
                     <CommandInput
                       placeholder="Search version..."
-                      className="bg-slate-700 border-slate-600 text-slate-100"
+                      className="bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100"
                     />
                     <CommandList>
-                      <CommandEmpty className="text-slate-400 py-3 text-center text-sm">
+                      <CommandEmpty className="text-slate-500 dark:text-slate-400 py-3 text-center text-sm">
                         No versions found
                       </CommandEmpty>
                       <CommandGroup>
@@ -333,7 +335,7 @@ export function PackagesPanel() {
                               );
                               setOpenVersionCombo(false);
                             }}
-                            className="text-slate-100 hover:bg-slate-700"
+                            className="text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
                             <Check
                               className={cn(
@@ -367,29 +369,29 @@ export function PackagesPanel() {
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-slate-700 my-4" />
+        <div className="h-px bg-slate-300 dark:bg-slate-700 my-4" />
 
         {/* Installed Packages Section */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Package className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-semibold text-slate-200">
+            <Package className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               Installed Packages ({filteredLibraries.length})
             </h3>
           </div>
 
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500 dark:text-slate-400" />
             <Input
               placeholder="Search installed packages..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-9 bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500"
+              className="pl-9 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
           </div>
 
           {filteredLibraries.length === 0 ? (
-            <div className="text-center py-8 text-slate-400 text-sm">
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm">
               {libsInstalled && Object.keys(libsInstalled).length === 0
                 ? 'No packages installed yet'
                 : 'No packages match your search'}
@@ -399,15 +401,17 @@ export function PackagesPanel() {
               {filteredLibraries.map(([name, version]) => (
                 <div
                   key={name}
-                  className="group flex items-center justify-between p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 hover:border-slate-600 transition-colors"
+                  className="group flex items-center justify-between p-3 rounded-lg bg-slate-100 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
                 >
                   <div className="flex items-center gap-2 flex-1 text-left min-w-0">
-                    <Package className="w-4 h-4 text-blue-400 shrink-0" />
+                    <Package className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                     <div className="min-w-0">
-                      <div className="font-medium text-slate-100 truncate">
+                      <div className="font-medium text-slate-900 dark:text-slate-100 truncate">
                         {name}
                       </div>
-                      <div className="text-xs text-slate-400">v{version}</div>
+                      <div className="text-xs text-slate-600 dark:text-slate-400">
+                        v{version}
+                      </div>
                     </div>
                   </div>
                   <Button

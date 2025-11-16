@@ -61,12 +61,12 @@ export default function TerminalPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-gray-100">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-gray-900 text-slate-900 dark:text-gray-100">
       {/* Header with controls */}
-      <div className="flex items-center justify-between p-2 border-b border-gray-700">
+      <div className="flex items-center justify-between p-2 border-b border-slate-300 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-medium">Terminal</h3>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-slate-500 dark:text-gray-400">
             ({terminal.filteredEntries.length} / {terminal.entries.length})
           </span>
         </div>
@@ -146,16 +146,16 @@ export default function TerminalPanel() {
         className="flex-1 overflow-y-auto p-2 font-mono text-xs leading-relaxed"
       >
         {terminal.filteredEntries.length === 0 ? (
-          <div className="text-gray-500 text-center py-8">
+          <div className="text-slate-500 dark:text-gray-500 text-center py-8">
             {noneVisible ? 'No streams selected' : 'No messages'}
           </div>
         ) : (
           terminal.filteredEntries.map(entry => (
             <div
               key={entry.id}
-              className="flex gap-2 py-0.5 hover:bg-gray-800/50"
+              className="flex gap-2 py-0.5 hover:bg-slate-200 dark:hover:bg-gray-800/50"
             >
-              <span className="text-gray-500 text-xs shrink-0 w-16">
+              <span className="text-slate-500 dark:text-gray-500 text-xs shrink-0 w-16">
                 {formatTime(entry.timestamp)}
               </span>
               <span

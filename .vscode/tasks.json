@@ -1,0 +1,60 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Dev Environment",
+			"dependsOn": [
+				"Web Dev Server",
+				"Jacly Build Watch",
+				"Registry Server"
+			],
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"label": "Web Dev Server",
+			"type": "shell",
+			"command": "pnpm dev --force",
+			"options": {
+				"cwd": "${workspaceFolder:JacLy}/apps/web"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Jacly Build Watch",
+			"type": "shell",
+			"command": "pnpm build:watch",
+			"options": {
+				"cwd": "${workspaceFolder:JacLy}/packages/jacly"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Registry Server",
+			"type": "shell",
+			"command": "./generateRegistry.sh serve test-registry",
+			"options": {
+				"cwd": "${workspaceFolder:JacLy}/test/data"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		}
+	]
+}

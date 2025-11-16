@@ -2,7 +2,7 @@
 
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-theme="dark"] *));
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -79,7 +79,7 @@
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
-.dark {
+[data-theme="dark"] {
   --background: oklch(0.15 0.05 260); /* Dark blue background */
   --foreground: oklch(0.95 0.01 260); /* Light text */
   --card: oklch(0.2 0.06 260); /* Slightly lighter dark blue for cards */
