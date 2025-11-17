@@ -35,4 +35,5 @@ export async function generateTarGz(sourceDir: string, outPath: string) {
   }
 
   fs.writeFileSync(outPath, gzData);
+  console.log(`Generated tar.gz at ${outPath}`);
 }

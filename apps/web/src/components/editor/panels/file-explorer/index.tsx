@@ -366,6 +366,7 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
       // Refresh the parent directory
       const tree = await buildFileTree(`/${project.id}`);
       setFileTree(tree);
+      setContextItem(null);
 
       enqueueSnackbar(
         `${contextItem.isDirectory ? 'Folder' : 'File'} deleted successfully`,
@@ -406,6 +407,7 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
       setFileTree(tree);
 
       setRenameDialogOpen(false);
+      setContextItem(null);
       enqueueSnackbar(
         `${contextItem.isDirectory ? 'Folder' : 'File'} renamed to ${renameValueTrimmed}`,
         { variant: 'success' }
@@ -428,7 +430,7 @@ export function FileExplorerPanel({ project }: FileExplorerProps) {
                   ? 'bg-slate-200 dark:bg-slate-700'
                   : 'hover:bg-slate-100 dark:hover:bg-slate-800'
               )}
-              style={{ paddingLeft: `${depth * 16 + 8}px` }}
+              style={{ paddingLeft: `${depth * 21 + 8}px` }}
               onClick={async () => {
                 setSelectedItem(item.path);
                 await handleOpen(item);

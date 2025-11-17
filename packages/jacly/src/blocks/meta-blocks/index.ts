@@ -6,6 +6,8 @@ import proceduresConfig from './procedures.jacly.json';
 import textConfig from './text.jacly.json';
 import variablesConfig from './variables.jacly.json';
 
+import basicConfig from './basic.jacly.json';
+
 export const metaBlocks = {
   'lists.jacly.json': listsConfig,
   'logic.jacly.json': logicConfig,
@@ -14,6 +16,8 @@ export const metaBlocks = {
   'procedures.jacly.json': proceduresConfig,
   'text.jacly.json': textConfig,
   'variables.jacly.json': variablesConfig,
+
+  'basic.jacly.json': basicConfig,
 } as const;
 
 export type MetaBlocksType = typeof metaBlocks;

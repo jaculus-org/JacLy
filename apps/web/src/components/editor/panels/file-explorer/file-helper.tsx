@@ -5,12 +5,14 @@ import {
   FileImage,
   FileVideo,
   FileAudio,
+  Blocks,
 } from 'lucide-react';
 
 export function getFileIcon(fileName: string, isDirectory: boolean) {
   if (isDirectory) return null; // Will be handled separately
 
   const ext = fileName.split('.').pop()?.toLowerCase();
+  const doubleExts = fileName.toLowerCase().split('.').slice(-2).join('.');
   const iconProps = { size: 16, className: 'text-blue-400' };
 
   switch (ext) {
@@ -29,6 +31,9 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
     case 'xml':
     case 'html':
     case 'css':
+      if (doubleExts === 'jacly.json') {
+        return <Blocks {...iconProps} className="text-orange-400" />;
+      }
       return <FileText {...iconProps} className="text-green-400" />;
     case 'png':
     case 'jpg':
@@ -44,6 +49,8 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
     case 'wav':
     case 'ogg':
       return <FileAudio {...iconProps} className="text-pink-400" />;
+    case 'jacly':
+      return <Blocks {...iconProps} className="text-orange-400" />;
     default:
       return <File {...iconProps} />;
   }

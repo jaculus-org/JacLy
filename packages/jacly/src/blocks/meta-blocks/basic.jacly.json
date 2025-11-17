@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "author": "Jakub Andrysek",
+  "github": "https://github.com/JakubAndrysek",
+  "license": "MIT",
+
+  "type": "basic",
+  "name": "Basic",
+  "description": "Basic task control blocks.",
+  "docs": "/docs/blocks/basic",
+  "color": "#FF6B35",
+  "categorystyle": "basic_category",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "basic_onStart",
+      "message0": "on start",
+      "args0": [
+        {
+          "type": "input_statement",
+          "name": "CODE",
+          "check": "Function"
+        }
+      ],
+      "tooltip": "Run code when the program starts",
+      "code": "basic.onStart(async () => {\n$[CODE]\n});"
+    },
+    {
+      "kind": "block",
+      "type": "basic_forever",
+      "message0": "forever",
+      "args0": [
+        {
+          "type": "input_statement",
+          "name": "CODE",
+          "check": "Function"
+        }
+      ],
+      "tooltip": "Run code repeatedly in the background",
+      "code": "basic.forever(async () => {\n$[CODE]\n});"
+    },
+    {
+      "kind": "block",
+      "type": "basic_pause",
+      "message0": "pause (ms) $[TIME]",
+      "args0": [
+        {
+          "type": "input_value",
+          "name": "TIME",
+          "check": "Number",
+          "defaultType": "Number",
+          "defaultValue": 1000,
+          "visual": "shadow"
+        }
+      ],
+      "tooltip": "Pause execution for the specified time in milliseconds",
+      "code": "await pause($[TIME]);",
+      "previousStatement": null,
+      "nextStatement": null
+    }
+  ]
+}

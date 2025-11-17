@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
 import { BlocklyWorkspace } from '@kuband/react-blockly';
@@ -7,7 +7,7 @@ import { darkTheme, lightTheme, Theme } from './theme';
 import { WorkspaceSvg } from 'blockly';
 import { JaclyBlocks } from '@/blocks';
 import { LoadingEditor } from './loading';
-import ConfigFiles from './config';
+import { applyBlockRules } from './blockRules';
 
 interface EditorProps {
   theme: Theme;
@@ -16,15 +16,23 @@ interface EditorProps {
 
 export function JaclyEditor({ theme, jaclyBlocks }: EditorProps) {
   const [toolboxConfiguration, setToolboxConfiguration] =
-    useState<Blockly.utils.toolbox.ToolboxDefinition | null>(
-      ConfigFiles.INITIAL_TOOLBOX_JSON
-    );
-  // const [toolboxConfiguration, ] =
-  //   useState<Blockly.utils.toolbox.ToolboxInfo>(ConfigFiles.INITIAL_TOOLBOX_JSON);
+    useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
+
+  // prevent recursive application of block rules
+  const isApplyingBlockRulesRef = useRef(false);
+
+  const enforceEntryBlockRules = useCallback((workspace: WorkspaceSvg) => {
+    isApplyingBlockRulesRef.current = true;
+    try {
+      applyBlockRules(workspace);
+    } finally {
+      isApplyingBlockRulesRef.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     async function loadToolbox() {
-      const config = await jaclyBlocks.loadLibs([]);
+      const config = await jaclyBlocks.loadLibs();
       setToolboxConfiguration(config);
     }
 
@@ -33,9 +41,11 @@ export function JaclyEditor({ theme, jaclyBlocks }: EditorProps) {
 
   const onWorkspaceChange = useCallback(
     async (workspace: WorkspaceSvg) => {
-      // workspace.registerButtonCallback('myFirstButtonPressed', () => {
-      //   alert('button is pressed');
-      // });
+      if (isApplyingBlockRulesRef.current) {
+        return;
+      }
+
+      enforceEntryBlockRules(workspace);
       jaclyBlocks.saveJaclyProject(
         Blockly.serialization.workspaces.save(workspace)
       );
@@ -43,7 +53,7 @@ export function JaclyEditor({ theme, jaclyBlocks }: EditorProps) {
       console.log('Generated code:', code);
       jaclyBlocks.saveGeneratedCode(code);
     },
-    [jaclyBlocks]
+    [enforceEntryBlockRules, jaclyBlocks]
   );
 
   const onJsonChange = useCallback(

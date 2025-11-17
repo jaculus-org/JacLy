@@ -7,7 +7,9 @@ export const getRequest: RequestFunction = async (
   libFile: string
 ): Promise<Uint8Array> => {
   if (baseUri.startsWith('http://') || baseUri.startsWith('https://')) {
-    const response = await fetch(new URL(libFile, baseUri));
+    const response = await fetch(new URL(libFile, baseUri), {
+      cache: 'no-store',
+    });
     console.log(response);
     if (!response.ok) {
       throw new Error(

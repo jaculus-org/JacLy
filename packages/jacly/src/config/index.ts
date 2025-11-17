@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { zodToJsonSchema } from '@alcyone-labs/zod-to-json-schema';
-// import * as Blockly from 'blockly';
 
 const SemVer = z.string().regex(/^\d+\.\d+\.\d+$/, 'version must be x.y.z');
 const Url = z.url('must be a valid URL');
@@ -23,16 +22,28 @@ const BlocklyColour = z.union([
     ),
 ]);
 
+const JaclyArgsType = z.enum(['input_value', 'input_statement']);
+const DefaultType = z.enum(['Number', 'String', 'Boolean', 'Array', 'Object']);
+
+const JaclyArgs = z.object({
+  type: JaclyArgsType,
+  name: Identifier.uppercase('name must be uppercase identifier'),
+  check: z.string().optional(),
+
+  defaultType: DefaultType.optional(),
+  defaultValue: z.any().optional(),
+  visual: z.enum(['shadow', 'block']).optional(),
+});
+
 export const JaclyBlockSchema = z.object({
-  //   name: Identifier.nonempty('block name is required'),
-  //   message: z.string().min(2).max(500),
-  //   tooltip: z.string().min(2).max(500),
-  //   previousStatement: z.string().min(2).max(100).optional(),
-  //   nextStatement: z.string().min(2).max(100).optional(),
-  //   args: z.array(JaclyArgumentSchema).min(1),
-  //   code: z.string().min(2).max(500),
   kind: z.enum(['block', 'category', 'separator']),
   type: Identifier.nonempty('type is required'),
+  message0: z.string().optional(),
+  args0: z.array(JaclyArgs).optional(),
+  tooltip: z.string().optional(),
+  code: z.string().optional(),
+  previousStatement: z.union([z.string(), z.null()]).optional(),
+  nextStatement: z.union([z.string(), z.null()]).optional(),
 });
 
 export const JaclyConfigSchema = z.object({
