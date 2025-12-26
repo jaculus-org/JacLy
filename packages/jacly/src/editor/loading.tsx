@@ -1,58 +1,33 @@
 export function LoadingEditor() {
   return (
-    <div className="h-full w-full bg-linear-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
-      {/* Main container */}
-      <div className="flex flex-col items-center gap-8">
-        {/* Animated logo/icon */}
-        <div className="relative w-20 h-20">
-          {/* Outer rotating ring */}
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-blue-500 dark:border-t-blue-500 dark:border-r-blue-400 animate-spin" />
+    <div className="h-full w-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-6">
+        {/* Modern spinner */}
+        <div className="relative w-16 h-16">
+          {/* Outer ring */}
+          <div className="absolute inset-0 rounded-full border-[3px] border-slate-200 dark:border-slate-800" />
 
-          {/* Middle rotating ring (reversed) */}
-          <div className="absolute inset-2 rounded-full border-4 border-transparent border-b-purple-600 border-l-purple-500 dark:border-b-purple-500 dark:border-l-purple-400 animate-spin-reverse" />
+          {/* Animated arc */}
+          <div
+            className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-blue-600 dark:border-t-blue-500 animate-spin"
+            style={{ animationDuration: '0.8s' }}
+          />
 
-          {/* Inner pulsing circle */}
-          <div className="absolute inset-4 rounded-full bg-linear-to-br from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 animate-pulse" />
+          {/* Inner dot */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500 animate-pulse" />
+          </div>
         </div>
 
-        {/* Loading text with animation */}
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
-            Initializing Editor
+        {/* Loading text */}
+        <div className="text-center space-y-1">
+          <h2 className="text-xl font-medium text-slate-900 dark:text-white">
+            Loading Editor
           </h2>
-          <p className="text-slate-700 dark:text-slate-300 text-sm">
-            <span className="inline-block">Loading filesystem</span>
-            <span className="inline-block ml-1">
-              <span className="inline-block w-1 h-1 bg-slate-700 dark:bg-slate-300 rounded-full animate-bounce" />
-              <span
-                className="inline-block w-1 h-1 bg-slate-700 dark:bg-slate-300 rounded-full animate-bounce"
-                style={{ animationDelay: '0.2s' }}
-              />
-              <span
-                className="inline-block w-1 h-1 bg-slate-700 dark:bg-slate-300 rounded-full animate-bounce"
-                style={{ animationDelay: '0.4s' }}
-              />
-            </span>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Please wait...
           </p>
         </div>
-
-        {/* Progress bar */}
-        <div className="w-64 h-1 bg-slate-300 dark:bg-slate-700 rounded-full overflow-hidden">
-          <div className="h-full bg-linear-to-r from-blue-600 via-purple-600 to-blue-600 dark:from-blue-500 dark:via-purple-500 dark:to-blue-500 rounded-full animate-pulse" />
-        </div>
-      </div>
-
-      {/* Floating background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400 dark:bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div
-          className="absolute top-40 right-10 w-72 h-72 bg-purple-400 dark:bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"
-          style={{ animationDelay: '2s' }}
-        />
-        <div
-          className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-400 dark:bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"
-          style={{ animationDelay: '4s' }}
-        />
       </div>
     </div>
   );

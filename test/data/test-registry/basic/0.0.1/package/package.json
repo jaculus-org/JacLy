@@ -1,0 +1,17 @@
+{
+    "name": "basic",
+    "version": "1.0.0",
+    "author": "Jakub Andrysek",
+    "license": "MIT",
+    "description": "Basic task package",
+    "type": "module",
+    "main": "dist/js/index.js",
+    "types": "dist/types/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "clean": "rm -rf dist"
+    },
+    "jaculus": {
+        "blocks": "blocks"
+    }
+}

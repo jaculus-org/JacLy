@@ -40,11 +40,17 @@ export async function loadPackageUri(
   const isGzipped = gz.length >= 2 && gz[0] === 0x1f && gz[1] === 0x8b;
   const archiveData = isGzipped ? pako.ungzip(gz) : gz;
 
+  // Extract the tar archive, remove prefix /package from all entries
   for await (const entry of Archive.read(archiveData)) {
+    let fileName = entry.fileName;
+    if (fileName.startsWith('package/')) {
+      fileName = fileName.slice('package/'.length);
+    }
+
     if (entry.isDirectory()) {
-      dirs.push(entry.fileName);
+      dirs.push(fileName);
     } else if (entry.isFile()) {
-      files[entry.fileName] = entry.content!;
+      files[fileName] = entry.content!;
     }
   }
 

@@ -20,8 +20,7 @@ import {
 import { enqueueSnackbar } from 'notistack';
 import { NewProjectButton } from './new-project-button';
 import { deleteProject, getProjects } from '@/lib/projects/project-manager';
-
-export type JaclyProjectType = 'jacly' | 'code';
+import type { JaculusProjectType } from '@jaculus/project';
 
 export type JacProject = {
   name: string;
@@ -31,7 +30,7 @@ export type JacProject = {
   isStarred: boolean;
   archived: Date | null;
   jaculusVersion: string;
-  type: JaclyProjectType;
+  type: JaculusProjectType;
   folderStructure?: Record<string, boolean>;
 };
 

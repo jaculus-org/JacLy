@@ -2,7 +2,6 @@ import { JaclyConfigSchema } from '../config';
 import { FSInterface, FSPromisesInterface } from '@jaculus/project/fs';
 import * as Blockly from 'blockly/core';
 import { z } from 'zod';
-import { metaBlocks } from './meta-blocks/index.js';
 import { registerBlocklyJs } from './generator';
 
 type ToolboxItemInfo = Blockly.utils.toolbox.ToolboxItemInfo;
@@ -10,13 +9,11 @@ type ToolboxInfo = Blockly.utils.toolbox.ToolboxInfo;
 
 const GENERATED_CODE_PATH = 'build/index.js';
 const JACLY_PROJECT_PATH = 'src/index.jacly';
-const emptyToolbox: ToolboxInfo = {
-  kind: 'categoryToolbox',
-  contents: [],
-};
 
 export class JaclyBlocks {
   private fsp: FSPromisesInterface;
+  // Add a map to track library types to their imports
+  private libToImports: Map<string, string[]> = new Map();
 
   constructor(
     private urlPrefix: string,
@@ -39,7 +36,11 @@ export class JaclyBlocks {
   }
 
   async saveGeneratedCode(code: string) {
-    return this.fsp.writeFile(this.getFilePath(GENERATED_CODE_PATH), code);
+    const path = this.getFilePath(GENERATED_CODE_PATH);
+    if (!this.fs.existsSync(path)) {
+      await this.fsp.mkdir(this.urlPrefix + '/build', { recursive: true });
+    }
+    return this.fsp.writeFile(path, code);
   }
 
   async saveJaclyProject(json: object) {
@@ -58,86 +59,26 @@ export class JaclyBlocks {
     }
   }
 
-  async loadLibs(): Promise<ToolboxInfo> {
-    let toolbox: ToolboxInfo = emptyToolbox;
-    toolbox.contents = await this.loadMetaLibs();
-    const fileLibs = await this.loadFileLibs(await this.jacLyFilesPromise);
-    toolbox.contents = toolbox.contents.concat(fileLibs);
-    return toolbox;
-  }
-
-  async loadMetaLibs(): Promise<ToolboxItemInfo[]> {
-    let items: ToolboxItemInfo[] = [];
-
-    // Load meta-blocks from imported modules (works in both web and Node.js)
-    try {
-      for (const [fileName, fileContent] of Object.entries(metaBlocks)) {
-        const libItems = await this.loadMetaLib(fileName, fileContent);
-        items.push(libItems);
-      }
-    } catch (error) {
-      console.error(`Error loading meta libraries: ${error}`);
-    }
-
-    return items;
-  }
-
-  async loadMetaLib(
-    fileName: string,
-    fileContent: object
-  ): Promise<ToolboxItemInfo> {
-    const result = JaclyConfigSchema.safeParse(fileContent);
-    if (result.success) {
-      const libJson = result.data;
-
-      if (libJson.contents !== undefined) {
-        for (const block of libJson.contents) {
-          if (block.message0 !== undefined) {
-            await registerBlocklyJs(
-              block,
-              libJson.color,
-              libJson.categorystyle
-            );
-          }
+  async loadLibs(loadedLibs: Set<string>): Promise<ToolboxInfo> {
+    let toolbox: ToolboxInfo = {
+      kind: 'categoryToolbox',
+      contents: [],
+    };
+    const libFiles = await this.jacLyFilesPromise;
+    for (const libFile of libFiles) {
+      const fileLib = await this.loadFileLib(libFile);
+      // Check if the library name is already loaded
+      if ('name' in fileLib && typeof fileLib.name === 'string') {
+        if (!loadedLibs.has(fileLib.name)) {
+          toolbox.contents = toolbox.contents.concat(fileLib);
+          loadedLibs.add(fileLib.name);
         }
-
-        let toolboxInfo: ToolboxItemInfo = {
-          kind: 'category',
-          name: libJson.name,
-          contents: libJson.contents,
-          // Set category color so the UI can show proper colors in the toolbox
-          colour: libJson.color,
-        };
-
-        return toolboxInfo;
-      } else if (libJson.custom !== undefined) {
-        let toolboxInfo: ToolboxItemInfo = {
-          kind: 'category',
-          name: libJson.name,
-          custom: libJson.custom,
-        };
-        return toolboxInfo;
       } else {
-        throw new Error(
-          `Jacly config in file ${fileName} must have either 'contents' or 'custom' property.`
-        );
+        // If no name, add it anyway (or handle as needed)
+        toolbox.contents = toolbox.contents.concat(fileLib);
       }
-    } else {
-      console.error(
-        `Invalid Jacly config in file ${fileName}:`,
-        z.prettifyError(result.error)
-      );
     }
-    throw new Error(`Invalid Jacly config in file ${fileName}`);
-  }
-
-  async loadFileLibs(jaclyFiles: string[]): Promise<ToolboxItemInfo[]> {
-    let items: ToolboxItemInfo[] = [];
-    for (const libFile of jaclyFiles) {
-      const libItems = await this.loadFileLib(libFile);
-      items = items.concat(libItems);
-    }
-    return items;
+    return toolbox;
   }
 
   async loadFileLib(libFile: string): Promise<ToolboxItemInfo> {
@@ -146,11 +87,13 @@ export class JaclyBlocks {
     }
 
     try {
-      debugger;
       const fileContent = this.fs.readFileSync(libFile, 'utf-8');
       const result = JaclyConfigSchema.safeParse(JSON.parse(fileContent));
       if (result.success) {
         const libJson = result.data;
+
+        // Track the library type to its imports
+        this.libToImports.set(libJson.category, libJson.libraries || []);
 
         if (libJson.contents !== undefined) {
           // Register blocks
@@ -158,7 +101,7 @@ export class JaclyBlocks {
             if (block.message0 !== undefined) {
               await registerBlocklyJs(
                 block,
-                libJson.color,
+                libJson.colour,
                 libJson.categorystyle
               );
             }
@@ -169,7 +112,7 @@ export class JaclyBlocks {
             name: libJson.name,
             contents: libJson.contents,
             // Set category color so the UI can show proper colors in the toolbox
-            colour: libJson.color,
+            colour: libJson.colour,
           };
           return toolboxInfo;
         } else if (libJson.custom !== undefined) {
@@ -195,5 +138,21 @@ export class JaclyBlocks {
       console.error(`Error loading library file ${libFile}: ${error}`);
       throw error;
     }
+  }
+
+  getImportsForBlocks(blockTypes: string[]): string[] {
+    const importsSet = new Set<string>();
+    const libraryTypes = new Set<string>();
+    for (const type of blockTypes) {
+      const libType = type.split('_')[0];
+      libraryTypes.add(libType);
+    }
+    for (const libType of libraryTypes) {
+      const libs = this.libToImports.get(libType);
+      if (libs) {
+        libs.forEach((lib: string) => importsSet.add(lib));
+      }
+    }
+    return Array.from(importsSet);
   }
 }

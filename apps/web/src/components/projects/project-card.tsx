@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 interface ProjectCardProps {
   title: string;
   description: string;
+  icon?: React.ReactNode;
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -17,6 +18,7 @@ interface ProjectCardProps {
 export function ProjectCard({
   title,
   description,
+  icon,
   isSelected,
   onSelect,
 }: ProjectCardProps) {
@@ -30,7 +32,10 @@ export function ProjectCard({
     >
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          {title}
+          <div className="flex items-center gap-2">
+            {icon}
+            {title}
+          </div>
           {isSelected && <CheckCircle className="h-5 w-5 text-primary" />}
         </CardTitle>
         <CardDescription>{description}</CardDescription>

@@ -1,37 +1,75 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { JaclyProjectType } from './projects-list';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import {
   createNewProject,
   getProjectDbName,
   saveProject,
   type JaclyProject,
 } from '@/lib/projects/project-manager';
+import { BlocksIcon, Code2Icon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { loadPackageUri } from '@/lib/projects/request';
 import { Writable } from 'node:stream';
 import logger from '@/lib/logger';
-import { Project } from '@jaculus/project';
+import { Project, type JaculusProjectType } from '@jaculus/project';
 import { configure, fs } from '@zenfs/core';
 import type { FSInterface } from '@jaculus/project/fs';
 import { ProjectCard } from './project-card';
 import { IndexedDB } from '@zenfs/dom';
 
+interface JaculusProjectOptions {
+  id: JaculusProjectType;
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
+  templateUrl: string;
+}
+
+const projectOptions: JaculusProjectOptions[] = [
+  {
+    id: 'jacly',
+    title: 'Jacly Blocks Project',
+    icon: <BlocksIcon />,
+    description: "Design your project using Jacly's visual blocks.",
+    templateUrl: 'http://localhost:3737/jacly-template/1.0.0/package.tar.gz',
+  },
+  {
+    id: 'code',
+    title: 'Jaculus Code Project',
+    description: 'Code your project directly in TypeScript.',
+    icon: <Code2Icon />,
+    templateUrl: 'http://localhost:3737/jaculus-template/1.0.0/package.tar.gz',
+  },
+];
+
 export function NewProject() {
   const navigate = useNavigate();
-  const [projectName, setProjectName] = useState('');
-  const [projectType, setProjectType] = useState<JaclyProjectType>('jacly');
-  const [newProjectConf, setNewProjectConf] = useState<JaclyProject | null>(
-    null
+  const [projectName, setProjectName] = useState('demo-project');
+  const [projectOption, setProjectOption] = useState<JaculusProjectOptions>(
+    projectOptions[0]
   );
+  const [isCreating, setIsCreating] = useState(false);
 
-  useEffect(() => {
-    if (!newProjectConf) return;
+  async function handleProjectCreation() {
+    const newProject = createNewProject(projectName, projectOption.id);
+    if (!newProject) {
+      enqueueSnackbar('Failed to create project. Project ID already exist.', {
+        variant: 'error',
+      });
+      return;
+    }
+    setIsCreating(true);
 
-    async function finishCreation(projectConf: JaclyProject) {
-      const pkg = await loadPackageUri('/project.tar.gz');
+    try {
+      const pkg = await loadPackageUri(projectOption.templateUrl);
       logger?.info(`Pkg loaded with ${Object.keys(pkg.files).length} files`);
 
       function writableErr(): Writable {
@@ -54,57 +92,42 @@ export function NewProject() {
         return stream;
       }
 
-      try {
-        await configure({
-          mounts: {
-            [`/${projectConf.id}`]: {
-              backend: IndexedDB,
-              storeName: getProjectDbName(projectConf.id),
-            },
+      await configure({
+        mounts: {
+          [`/${newProject.id}`]: {
+            backend: IndexedDB,
+            storeName: getProjectDbName(newProject.id),
           },
-        });
+        },
+      });
 
-        const project = new Project(
-          fs as unknown as FSInterface,
-          `/${projectConf.id}`,
-          writableOut(),
-          writableErr()
-        );
-        await project.createFromPackage(pkg, false, false);
-
-        const rootDirs = await fs.promises.readdir('/' + projectConf.id);
-        logger?.info('Project root directories:' + rootDirs);
-
-        saveProject(newProjectConf as JaclyProject);
-        enqueueSnackbar('Project created successfully!', {
-          variant: 'success',
-        });
-        navigate({
-          to: '/editor/$projectId',
-          params: { projectId: projectConf.id! },
-        });
-      } catch (err) {
-        logger?.error('Error creating project from package:' + err);
-        enqueueSnackbar(`Error creating project: ${(err as Error).message}`, {
-          variant: 'error',
-        });
-      }
-    }
-
-    finishCreation(newProjectConf);
-  }, [newProjectConf, navigate]);
-
-  async function createProjectHelper() {
-    const newProject = createNewProject(projectName, projectType);
-    if (!newProject) {
-      enqueueSnackbar(
-        'Failed to create project. Project ID may already exist.',
-        { variant: 'error' }
+      const project = new Project(
+        fs as unknown as FSInterface,
+        `/${newProject.id}`,
+        writableOut(),
+        writableErr()
       );
-      return;
-    }
+      await project.createFromPackage(pkg, false, false);
 
-    setNewProjectConf(newProject);
+      const rootDirs = await fs.promises.readdir('/' + newProject.id);
+      logger?.info('Project root directories:' + rootDirs);
+
+      saveProject(newProject);
+      enqueueSnackbar('Project created successfully!', {
+        variant: 'success',
+      });
+      navigate({
+        to: '/editor/$projectId',
+        params: { projectId: newProject.id! },
+      });
+    } catch (err) {
+      logger?.error('Error creating project from package:' + err);
+      enqueueSnackbar(`Error creating project: ${(err as Error).message}`, {
+        variant: 'error',
+      });
+    } finally {
+      setIsCreating(false);
+    }
   }
 
   return (
@@ -130,23 +153,58 @@ export function NewProject() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Project Type</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ProjectCard
-              title="Jacly Project"
-              description="A project using the Jacly framework."
-              isSelected={projectType === 'jacly'}
-              onSelect={() => setProjectType('jacly')}
-            />
-            <ProjectCard
-              title="Jaculus Project"
-              description="A standard Jaculus project."
-              isSelected={projectType === 'code'}
-              onSelect={() => setProjectType('code')}
-            />
+            {projectOptions.map(type => (
+              <ProjectCard
+                key={type.id}
+                title={type.title}
+                description={type.description}
+                isSelected={projectOption?.id === type.id}
+                onSelect={() => setProjectOption(type)}
+                icon={type.icon}
+              />
+            ))}
           </div>
         </div>
 
-        <Button onClick={createProjectHelper} className="w-full">
-          Create Project
+        <Accordion type="single" collapsible>
+          <AccordionItem value="advanced">
+            <AccordionTrigger>Advanced Settings</AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="templateUrl"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Template URL (optional)
+                  </label>
+                  <Input
+                    id="templateUrl"
+                    value={projectOption.templateUrl}
+                    onChange={e => {
+                      setProjectOption({
+                        ...projectOption,
+                        templateUrl: e.target.value,
+                      });
+                    }}
+                    className="text-sm"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Leave empty to use the default template for the selected
+                    project type.
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <Button
+          onClick={handleProjectCreation}
+          className="w-full"
+          disabled={isCreating}
+        >
+          {isCreating ? 'Creating...' : 'Create Project'}
         </Button>
       </div>
     </div>

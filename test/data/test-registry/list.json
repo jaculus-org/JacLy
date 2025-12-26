@@ -6,6 +6,9 @@
         "id": "led-strip"
     },
     {
-        "id": "color"
+        "id": "colour"
+    },
+    {
+        "id": "basic"
     }
 ]

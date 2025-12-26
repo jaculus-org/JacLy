@@ -258,32 +258,36 @@ export function PackagesPanel() {
                         No packages found
                       </CommandEmpty>
                       <CommandGroup>
-                        {libsRegistry.map(lib => (
-                          <CommandItem
-                            key={lib}
-                            value={lib}
-                            onSelect={currentValue => {
-                              setSelectedLibrary(
-                                currentValue === selectedLibrary
-                                  ? ''
-                                  : currentValue
-                              );
-                              setSelectedVersion('latest');
-                              setOpenLibraryCombo(false);
-                            }}
-                            className="text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
-                          >
-                            <Check
-                              className={cn(
-                                'mr-2 h-4 w-4',
-                                selectedLibrary === lib
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
-                            />
-                            {lib}
-                          </CommandItem>
-                        ))}
+                        {libsRegistry
+                          .filter(
+                            lib => !libsInstalled || !(lib in libsInstalled)
+                          )
+                          .map(lib => (
+                            <CommandItem
+                              key={lib}
+                              value={lib}
+                              onSelect={currentValue => {
+                                setSelectedLibrary(
+                                  currentValue === selectedLibrary
+                                    ? ''
+                                    : currentValue
+                                );
+                                setSelectedVersion('latest');
+                                setOpenLibraryCombo(false);
+                              }}
+                              className="text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  selectedLibrary === lib
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                                )}
+                              />
+                              {lib}
+                            </CommandItem>
+                          ))}
                       </CommandGroup>
                     </CommandList>
                   </Command>

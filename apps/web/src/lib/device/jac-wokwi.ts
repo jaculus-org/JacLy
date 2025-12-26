@@ -36,7 +36,7 @@
 //       "id": "led1",
 //       "top": 102,
 //       "left": 119.4,
-//       "attrs": { "color": "red", "flip": "1", "builder": "esp-idf" }
+//       "attrs": { "colour": "red", "flip": "1", "builder": "esp-idf" }
 //     }
 //   ],
 //   "connections": [

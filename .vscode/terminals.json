@@ -1,0 +1,39 @@
+{
+  "autorun": true,
+  "terminals": [
+    {
+      "name": "Web Dev Server",
+      "description": "Development server for web app",
+      "focus": false,
+      "icon": "globe",
+      "command": "cd [workspaceFolder]/apps/web && pnpm dev --force"
+    },
+    {
+      "name": "Jacly Build Watch",
+      "description": "Build watcher for Jacly package",
+      "focus": false,
+      "icon": "refresh",
+      "command": "cd [workspaceFolder]/packages/jacly && pnpm build:watch"
+    },
+    {
+      "name": "Jaculus/Project Build Watch",
+      "description": "Build watcher for Jaculus Project package",
+      "focus": false,
+      "icon": "refresh",
+      "commands": [ // Multiple commands to run
+        "cd ../Jaculus-tools/packages/project",
+        "pnpm build:watch"
+      ]
+    },
+    {
+      "name": "Registry Server",
+      "description": "Registry server for testing",
+      "focus": true,
+      "icon": "broadcast",
+      "commands": [ // Multiple commands to run
+        "cd ../Jaculus-libraries",
+        "jaculus-registry serve ."
+      ]
+    }
+  ]
+}

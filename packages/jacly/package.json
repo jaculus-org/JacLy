@@ -6,7 +6,6 @@
   "type": "module",
   "files": [
     "dist",
-    "src/blocks/meta-blocks",
     "README.md",
     "LICENSE"
   ],
@@ -21,11 +20,6 @@
       "import": "./dist/blocks/index.js",
       "default": "./dist/blocks/index.js"
     },
-    "./blocks/meta-blocks": {
-      "types": "./dist/blocks/meta-blocks/index.d.ts",
-      "import": "./dist/blocks/meta-blocks/index.js",
-      "default": "./dist/blocks/meta-blocks/index.js"
-    },
     "./project": {
       "types": "./dist/project/index.d.ts",
       "import": "./dist/project/index.js",
@@ -38,7 +32,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && cp -r src/blocks/meta-blocks dist/blocks/meta-blocks",
+    "build": "tsc",
     "build:watch": "tsc --watch",
     "type-check": "tsc --noEmit",
     "lint": "echo 'No linting configured for this package'",

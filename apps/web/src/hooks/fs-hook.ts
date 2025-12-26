@@ -44,7 +44,7 @@ export function useWebFs(projectId: string) {
           error instanceof Error &&
           error.message.includes('Mount point is already in use')
         ) {
-          console.warn('Filesystem already mounted for project:', projectId);
+          // console.warn('Filesystem already mounted for project:', projectId);
           setMounted(true);
         } else {
           console.error('Failed to mount filesystem:', error);
