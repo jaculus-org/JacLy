@@ -9,28 +9,6 @@
     "README.md",
     "LICENSE"
   ],
-  "exports": {
-    "./editor": {
-      "types": "./dist/editor/index.d.ts",
-      "import": "./dist/editor/index.js",
-      "default": "./dist/editor/index.js"
-    },
-    "./blocks": {
-      "types": "./dist/blocks/index.d.ts",
-      "import": "./dist/blocks/index.js",
-      "default": "./dist/blocks/index.js"
-    },
-    "./project": {
-      "types": "./dist/project/index.d.ts",
-      "import": "./dist/project/index.js",
-      "default": "./dist/project/index.js"
-    },
-    "./config": {
-      "types": "./dist/config/index.d.ts",
-      "import": "./dist/config/index.js",
-      "default": "./dist/config/index.js"
-    }
-  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -50,11 +28,7 @@
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
-    "@obsidize/tar-browserify": "^6.3.2",
-    "@zenfs/core": "^2.4.2",
-    "@zenfs/dom": "^1.2.5",
     "blockly": "^12.3.1",
-    "fflate": "^0.8.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.1.12"
@@ -72,20 +46,5 @@
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "vite": "^7.1.12"
-  },
-  "peerDependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "blockly": {
-      "optional": true
-    }
   }
 }

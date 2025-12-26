@@ -1,23 +1,24 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { Header } from '@/components/layout/header';
-import { Page404 } from '@/components/404/404';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { AppProviders } from '../providers/app-provider';
+import { NotFoundPage } from './not-found-page';
+import type { RouterContext } from '../router/router-context';
 // import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 function RootLayout() {
   return (
-    <div className="min-h-screen bg-blue-50 text-blue-900 transition-colors duration-300 ease-in-out dark:bg-slate-900 dark:text-slate-100">
-      <Header />
+    <AppProviders>
+      <div className="min-h-screen bg-blue-50 text-blue-900 transition-colors duration-300 ease-in-out dark:bg-slate-900 dark:text-slate-100">
+        <main>
+          <Outlet />
+        </main>
 
-      <main>
-        <Outlet />
-      </main>
-
-      {/* <TanStackRouterDevtools /> */}
-    </div>
+        {/* <TanStackRouterDevtools /> */}
+      </div>
+    </AppProviders>
   );
 }
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
-  notFoundComponent: Page404,
+  notFoundComponent: NotFoundPage,
 });

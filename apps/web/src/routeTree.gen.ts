@@ -9,115 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EditorIndexRouteImport } from './routes/editor/index'
-import { Route as EditorNewRouteImport } from './routes/editor/new'
-import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const R404Route = R404RouteImport.update({
-  id: '/404',
-  path: '/404',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EditorIndexRoute = EditorIndexRouteImport.update({
-  id: '/editor/',
-  path: '/editor/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EditorNewRoute = EditorNewRouteImport.update({
-  id: '/editor/new',
-  path: '/editor/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EditorProjectIdRoute = EditorProjectIdRouteImport.update({
-  id: '/editor/$projectId',
-  path: '/editor/$projectId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/404': typeof R404Route
-  '/about': typeof AboutRoute
-  '/editor/$projectId': typeof EditorProjectIdRoute
-  '/editor/new': typeof EditorNewRoute
-  '/editor': typeof EditorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/404': typeof R404Route
-  '/about': typeof AboutRoute
-  '/editor/$projectId': typeof EditorProjectIdRoute
-  '/editor/new': typeof EditorNewRoute
-  '/editor': typeof EditorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/404': typeof R404Route
-  '/about': typeof AboutRoute
-  '/editor/$projectId': typeof EditorProjectIdRoute
-  '/editor/new': typeof EditorNewRoute
-  '/editor/': typeof EditorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/404'
-    | '/about'
-    | '/editor/$projectId'
-    | '/editor/new'
-    | '/editor'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/404' | '/about' | '/editor/$projectId' | '/editor/new' | '/editor'
-  id:
-    | '__root__'
-    | '/'
-    | '/404'
-    | '/about'
-    | '/editor/$projectId'
-    | '/editor/new'
-    | '/editor/'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  R404Route: typeof R404Route
-  AboutRoute: typeof AboutRoute
-  EditorProjectIdRoute: typeof EditorProjectIdRoute
-  EditorNewRoute: typeof EditorNewRoute
-  EditorIndexRoute: typeof EditorIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/404': {
-      id: '/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof R404RouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -125,37 +48,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/editor/': {
-      id: '/editor/'
-      path: '/editor'
-      fullPath: '/editor'
-      preLoaderRoute: typeof EditorIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editor/new': {
-      id: '/editor/new'
-      path: '/editor/new'
-      fullPath: '/editor/new'
-      preLoaderRoute: typeof EditorNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editor/$projectId': {
-      id: '/editor/$projectId'
-      path: '/editor/$projectId'
-      fullPath: '/editor/$projectId'
-      preLoaderRoute: typeof EditorProjectIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  R404Route: R404Route,
-  AboutRoute: AboutRoute,
-  EditorProjectIdRoute: EditorProjectIdRoute,
-  EditorNewRoute: EditorNewRoute,
-  EditorIndexRoute: EditorIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

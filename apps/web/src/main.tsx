@@ -1,32 +1,19 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
-import SnackbarProviderCustom from './providers/snackbar-provider';
-import { ThemeProvider } from './providers/theme-provider';
-import { HeaderProvider } from './providers/header-provider';
-import { routeTree } from './routeTree.gen';
+import { RouterProvider } from '@tanstack/react-router';
+import { makeRouterContext } from './router/router-context';
+import { makeRouter } from './router/router';
 import './index.css';
 
-const router = createRouter({ routeTree });
+async function bootstrap() {
+  const context = makeRouterContext();
+  const router = makeRouter(context);
 
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-  }
-}
-
-const rootElement = document.getElementById('root')!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
+  ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <SnackbarProviderCustom>
-        <ThemeProvider>
-          <HeaderProvider>
-            <RouterProvider router={router} />
-          </HeaderProvider>
-        </ThemeProvider>
-      </SnackbarProviderCustom>
+      <RouterProvider router={router} />
     </StrictMode>
   );
 }
+
+bootstrap();
