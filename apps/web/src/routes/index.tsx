@@ -1,3 +1,4 @@
+import { GeneralHeader } from '@/features/shared/components/custom/general-header';
 import { createFileRoute } from '@tanstack/react-router';
 // import { Card, CardContent } from '@/components/ui/card';
 // import { Button } from '@/components/ui/button';
@@ -27,7 +28,7 @@ function Root() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-secondary/20">
-      asd
+      <GeneralHeader />
     </div>
   );
 }

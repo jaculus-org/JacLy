@@ -9,6 +9,13 @@
     "README.md",
     "LICENSE"
   ],
+  "exports": {
+    "./editor": {
+      "types": "./dist/editor/index.d.ts",
+      "import": "./dist/editor/index.js",
+      "default": "./dist/editor/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",

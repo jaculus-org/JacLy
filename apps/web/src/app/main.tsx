@@ -1,9 +1,10 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from '@tanstack/react-router';
-import { makeRouterContext } from './router/router-context';
-import { makeRouter } from './router/router';
-import './index.css';
+import { makeRouterContext } from '@/router/router-context';
+import { makeRouter } from '@/router/router';
+import { AppProviders } from '@/providers/app-provider';
+import '@/app/index.css';
 
 async function bootstrap() {
   const context = makeRouterContext();
@@ -11,7 +12,9 @@ async function bootstrap() {
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <AppProviders>
+        <RouterProvider router={router} />
+      </AppProviders>
     </StrictMode>
   );
 }
