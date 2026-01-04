@@ -29,4 +29,8 @@ export default defineConfig({
     port: 5445,
     strictPort: true,
   },
+  preview: {
+    port: 5445,
+    strictPort: true,
+  },
 });
