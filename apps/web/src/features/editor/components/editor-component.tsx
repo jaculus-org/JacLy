@@ -21,7 +21,6 @@ export function EditorComponent() {
 
   return (
     <>
-      <EditorHeader />
       <h1 className="text-2xl font-bold mb-4">Editor Component</h1>
       <p>
         Project Name: {project.name} (Type: {project.type})
