@@ -1,6 +1,6 @@
-import { EditorComponent } from '@/features/editor/components/editor-component';
-import { EditorHeader } from '@/features/editor/components/editor-header';
-import { ActiveProjectProvider } from '@/features/editor/provider/active-project-provider';
+import { EditorComponent } from '@/features/project/components/editor-component';
+import { EditorHeader } from '@/features/project/components/editor-header';
+import { ActiveProjectProvider } from '@/features/project/provider/active-project-provider';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 

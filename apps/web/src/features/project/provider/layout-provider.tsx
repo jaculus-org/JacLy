@@ -1,21 +1,21 @@
 import { createContext, use, useState, useEffect } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { Route } from '@/routes/__root';
-import { EditorMountLoading } from '@/features/editor/components/editor-loading';
-import '@/features/editor/components/flex-layout/flexlayout.css';
-import { flexLayoutDefaultJson } from '@/features/editor/lib/flexlayout-defaults';
+import { EditorMountLoading } from '@/features/project/components/editor-loading';
+import '@/features/project/components/flex-layout/flexlayout.css';
+import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
 import {
   controlPanel,
   getUpdatedLayoutModel,
   openPanel,
-} from '@/features/editor/lib/flexlayout';
+} from '@/features/project/lib/flexlayout';
 import type {
   NewPanelProps,
   PanelAction,
   PanelType,
-} from '@/features/editor/types/flexlayout-type';
+} from '@/features/project/types/flexlayout-type';
 import { enqueueSnackbar } from 'notistack';
-import { factory } from '@/features/editor/lib/flexlayout-components';
+import { factory } from '@/features/project/lib/flexlayout-components';
 
 export interface EditorContextValue {
   controlPanel: (type: PanelType, action: PanelAction) => void;

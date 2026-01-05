@@ -1,6 +1,6 @@
 import * as FlexLayout from 'flexlayout-react';
-import type { PanelType } from '@/features/editor/types/flexlayout-type';
-import { PanelWrapper } from '@/features/editor/components/panel-warpper';
+import type { PanelType } from '@/features/project/types/flexlayout-type';
+import { PanelWrapper } from '@/features/project/components/panel-warpper';
 import { FileExplorerPanel } from '../components/panels/file-explorer';
 
 // Component registry - map panel types to their components

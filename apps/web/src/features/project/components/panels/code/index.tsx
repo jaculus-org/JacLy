@@ -1,4 +1,4 @@
-import { useEditor } from '@/features/editor/provider/layout-provider';
+import { useEditor } from '@/features/project/provider/layout-provider';
 
 export function CodePanel() {
   const { controlPanel } = useEditor();

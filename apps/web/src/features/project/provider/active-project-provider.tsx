@@ -5,8 +5,8 @@ import {
   ProjectFsService,
   type ProjectFsInterface,
 } from '@/services/project-fs-service';
-import { EditorMountLoading } from '@/features/editor/components/editor-loading';
-import { EditorLoadError } from '@/features/editor/components/editor-load-error';
+import { EditorMountLoading } from '@/features/project/components/editor-loading';
+import { EditorLoadError } from '@/features/project/components/editor-load-error';
 
 export interface ActiveProjectContextValue {
   fs: typeof fs;

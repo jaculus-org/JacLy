@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import {
   ActiveProjectContext,
   type ActiveProjectContextValue,
-} from '@/features/editor/provider/active-project-provider';
+} from '@/features/project/provider/active-project-provider';
 
 export function useActiveProject(): ActiveProjectContextValue {
   const context = useContext(ActiveProjectContext);

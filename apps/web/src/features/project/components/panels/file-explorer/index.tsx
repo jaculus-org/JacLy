@@ -10,7 +10,7 @@ import { ChevronDown, ChevronRight, Folder, FolderOpen } from 'lucide-react';
 import { useState, useEffect, type JSX, useEffectEvent } from 'react';
 import type { FileSystemItem } from './types';
 import { getFileIcon, buildFileTree, loadDirectoryChildren } from './helper';
-import { useEditor } from '@/features/editor/provider/layout-provider';
+import { useEditor } from '@/features/project/provider/layout-provider';
 
 export function FileExplorerPanel() {
   const { fsp, projectPath } = useActiveProject();

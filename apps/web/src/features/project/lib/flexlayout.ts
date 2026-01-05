@@ -3,8 +3,8 @@ import type {
   FlexLayoutAttributes,
   PanelAction,
   PanelType,
-} from '@/features/editor/types/flexlayout-type';
-import { flexLayoutDefaultJson } from '@/features/editor/lib/flexlayout-defaults';
+} from '@/features/project/types/flexlayout-type';
+import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
 
 export function processAllTabs(
   model: FlexLayout.IJsonModel,
