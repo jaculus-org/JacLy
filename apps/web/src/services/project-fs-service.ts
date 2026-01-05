@@ -53,6 +53,9 @@ export class ProjectFsService {
       throw error;
     }
 
+    window.fs = fs;
+    window.fsp = fs.promises;
+
     return {
       fs,
       projectPath: mountPath,
@@ -91,5 +94,12 @@ export class ProjectFsService {
         this.unmount(projectId);
       }
     }
+  }
+}
+
+declare global {
+  interface Window {
+    fs?: typeof fs;
+    fsp?: typeof fs.promises;
   }
 }

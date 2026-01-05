@@ -6,7 +6,7 @@ export function RootLayout() {
   const matches = useMatches();
   // Don't show GeneralHeader on /editor/:projectId routes
   const isEditorProjectPage = matches.some(
-    (match) => match.routeId === '/editor/$projectId'
+    match => match.routeId === '/editor/$projectId'
   );
 
   return (

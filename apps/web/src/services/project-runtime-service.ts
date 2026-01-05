@@ -29,4 +29,16 @@ export class ProjectRuntimeService {
   async listProjects(): Promise<IProject[]> {
     return await this.repo.list();
   }
+
+  async projectExists(id: string): Promise<boolean> {
+    return (await this.repo.get(id)) !== undefined;
+  }
+
+  async updateProjectKey(
+    id: string,
+    key: keyof IProject,
+    value: IProject[typeof key]
+  ): Promise<void> {
+    await this.repo.updateKey(id, key, value);
+  }
 }

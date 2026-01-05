@@ -46,4 +46,12 @@ export class ProjectRepository {
   async delete(id: string): Promise<void> {
     await this.db.projects.update(id, { deletedAt: Date.now() });
   }
+
+  async updateKey(
+    id: string,
+    key: keyof IProject,
+    value: IProject[typeof key]
+  ): Promise<void> {
+    await this.db.projects.update(id, { [key]: value });
+  }
 }

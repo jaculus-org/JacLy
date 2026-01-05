@@ -1,7 +1,11 @@
 import { Loader2Icon, ArrowLeftIcon } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
-export function EditorMountLoading() {
+interface EditorMountLoadingProps {
+  message?: string;
+}
+
+export function EditorMountLoading({ message }: EditorMountLoadingProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <div className="flex flex-col items-center gap-8">
@@ -24,7 +28,7 @@ export function EditorMountLoading() {
         <div className="flex flex-col items-center gap-2">
           <p className="text-sm font-medium text-foreground">Loading Project</p>
           <p className="text-xs text-muted-foreground animate-pulse">
-            Mounting filesystem...
+            {message}
           </p>
         </div>
 

@@ -1,16 +1,16 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react';
-import type { fs as FsType } from '@zenfs/core';
+import * as fs from 'fs';
 import type { IProject } from '@/types/project';
 import {
   ProjectFsService,
   type ProjectFsInterface,
 } from '@/services/project-fs-service';
-import { EditorMountLoading } from '@/features/editor/components/editor-mount-loading';
+import { EditorMountLoading } from '@/features/editor/components/editor-loading';
 import { EditorLoadError } from '@/features/editor/components/editor-load-error';
 
 export interface ActiveProjectContextValue {
-  fs: typeof FsType;
-  fsp: typeof FsType.promises;
+  fs: typeof fs;
+  fsp: typeof fs.promises;
   project: IProject;
   projectPath: string;
 }
@@ -66,12 +66,12 @@ export function ActiveProjectProvider({
   }
 
   if (!fsInterface) {
-    return <EditorMountLoading />;
+    return <EditorMountLoading message="Mounting filesystem..." />;
   }
 
   const contextValue: ActiveProjectContextValue = {
-    fs: fsInterface.fs,
-    fsp: fsInterface.fs.promises,
+    fs: fsInterface.fs as unknown as typeof fs,
+    fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
     project,
     projectPath: fsInterface.projectPath,
   };

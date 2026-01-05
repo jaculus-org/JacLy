@@ -1,7 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/features/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/features/shared/components/ui/card';
 import { Button } from '@/features/shared/components/ui/button';
-import { BlocksIcon, Code2Icon, ZapIcon, ListIcon, PlusCircleIcon } from 'lucide-react';
+import {
+  BlocksIcon,
+  Code2Icon,
+  ZapIcon,
+  ListIcon,
+  PlusCircleIcon,
+} from 'lucide-react';
 
 export const Route = createFileRoute('/')({
   component: Root,
@@ -11,17 +23,20 @@ function Root() {
   const features = [
     {
       title: 'Visual Programming',
-      description: 'Design your projects using intuitive visual blocks - no coding required.',
+      description:
+        'Design your projects using intuitive visual blocks - no coding required.',
       icon: BlocksIcon,
     },
     {
       title: 'TypeScript Code',
-      description: 'Write powerful code directly in TypeScript with full editor support.',
+      description:
+        'Write powerful code directly in TypeScript with full editor support.',
       icon: Code2Icon,
     },
     {
       title: 'Fast & Modern',
-      description: 'Built with cutting-edge tools for a smooth development experience.',
+      description:
+        'Built with cutting-edge tools for a smooth development experience.',
       icon: ZapIcon,
     },
   ];
@@ -34,7 +49,8 @@ function Root() {
           Welcome to Jacly
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Your journey into visual programming starts here. Build amazing projects with blocks or code.
+          Your journey into visual programming starts here. Build amazing
+          projects with blocks or code.
         </p>
 
         {/* Action Buttons */}
@@ -56,10 +72,13 @@ function Root() {
 
       {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {features.map((feature) => {
+        {features.map(feature => {
           const Icon = feature.icon;
           return (
-            <Card key={feature.title} className="transition-all hover:shadow-lg hover:-translate-y-1">
+            <Card
+              key={feature.title}
+              className="transition-all hover:shadow-lg hover:-translate-y-1"
+            >
               <CardHeader>
                 <div className="mb-4 p-3 rounded-lg bg-primary/10 w-fit">
                   <Icon className="h-8 w-8 text-primary" />
@@ -90,7 +109,8 @@ function Root() {
             <div className="flex-1">
               <h3 className="font-semibold mb-1">Visual Blocks</h3>
               <p className="text-sm text-muted-foreground">
-                Perfect for beginners or quick prototyping. Drag and drop blocks to build your logic.
+                Perfect for beginners or quick prototyping. Drag and drop blocks
+                to build your logic.
               </p>
             </div>
           </div>
@@ -102,7 +122,8 @@ function Root() {
             <div className="flex-1">
               <h3 className="font-semibold mb-1">TypeScript Code</h3>
               <p className="text-sm text-muted-foreground">
-                Full control with professional TypeScript development. IntelliSense and debugging included.
+                Full control with professional TypeScript development.
+                IntelliSense and debugging included.
               </p>
             </div>
           </div>
