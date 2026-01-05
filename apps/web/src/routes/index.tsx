@@ -56,13 +56,13 @@ function Root() {
         {/* Action Buttons */}
         <div className="flex gap-4 justify-center flex-wrap">
           <Button asChild size="lg" className="gap-2">
-            <Link to="/editor/new">
+            <Link to="/project/new">
               <PlusCircleIcon className="h-5 w-5" />
               Create New Project
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="gap-2">
-            <Link to="/editor">
+            <Link to="/project">
               <ListIcon className="h-5 w-5" />
               View Projects
             </Link>

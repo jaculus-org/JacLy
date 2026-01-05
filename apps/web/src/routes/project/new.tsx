@@ -12,7 +12,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/editor/new')({
+export const Route = createFileRoute('/project/new')({
   component: NewProject,
 });
 
@@ -75,7 +75,7 @@ function NewProject() {
       );
 
       navigate({
-        to: '/editor/$projectId',
+        to: '/project/$projectId',
         params: { projectId: newProject.id },
       });
     } catch (error) {

@@ -9,7 +9,7 @@ export function EditorHeader() {
           {/* Navigation */}
           <nav className="flex gap-6">
             <Link
-              to={'/editor'}
+              to={'/project'}
               className="font-medium text-blue-900 no-underline transition-colors duration-300 ease-in-out hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-500"
             >
               Editor

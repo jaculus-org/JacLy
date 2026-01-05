@@ -4,14 +4,14 @@ import { ActiveProjectProvider } from '@/features/project/provider/active-projec
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 
-export const Route = createFileRoute('/editor/$projectId')({
+export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context, params }) => {
     const project = await context.runtimeService.getProject(params.projectId);
     if (!project) {
       enqueueSnackbar('I could not find the requested project.', {
         variant: 'error',
       });
-      throw redirect({ to: '/editor' });
+      throw redirect({ to: "/project" });
     }
     return project;
   },

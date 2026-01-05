@@ -24,7 +24,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Blocks, Code, MoreVertical, Trash } from 'lucide-react';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/editor/')({
+export const Route = createFileRoute('/project/')({
   component: EditorList,
 });
 
@@ -54,7 +54,7 @@ function EditorList() {
       <div className="flex justify-center mb-4">
         <Button
           onClick={() => {
-            navigate({ to: '/editor/new' });
+            navigate({ to: "/project/new" });
           }}
           variant="outline"
           size={'lg'}
@@ -71,7 +71,7 @@ function EditorList() {
               return (
                 <Link
                   key={project.id}
-                  to="/editor/$projectId"
+                  to="/project/$projectId"
                   params={{ projectId: project.id }}
                   className="block"
                 >

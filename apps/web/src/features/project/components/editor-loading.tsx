@@ -41,7 +41,7 @@ export function EditorMountLoading({ message }: EditorMountLoadingProps) {
 
         {/* Back to projects link */}
         <Link
-          to="/editor"
+          to="/project"
           className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
         >
           <ArrowLeftIcon className="h-4 w-4" />
