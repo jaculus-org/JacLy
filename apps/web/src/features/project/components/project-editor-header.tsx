@@ -1,12 +1,14 @@
-import { ModeToggle } from '@/features/theme/components/mode-toggle';
+import { ConnectionSelector } from '@/features/device/components/connection-selector';
+import { ConsoleSelector } from '@/features/device/components/console-selector';
+import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
 
-export function EditorHeader() {
+export function ProjectEditorHeader() {
   return (
     <header className="relative backdrop-blur-sm bg-white border-b border-blue-100 dark:bg-slate-800 dark:border-slate-700">
-      <div className="max-w-full mx-auto px-4">
-        <div className="flex justify-between items-center py-3 px-4">
+      <div className="max-w-full">
+        <div className="flex justify-between items-center py-3 px-1 pl-3">
           {/* Navigation */}
           <nav className="flex gap-6">
             <Link
@@ -20,7 +22,9 @@ export function EditorHeader() {
 
           {/* Theme switcher */}
           <div className="flex items-center gap-4">
-            <ModeToggle />
+            <ConsoleSelector />
+            <ConnectionSelector />
+            <ThemeToggle />
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ import {
 import { useState, useEffect, type JSX, useEffectEvent } from 'react';
 import type { FileSystemItem } from './types';
 import { getFileIcon, buildFileTree, loadDirectoryChildren } from './helper';
-import { useEditor } from '@/features/project/provider/layout-provider';
+import { useEditor } from '@/features/project/provider/project-editor-provider';
 import { enqueueSnackbar } from 'notistack';
 
 export function FileExplorerPanel() {

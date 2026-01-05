@@ -5,7 +5,7 @@ interface EditorLoadErrorProps {
   error: Error;
 }
 
-export function EditorLoadError({ error }: EditorLoadErrorProps) {
+export function ProjectLoadError({ error }: EditorLoadErrorProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <div className="flex flex-col items-center gap-6 max-w-md p-8">

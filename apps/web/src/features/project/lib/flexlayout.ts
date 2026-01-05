@@ -176,6 +176,7 @@ export function controlPanel(
       model.doAction(FlexLayout.Actions.deleteTab(node.getId()));
       break;
     case 'expand':
+      debugger;
       if (isInBorder) {
         // For border panels, just select them to make them visible
         model.doAction(FlexLayout.Actions.selectTab(node.getId()));

@@ -1,4 +1,4 @@
-import { ModeToggle } from '@/features/theme/components/mode-toggle';
+import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 
 export function GeneralHeader() {
@@ -25,7 +25,7 @@ export function GeneralHeader() {
           </nav>
           {/* Theme switcher */}
           <div className="flex items-center gap-4">
-            <ModeToggle />
+            <ThemeToggle />
             {/* <LocaleSwitcher /> */}
           </div>
         </div>

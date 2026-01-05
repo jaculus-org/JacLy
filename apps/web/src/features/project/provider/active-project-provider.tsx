@@ -5,16 +5,19 @@ import {
   ProjectFsService,
   type ProjectFsInterface,
 } from '@/services/project-fs-service';
-import { EditorMountLoading } from '@/features/project/components/editor-loading';
-import { EditorLoadError } from '@/features/project/components/editor-load-error';
+import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
+import { ProjectLoadError } from '@/features/project/components/project-load-error';
 import { indexMonacoFiles } from '@/features/editor/lib/project-indexer';
 import { useMonaco } from '@monaco-editor/react';
+import { JacDevice } from '@jaculus/device';
 
 export interface ActiveProjectContextValue {
   fs: typeof fs;
   fsp: typeof fs.promises;
   project: IProject;
   projectPath: string;
+  device: JacDevice | null;
+  setDevice: (device: JacDevice | null) => void;
 }
 
 export const ActiveProjectContext =
@@ -35,6 +38,7 @@ export function ActiveProjectProvider({
     null
   );
   const [error, setError] = useState<Error | null>(null);
+  const [device, setDevice] = useState<JacDevice | null>(null);
   const monaco = useMonaco();
 
   useEffect(() => {
@@ -72,11 +76,11 @@ export function ActiveProjectProvider({
   }, [project.id, projectFsService, monaco]);
 
   if (error) {
-    return <EditorLoadError error={error} />;
+    return <ProjectLoadError error={error} />;
   }
 
   if (!fsInterface) {
-    return <EditorMountLoading message="Mounting filesystem..." />;
+    return <ProjectLoadingIndicator message="Mounting filesystem..." />;
   }
 
   const contextValue: ActiveProjectContextValue = {
@@ -84,6 +88,13 @@ export function ActiveProjectProvider({
     fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
     project,
     projectPath: fsInterface.projectPath,
+    device: device,
+    setDevice: (newDevice: JacDevice | null) => {
+      if (device) {
+        device.destroy();
+      }
+      setDevice(newDevice);
+    },
   };
 
   return (

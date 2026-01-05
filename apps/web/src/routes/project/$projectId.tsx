@@ -1,5 +1,4 @@
-import { EditorComponent } from '@/features/project/components/editor-component';
-import { EditorHeader } from '@/features/project/components/editor-header';
+import { ProjectEditorComponent } from '@/features/project/components';
 import { ActiveProjectProvider } from '@/features/project/provider/active-project-provider';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
@@ -27,8 +26,7 @@ function ProjectEditorRoute() {
       project={project}
       projectFsService={projectFsService}
     >
-      <EditorHeader />
-      <EditorComponent />
+      <ProjectEditorComponent />
     </ActiveProjectProvider>
   );
 }

@@ -1,7 +1,7 @@
 import { createContext, use, useState, useEffect } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { Route } from '@/routes/__root';
-import { EditorMountLoading } from '@/features/project/components/editor-loading';
+import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
 import '@/features/project/components/flex-layout/flexlayout.css';
 import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
 import {
@@ -16,6 +16,7 @@ import type {
 } from '@/features/project/types/flexlayout-type';
 import { enqueueSnackbar } from 'notistack';
 import { factory } from '@/features/project/lib/flexlayout-components';
+import { ProjectEditorHeader } from '../components/project-editor-header';
 
 export interface EditorContextValue {
   controlPanel: (type: PanelType, action: PanelAction) => void;
@@ -31,7 +32,7 @@ const initialState: EditorContextValue = {
 
 export const EditorContext = createContext<EditorContextValue>(initialState);
 
-export function EditorProvider() {
+export function ProjectEditorProvider() {
   const { settingsService } = Route.useRouteContext();
   const [model, setModel] = useState<FlexLayout.Model | null>(null);
 
@@ -68,11 +69,12 @@ export function EditorProvider() {
   };
 
   if (!model) {
-    return <EditorMountLoading message="Loading layout..." />;
+    return <ProjectLoadingIndicator message="Loading layout..." />;
   }
 
   return (
     <EditorContext.Provider value={value}>
+      <ProjectEditorHeader />
       <div className="h-[calc(100vh-3.5rem)] w-full">
         <FlexLayout.Layout
           model={model}
