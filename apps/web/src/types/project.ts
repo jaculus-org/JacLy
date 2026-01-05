@@ -1,9 +1,9 @@
-export type ProjectType = 'graphical' | 'code';
+import type { JaculusProjectType } from '@jaculus/project';
 
 export interface IProject {
   id: string;
   name: string;
-  type: ProjectType;
+  type: JaculusProjectType;
   createdAt: number;
   modifiedAt: number;
   deletedAt: number | null;

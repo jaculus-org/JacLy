@@ -1,4 +1,4 @@
-import type { IProject, ProjectType } from '@/types/project';
+import type { IProject } from '@/types/project';
 import type { AppDB } from '@/lib/db/db';
 
 export class ProjectRepository {
@@ -18,7 +18,11 @@ export class ProjectRepository {
       .sortBy('modifiedAt');
   }
 
-  async create(id: string, name: string, type: ProjectType): Promise<IProject> {
+  async create(
+    id: string,
+    name: string,
+    type: IProject['type']
+  ): Promise<IProject> {
     const now = Date.now();
     const row: IProject = {
       id,

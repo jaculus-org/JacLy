@@ -1,5 +1,6 @@
 import { ModeToggle } from '@/features/theme/components/mode-toggle';
 import { Link } from '@tanstack/react-router';
+import { HouseIcon } from 'lucide-react';
 
 export function EditorHeader() {
   return (
@@ -12,7 +13,8 @@ export function EditorHeader() {
               to={'/project'}
               className="font-medium text-blue-900 no-underline transition-colors duration-300 ease-in-out hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-500"
             >
-              Editor
+              <HouseIcon className="inline-block mr-1 mb-1 h-4 w-4" />
+              All Projects
             </Link>
           </nav>
 

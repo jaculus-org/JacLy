@@ -54,7 +54,7 @@ function EditorList() {
       <div className="flex justify-center mb-4">
         <Button
           onClick={() => {
-            navigate({ to: "/project/new" });
+            navigate({ to: '/project/new' });
           }}
           variant="outline"
           size={'lg'}
@@ -67,7 +67,7 @@ function EditorList() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.map(project => {
-              const Icon = project.type === 'graphical' ? Blocks : Code;
+              const Icon = project.type === 'jacly' ? Blocks : Code;
               return (
                 <Link
                   key={project.id}

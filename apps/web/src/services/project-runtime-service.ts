@@ -1,6 +1,6 @@
 import type { ProjectRepository } from '@/lib/db/project-repository';
 import { generateProjectId } from '@/lib/utils/nanoid';
-import type { IProject, ProjectType } from '@/types/project';
+import type { IProject } from '@/types/project';
 
 export class ProjectRuntimeService {
   private repo: ProjectRepository;
@@ -9,7 +9,7 @@ export class ProjectRuntimeService {
     this.repo = repo;
   }
 
-  async createProject(name: string, type: ProjectType): Promise<IProject> {
+  async createProject(name: string, type: IProject['type']): Promise<IProject> {
     const id = generateProjectId();
     return await this.repo.create(id, name, type);
   }

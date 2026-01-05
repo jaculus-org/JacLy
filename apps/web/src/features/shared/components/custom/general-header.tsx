@@ -4,7 +4,7 @@ import { Link } from '@tanstack/react-router';
 export function GeneralHeader() {
   const links = [
     { name: 'Home' as string, path: '/' },
-    { name: 'Editor' as string, path: '/editor/' },
+    { name: 'Projects' as string, path: '/project/' },
   ];
 
   return (

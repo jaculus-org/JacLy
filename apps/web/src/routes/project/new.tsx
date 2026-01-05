@@ -7,10 +7,13 @@ import {
 } from '@/features/shared/components/ui/accordion';
 import { Button } from '@/features/shared/components/ui/button';
 import { Input } from '@/features/shared/components/ui/input';
-import type { ProjectType } from '@/types/project';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
+import { Project, type JaculusProjectType } from '@jaculus/project';
+import type { FSInterface } from '@jaculus/project/fs';
+import { Writable } from 'node:stream';
 import { useState } from 'react';
+import { loadPackageUri } from '@/features/project/lib/request';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -18,7 +21,7 @@ export const Route = createFileRoute('/project/new')({
 
 interface JaculusProjectOptions {
   // id: JaculusProjectType;
-  type: ProjectType;
+  type: JaculusProjectType;
   title: string;
   description: string;
   icon?: React.ReactNode;
@@ -27,7 +30,7 @@ interface JaculusProjectOptions {
 
 const projectOptions: JaculusProjectOptions[] = [
   {
-    type: 'graphical',
+    type: 'jacly',
     title: 'Jacly Blocks Project',
     icon: <BlocksIcon />,
     description: "Design your project using Jacly's visual blocks.",
@@ -54,7 +57,29 @@ function NewProject() {
   async function handleProjectCreation() {
     setIsCreating(true);
 
+    function writableErr(): Writable {
+      const stream = new Writable({
+        write(chunk, _encoding, callback) {
+          console.log('ERR:', chunk.toString());
+          callback();
+        },
+      });
+      return stream;
+    }
+
+    function writableOut(): Writable {
+      const stream = new Writable({
+        write(chunk, _encoding, callback) {
+          console.log('OUT:', chunk.toString());
+          callback();
+        },
+      });
+      return stream;
+    }
+
     try {
+      const pkg = await loadPackageUri(projectOption.templateUrl);
+
       // Create the project in the database
       const newProject = await runtimeService.createProject(
         projectName,
@@ -66,11 +91,14 @@ function NewProject() {
         newProject.id,
         async ({ fs, projectPath }) => {
           // Write test.txt with current timestamp
-          const timestamp = new Date().toISOString();
-          await fs.promises.writeFile(
-            `${projectPath}/test.txt`,
-            `Project created at: ${timestamp}\nProject ID: ${newProject.id}\nProject Name: ${newProject.name}\nProject Type: ${newProject.type}`
+
+          const project = new Project(
+            fs as unknown as FSInterface,
+            projectPath,
+            writableOut(),
+            writableErr()
           );
+          await project.createFromPackage(pkg, false, false);
         }
       );
 

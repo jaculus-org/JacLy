@@ -11,7 +11,7 @@ export const Route = createFileRoute('/project/$projectId')({
       enqueueSnackbar('I could not find the requested project.', {
         variant: 'error',
       });
-      throw redirect({ to: "/project" });
+      throw redirect({ to: '/project' });
     }
     return project;
   },
