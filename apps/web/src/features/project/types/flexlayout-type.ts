@@ -9,7 +9,7 @@ export type PanelType =
   | 'blockly'
   | 'console'
   | 'file-explorer'
-  | 'source-code'
+  | 'code'
   | 'generated-code'
   | 'wokwi'
   | 'packages'
@@ -18,5 +18,5 @@ export type PanelType =
 export type PanelAction = 'close' | 'expand' | 'collapse' | 'focus';
 
 export type NewPanelProps = {
-  'source-code': { filePath?: string };
+  code: { filePath?: string };
 };

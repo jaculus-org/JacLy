@@ -6,11 +6,23 @@ import {
 } from '@/features/shared/components/ui/context-menu';
 import { useActiveProject } from '@/hooks/use-active-project';
 import { cn } from '@/lib/utils/cn';
-import { ChevronDown, ChevronRight, Folder, FolderOpen } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  FilePlusIcon,
+  FileTypeIcon,
+  FileXIcon,
+  Folder,
+  FolderMinusIcon,
+  FolderOpen,
+  FolderPenIcon,
+  FolderPlusIcon,
+} from 'lucide-react';
 import { useState, useEffect, type JSX, useEffectEvent } from 'react';
 import type { FileSystemItem } from './types';
 import { getFileIcon, buildFileTree, loadDirectoryChildren } from './helper';
 import { useEditor } from '@/features/project/provider/layout-provider';
+import { enqueueSnackbar } from 'notistack';
 
 export function FileExplorerPanel() {
   const { fsp, projectPath } = useActiveProject();
@@ -22,6 +34,14 @@ export function FileExplorerPanel() {
     new Set()
   );
   const [loading, setLoading] = useState(false);
+
+  const rootFileItem: FileSystemItem = {
+    isRoot: true,
+    name: projectPath,
+    path: projectPath,
+    isDirectory: true,
+    children: [],
+  };
 
   const loadFileTree = useEffectEvent(async () => {
     setLoading(true);
@@ -39,12 +59,43 @@ export function FileExplorerPanel() {
     loadFileTree();
   }, [projectPath]);
 
+  useEffect(() => {
+    if (!projectPath || !fsp.watch) return;
+
+    let aborted = false;
+    const abortController = new AbortController();
+
+    (async () => {
+      try {
+        const watcher = fsp.watch(projectPath, {
+          recursive: true,
+          signal: abortController.signal,
+        });
+
+        for await (const event of watcher) {
+          if (aborted) break;
+          console.log('File system change detected:', event);
+          loadFileTree();
+        }
+      } catch (error) {
+        if (!aborted) {
+          console.error('Error watching files:', error);
+        }
+      }
+    })();
+
+    return () => {
+      aborted = true;
+      abortController.abort();
+    };
+  }, [projectPath, fsp]);
+
   async function handleOpen(item: FileSystemItem) {
     if (item.isDirectory) {
       await toggleDirectory(item);
     } else {
       const path = item.path.replace(`${projectPath}/`, '');
-      openPanel('source-code', { filePath: path });
+      openPanel('code', { filePath: path });
     }
   }
 
@@ -66,6 +117,65 @@ export function FileExplorerPanel() {
     setExpandedFolders(newExpanded);
   }
 
+  async function createNewFile(item: FileSystemItem) {
+    const fileName = prompt(
+      `Creating new file under: ${item.path}\nEnter file name:`
+    );
+    if (!fileName) return;
+
+    const newPath = `${item.path}/${fileName}`;
+    try {
+      await fsp.writeFile(newPath, '', 'utf-8');
+    } catch (error) {
+      console.error('Error creating file:', error);
+      enqueueSnackbar('Failed to create file', { variant: 'error' });
+    }
+  }
+
+  async function createNewDirectory(item: FileSystemItem) {
+    const dirName = prompt(
+      `Creating new folder under: ${item.path}\nEnter folder name:`
+    );
+    if (!dirName) return;
+
+    const newPath = `${item.path}/${dirName}`;
+    try {
+      await fsp.mkdir(newPath);
+    } catch (error) {
+      console.error('Error creating directory:', error);
+      enqueueSnackbar('Failed to create directory', { variant: 'error' });
+    }
+  }
+
+  async function removeItem(item: FileSystemItem) {
+    confirm(
+      `Are you sure you want to delete "${item.isDirectory ? 'folder' : 'file'} ${item.name}"?`
+    );
+    try {
+      if (item.isDirectory) {
+        await fsp.rm(item.path, { recursive: true, force: true });
+      } else {
+        await fsp.unlink(item.path);
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      enqueueSnackbar('Failed to delete item', { variant: 'error' });
+    }
+  }
+
+  async function renameItem(item: FileSystemItem) {
+    const newName = prompt(`Enter new name for "${item.name}":`, item.name);
+    if (!newName || newName === item.name) return;
+
+    const newPath = item.path.replace(/[^/]+$/, newName);
+    try {
+      await fsp.rename(item.path, newPath);
+    } catch (error) {
+      console.error('Error renaming item:', error);
+      enqueueSnackbar('Failed to rename item', { variant: 'error' });
+    }
+  }
+
   function updateItemChildren(
     items: FileSystemItem[],
     path: string,
@@ -83,6 +193,51 @@ export function FileExplorerPanel() {
     }
   }
 
+  function contextMenu(item: FileSystemItem): JSX.Element {
+    return (
+      <ContextMenuContent>
+        {item.isDirectory && (
+          <ContextMenuItem onClick={async () => await createNewFile(item)}>
+            <FilePlusIcon size={16} className="mr-2 inline-block" />
+            New File
+          </ContextMenuItem>
+        )}
+        {item.isDirectory && (
+          <ContextMenuItem onClick={async () => await createNewDirectory(item)}>
+            <FolderPlusIcon size={16} className="mr-2 inline-block" />
+            New Folder
+          </ContextMenuItem>
+        )}
+
+        {!item.isRoot && (
+          <ContextMenuItem onClick={async () => await renameItem(item)}>
+            {item.isDirectory ? (
+              <FolderPenIcon size={16} className="mr-2 inline-block" />
+            ) : (
+              <FileTypeIcon size={16} className="mr-2 inline-block" />
+            )}
+            Rename {item.isDirectory ? 'Folder' : 'File'}
+          </ContextMenuItem>
+        )}
+
+        {!item.isRoot && (
+          <ContextMenuItem
+            onClick={async () => {
+              await removeItem(item);
+            }}
+          >
+            {item.isDirectory ? (
+              <FolderMinusIcon size={16} className="mr-2 inline-block" />
+            ) : (
+              <FileXIcon size={16} className="mr-2 inline-block" />
+            )}
+            Delete {item.isDirectory ? 'Folder' : 'File'}
+          </ContextMenuItem>
+        )}
+      </ContextMenuContent>
+    );
+  }
+
   // Render file tree recursively
   function renderFileTree(items: FileSystemItem[], depth = 0): JSX.Element[] {
     return items.map(item => (
@@ -91,7 +246,7 @@ export function FileExplorerPanel() {
           <ContextMenuTrigger asChild>
             <div
               className={cn(
-                'flex items-center gap-1 px-2 py-1 text-sm cursor-pointer rounded transition-colors',
+                'flex items-center gap-1 px-2 py-0.5 text-sm cursor-pointer rounded transition-colors',
                 selectedItem === item.path
                   ? 'bg-slate-200 dark:bg-slate-700'
                   : 'hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -133,11 +288,7 @@ export function FileExplorerPanel() {
             </div>
           </ContextMenuTrigger>
 
-          <ContextMenuContent>
-            <ContextMenuItem onClick={async () => await handleOpen(item)}>
-              {item.isDirectory ? 'Open Folder' : 'Open File'}
-            </ContextMenuItem>
-          </ContextMenuContent>
+          {contextMenu(item)}
         </ContextMenu>
 
         {item.isDirectory &&
@@ -150,18 +301,23 @@ export function FileExplorerPanel() {
   }
 
   return (
-    <div className="flex-1 overflow-auto p-1">
-      {loading ? (
-        <div className="p-4 text-center text-muted-foreground text-sm">
-          Loading files...
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div className="flex-1 overflow-auto p-1 min-h-full">
+          {loading ? (
+            <div className="p-4 text-center text-muted-foreground text-sm">
+              Loading files...
+            </div>
+          ) : fileTree.length === 0 ? (
+            <div className="p-4 text-center text-muted-foreground text-sm">
+              No files found
+            </div>
+          ) : (
+            <div className="min-h-full">{renderFileTree(fileTree)}</div>
+          )}
         </div>
-      ) : fileTree.length === 0 ? (
-        <div className="p-4 text-center text-muted-foreground text-sm">
-          No files found
-        </div>
-      ) : (
-        renderFileTree(fileTree)
-      )}
-    </div>
+      </ContextMenuTrigger>
+      {contextMenu(rootFileItem)}
+    </ContextMenu>
   );
 }

@@ -24,6 +24,7 @@ export async function buildFileTree(
       const isDirectory = entry.isDirectory();
 
       items.push({
+        isRoot: false,
         name,
         path: itemPath,
         isDirectory,

@@ -1,0 +1,37 @@
+export interface FileEntry {
+  path: string;
+  content: string;
+}
+
+export async function loadProjectFiles(
+  projectPath: string,
+  fsp: typeof import('fs').promises
+): Promise<FileEntry[]> {
+  const fileEntries: FileEntry[] = [];
+
+  async function traverseDirectory(currentPath: string) {
+    const entries = await fsp.readdir(currentPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = `${currentPath}/${entry.name}`;
+
+      if (entry.isDirectory()) {
+        await traverseDirectory(fullPath);
+      } else if (entry.isFile()) {
+        // if (/\.(ts|js|json)$/.test(entry.name)) {
+        // 	const content = await fsp.readFile(fullPath, 'utf-8');
+        // 	fileEntries.push({ path: fullPath.replace(projectPath, ''), content });
+        // }
+        const content = await fsp.readFile(fullPath, 'utf-8');
+        // Remove leading slash from relative path
+        const relativePath = fullPath
+          .replace(projectPath, '')
+          .replace(/^\//, '');
+        fileEntries.push({ path: relativePath, content });
+      }
+    }
+  }
+
+  await traverseDirectory(projectPath);
+  return fileEntries;
+}

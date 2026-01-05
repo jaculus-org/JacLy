@@ -1,13 +1,9 @@
-import { useEditor } from '@/features/project/provider/layout-provider';
+import { CodeEditor } from '@/features/editor/components';
 
-export function CodePanel() {
-  const { controlPanel } = useEditor();
+interface CodePanelProps {
+  filePath: string;
+}
 
-  return (
-    <>
-      <button onClick={() => controlPanel('file-explorer', 'collapse')}>
-        Close Code Panel
-      </button>
-    </>
-  );
+export function CodePanel({ filePath }: CodePanelProps) {
+  return <CodeEditor filePath={filePath} />;
 }

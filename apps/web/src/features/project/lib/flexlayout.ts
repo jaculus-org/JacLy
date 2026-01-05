@@ -219,7 +219,7 @@ export function openPanel(
   if (!model) return;
 
   switch (type) {
-    case 'source-code': {
+    case 'code': {
       const panelId = `source-code-${props?.filePath}`;
       const node = model.getNodeById(panelId);
       if (node) {

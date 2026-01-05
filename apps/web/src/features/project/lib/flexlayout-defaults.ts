@@ -61,16 +61,16 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
     children: [
       {
         type: 'tab',
-        name: 'Terminal',
-        component: 'terminal',
-        id: 'terminal',
+        name: 'Console',
+        component: 'console',
+        id: 'console',
         enableClose: false,
       },
       {
         type: 'tab',
         name: 'Generated Code',
-        component: 'code',
-        id: 'code',
+        component: 'generated-code',
+        id: 'generated-code',
         enableClose: false,
       },
     ],

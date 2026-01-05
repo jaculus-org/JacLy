@@ -20,7 +20,7 @@ import { factory } from '@/features/project/lib/flexlayout-components';
 export interface EditorContextValue {
   controlPanel: (type: PanelType, action: PanelAction) => void;
   openPanel: {
-    (type: 'source-code', props?: NewPanelProps['source-code']): void;
+    (type: 'code', props?: NewPanelProps['code']): void;
   };
 }
 
@@ -44,7 +44,7 @@ export function EditorProvider() {
       } catch (error) {
         console.error('Failed to load layout settings:', error);
         enqueueSnackbar('Failed to load layout settings, using default.', {
-          variant: 'error',
+          variant: 'info',
         });
         setModel(FlexLayout.Model.fromJson(flexLayoutDefaultJson));
       }
