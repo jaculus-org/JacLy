@@ -39,7 +39,7 @@ export async function downloadProjectAsZip(
   fs: FSInterface,
   projectPath: string,
   projectName: string
-): Promise<boolean> {
+): Promise<void> {
   try {
     // Collect all files from the project directory
     const files = await collectFiles(fs, projectPath);
@@ -49,7 +49,6 @@ export async function downloadProjectAsZip(
       enqueueSnackbar('No files found in project to download', {
         variant: 'warning',
       });
-      return false;
     }
 
     // Create ZIP using fflate
@@ -75,5 +74,4 @@ export async function downloadProjectAsZip(
     console.error('Failed to download project as ZIP:', error);
     throw error;
   }
-  return true;
 }

@@ -4,26 +4,21 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/features/shared/components/ui/context-menu';
-import { cn } from '@/lib/utils/cn';
 import {
-  ChevronDown,
-  ChevronRight,
   CopyIcon,
   FilePlusIcon,
-  FileTypeIcon,
-  FileXIcon,
-  Folder,
   FolderMinusIcon,
-  FolderOpen,
   FolderPenIcon,
   FolderPlusIcon,
 } from 'lucide-react';
-import { useState, useEffect, type JSX, useEffectEvent } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { FileSystemItem } from './types';
-import { getFileIcon, buildFileTree, loadDirectoryChildren } from './helper';
+import { buildFileTree, loadDirectoryChildren } from './helper';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
 import { enqueueSnackbar } from 'notistack';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { debounce } from '@/lib/utils/debouncer';
+import { FileTreeNode } from './file-tree-node';
 
 export function FileExplorerPanel() {
   const { fsp, projectPath } = useActiveProject();
@@ -31,10 +26,13 @@ export function FileExplorerPanel() {
 
   const [fileTree, setFileTree] = useState<FileSystemItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // We keep expandedFolders in state for UI updates, and a Ref for the background watcher
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set()
   );
-  const [loading, setLoading] = useState(false);
+  const expandedFoldersRef = useRef(expandedFolders);
 
   const rootFileItem: FileSystemItem = {
     isRoot: true,
@@ -44,21 +42,87 @@ export function FileExplorerPanel() {
     children: [],
   };
 
-  const loadFileTree = useEffectEvent(async () => {
-    setLoading(true);
-    try {
-      const tree = await buildFileTree(fsp, projectPath);
-      setFileTree(tree);
-    } catch (error) {
-      console.error('Failed to load file tree:', error);
-    } finally {
-      setLoading(false);
-    }
-  });
-
+  // Sync Ref with State automatically
   useEffect(() => {
-    loadFileTree();
-  }, [projectPath]);
+    expandedFoldersRef.current = expandedFolders;
+  }, [expandedFolders]);
+
+  // Update tree helper to ensure React sees data changes
+  const updateTreeItem = useCallback(
+    (
+      nodes: FileSystemItem[],
+      targetPath: string,
+      updater: (node: FileSystemItem) => FileSystemItem
+    ): FileSystemItem[] => {
+      return nodes.map(node => {
+        if (node.path === targetPath) {
+          return updater(node);
+        }
+        if (node.children) {
+          const newChildren = updateTreeItem(
+            node.children,
+            targetPath,
+            updater
+          );
+          if (newChildren !== node.children) {
+            return { ...node, children: newChildren };
+          }
+        }
+        return node;
+      });
+    },
+    []
+  );
+
+  const loadTreeWithExpansion = useCallback(
+    async (
+      path: string,
+      expandedSet: Set<string>
+    ): Promise<FileSystemItem[]> => {
+      try {
+        const items = await buildFileTree(fsp, path);
+        // Recursively load children for expanded folders
+        await Promise.all(
+          items.map(async item => {
+            if (item.isDirectory && expandedSet.has(item.path)) {
+              item.children = await loadTreeWithExpansion(
+                item.path,
+                expandedSet
+              );
+            }
+          })
+        );
+        return items;
+      } catch (error) {
+        console.error(`Error loading tree at ${path}:`, error);
+        return [];
+      }
+    },
+    [fsp]
+  );
+
+  const refreshTree = useCallback(
+    async (isBackground = false) => {
+      if (!isBackground) setLoading(true);
+      try {
+        const tree = await loadTreeWithExpansion(
+          projectPath,
+          expandedFoldersRef.current
+        );
+        setFileTree(tree);
+      } catch (error) {
+        console.error('Failed to load file tree:', error);
+      } finally {
+        if (!isBackground) setLoading(false);
+      }
+    },
+    [projectPath, loadTreeWithExpansion]
+  );
+
+  // Initial Load
+  useEffect(() => {
+    refreshTree(false);
+  }, [refreshTree]);
 
   useEffect(() => {
     if (!projectPath || !fsp.watch) return;
@@ -66,22 +130,25 @@ export function FileExplorerPanel() {
     let aborted = false;
     const abortController = new AbortController();
 
+    const debouncedRefresh = debounce(() => {
+      if (!aborted) {
+        refreshTree(true);
+      }
+    }, 300);
+
     (async () => {
       try {
         const watcher = fsp.watch(projectPath, {
           recursive: true,
           signal: abortController.signal,
         });
-
         for await (const event of watcher) {
+          void event;
           if (aborted) break;
-          console.log('File system change detected:', event);
-          loadFileTree();
+          debouncedRefresh();
         }
       } catch (error) {
-        if (!aborted) {
-          console.error('Error watching files:', error);
-        }
+        if (!aborted) console.error('Error watching files:', error);
       }
     })();
 
@@ -89,236 +156,140 @@ export function FileExplorerPanel() {
       aborted = true;
       abortController.abort();
     };
-  }, [projectPath, fsp]);
+  }, [projectPath, fsp, refreshTree]);
 
-  async function handleOpen(item: FileSystemItem) {
-    if (item.isDirectory) {
-      await toggleDirectory(item);
-    } else {
-      const path = item.path.replace(`${projectPath}/`, '');
-      openPanel('code', { filePath: path });
-    }
-  }
-
-  async function toggleDirectory(item: FileSystemItem) {
-    const newExpanded = new Set(expandedFolders);
-
-    if (newExpanded.has(item.path)) {
-      newExpanded.delete(item.path);
-    } else {
-      newExpanded.add(item.path);
-
-      // Load children if not already loaded
-      if (!item.children || item.children.length === 0) {
-        const children = await loadDirectoryChildren(fsp, item);
-        updateItemChildren(fileTree, item.path, children);
+  const handleOpen = useCallback(
+    async (item: FileSystemItem) => {
+      if (!item.isDirectory) {
+        const path = item.path.replace(`${projectPath}/`, '');
+        openPanel('code', { filePath: path });
       }
-    }
+    },
+    [projectPath, openPanel]
+  );
 
-    setExpandedFolders(newExpanded);
-  }
+  const toggleDirectory = useCallback(
+    async (item: FileSystemItem) => {
+      setExpandedFolders(prev => {
+        const newExpanded = new Set(prev);
+        if (newExpanded.has(item.path)) {
+          newExpanded.delete(item.path);
+        } else {
+          newExpanded.add(item.path);
+        }
+        return newExpanded;
+      });
 
-  async function createNewFile(item: FileSystemItem) {
+      // If we are opening and children are missing, load them
+      if (
+        !expandedFoldersRef.current.has(item.path) &&
+        (!item.children || item.children.length === 0)
+      ) {
+        const children = await loadDirectoryChildren(fsp, item);
+
+        setFileTree(prevTree =>
+          updateTreeItem(prevTree, item.path, node => ({
+            ...node,
+            children: children,
+          }))
+        );
+      }
+    },
+    [fsp, updateTreeItem]
+  );
+
+  const createNewFile = async (item: FileSystemItem) => {
     const fileName = prompt(
       `Creating new file under: ${item.path}\nEnter file name:`
     );
     if (!fileName) return;
-
-    const newPath = `${item.path}/${fileName}`;
     try {
-      await fsp.writeFile(newPath, '', 'utf-8');
-
-      openPanel('code', { filePath: newPath.replace(`${projectPath}/`, '') });
-    } catch (error) {
-      console.error('Error creating file:', error);
+      await fsp.writeFile(`${item.path}/${fileName}`, '', 'utf-8');
+      openPanel('code', {
+        filePath: `${item.path}/${fileName}`.replace(`${projectPath}/`, ''),
+      });
+    } catch {
       enqueueSnackbar('Failed to create file', { variant: 'error' });
     }
-  }
+  };
 
-  async function createNewDirectory(item: FileSystemItem) {
+  const createNewDirectory = async (item: FileSystemItem) => {
     const dirName = prompt(
       `Creating new folder under: ${item.path}\nEnter folder name:`
     );
     if (!dirName) return;
-
-    const newPath = `${item.path}/${dirName}`;
     try {
-      await fsp.mkdir(newPath);
-    } catch (error) {
-      console.error('Error creating directory:', error);
-      enqueueSnackbar('Failed to create directory', { variant: 'error' });
+      await fsp.mkdir(`${item.path}/${dirName}`);
+    } catch {
+      enqueueSnackbar('Failed to create folder', { variant: 'error' });
     }
-  }
+  };
 
-  async function removeItem(item: FileSystemItem) {
-    confirm(
-      `Are you sure you want to delete "${item.isDirectory ? 'folder' : 'file'} ${item.name}"?`
-    );
-    try {
-      if (item.isDirectory) {
-        await fsp.rm(item.path, { recursive: true, force: true });
-      } else {
-        await fsp.unlink(item.path);
-      }
-    } catch (error) {
-      console.error('Error deleting item:', error);
-      enqueueSnackbar('Failed to delete item', { variant: 'error' });
-    }
-  }
-
-  async function renameItem(item: FileSystemItem) {
+  const renameItem = async (item: FileSystemItem) => {
     const newName = prompt(`Enter new name for "${item.name}":`, item.name);
     if (!newName || newName === item.name) return;
-
-    const newPath = item.path.replace(/[^/]+$/, newName);
     try {
+      const newPath = item.path.replace(/[^/]+$/, newName);
       await fsp.rename(item.path, newPath);
-    } catch (error) {
-      console.error('Error renaming item:', error);
-      enqueueSnackbar('Failed to rename item', { variant: 'error' });
+    } catch {
+      enqueueSnackbar('Failed to rename', { variant: 'error' });
     }
-  }
+  };
 
-  function updateItemChildren(
-    items: FileSystemItem[],
-    path: string,
-    children: FileSystemItem[]
-  ) {
-    for (const item of items) {
-      if (item.path === path) {
-        item.children = children;
-        setFileTree([...fileTree]); // Force re-render
-        return;
-      }
-      if (item.children) {
-        updateItemChildren(item.children, path, children);
-      }
+  const removeItem = async (item: FileSystemItem) => {
+    if (!confirm(`Delete ${item.name}?`)) return;
+    try {
+      if (item.isDirectory)
+        await fsp.rm(item.path, { recursive: true, force: true });
+      else await fsp.unlink(item.path);
+    } catch {
+      enqueueSnackbar('Failed to delete', { variant: 'error' });
     }
-  }
+  };
 
-  function contextMenu(item: FileSystemItem): JSX.Element {
-    return (
+  const NodeContextMenu = useCallback(
+    ({ item }: { item: FileSystemItem }) => (
       <ContextMenuContent>
         {item.isDirectory && (
-          <ContextMenuItem onClick={async () => await createNewFile(item)}>
-            <FilePlusIcon size={16} className="mr-2 inline-block" />
-            New File
-          </ContextMenuItem>
+          <>
+            <ContextMenuItem onClick={() => createNewFile(item)}>
+              <FilePlusIcon size={16} className="mr-2" /> New File
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => createNewDirectory(item)}>
+              <FolderPlusIcon size={16} className="mr-2" /> New Folder
+            </ContextMenuItem>
+          </>
         )}
-        {item.isDirectory && (
-          <ContextMenuItem onClick={async () => await createNewDirectory(item)}>
-            <FolderPlusIcon size={16} className="mr-2 inline-block" />
-            New Folder
-          </ContextMenuItem>
-        )}
-
         {!item.isRoot && (
-          <ContextMenuItem onClick={async () => await renameItem(item)}>
-            {item.isDirectory ? (
-              <FolderPenIcon size={16} className="mr-2 inline-block" />
-            ) : (
-              <FileTypeIcon size={16} className="mr-2 inline-block" />
-            )}
-            Rename {item.isDirectory ? 'Folder' : 'File'}
-          </ContextMenuItem>
-        )}
-
-        {!item.isRoot && (
-          <ContextMenuItem
-            onClick={async () => {
-              await removeItem(item);
-            }}
-          >
-            {item.isDirectory ? (
-              <FolderMinusIcon size={16} className="mr-2 inline-block" />
-            ) : (
-              <FileXIcon size={16} className="mr-2 inline-block" />
-            )}
-            Delete {item.isDirectory ? 'Folder' : 'File'}
-          </ContextMenuItem>
+          <>
+            <ContextMenuItem onClick={() => renameItem(item)}>
+              <FolderPenIcon size={16} className="mr-2" /> Rename
+            </ContextMenuItem>
+            <ContextMenuItem
+              onClick={() => removeItem(item)}
+              className="text-red-500"
+            >
+              <FolderMinusIcon size={16} className="mr-2" /> Delete
+            </ContextMenuItem>
+          </>
         )}
         <ContextMenuItem
-          onClick={() =>
-            navigator.clipboard.writeText(
-              item.path.replace(`${projectPath}/`, '')
-            )
-          }
+          onClick={() => navigator.clipboard.writeText(item.path)}
         >
-          <CopyIcon size={16} className="mr-2 inline-block" />
-          Copy Path
+          <CopyIcon size={16} className="mr-2" /> Copy Path
         </ContextMenuItem>
       </ContextMenuContent>
-    );
-  }
-
-  // Render file tree recursively
-  function renderFileTree(items: FileSystemItem[], depth = 0): JSX.Element[] {
-    return items.map(item => (
-      <div key={item.path}>
-        <ContextMenu>
-          <ContextMenuTrigger asChild>
-            <div
-              className={cn(
-                'flex items-center gap-1 px-2 py-0.5 text-sm cursor-pointer rounded transition-colors',
-                selectedItem === item.path
-                  ? 'bg-slate-200 dark:bg-slate-700'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800'
-              )}
-              style={{ paddingLeft: `${depth * 21 + 8}px` }}
-              onClick={() => {
-                setSelectedItem(item.path);
-                handleOpen(item);
-              }}
-              onDoubleClick={async () => await handleOpen(item)}
-            >
-              {item.isDirectory && (
-                <button
-                  className="p-0 h-4 w-4 flex items-center justify-center"
-                  onClick={async e => {
-                    e.stopPropagation();
-                    await toggleDirectory(item);
-                  }}
-                >
-                  {expandedFolders.has(item.path) ? (
-                    <ChevronDown size={12} />
-                  ) : (
-                    <ChevronRight size={12} />
-                  )}
-                </button>
-              )}
-
-              {item.isDirectory ? (
-                expandedFolders.has(item.path) ? (
-                  <FolderOpen size={16} className="text-blue-500" />
-                ) : (
-                  <Folder size={16} className="text-blue-500" />
-                )
-              ) : (
-                getFileIcon(item.name, false)
-              )}
-
-              <span className="truncate flex-1">{item.name}</span>
-            </div>
-          </ContextMenuTrigger>
-
-          {contextMenu(item)}
-        </ContextMenu>
-
-        {item.isDirectory &&
-          expandedFolders.has(item.path) &&
-          item.children && (
-            <div>{renderFileTree(item.children, depth + 1)}</div>
-          )}
-      </div>
-    ));
-  }
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [projectPath]
+  );
 
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <div className="flex-1 overflow-auto p-1 min-h-full">
-          {loading ? (
-            <div className="p-4 text-center text-muted-foreground text-sm">
+          {loading && fileTree.length === 0 ? (
+            <div className="flex items-center justify-center h-20 text-muted-foreground text-sm">
               Loading files...
             </div>
           ) : fileTree.length === 0 ? (
@@ -326,11 +297,25 @@ export function FileExplorerPanel() {
               No files found
             </div>
           ) : (
-            <div className="min-h-full">{renderFileTree(fileTree)}</div>
+            <div className="min-h-full">
+              {fileTree.map(item => (
+                <FileTreeNode
+                  key={item.path}
+                  item={item}
+                  depth={0}
+                  expandedFolders={expandedFolders}
+                  selectedItem={selectedItem}
+                  onToggle={toggleDirectory}
+                  onOpen={handleOpen}
+                  onSelect={setSelectedItem}
+                  ContextMenuComponent={NodeContextMenu}
+                />
+              ))}
+            </div>
           )}
         </div>
       </ContextMenuTrigger>
-      {contextMenu(rootFileItem)}
+      <NodeContextMenu item={rootFileItem} />
     </ContextMenu>
   );
 }
