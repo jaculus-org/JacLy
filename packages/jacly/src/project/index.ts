@@ -1,0 +1,1 @@
+export { getRequest } from './request';

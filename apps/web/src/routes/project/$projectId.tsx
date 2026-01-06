@@ -1,5 +1,7 @@
+import { JacDeviceProvider } from '@/features/jac-device/provider/jac-device-provider';
 import { ProjectEditorComponent } from '@/features/project/components';
 import { ActiveProjectProvider } from '@/features/project/provider/active-project-provider';
+import { TerminalProvider } from '@/features/terminal/provider/terminal-provider';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 
@@ -23,10 +25,14 @@ function ProjectEditorRoute() {
 
   return (
     <ActiveProjectProvider
-      project={project}
+      dbProject={project}
       projectFsService={projectFsService}
     >
-      <ProjectEditorComponent />
+      <TerminalProvider>
+        <JacDeviceProvider>
+          <ProjectEditorComponent />
+        </JacDeviceProvider>
+      </TerminalProvider>
     </ActiveProjectProvider>
   );
 }

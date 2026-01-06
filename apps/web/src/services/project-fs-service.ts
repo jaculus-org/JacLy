@@ -1,5 +1,6 @@
 import { configure, fs, mounts, umount } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
+import { Zip } from '@zenfs/archives';
 
 export interface ProjectFsInterface {
   fs: typeof fs;
@@ -34,12 +35,14 @@ export class ProjectFsService {
     }
 
     try {
+      const res = await fetch('/tsLibs.zip');
       await configure({
         mounts: {
           [mountPath]: {
             backend: IndexedDB,
             storeName,
           },
+          '/tsLibs': { backend: Zip, data: await res.arrayBuffer() },
         },
       });
     } catch (error) {

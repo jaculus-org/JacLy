@@ -1,13 +1,11 @@
 import { Button } from '@/features/shared/components/ui/button';
-import { useActiveProject } from '@/hooks/use-active-project';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
 import { CableIcon } from 'lucide-react';
+import { useJacDevice } from '../provider/jac-device-provider';
 
-interface ConsoleSelectorProps {}
-
-export function ConsoleSelector({}: ConsoleSelectorProps) {
-  const { device } = useActiveProject();
+export function ConsoleSelector() {
+  const { device } = useJacDevice();
   const { controlPanel } = useEditor();
 
   if (!device) {

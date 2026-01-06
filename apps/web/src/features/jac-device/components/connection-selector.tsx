@@ -6,18 +6,22 @@ import {
   SelectValue,
 } from '@/features/shared/components/ui/select';
 import { useState } from 'react';
-import { connectDevice, getAvailableConnectionTypes } from '../lib/connection';
+import {
+  connectDevice,
+  getAvailableConnectionTypes,
+  UnknownConnectionTypeError,
+} from '../lib/connection';
 import { Button } from '@/features/shared/components/ui/button';
 import type { ConnectionType } from '../types/connection';
 import { enqueueSnackbar } from 'notistack';
-import { useActiveProject } from '@/hooks/use-active-project';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
+import { useJacDevice } from '../provider/jac-device-provider';
+import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 
-interface ConnectionSelectorProps {}
-
-export function ConnectionSelector({}: ConnectionSelectorProps) {
+export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
-  const { setDevice } = useActiveProject();
+  const { addEntry } = useTerminal();
+  const { setDevice } = useJacDevice();
 
   const [selectedConnection, setSelectedConnection] = useState<ConnectionType>(
     availableConnections[0].type
@@ -34,12 +38,23 @@ export function ConnectionSelector({}: ConnectionSelectorProps) {
     }
   }
 
+  function onDisconnect() {
+    setDevice(null);
+    setIsConnected(false);
+    enqueueSnackbar('Device disconnected.', { variant: 'warning' });
+  }
+
   async function handleConnect() {
     try {
-      setDevice(await connectDevice(selectedConnection));
+      setDevice(
+        await connectDevice(selectedConnection, addEntry, onDisconnect)
+      );
     } catch (error) {
-      console.error('Failed to connect device:', error);
-      enqueueSnackbar('Failed to connect device.', { variant: 'error' });
+      if (error instanceof UnknownConnectionTypeError) {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      } else {
+        enqueueSnackbar('Failed to connect to device.', { variant: 'error' });
+      }
       return;
     }
     setIsConnected(true);

@@ -1,4 +1,4 @@
-import type { IProject } from '@/types/project';
+import type { IDbProject } from '@/types/project';
 import type { AppDB } from '@/lib/db/db';
 
 export class ProjectRepository {
@@ -8,11 +8,11 @@ export class ProjectRepository {
     this.db = db;
   }
 
-  async get(id: string): Promise<IProject | undefined> {
+  async get(id: string): Promise<IDbProject | undefined> {
     return this.db.projects.get(id);
   }
 
-  async list(): Promise<IProject[]> {
+  async list(): Promise<IDbProject[]> {
     return this.db.projects
       .filter(project => project.deletedAt === null)
       .sortBy('modifiedAt');
@@ -21,10 +21,10 @@ export class ProjectRepository {
   async create(
     id: string,
     name: string,
-    type: IProject['type']
-  ): Promise<IProject> {
+    type: IDbProject['type']
+  ): Promise<IDbProject> {
     const now = Date.now();
-    const row: IProject = {
+    const row: IDbProject = {
       id,
       name,
       type,
@@ -53,8 +53,8 @@ export class ProjectRepository {
 
   async updateKey(
     id: string,
-    key: keyof IProject,
-    value: IProject[typeof key]
+    key: keyof IDbProject,
+    value: IDbProject[typeof key]
   ): Promise<void> {
     await this.db.projects.update(id, { [key]: value });
   }

@@ -4,11 +4,11 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/features/shared/components/ui/context-menu';
-import { useActiveProject } from '@/hooks/use-active-project';
 import { cn } from '@/lib/utils/cn';
 import {
   ChevronDown,
   ChevronRight,
+  CopyIcon,
   FilePlusIcon,
   FileTypeIcon,
   FileXIcon,
@@ -23,6 +23,7 @@ import type { FileSystemItem } from './types';
 import { getFileIcon, buildFileTree, loadDirectoryChildren } from './helper';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
 import { enqueueSnackbar } from 'notistack';
+import { useActiveProject } from '@/features/project/provider/active-project-provider';
 
 export function FileExplorerPanel() {
   const { fsp, projectPath } = useActiveProject();
@@ -126,6 +127,8 @@ export function FileExplorerPanel() {
     const newPath = `${item.path}/${fileName}`;
     try {
       await fsp.writeFile(newPath, '', 'utf-8');
+
+      openPanel('code', { filePath: newPath.replace(`${projectPath}/`, '') });
     } catch (error) {
       console.error('Error creating file:', error);
       enqueueSnackbar('Failed to create file', { variant: 'error' });
@@ -234,6 +237,16 @@ export function FileExplorerPanel() {
             Delete {item.isDirectory ? 'Folder' : 'File'}
           </ContextMenuItem>
         )}
+        <ContextMenuItem
+          onClick={() =>
+            navigator.clipboard.writeText(
+              item.path.replace(`${projectPath}/`, '')
+            )
+          }
+        >
+          <CopyIcon size={16} className="mr-2 inline-block" />
+          Copy Path
+        </ContextMenuItem>
       </ContextMenuContent>
     );
   }

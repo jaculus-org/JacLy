@@ -4,6 +4,8 @@ import { PanelWrapper } from '@/features/project/components/panel-warpper';
 import { FileExplorerPanel } from '../components/panels/file-explorer';
 import { CodePanel } from '../components/panels/code';
 import { GeneratedCode } from '../components/panels/generated-code';
+import { ConsolePanel } from '../components/panels/console';
+import { LogsPanel } from '../components/panels/logs';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
@@ -11,13 +13,13 @@ const PANEL_COMPONENTS: Record<
   (config?: Record<string, unknown>) => React.ReactNode
 > = {
   blockly: () => <>blockly</>,
-  console: () => <>console</>,
+  console: () => <ConsolePanel />,
   'file-explorer': () => <FileExplorerPanel />,
   code: config => <CodePanel filePath={config?.filePath as string} />,
   'generated-code': () => <GeneratedCode />,
   wokwi: () => <>wokwi</>,
   packages: () => <>packages</>,
-  logs: () => <>logs</>,
+  logs: () => <LogsPanel />,
 };
 
 export function factory(node: FlexLayout.TabNode) {

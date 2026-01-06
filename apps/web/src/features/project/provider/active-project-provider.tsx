@@ -1,36 +1,32 @@
-import { createContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 import * as fs from 'fs';
-import type { IProject } from '@/types/project';
+import type { IDbProject } from '@/types/project';
 import {
   ProjectFsService,
   type ProjectFsInterface,
 } from '@/services/project-fs-service';
 import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
 import { ProjectLoadError } from '@/features/project/components/project-load-error';
-import { indexMonacoFiles } from '@/features/editor/lib/project-indexer';
+import { indexMonacoFiles } from '@/features/code-editor/lib/project-indexer';
 import { useMonaco } from '@monaco-editor/react';
-import { JacDevice } from '@jaculus/device';
-
 export interface ActiveProjectContextValue {
   fs: typeof fs;
   fsp: typeof fs.promises;
-  project: IProject;
+  dbProject: IDbProject;
   projectPath: string;
-  device: JacDevice | null;
-  setDevice: (device: JacDevice | null) => void;
 }
 
 export const ActiveProjectContext =
   createContext<ActiveProjectContextValue | null>(null);
 
 interface ActiveProjectProviderProps {
-  project: IProject;
+  dbProject: IDbProject;
   projectFsService: ProjectFsService;
   children: ReactNode;
 }
 
 export function ActiveProjectProvider({
-  project,
+  dbProject: project,
   projectFsService,
   children,
 }: ActiveProjectProviderProps) {
@@ -38,7 +34,7 @@ export function ActiveProjectProvider({
     null
   );
   const [error, setError] = useState<Error | null>(null);
-  const [device, setDevice] = useState<JacDevice | null>(null);
+
   const monaco = useMonaco();
 
   useEffect(() => {
@@ -86,15 +82,8 @@ export function ActiveProjectProvider({
   const contextValue: ActiveProjectContextValue = {
     fs: fsInterface.fs as unknown as typeof fs,
     fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
-    project,
+    dbProject: project,
     projectPath: fsInterface.projectPath,
-    device: device,
-    setDevice: (newDevice: JacDevice | null) => {
-      if (device) {
-        device.destroy();
-      }
-      setDevice(newDevice);
-    },
   };
 
   return (
@@ -102,4 +91,14 @@ export function ActiveProjectProvider({
       {children}
     </ActiveProjectContext.Provider>
   );
+}
+
+export function useActiveProject(): ActiveProjectContextValue {
+  const context = use(ActiveProjectContext);
+  if (!context) {
+    throw new Error(
+      'useActiveProject must be used within an ActiveProjectProvider'
+    );
+  }
+  return context;
 }

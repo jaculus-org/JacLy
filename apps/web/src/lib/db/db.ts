@@ -1,9 +1,9 @@
 import Dexie, { type Table } from 'dexie';
 import type { ISettings } from '@/types/settings';
-import type { IProject } from '@/types/project';
+import type { IDbProject } from '@/types/project';
 
 export class AppDB extends Dexie {
-  projects!: Table<IProject, string>;
+  projects!: Table<IDbProject, string>;
   settings!: Table<ISettings, number>;
 
   constructor() {

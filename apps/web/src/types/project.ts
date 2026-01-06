@@ -1,6 +1,6 @@
 import type { JaculusProjectType } from '@jaculus/project';
 
-export interface IProject {
+export interface IDbProject {
   id: string;
   name: string;
   type: JaculusProjectType;

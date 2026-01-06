@@ -39,7 +39,9 @@ export async function indexMonacoFiles(
   monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
 
   try {
-    const { loadProjectFiles } = await import('@/features/editor/lib/loader');
+    const { loadProjectFiles } = await import(
+      '@/features/code-editor/lib/loader'
+    );
     const fileEntries = await loadProjectFiles(projectPath, fsp);
 
     fileEntries.forEach(({ path, content }) => {

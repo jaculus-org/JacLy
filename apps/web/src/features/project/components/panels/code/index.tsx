@@ -1,4 +1,4 @@
-import { CodeEditor } from '@/features/editor/components';
+import { CodeEditor } from '@/features/code-editor/components';
 
 interface CodePanelProps {
   filePath: string;

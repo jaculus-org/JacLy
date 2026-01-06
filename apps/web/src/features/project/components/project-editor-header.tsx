@@ -1,5 +1,7 @@
-import { ConnectionSelector } from '@/features/device/components/connection-selector';
-import { ConsoleSelector } from '@/features/device/components/console-selector';
+import { Build } from '@/features/jac-device/components/build';
+import { BuildFlash } from '@/features/jac-device/components/build-flash';
+import { ConnectionSelector } from '@/features/jac-device/components/connection-selector';
+import { ConsoleSelector } from '@/features/jac-device/components/console-selector';
 import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
@@ -22,6 +24,8 @@ export function ProjectEditorHeader() {
 
           {/* Theme switcher */}
           <div className="flex items-center gap-4">
+            <Build />
+            <BuildFlash />
             <ConsoleSelector />
             <ConnectionSelector />
             <ThemeToggle />
