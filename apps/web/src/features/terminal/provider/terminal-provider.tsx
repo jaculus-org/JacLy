@@ -28,12 +28,6 @@ export interface TerminalContextValue {
 
 export const TerminalContext = createContext<TerminalContextValue | null>(null);
 
-const consoleKeys: TerminalStreamType[] = [
-  'console-in',
-  'console-out',
-  'console-err',
-];
-
 export const logKeys = ['compiler', 'runtime'];
 
 interface TerminalProviderProps {
@@ -68,13 +62,13 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
   }
 
   const consoleEntries = useMemo(
-    () => entries.filter(entry => consoleKeys.includes(entry.type)),
+    () => entries.filter(entry => entry.type.startsWith('console')),
     [entries]
   );
 
   // non-console entries
   const logEntries = useMemo(
-    () => entries.filter(entry => !consoleKeys.includes(entry.type)),
+    () => entries.filter(entry => !entry.type.startsWith('console')),
     [entries]
   );
 

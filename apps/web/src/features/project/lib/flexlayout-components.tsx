@@ -6,6 +6,7 @@ import { CodePanel } from '../components/panels/code';
 import { GeneratedCode } from '../components/panels/generated-code';
 import { ConsolePanel } from '../components/panels/console';
 import { LogsPanel } from '../components/panels/logs';
+import { PackagesPanel } from '../components/panels/packages';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
@@ -18,7 +19,7 @@ const PANEL_COMPONENTS: Record<
   code: config => <CodePanel filePath={config?.filePath as string} />,
   'generated-code': () => <GeneratedCode />,
   wokwi: () => <>wokwi</>,
-  packages: () => <>packages</>,
+  packages: () => <PackagesPanel />,
   logs: () => <LogsPanel />,
 };
 

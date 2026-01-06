@@ -39,6 +39,7 @@
     "clsx": "^2.1.1",
     "dexie": "^4.2.1",
     "dexie-react-hooks": "^4.2.0",
+    "fflate": "^0.8.2",
     "flexlayout-react": "^0.8.17",
     "lucide-react": "^0.562.0",
     "nanoid": "^5.1.6",

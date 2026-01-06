@@ -1,3 +1,4 @@
+import { downloadProjectAsZip } from '@/features/project/lib/download';
 import { Button } from '@/features/shared/components/ui/button';
 import {
   Card,
@@ -19,9 +20,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/features/shared/components/ui/dropdown-menu';
+import type { FSInterface } from '@jaculus/project/fs';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Blocks, Code, MoreVertical, Trash } from 'lucide-react';
+import { Blocks, Code, Download, MoreVertical, Trash } from 'lucide-react';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/project/')({
@@ -29,7 +31,7 @@ export const Route = createFileRoute('/project/')({
 });
 
 function EditorList() {
-  const { runtimeService } = Route.useRouteContext();
+  const { runtimeService, projectFsService } = Route.useRouteContext();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
@@ -102,6 +104,24 @@ function EditorList() {
                             >
                               <Trash className="w-4 h-4 mr-2" />
                               Delete Project
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={async e => {
+                                e.stopPropagation();
+                                await projectFsService.withMount(
+                                  project.id,
+                                  async ({ fs, projectPath }) => {
+                                    await downloadProjectAsZip(
+                                      fs as unknown as FSInterface,
+                                      projectPath,
+                                      project.name
+                                    );
+                                  }
+                                );
+                              }}
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              Download as ZIP
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
