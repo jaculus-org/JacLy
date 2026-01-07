@@ -3,7 +3,6 @@ import { enqueueSnackbar } from 'notistack';
 
 export function inferLanguageFromPath(path: string): string {
   if (!path) return 'plaintext';
-  console.log('Inferring language from path:', path);
   const extension = path.split('.').pop()?.toLowerCase();
   switch (extension) {
     case 'ts':
@@ -24,12 +23,12 @@ export async function indexMonacoFiles(
   projectPath: string,
   fsp: typeof import('fs').promises
 ) {
-  console.log(
-    'Indexing Monaco files for project at:',
-    projectPath,
-    monaco,
-    fsp
-  );
+  // console.log(
+  //   'Indexing Monaco files for project at:',
+  //   projectPath,
+  //   monaco,
+  //   fsp
+  // );
 
   if (!monaco || !projectPath || !fsp) return;
 
@@ -47,7 +46,7 @@ export async function indexMonacoFiles(
     fileEntries.forEach(({ path, content }) => {
       // create valid Monaco URI
       const uri = monaco.Uri.file(path);
-      console.log('Indexing file in Monaco:', path, uri.toString(), content);
+      // console.log('Indexing file in Monaco:', path, uri.toString(), content);
 
       const existingModel = monaco.editor.getModel(uri);
       if (existingModel) {

@@ -23,7 +23,6 @@ export const defaultLayout: FlexLayout.IJsonRowNode = {
           name: 'Blockly Editor',
           component: 'blockly',
           id: 'blockly',
-          enableClose: true,
         },
       ],
     },

@@ -9,11 +9,13 @@ import { ProjectLoadingIndicator } from '@/features/project/components/project-l
 import { ProjectLoadError } from '@/features/project/components/project-load-error';
 import { indexMonacoFiles } from '@/features/code-editor/lib/project-indexer';
 import { useMonaco } from '@monaco-editor/react';
+import { JaclyFiles } from '../types/jacly-files';
 export interface ActiveProjectContextValue {
   fs: typeof fs;
   fsp: typeof fs.promises;
   dbProject: IDbProject;
   projectPath: string;
+  getFileName(fileType: keyof typeof JaclyFiles): string;
 }
 
 export const ActiveProjectContext =
@@ -84,6 +86,9 @@ export function ActiveProjectProvider({
     fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
     dbProject: project,
     projectPath: fsInterface.projectPath,
+    getFileName(fileType) {
+      return `${fsInterface.projectPath}/${JaclyFiles[fileType]}`;
+    },
   };
 
   return (

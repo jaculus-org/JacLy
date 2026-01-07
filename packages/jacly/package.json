@@ -10,10 +10,10 @@
     "LICENSE"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/blocks/index.d.ts",
-      "import": "./dist/blocks/index.js",
-      "default": "./dist/blocks/index.js"
+    "./editor": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./project": {
       "types": "./dist/project/index.d.ts",
@@ -22,8 +22,8 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build": "tsc && tsc-alias",
+    "build:watch": "tsc --watch & tsc-alias --watch",
     "type-check": "tsc --noEmit",
     "lint": "echo 'No linting configured for this package'",
     "lint:fix": "echo 'No linting configured for this package'",
@@ -41,6 +41,7 @@
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
     "blockly": "^12.3.1",
+    "lucide-react": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.1.12"
@@ -55,6 +56,7 @@
     "chai": "^6.2.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "vite": "^7.1.12"

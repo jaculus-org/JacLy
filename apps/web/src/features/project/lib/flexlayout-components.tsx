@@ -7,13 +7,14 @@ import { GeneratedCode } from '../components/panels/generated-code';
 import { ConsolePanel } from '../components/panels/console';
 import { LogsPanel } from '../components/panels/logs';
 import { PackagesPanel } from '../components/panels/packages';
+import { BlocklyEditorPanel } from '../components/panels/blockly';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
   PanelType,
   (config?: Record<string, unknown>) => React.ReactNode
 > = {
-  blockly: () => <>blockly</>,
+  blockly: () => <BlocklyEditorPanel />,
   console: () => <ConsolePanel />,
   'file-explorer': () => <FileExplorerPanel />,
   code: config => <CodePanel filePath={config?.filePath as string} />,

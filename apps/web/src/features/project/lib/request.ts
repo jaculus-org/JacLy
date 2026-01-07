@@ -31,8 +31,6 @@ export async function loadPackageUri(
     throw new Error(`Unsupported URI scheme or missing fs for ${pkgUri}`);
   }
 
-  console.log(gz);
-
   const dirs: string[] = [];
   const files: Record<string, Uint8Array> = {};
 
