@@ -34,7 +34,7 @@ export const FileTreeNode = memo(
                   ? 'bg-slate-200 dark:bg-slate-700'
                   : 'hover:bg-slate-100 dark:hover:bg-slate-800'
               )}
-              style={{ paddingLeft: `${depth * 20 + 8}px` }}
+              style={{ paddingLeft: `${depth * 15 + 8}px` }}
               onClick={() => {
                 onSelect(item.path);
                 onOpen(item);

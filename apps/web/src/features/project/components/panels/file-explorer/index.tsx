@@ -274,7 +274,7 @@ export function FileExplorerPanel() {
           </>
         )}
         <ContextMenuItem
-          onClick={() => navigator.clipboard.writeText(item.path)}
+          onClick={() => navigator.clipboard.writeText(item.path.replace(`${projectPath}`, ''))}
         >
           <CopyIcon size={16} className="mr-2" /> Copy Path
         </ContextMenuItem>
