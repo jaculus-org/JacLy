@@ -11,9 +11,9 @@
   ],
   "exports": {
     "./editor": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/editor/index.d.ts",
+      "import": "./dist/editor/index.js",
+      "default": "./dist/editor/index.js"
     },
     "./project": {
       "types": "./dist/project/index.d.ts",

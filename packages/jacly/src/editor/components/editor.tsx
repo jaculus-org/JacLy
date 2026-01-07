@@ -1,12 +1,16 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import * as Blockly from 'blockly/core';
+import 'blockly/blocks';
 import { Theme } from '@/editor/types/theme';
 import { useState, useEffect } from 'react';
 import { getBlocklyTheme } from '@/editor/lib/theme';
 import { JaclyBlocksFiles } from '@jaculus/project';
-import { loadToolboxConfiguration } from '@/editor/lib/toolbox-loader';
+import { loadToolboxConfiguration } from '@/blocks/lib/toolbox-loader';
 import { workspaceChange } from '../lib/workspace-change';
 import { JaclyLoading } from './loading';
+import * as En from 'blockly/msg/en';
+
+Object.assign(Blockly.Msg, En);
 
 interface JaclyEditorProps {
   theme: Theme;

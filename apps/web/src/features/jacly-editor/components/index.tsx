@@ -1,6 +1,6 @@
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { useTheme } from '@/features/theme/components/theme-provider';
-import { JaclyEditor } from '@jaculus/jacly/editor';
+import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
 import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect } from 'react';
 import { dirname } from 'path';
@@ -85,7 +85,7 @@ export function BlocklyEditorComponent() {
   }
 
   if (isLoading || !initialJson || !jaclyBlockFiles) {
-    return <div>Loading editor...</div>;
+    return <JaclyLoading />;
   }
 
   return (
