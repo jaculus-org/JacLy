@@ -53,13 +53,11 @@ function setupJacDevice(
 
   device.programOutput.onData(data => {
     const msg = String.fromCharCode(...data);
-    logger.info('[PROGRAM OUT]' + msg);
     addToTerminal('console-out', msg);
   });
 
   device.programError.onData(data => {
     const msg = String.fromCharCode(...data);
-    logger.error('[PROGRAM ERR]' + msg);
     addToTerminal('console-err', msg);
   });
 

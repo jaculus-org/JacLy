@@ -1,6 +1,6 @@
-import { CodeEditor } from '@/features/code-editor/components';
+import { CodeEditorReadOnly } from '@/features/code-editor/components/code-editor-read';
 
 export function GeneratedCode() {
   const filePath = 'build/index.js';
-  return <CodeEditor filePath={filePath} readOnly={true} />;
+  return <CodeEditorReadOnly filePath={filePath} />;
 }

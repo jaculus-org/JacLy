@@ -8,6 +8,7 @@ import { ConsolePanel } from '../components/panels/console';
 import { LogsPanel } from '../components/panels/logs';
 import { PackagesPanel } from '../components/panels/packages';
 import { BlocklyEditorPanel } from '../components/panels/blockly';
+import { JaculusPanel } from '../components/panels/jaculus';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
@@ -22,6 +23,7 @@ const PANEL_COMPONENTS: Record<
   wokwi: () => <>wokwi</>,
   packages: () => <PackagesPanel />,
   logs: () => <LogsPanel />,
+  jaculus: () => <JaculusPanel />,
 };
 
 export function factory(node: FlexLayout.TabNode) {

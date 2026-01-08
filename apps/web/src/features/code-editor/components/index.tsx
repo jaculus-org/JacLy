@@ -1,8 +1,8 @@
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { debounce } from '@/lib/utils/debouncer';
 import { useMemo, useRef } from 'react';
-import { inferLanguageFromPath } from '../lib/project-indexer';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { inferLanguageFromPath } from '../lib/language';
 
 interface CodeEditorProps {
   readonly filePath?: string;

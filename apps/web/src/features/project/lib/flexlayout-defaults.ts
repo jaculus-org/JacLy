@@ -50,6 +50,13 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
         id: 'packages',
         enableClose: false,
       },
+      {
+        type: 'tab',
+        name: 'Jaculus',
+        component: 'jaculus',
+        id: 'jaculus',
+        enableClose: false,
+      },
     ],
   },
   {

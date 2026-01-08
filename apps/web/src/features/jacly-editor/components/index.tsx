@@ -20,6 +20,13 @@ export function BlocklyEditorComponent() {
   useEffect(() => {
     (async () => {
       try {
+        if (!jacProject) {
+          enqueueSnackbar('No Jacly project loaded.', { variant: 'error' });
+          setInitialJson({});
+          setJaclyBlockFiles({});
+          return;
+        }
+
         setIsLoading(true);
 
         // Load initial JSON

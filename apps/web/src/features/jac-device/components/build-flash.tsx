@@ -11,9 +11,9 @@ import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 export function BuildFlash() {
   const { projectPath, fs } = useActiveProject();
   const { addEntry } = useTerminal();
-  const { device } = useJacDevice();
+  const { device, jacProject } = useJacDevice();
 
-  if (!device) {
+  if (!device || !jacProject) {
     return;
   }
 
@@ -28,7 +28,12 @@ export function BuildFlash() {
         enqueueSnackbar('Compilation failed', { variant: 'error' });
         return;
       }
-      await flashProject(projectPath, device, fs);
+      const files = await jacProject!.getFlashFiles();
+      console.log(`Files to flash: ${Object.keys(files).length}`);
+      for (const [filePath, content] of Object.entries(files)) {
+        console.log(`File: ${filePath}, Content: ${content.toString()}`);
+      }
+      await flashProject(files, device);
     } catch (error) {
       enqueueSnackbar(
         error instanceof Error ? error.message : 'Build & Flash failed',

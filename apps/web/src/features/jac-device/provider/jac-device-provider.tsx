@@ -1,4 +1,4 @@
-import { createContext, use, useState, type ReactNode } from 'react';
+import { createContext, use, useMemo, useState, type ReactNode } from 'react';
 import { loadPackageJsonSync, Project, Registry } from '@jaculus/project';
 import { JacDevice } from '@jaculus/device';
 import { getRequest } from '@jaculus/jacly/project';
@@ -7,9 +7,10 @@ import path from 'path';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { createWritableStream } from '@/features/terminal/lib/stream';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { enqueueSnackbar } from 'notistack';
 
 export interface JacDeviceContextValue {
-  jacProject: Project;
+  jacProject: Project | null;
   device: JacDevice | null;
   setDevice: (device: JacDevice | null) => void;
   outStream?: Writable;
@@ -29,20 +30,42 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const { addEntry } = useTerminal();
   const [device, setDevice] = useState<JacDevice | null>(null);
 
-  const pkg = loadPackageJsonSync(fs, path.join(projectPath, 'package.json'));
-  const registry = new Registry(pkg.registry, getRequest);
+  const jacProject = useMemo(() => {
+    const packageJsonPath = path.join(projectPath, 'package.json');
+    try {
+      if (!fs.existsSync(packageJsonPath)) {
+        enqueueSnackbar(
+          'No package.json found in the project. Please initialize a Jacly project.',
+          { variant: 'warning' }
+        );
+        return null;
+      }
+      const pkg = loadPackageJsonSync(fs, packageJsonPath);
+      const registry = new Registry(pkg.registry, getRequest);
 
-  const jacProject = new Project(
-    fs,
-    projectPath,
-    createWritableStream('runtime-stdout', addEntry),
-    createWritableStream('runtime-stderr', addEntry),
-    registry
-  );
+      return new Project(
+        fs,
+        projectPath,
+        createWritableStream('runtime-stdout', addEntry),
+        createWritableStream('runtime-stderr', addEntry),
+        registry
+      );
+    } catch (error) {
+      console.error(
+        `Failed to load Jacly project at ${packageJsonPath}:`,
+        error
+      );
+      enqueueSnackbar(
+        `Failed to load Jacly project. Please ensure it is a valid Jacly project.`,
+        { variant: 'error' }
+      );
+      return null;
+    }
+  }, [fs, projectPath, addEntry]);
 
   const contextValue: JacDeviceContextValue = {
-    jacProject: jacProject,
-    device: device,
+    jacProject,
+    device,
     setDevice: (newDevice: JacDevice | null) => {
       if (device) {
         device.destroy();

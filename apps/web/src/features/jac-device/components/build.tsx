@@ -9,15 +9,20 @@ import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 
 export function Build() {
   const { projectPath, fs } = useActiveProject();
-  const { device } = useJacDevice();
+  const { jacProject } = useJacDevice();
   const { addEntry } = useTerminal();
 
-  if (device) {
+  if (jacProject == null) {
     return;
   }
 
   async function handleBuild() {
     try {
+      const files = await jacProject!.getFlashFiles();
+      console.log(`Files to flash: ${Object.keys(files).length}`);
+      for (const [filePath, content] of Object.entries(files)) {
+        console.log(`File: ${filePath}, Content: ${content.toString()}`);
+      }
       if (!(await compileProject(projectPath, fs, addEntry))) {
         enqueueSnackbar('Compilation failed', { variant: 'error' });
         return;

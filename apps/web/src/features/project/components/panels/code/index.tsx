@@ -1,9 +1,9 @@
-import { CodeEditor } from '@/features/code-editor/components';
+import { CodeEditorBasic } from '@/features/code-editor/components/code-editor-basic';
 
 interface CodePanelProps {
   filePath: string;
 }
 
 export function CodePanel({ filePath }: CodePanelProps) {
-  return <CodeEditor filePath={filePath} />;
+  return <CodeEditorBasic filePath={filePath} ifNotExists="create" />;
 }

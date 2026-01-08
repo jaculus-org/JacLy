@@ -7,9 +7,8 @@ import {
 } from '@/services/project-fs-service';
 import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
 import { ProjectLoadError } from '@/features/project/components/project-load-error';
-import { indexMonacoFiles } from '@/features/code-editor/lib/project-indexer';
-import { useMonaco } from '@monaco-editor/react';
 import { JaclyFiles } from '../types/jacly-files';
+// import { useMonaco } from '@monaco-editor/react';
 export interface ActiveProjectContextValue {
   fs: typeof fs;
   fsp: typeof fs.promises;
@@ -37,10 +36,10 @@ export function ActiveProjectProvider({
   );
   const [error, setError] = useState<Error | null>(null);
 
-  const monaco = useMonaco();
+  // const monaco = useMonaco();
 
   useEffect(() => {
-    if (!monaco) return;
+    // if (!monaco) return;
 
     let mounted = true;
 
@@ -48,11 +47,17 @@ export function ActiveProjectProvider({
       try {
         const result = await projectFsService.mount(project.id);
         if (mounted) {
-          indexMonacoFiles(
-            monaco,
-            result.projectPath,
-            result.fs.promises as unknown as typeof fs.promises
-          );
+          // indexMonacoFiles(
+          //   monaco,
+          //   result.projectPath,
+          //   result.fs.promises as unknown as typeof fs.promises
+          // );
+          // watchMonacoFiles(
+          //   monaco,
+          //   result.projectPath,
+          //   result.fs as unknown as typeof fs
+          // );
+
           setFsInterface(result);
         }
       } catch (err) {
@@ -71,7 +76,7 @@ export function ActiveProjectProvider({
       // Unmount when leaving the project
       projectFsService.unmount(project.id);
     };
-  }, [project.id, projectFsService, monaco]);
+  }, [project.id, projectFsService /*monaco */]);
 
   if (error) {
     return <ProjectLoadError error={error} />;

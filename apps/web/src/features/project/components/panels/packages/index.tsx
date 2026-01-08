@@ -50,7 +50,7 @@ export function PackagesPanel() {
     (async () => {
       try {
         setError(null);
-        if (jacProject.registry == null) return;
+        if (jacProject == null || jacProject.registry == null) return;
         setAvailableLibs(await jacProject.registry.list());
         setInstalledLibs(await jacProject.installedLibraries());
       } catch (err) {
@@ -66,7 +66,11 @@ export function PackagesPanel() {
     (async () => {
       try {
         setError(null);
-        if (selectedLib == null || jacProject.registry == null) {
+        if (
+          jacProject == null ||
+          selectedLib == null ||
+          jacProject.registry == null
+        ) {
           setAvailableLibVersions([]);
           return;
         }
@@ -87,12 +91,20 @@ export function PackagesPanel() {
     })();
   }, [selectedLib, jacProject]);
 
+  if (jacProject == null) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+        No project loaded
+      </div>
+    );
+  }
+
   async function handleInstall() {
     try {
       setIsInstalling(true);
       setError(null);
-      await jacProject.install();
-      setInstalledLibs(await jacProject.installedLibraries());
+      await jacProject!.install();
+      setInstalledLibs(await jacProject!.installedLibraries());
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to install library'
@@ -112,9 +124,9 @@ export function PackagesPanel() {
         return;
       }
       const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
-      await jacProject.addLibraryVersion(selectedLib, versionToInstall);
-      await jacProject.install();
-      setInstalledLibs(await jacProject.installedLibraries());
+      await jacProject!.addLibraryVersion(selectedLib, versionToInstall);
+      await jacProject!.install();
+      setInstalledLibs(await jacProject!.installedLibraries());
       enqueueSnackbar(
         `Library '${selectedLib}@${versionToInstall}' added successfully`,
         { variant: 'success' }
@@ -133,9 +145,9 @@ export function PackagesPanel() {
     try {
       setIsInstalling(true);
       setError(null);
-      await jacProject.removeLibrary(library);
-      await jacProject.install();
-      setInstalledLibs(await jacProject.installedLibraries());
+      await jacProject!.removeLibrary(library);
+      await jacProject!.install();
+      setInstalledLibs(await jacProject!.installedLibraries());
       enqueueSnackbar(`Library '${library}' removed successfully`, {
         variant: 'success',
       });

@@ -9,6 +9,13 @@
       "command": "cd [workspaceFolder]/apps/web && pnpm dev --force"
     },
     {
+      "name": "Web Dev Server - Lint",
+      "description": "Development server for web app",
+      "focus": false,
+      "icon": "globe",
+      "command": "cd [workspaceFolder]/apps/web && pnpm lint"
+    },
+    {
       "name": "Jacly Build Watch",
       "description": "Build watcher for Jacly package",
       "focus": false,
@@ -26,13 +33,23 @@
       ]
     },
     {
-      "name": "Registry Server",
+      "name": "Registry Server - Serve",
       "description": "Registry server for testing",
       "focus": true,
       "icon": "broadcast",
       "commands": [ // Multiple commands to run
         "cd ../Jaculus-libraries",
         "jaculus-registry serve ."
+      ]
+    },
+    {
+      "name": "Registry Server - Watch",
+      "description": "Registry server for testing",
+      "focus": true,
+      "icon": "broadcast",
+      "commands": [ // Multiple commands to run
+        "cd ../Jaculus-libraries",
+        "jaculus-registry build-watch ."
       ]
     }
   ]

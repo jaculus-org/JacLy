@@ -13,7 +13,8 @@ export type PanelType =
   | 'generated-code'
   | 'wokwi'
   | 'packages'
-  | 'logs';
+  | 'logs'
+  | 'jaculus';
 
 export type PanelAction = 'close' | 'expand' | 'collapse' | 'focus';
 
