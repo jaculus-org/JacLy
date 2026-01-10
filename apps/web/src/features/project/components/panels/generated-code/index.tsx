@@ -1,4 +1,4 @@
-import { CodeEditorReadOnly } from '@/features/code-editor/components/code-editor-read';
+import { CodeEditorReadOnly } from '@/features/editor-code/components/code-editor-read';
 
 export function GeneratedCode() {
   const filePath = 'build/index.js';

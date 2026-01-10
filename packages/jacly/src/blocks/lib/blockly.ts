@@ -1,16 +1,26 @@
 import { Blocks } from 'blockly/core';
 import { JaclyBlock, JaclyConfig } from '../schema';
-import { BlockWithCode } from '../types/custom-block';
+import { BlockExtended } from '../types/custom-block';
+import * as Blockly from 'blockly/core';
+
 import {
   JavascriptGenerator,
   javascriptGenerator as jsg,
   Order,
 } from 'blockly/javascript';
+import {
+  getConstructorMixin,
+  getInstanceDropdownGenerator,
+  registerConstructorType,
+  validateInstanceSelection,
+} from './constructors';
 
 export function registerBlocklyBlock(
   block: JaclyBlock,
   jaclyConfig: JaclyConfig
 ) {
+  const inputs: JaclyBlock['inputs'] = {};
+
   // Process message0 to replace $[NAME] with %1, %2, etc.
   if (block.args0 && block.args0.length > 0 && block.message0) {
     let argIndex = 1;
@@ -23,6 +33,23 @@ export function registerBlocklyBlock(
         message = message.replace(placeholder, `%${argIndex}`);
         argIndex++;
       }
+
+      // Special handling for instance dropdowns
+      if (arg.type === 'field_dropdown' && arg.instanceof && !arg.options) {
+        // Dynamically populate options for instance dropdowns
+        arg.options = [['<No Init Block>', 'INVALID']];
+      }
+
+      // Collect inputs for later use
+      if (arg.shadow) {
+        inputs[arg.name] = {
+          shadow: arg.shadow,
+        };
+      } else if (arg.block) {
+        inputs[arg.name] = {
+          block: arg.block,
+        };
+      }
     });
 
     while (argIndex <= block.args0.length) {
@@ -33,6 +60,12 @@ export function registerBlocklyBlock(
     block.message0 = message;
   }
 
+  // Attach inputs to the block definition
+  if (Object.keys(inputs).length > 0) {
+    block.inputs = inputs;
+  }
+
+  // Apply jaclyConfig properties to the block
   if (jaclyConfig.colour) {
     block.colour = jaclyConfig.colour;
   }
@@ -40,12 +73,55 @@ export function registerBlocklyBlock(
     block.style = jaclyConfig.style;
   }
 
+  if (block.constructs) {
+    registerConstructorType(block.constructs, block.type);
+  }
+
   // Define the block in Blockly
   Blocks[block.type] = {
-    init(this: BlockWithCode) {
+    init(this: BlockExtended) {
       this.jsonInit(block);
       this.code = block.code;
       this.isProgramStart = block.isProgramStart;
+
+      // Additional custom properties can be initialized here
+      if (block.constructs) {
+        this.mixin(getConstructorMixin(block.constructs));
+      }
+
+      if (block.args0) {
+        block.args0.forEach(arg => {
+          if (
+            arg.type === 'field_dropdown' &&
+            arg.instanceof &&
+            arg.options &&
+            arg.options.length === 1
+          ) {
+            const systemId = arg.instanceof;
+            const fieldName = arg.name;
+
+            const field = this.getField(fieldName);
+            if (field && field instanceof Blockly.FieldDropdown) {
+              // @ts-ignore
+              field.menuGenerator_ = getInstanceDropdownGenerator(systemId);
+            }
+
+            const existingOnChange = this.onchange;
+            this.onchange = function (this: BlockExtended, e: any) {
+              if (existingOnChange) existingOnChange.call(this, e);
+              validateInstanceSelection.call(this, systemId, fieldName);
+            };
+
+            this.saveExtraState = function () {
+              return { instanceName: this.getFieldValue(fieldName) };
+            };
+
+            this.loadExtraState = function (state: any) {
+              this.savedInstanceName = state['instanceName'];
+            };
+          }
+        });
+      }
     },
   };
 }
@@ -60,7 +136,7 @@ export function registerCodeGenerator(
   }
 
   jsg.forBlock[block.type] = function (
-    codeBlock: BlockWithCode,
+    codeBlock: BlockExtended,
     generator: JavascriptGenerator
   ) {
     let code = block.code!;
@@ -70,23 +146,28 @@ export function registerCodeGenerator(
       let replaceValue = '';
       if (code.includes(placeholder)) {
         switch (arg.type) {
+          // Fields - use getFieldValue
+          case 'field_input':
+          case 'field_number':
+          case 'field_dropdown':
+            replaceValue = codeBlock.getFieldValue(arg.name) || '';
+            break;
+          // Inputs - use valueToCode or statementToCode
           case 'input_value':
             replaceValue =
               generator.valueToCode(codeBlock, arg.name, Order.NONE) || 'null';
             break;
           case 'input_statement':
             replaceValue = generator.statementToCode(codeBlock, arg.name) || '';
-            // code = code.replace(placeholder, statementCode);
-            break;
-          case 'field_dropdown':
-          case 'field_variable':
-            replaceValue = codeBlock.getFieldValue(arg.name) || '';
             break;
         }
         code = code.replace(placeholder, replaceValue);
       }
     });
 
-    return [code, Order.NONE];
+    if (!block.previousStatement) {
+      code += '\n';
+    }
+    return code;
   };
 }

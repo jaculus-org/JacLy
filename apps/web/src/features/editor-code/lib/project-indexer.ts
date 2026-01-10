@@ -23,7 +23,7 @@ export async function indexMonacoFiles(
 
   try {
     const { loadProjectFiles } = await import(
-      '@/features/code-editor/lib/loader'
+      '@/features/editor-code/lib/loader'
     );
     const fileEntries = await loadProjectFiles(projectPath, fsp);
 

@@ -7,7 +7,7 @@ import { dirname } from 'path';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { JaclyBlocksFiles } from '@jaculus/project';
 
-export function BlocklyEditorComponent() {
+export function JaclyEditorComponent() {
   const { themeNormalized } = useTheme();
   const { fs, fsp, getFileName } = useActiveProject();
   const { jacProject } = useJacDevice();
@@ -15,7 +15,6 @@ export function BlocklyEditorComponent() {
   const [initialJson, setInitialJson] = useState<object | null>(null);
   const [jaclyBlockFiles, setJaclyBlockFiles] =
     useState<JaclyBlocksFiles | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -26,8 +25,6 @@ export function BlocklyEditorComponent() {
           setJaclyBlockFiles({});
           return;
         }
-
-        setIsLoading(true);
 
         // Load initial JSON
         const jaclyFile = getFileName('JACLY_INDEX');
@@ -51,8 +48,6 @@ export function BlocklyEditorComponent() {
         enqueueSnackbar('Failed to load editor data.', { variant: 'error' });
         setInitialJson({});
         setJaclyBlockFiles({});
-      } finally {
-        setIsLoading(false);
       }
     })();
   }, [fs, fsp, getFileName, jacProject]);
@@ -91,7 +86,7 @@ export function BlocklyEditorComponent() {
     }
   }
 
-  if (isLoading || !initialJson || !jaclyBlockFiles) {
+  if (!initialJson || !jaclyBlockFiles) {
     return <JaclyLoading />;
   }
 

@@ -1,5 +1,5 @@
 import type { ProjectRepository } from '@/lib/db/project-repository';
-// import { generateProjectId } from '@/lib/utils/nanoid';
+import { generateProjectId } from '@/lib/utils/nanoid';
 import type { IDbProject } from '@/types/project';
 
 export class ProjectRuntimeService {
@@ -13,8 +13,7 @@ export class ProjectRuntimeService {
     name: string,
     type: IDbProject['type']
   ): Promise<IDbProject> {
-    // const id = generateProjectId();
-    const id = 'demo';
+    const id = generateProjectId();
     return await this.repo.create(id, name, type);
   }
 

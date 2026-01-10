@@ -2,13 +2,15 @@ import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
 import { Theme } from '@/editor/types/theme';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getBlocklyTheme } from '@/editor/lib/theme';
 import { JaclyBlocksFiles } from '@jaculus/project';
 import { loadToolboxConfiguration } from '@/blocks/lib/toolbox-loader';
-import { workspaceChange } from '../lib/workspace-change';
+import { registerWorkspaceChangeListener } from '@/blocks/lib/rules';
 import { JaclyLoading } from './loading';
 import * as En from 'blockly/msg/en';
+import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
+import { generateCodeFromWorkspace } from '../lib/code-generation';
 
 Object.assign(Blockly.Msg, En);
 
@@ -29,6 +31,7 @@ export function JaclyEditor({
 }: JaclyEditorProps) {
   const [toolboxConfiguration, setToolboxConfiguration] =
     useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
+  const isListenerRegistered = useRef(false);
 
   useEffect(() => {
     (async () => {
@@ -39,6 +42,15 @@ export function JaclyEditor({
   if (!toolboxConfiguration) {
     return <JaclyLoading />;
   }
+
+  const handleWorkspaceChange = (workspace: WorkspaceSvgExtended) => {
+    if (!isListenerRegistered.current) {
+      registerWorkspaceChangeListener(workspace as any);
+      isListenerRegistered.current = true;
+    }
+    onGeneratedCode(generateCodeFromWorkspace(workspace));
+    Blockly.Events.BLOCK_MOVE;
+  };
 
   return (
     <BlocklyWorkspace
@@ -67,7 +79,7 @@ export function JaclyEditor({
       }}
       initialJson={initialJson}
       className="h-full w-full"
-      onWorkspaceChange={workspaceChange.bind(null, onGeneratedCode)}
+      onWorkspaceChange={handleWorkspaceChange}
       onJsonChange={onJsonChange}
     />
   );

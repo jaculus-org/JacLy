@@ -10,6 +10,7 @@ import {
 } from '../types/errors';
 import { z } from 'zod';
 import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
+// import { registerNvsBlock } from './advanced-blocks/nvs';
 
 export function loadToolboxConfiguration(
   jaclyBlockFiles: JaclyBlocksFiles
@@ -31,6 +32,8 @@ export function loadToolboxConfiguration(
       );
     }
   }
+
+  // toolboxContent.push(registerNvsBlock());
 
   toolbox.contents = sortToolboxItems(toolboxContent);
   return toolbox;

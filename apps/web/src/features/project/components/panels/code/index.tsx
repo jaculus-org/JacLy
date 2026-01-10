@@ -1,4 +1,4 @@
-import { CodeEditorBasic } from '@/features/code-editor/components/code-editor-basic';
+import { CodeEditorBasic } from '@/features/editor-code/components/code-editor-basic';
 
 interface CodePanelProps {
   filePath: string;
