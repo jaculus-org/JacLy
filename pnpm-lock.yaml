@@ -435,6 +435,24 @@ importers:
       '@alcyone-labs/zod-to-json-schema':
         specifier: ^4.0.10
         version: 4.0.10(zod@4.1.12)
+      '@blockly/block-plus-minus':
+        specifier: ^9.0.7
+        version: 9.0.7(blockly@12.3.1)
+      '@blockly/field-angle':
+        specifier: ^6.0.7
+        version: 6.0.7(blockly@12.3.1)
+      '@blockly/field-colour':
+        specifier: ^6.0.10
+        version: 6.0.10(blockly@12.3.1)
+      '@blockly/field-colour-hsv-sliders':
+        specifier: ^6.0.10
+        version: 6.0.10(blockly@12.3.1)
+      '@blockly/plugin-cross-tab-copy-paste':
+        specifier: ^8.0.6
+        version: 8.0.6(blockly@12.3.1)
+      '@blockly/toolbox-search':
+        specifier: ^3.1.7
+        version: 3.1.7(blockly@12.3.1)
       '@jaculus/device':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/device
@@ -450,6 +468,9 @@ importers:
       lucide-react:
         specifier: ^0.562.0
         version: 0.562.0(react@19.2.0)
+      lucide-static:
+        specifier: ^0.562.0
+        version: 0.562.0
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -719,6 +740,47 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@blockly/block-plus-minus@9.0.7':
+    resolution: {integrity: sha512-RnQbnZ6ydQVoa+zxD+XDJUQKHcHACN4he6QcC5ixIj+ImKQmDGQtGT7HcHrn7hf8bSrdyuLBPiMOgITc9w1XOA==}
+    engines: {node: '>=8.17.0'}
+    peerDependencies:
+      blockly: ^12.0.0
+
+  '@blockly/field-angle@6.0.7':
+    resolution: {integrity: sha512-+CRjARUAFRRbQ7DivXt+kb+VHJSzXe6Y12mjTKIQGaO1c2vZ1EXLRJ3AWAxOIpYMlERG2rejKBL+SKLndHds/w==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      blockly: ^12.0.0
+
+  '@blockly/field-colour-hsv-sliders@6.0.10':
+    resolution: {integrity: sha512-hAPcZyUhJXs6Igoj15aQAfJzyNjcFRaqnK2QKn63kDoMHOK/TeyCYp1MgAZ1jR77ozOCGov8oicGNsi6bfL2QQ==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      blockly: ^12.0.0
+
+  '@blockly/field-colour@6.0.10':
+    resolution: {integrity: sha512-vzUsQOLGrGDGnzH0kkSU1mOrtxJHoQI8BBFeLY18DLjAhTsDoWmxyYZyHiJ3+d5Kg9uIygitSjNujF4jLIpokA==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      blockly: ^12.0.0
+
+  '@blockly/field-grid-dropdown@6.0.8':
+    resolution: {integrity: sha512-2BySAf51TkyCqi3kCInIjBGmaV1tL9P1TQOITteuAQjA4UPYwLGzS8ninCWefZOGTKwRE440HEj7VZOKBIsK2g==}
+    engines: {node: '>=8.17.0'}
+    peerDependencies:
+      blockly: ^12.0.0
+
+  '@blockly/plugin-cross-tab-copy-paste@8.0.6':
+    resolution: {integrity: sha512-P1NUt6HhnTF1gSX3J+3a4UpEex/ZCcoypyzxV9OQxh+4dsBQkw3bMpfB4YsESzKwkigNs3Q61MZZ9u21x8nEJA==}
+    engines: {node: '>=8.17.0'}
+    peerDependencies:
+      blockly: ^12.1.0
+
+  '@blockly/toolbox-search@3.1.7':
+    resolution: {integrity: sha512-0yUkfGWB97MWR8ltpIXIj6zeXlziYNz3tJytQioaepMAOWrflmiId0RMfvoPK2hHxPTp60B36h2mhzhtoBxqyw==}
+    peerDependencies:
+      blockly: ^12.0.0
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -4910,6 +4972,9 @@ packages:
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  lucide-static@0.562.0:
+    resolution: {integrity: sha512-TM2vNVOEsO3+ijmno7n/VmxUo0Shr9OXC/UqZc5n4xEVyXX4E4NVvXoRPAZiSsIsdvlQ7alGOcIC/QGtR+OgUQ==}
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -6945,6 +7010,36 @@ snapshots:
       '@types/react': 19.2.7
 
   '@bcoe/v8-coverage@0.2.3': {}
+
+  '@blockly/block-plus-minus@9.0.7(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
+
+  '@blockly/field-angle@6.0.7(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
+
+  '@blockly/field-colour-hsv-sliders@6.0.10(blockly@12.3.1)':
+    dependencies:
+      '@blockly/field-colour': 6.0.10(blockly@12.3.1)
+      blockly: 12.3.1
+
+  '@blockly/field-colour@6.0.10(blockly@12.3.1)':
+    dependencies:
+      '@blockly/field-grid-dropdown': 6.0.8(blockly@12.3.1)
+      blockly: 12.3.1
+
+  '@blockly/field-grid-dropdown@6.0.8(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
+
+  '@blockly/plugin-cross-tab-copy-paste@8.0.6(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
+
+  '@blockly/toolbox-search@3.1.7(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
 
   '@colors/colors@1.6.0': {}
 
@@ -11289,6 +11384,8 @@ snapshots:
   lucide-react@0.562.0(react@19.2.3):
     dependencies:
       react: 19.2.3
+
+  lucide-static@0.562.0: {}
 
   magic-string@0.30.21:
     dependencies:

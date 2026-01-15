@@ -1,5 +1,5 @@
 import { Blocks } from 'blockly/core';
-import { JaclyBlock, JaclyConfig } from '../schema';
+import { JaclyBlock, JaclyBlockKindBlock, JaclyConfig } from '../schema';
 import { BlockExtended } from '../types/custom-block';
 import * as Blockly from 'blockly/core';
 
@@ -14,12 +14,17 @@ import {
   registerConstructorType,
   validateInstanceSelection,
 } from './constructors';
+import { colourHexaToRgbString } from '@/editor/plugins/field-colour-hsv-sliders';
 
 export function registerBlocklyBlock(
   block: JaclyBlock,
   jaclyConfig: JaclyConfig
 ) {
-  const inputs: JaclyBlock['inputs'] = {};
+  if (block.kind != 'block') {
+    return;
+  }
+
+  const inputs: JaclyBlockKindBlock['inputs'] = {};
 
   // Process message0 to replace $[NAME] with %1, %2, etc.
   if (block.args0 && block.args0.length > 0 && block.message0) {
@@ -131,7 +136,7 @@ export function registerCodeGenerator(
   _jaclyConfig: JaclyConfig,
   _libName: string
 ) {
-  if (!block.code) {
+  if (block.kind != 'block' || !block.code) {
     return;
   }
 
@@ -150,6 +155,7 @@ export function registerCodeGenerator(
           case 'field_input':
           case 'field_number':
           case 'field_dropdown':
+          case 'field_colour':
             replaceValue = codeBlock.getFieldValue(arg.name) || '';
             break;
           // Inputs - use valueToCode or statementToCode
@@ -160,14 +166,26 @@ export function registerCodeGenerator(
           case 'input_statement':
             replaceValue = generator.statementToCode(codeBlock, arg.name) || '';
             break;
+
+          case 'field_colour_hsv_sliders':
+            replaceValue = colourHexaToRgbString(codeBlock.getFieldValue(arg.name) || '#ffffff');
+            break;
+          case 'color_field_select':
+            replaceValue = codeBlock.getFieldValue(arg.name) || '#ffffff';
+            break;
         }
         code = code.replace(placeholder, replaceValue);
       }
     });
 
-    if (!block.previousStatement) {
-      code += '\n';
+
+    if (block.output) {
+      return [code, Order.NONE];
+    } else {
+      if (!block.previousStatement) {
+        code += '\n';
+      }
+      return code;
     }
-    return code;
   };
 }

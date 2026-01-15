@@ -19,6 +19,11 @@
       "types": "./dist/project/index.d.ts",
       "import": "./dist/project/index.js",
       "default": "./dist/project/index.js"
+    },
+    "./blocks": {
+      "types": "./dist/blocks/index.d.ts",
+      "import": "./dist/blocks/index.js",
+      "default": "./dist/blocks/index.js"
     }
   },
   "scripts": {
@@ -36,12 +41,18 @@
     "clean-node": "pnpm clean && rm -rf node_modules"
   },
   "dependencies": {
-    "@alcyone-labs/zod-to-json-schema": "^4.0.10",
+    "@blockly/block-plus-minus": "^9.0.7",
+    "@blockly/field-angle": "^6.0.7",
+    "@blockly/field-colour": "^6.0.10",
+    "@blockly/field-colour-hsv-sliders": "^6.0.10",
+    "@blockly/plugin-cross-tab-copy-paste": "^8.0.6",
+    "@blockly/toolbox-search": "^3.1.7",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
     "blockly": "^12.3.1",
     "lucide-react": "^0.562.0",
+    "lucide-static": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.1.12"

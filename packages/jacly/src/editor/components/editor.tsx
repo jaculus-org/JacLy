@@ -12,6 +12,19 @@ import * as En from 'blockly/msg/en';
 import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import { generateCodeFromWorkspace } from '../lib/code-generation';
 
+// Extensions
+import '@blockly/toolbox-search';
+import '@blockly/block-plus-minus';
+import '@blockly/field-colour-hsv-sliders';
+import {registerFieldColour} from '@blockly/field-colour';
+import { registerCrossTabCopyPaste } from '../plugins/cross-tab-copy-paste';
+import '../../blocks/new-blocks/color';
+import '../../blocks/new-blocks/parallel';
+import '../../blocks/new-blocks/loops';
+
+// import { registerJaclyCustomCategory } from '../lib/custom-category';
+// import '../styles/toolbox.css';
+
 Object.assign(Blockly.Msg, En);
 
 interface JaclyEditorProps {
@@ -31,9 +44,16 @@ export function JaclyEditor({
 }: JaclyEditorProps) {
   const [toolboxConfiguration, setToolboxConfiguration] =
     useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
-  const isListenerRegistered = useRef(false);
+  const listenerRegistrationStatus = useRef(false);
+  // const isCategoryRegistered = useRef(false);
 
   useEffect(() => {
+    // Register custom category renderer once
+    // if (!isCategoryRegistered.current) {
+    //   registerJaclyCustomCategory();
+    //   isCategoryRegistered.current = true;
+    // }
+
     (async () => {
       setToolboxConfiguration(loadToolboxConfiguration(jaclyBlockFiles));
     })();
@@ -44,10 +64,15 @@ export function JaclyEditor({
   }
 
   const handleWorkspaceChange = (workspace: WorkspaceSvgExtended) => {
-    if (!isListenerRegistered.current) {
+    if (!listenerRegistrationStatus.current) {
       registerWorkspaceChangeListener(workspace as any);
-      isListenerRegistered.current = true;
+
+      registerCrossTabCopyPaste();
+      registerFieldColour();
+
+      listenerRegistrationStatus.current = true;
     }
+
     onGeneratedCode(generateCodeFromWorkspace(workspace));
     Blockly.Events.BLOCK_MOVE;
   };
@@ -68,7 +93,7 @@ export function JaclyEditor({
           startScale: 0.9,
           maxScale: 3,
           minScale: 0.2,
-          scaleSpeed: 1.3,
+          scaleSpeed: 1.1,
         },
         grid: {
           spacing: 20,

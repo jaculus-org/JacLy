@@ -1,6 +1,5 @@
 import { JaclyBlocksFiles } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
-import { ToolboxInfo } from '@/editor/types/toolbox';
 import { ToolboxItemInfoSort } from '../types/toolbox';
 import { JaclyConfigSchema } from '../schema';
 import {
@@ -10,17 +9,12 @@ import {
 } from '../types/errors';
 import { z } from 'zod';
 import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
-// import { registerNvsBlock } from './advanced-blocks/nvs';
 
 export function loadToolboxConfiguration(
   jaclyBlockFiles: JaclyBlocksFiles
 ): Blockly.utils.toolbox.ToolboxDefinition {
-  let toolbox: ToolboxInfo = {
-    kind: 'categoryToolbox',
-    contents: [],
-  };
-
   const toolboxContent: ToolboxItemInfoSort[] = [];
+
   for (const fileKey in jaclyBlockFiles) {
     const file = jaclyBlockFiles[fileKey];
     try {
@@ -33,10 +27,17 @@ export function loadToolboxConfiguration(
     }
   }
 
-  // toolboxContent.push(registerNvsBlock());
+  const toolbox = buildCategoryHierarchy(toolboxContent);
+  const search: ToolboxItemInfoSort = {
+      'kind': 'search',
+      'name': 'Search',
+      'contents': [],
+  };
 
-  toolbox.contents = sortToolboxItems(toolboxContent);
-  return toolbox;
+  return {
+    kind: 'categoryToolbox',
+    contents: [ search, ...toolbox],
+  };
 }
 
 function loadToolboxLibrary(
@@ -49,7 +50,7 @@ function loadToolboxLibrary(
       `Failed to parse Jacly block file '${libName}': ${z.prettifyError(result.error)}`
     );
   }
-  const jaclyConfig = result.data;
+  const jaclyConfig = result.data;4
 
   if (jaclyConfig.contents) {
     return parseToolboxContentsBlock(jaclyConfig, libName);
@@ -62,16 +63,82 @@ function loadToolboxLibrary(
   }
 }
 
-function sortToolboxItems(items: ToolboxItemInfoSort[]): ToolboxItemInfoSort[] {
-  return items.sort((a, b) => {
-    const categoryA = a.categoryIndex ?? Number.MAX_SAFE_INTEGER;
-    const categoryB = b.categoryIndex ?? Number.MAX_SAFE_INTEGER;
-    if (categoryA !== categoryB) {
-      return categoryA - categoryB;
-    }
+/**
+ * Build a hierarchical category structure from flat toolbox items.
+ * Top-level categories are sorted by priority, subcategories alphabetically by name.
+ */
+function buildCategoryHierarchy(items: ToolboxItemInfoSort[]): ToolboxItemInfoSort[] {
+  const topLevelCategories: ToolboxItemInfoSort[] = [];
+  const subcategoriesMap = new Map<string, ToolboxItemInfoSort[]>();
+  const categoryIds = new Set<string>();
 
-    const underCategoryA = a.underCategoryIndex ?? Number.MAX_SAFE_INTEGER;
-    const underCategoryB = b.underCategoryIndex ?? Number.MAX_SAFE_INTEGER;
-    return underCategoryA - underCategoryB;
+  // separate top-level categories from subcategories and collect IDs
+  for (const item of items) {
+    if (item.kind === 'category' && item.parentCategory) {
+      // subcategory
+      const parentId = item.parentCategory;
+      const list = subcategoriesMap.get(parentId);
+      if (list) {
+        list.push(item);
+      } else {
+        subcategoriesMap.set(parentId, [item]);
+      }
+    } else {
+      // top-level category
+      topLevelCategories.push(item);
+      if (item.kind === 'category' && item.category) {
+        categoryIds.add(item.category);
+      }
+    }
+  }
+
+  // sort top-level categories by priority
+  topLevelCategories.sort((a, b) => {
+    const priorityA = a.priority ?? Number.MAX_SAFE_INTEGER;
+    const priorityB = b.priority ?? Number.MAX_SAFE_INTEGER;
+    return priorityA - priorityB;
   });
+
+  // attach subcategories and collect orphans
+  const orphans: ToolboxItemInfoSort[] = [];
+
+  for (const category of topLevelCategories) {
+    if (category.kind === 'category' && category.category) {
+      const subs = subcategoriesMap.get(category.category);
+      if (subs) {
+        // Sort and attach subcategories
+        subs.sort((a, b) => {
+          const nameA = a.name || '';
+          const nameB = b.name || '';
+          return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+        });
+        category.contents = [...(category.contents || []), ...subs];
+        subcategoriesMap.delete(category.category);
+      }
+    }
+  }
+
+  // remaining subcategories are orphans
+  for (const subs of subcategoriesMap.values()) {
+    orphans.push(...subs);
+  }
+
+  // fallback category for orphans
+  if (orphans.length > 0) {
+    orphans.sort((a, b) => {
+      const nameA = a.name || '';
+      const nameB = b.name || '';
+      return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+    });
+
+    topLevelCategories.push({
+      kind: 'category',
+      name: 'Other',
+      category: '_fallback',
+      colour: '#999999',
+      contents: orphans,
+      priority: Number.MAX_SAFE_INTEGER,
+    });
+  }
+  return topLevelCategories;
 }

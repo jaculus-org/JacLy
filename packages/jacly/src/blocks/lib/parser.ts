@@ -7,6 +7,10 @@ export function parseToolboxContentsBlock(
   libName: string
 ): ToolboxItemInfoSort {
   for (const item of jaclyConfig.contents!) {
+    if (item.kind !== 'block') {
+      continue;
+    }
+
     // Only register custom blocks (those that have message0, args0, or code defined)
     // Built-in blocks should not be re-registered as it will overwrite their definitions
     const isCustomBlock =

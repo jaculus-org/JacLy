@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { dirname } from 'path';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { JaclyBlocksFiles } from '@jaculus/project';
+import '../styles/toolbox.css';
 
 export function JaclyEditorComponent() {
   const { themeNormalized } = useTheme();

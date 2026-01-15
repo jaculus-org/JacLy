@@ -1,10 +1,9 @@
 import { z } from 'zod';
-import { zodToJsonSchema } from '@alcyone-labs/zod-to-json-schema';
 
 const SemVer = z.string().regex(/^\d+\.\d+\.\d+$/, 'version must be x.y.z');
 const Url = z.url('must be a valid URL');
 const Identifier = z
-  .string()
+  .string("must be a valid identifier - letters, numbers, '-', '_'")
   .regex(/^[a-zA-Z0-9-_]+$/, 'must be a valid identifier');
 
 const Variable = Identifier.uppercase('variable must be uppercase identifier');
@@ -111,16 +110,32 @@ const JaclyArgsInputValue = JaclyArgsBase.extend({
 const JaclyArgsInputStatement = JaclyArgsBase.extend({
   type: z.literal('input_statement'),
   align: z.enum(['LEFT', 'RIGHT', 'CENTRE']).optional(),
+  check: ArgsCheck.optional(),
 });
 
-// const JaclyArgsInputDummy = JaclyArgsBase.extend({
-//   type: z.literal('input_dummy'),
-//   align: z.enum(['LEFT', 'RIGHT', 'CENTRE']).optional(),
-// });
+const JaclyArgsInputDummy = JaclyArgsBase.extend({
+  type: z.literal('input_dummy'),
+  align: z.enum(['LEFT', 'RIGHT', 'CENTRE']).optional(),
+});
 
-// const JaclyArgsInputEndRow = JaclyArgsBase.extend({
-//   type: z.literal('input_end_row'),
-// });
+const JaclyArgsInputEndRow = JaclyArgsBase.extend({
+  type: z.literal('input_end_row'),
+});
+
+const ColourHsvSlider = JaclyArgsBase.extend({
+  type: z.literal('field_colour_hsv_sliders'),
+  colour: z.string().optional(),
+});
+
+const ColourField = JaclyArgsBase.extend({
+  type: z.literal('field_colour'),
+  colour: z.string().optional(),
+});
+
+const ColourFieldSelect = JaclyArgsBase.extend({
+  type: z.literal('color_field_select'),
+  colour: z.string().optional(),
+});
 
 // Discriminated union of all arg types
 const JaclyArgs = z.discriminatedUnion('type', [
@@ -135,8 +150,12 @@ const JaclyArgs = z.discriminatedUnion('type', [
   // JaclyArgsFieldImage,
   JaclyArgsInputValue,
   JaclyArgsInputStatement,
-  // JaclyArgsInputDummy,
-  // JaclyArgsInputEndRow,
+  JaclyArgsInputDummy,
+  JaclyArgsInputEndRow,
+
+  ColourField,
+  ColourHsvSlider,
+  ColourFieldSelect,
 ]);
 
 export const ToolboxInputsSchema = z.record(
@@ -147,17 +166,20 @@ export const ToolboxInputsSchema = z.record(
   })
 );
 
-export const JaclyBlockSchema = z.object({
-  kind: z.enum(['block', 'category', 'separator']),
+// Schema for kind: 'block'
+const JaclyBlockKindBlock = z.object({
+  kind: z.literal('block'),
   type: Identifier.nonempty('type is required'),
   message0: z.string().optional(),
   args0: z.array(JaclyArgs).optional(),
   tooltip: z.string().optional(),
-  isProgramStart: z.boolean().default(false),
+  isProgramStart: z.boolean().optional(),
   code: z.string().optional(),
+  output: z.union([z.string(), z.null()]).optional(),
   previousStatement: z.union([z.string(), z.null()]).optional(),
   nextStatement: z.union([z.string(), z.null()]).optional(),
   inputs: ToolboxInputsSchema.optional(),
+  inputsInline: z.boolean().optional(),
 
   // auto configured from root config
   colour: BlocklyColour.optional(),
@@ -165,31 +187,85 @@ export const JaclyBlockSchema = z.object({
 
   // JacLy extensions
   constructs: Identifier.optional(),
+}).refine(
+  (data) => {
+    const hasOutput = data.output !== undefined;
+    const hasStatementConnection = data.previousStatement !== undefined || data.nextStatement !== undefined;
+    return !(hasOutput && hasStatementConnection);
+  },
+  {
+    message: 'Block cannot have both "output" and "previousStatement"/"nextStatement" - use output for value blocks OR statement connections for stackable blocks',
+  }
+);
+
+// Schema for kind: 'category'
+const JaclyBlockKindCategory = z.object({
+  kind: z.literal('category'),
+  name: z.string().nonempty('name is required for category'),
+  colour: BlocklyColour.optional(),
+  categorystyle: z.string().optional(),
+  custom: z.string().optional(),
 });
 
+// Schema for kind: 'separator'
+const JaclyBlockKindSeparator = z.object({
+  kind: z.literal('separator'),
+  gap: z.number().optional(),
+});
+
+// Schema for kind: 'label'
+const JaclyBlockKindLabel = z.object({
+  kind: z.literal('label'),
+  text: z.string().nonempty('text is required for label'),
+  "web-class": z.string().optional(),
+});
+
+// Discriminated union of all block kinds
+export const JaclyBlockSchema = z.discriminatedUnion('kind', [
+  JaclyBlockKindBlock,
+  JaclyBlockKindCategory,
+  JaclyBlockKindSeparator,
+  JaclyBlockKindLabel,
+]);
+
 export const JaclyConfigSchema = z.object({
+  "$schema": z.string().optional(),
   version: SemVer,
   author: z.string().nonempty('author is required'),
   github: Url.optional(),
   license: z.string().nonempty('license is required'),
 
-  category: Identifier.nonempty('category is required'),
-  name: Identifier.nonempty('name is required'),
+  category: Identifier.optional(),
+  parentCategory: Identifier.optional(),
+  name: z.string().nonempty('name is required'),
   description: z.string().optional(),
   docs: z.string().optional(),
   colour: BlocklyColour.optional(),
   style: z.string().optional(),
+  icon: z.string().optional(),
   custom: z.string().optional(),
   categorystyle: z.string().optional(),
   libraries: z.array(z.string()).optional(),
+  priority: z.number().optional(),
+  priorityCategory: z.number().optional(),
 
   contents: z.array(JaclyBlockSchema).optional(),
-});
+}).refine(
+  (data) => {
+    const hasCategory = !!data.category;
+    const categoryHasParent = !!data.parentCategory;
+    return hasCategory !== categoryHasParent; // XOR: exactly one must be true
+  },
+  {
+    message: 'Exactly one of "category" or "categoryParent" must be provided, not both',
+  }
+);
 
 export type JaclyConfig = z.infer<typeof JaclyConfigSchema>;
 export type JaclyBlock = z.infer<typeof JaclyBlockSchema>;
+export type JaclyBlockKindBlock = z.infer<typeof JaclyBlockKindBlock>;
 export type JaclyBlocksArgs = z.infer<typeof JaclyArgs>;
 
 export function jaclyJsonSchema() {
-  return zodToJsonSchema(JaclyConfigSchema, 'jaculus-project');
+  return z.toJSONSchema(JaclyConfigSchema, {})
 }
