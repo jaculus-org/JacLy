@@ -137,11 +137,19 @@ const ColourFieldSelect = JaclyArgsBase.extend({
   colour: z.string().optional(),
 });
 
+// // Field label serializable (for callback variable labels)
+// const JaclyArgsFieldLabelSerializable = JaclyArgsBase.extend({
+//   type: z.literal('field_label_serializable'),
+//   text: z.string().optional(),
+//   class: z.string().optional(),
+// });
+
 // Discriminated union of all arg types
 const JaclyArgs = z.discriminatedUnion('type', [
   JaclyArgsFieldInput,
   JaclyArgsFieldNumber,
   JaclyArgsFieldDropdown,
+  // JaclyArgsFieldLabelSerializable,
   // JaclyArgsFieldCheckbox,
   // JaclyArgsFieldColour,
   // JaclyArgsFieldAngle,
@@ -166,6 +174,13 @@ export const ToolboxInputsSchema = z.record(
   })
 );
 
+// Schema for callback variables (scoped variables available inside callback blocks)
+const CallbackVarSchema = z.object({
+  name: z.string().nonempty('callback variable name is required'),
+  type: z.string().optional(), // Blockly output type (e.g., "Number", "String")
+  codeName: z.string().nonempty('codeName is required for code generation'),
+});
+
 // Schema for kind: 'block'
 const JaclyBlockKindBlock = z.object({
   kind: z.literal('block'),
@@ -187,6 +202,7 @@ const JaclyBlockKindBlock = z.object({
 
   // JacLy extensions
   constructs: Identifier.optional(),
+  callbackVars: z.array(CallbackVarSchema).optional(),
 }).refine(
   (data) => {
     const hasOutput = data.output !== undefined;

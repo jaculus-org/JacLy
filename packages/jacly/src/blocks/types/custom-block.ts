@@ -13,13 +13,15 @@ interface BlockExtension {
   nextStatement?: string | null;
 
   savedInstanceName?: string;
+  callbackVarInputName?: string;
 }
 
-export interface BlockExtended extends Block, BlockExtension {}
-export interface BlockSvgExtended extends BlockSvg, BlockExtension {}
+export interface BlockExtended extends Block, BlockExtension { }
+export interface BlockSvgExtended extends BlockSvg, BlockExtension { }
 
 export interface WorkspaceSvgExtended extends WorkspaceSvg {
   getAllBlocks: (ordered: boolean) => BlockSvgExtended[];
+  newBlock(prototypeName: string, opt_id?: string): BlockSvgExtended;
 }
 
 export interface IIconBlock extends IIcon {
