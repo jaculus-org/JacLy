@@ -20,10 +20,10 @@ export function getConstructorMixin(systemId: string) {
         return;
       }
 
-      const fieldName = 'VAR_NAME';
+      const fieldName = 'CONSTRUCTED_VAR_NAME';
       const currentName = this.getFieldValue(fieldName);
 
-      // If the user changed the VAR_NAME field, prevent duplicates by reverting
+      // If the user changed the CONSTRUCTED_VAR_NAME field, prevent duplicates by reverting
       if (
         e &&
         e.type === Blockly.Events.BLOCK_CHANGE &&
@@ -77,20 +77,17 @@ export function getInstanceDropdownGenerator(
     const options: [string, string][] = [];
 
     const constructorBlockType = constructorTypeMap.get(systemId);
-    if (!constructorBlockType) {
-      return [['<No Init Block>', 'INVALID']];
-    }
 
     const sourceBlock = this.getSourceBlock();
     const workspace = sourceBlock
       ? sourceBlock.workspace
       : Blockly.getMainWorkspace();
 
-    if (workspace) {
+    if (workspace && constructorBlockType) {
       const blocks = workspace.getBlocksByType(constructorBlockType);
 
       blocks.forEach(block => {
-        const instanceName = block.getFieldValue('VAR_NAME');
+        const instanceName = block.getFieldValue('CONSTRUCTED_VAR_NAME');
         if (instanceName && instanceName !== `${systemId.toLowerCase()}_?`) {
           options.push([instanceName, instanceName]);
         }
@@ -142,7 +139,7 @@ export function validateInstanceSelection(
 
   const blocks = this.workspace.getBlocksByType(targetBlockType);
   const exists = blocks.some(
-    block => block.getFieldValue('VAR_NAME') === selectedName
+    block => block.getFieldValue('CONSTRUCTED_VAR_NAME') === selectedName
   );
 
   if (!exists) {

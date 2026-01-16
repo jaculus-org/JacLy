@@ -88,12 +88,12 @@ Definition of the constructor block:
     {
       "kind": "block",
       "type": "kv_open",
-      "message0": "open $[VAR_NAME] namespace $[NAMESPACE]",
+      "message0": "open $[CONSTRUCTED_VAR_NAME] namespace $[NAMESPACE]",
       "args0": [
         {
           "type": "field_input",
-          "name": "VAR_NAME",
-          "text": "keyValue_?"
+          "name": "CONSTRUCTED_VAR_NAME", // this is special name, has to be exactly this
+          "text": "keyValue_?" // variable name pattern, <constructed_var_name>_? -> keyValue_1, keyValue_2, ...
         },
         {
           "type": "input_value",
@@ -107,9 +107,9 @@ Definition of the constructor block:
           }
         }
       ],
-      "constructs": "keyValue",
+      "constructs": "keyValue", // indicates that this block constructs an object of type keyValue (has to match instanceof in other blocks)
       "tooltip": "Initialize an Key Value Storage namespace",
-      "code": "const $[VAR_NAME] = keyvalue.open($[NAMESPACE]);",
+      "code": "const $[CONSTRUCTED_VAR_NAME] = keyvalue.open($[NAMESPACE]);",
       "previousStatement": null,
       "nextStatement": null
     },

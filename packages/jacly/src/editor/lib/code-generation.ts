@@ -32,7 +32,7 @@ function collectWorkspaceWarnings(workspace: WorkspaceSvg): string[] {
     if (icon && icon.textMap) {
       let blockName = block.type;
       const varField =
-        block.getField('VAR_NAME') || block.getField('NVS_INSTANCE');
+        block.getField('CONSTRUCTED_VAR_NAME') || block.getField('NVS_INSTANCE');
       if (varField) {
         blockName += ` "${varField.getText()}"`;
       }

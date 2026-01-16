@@ -274,7 +274,7 @@ export function registerCodeGenerator(
             replaceValue = codeBlock.getFieldValue(arg.name) || '#ffffff';
             break;
         }
-        code = code.replace(placeholder, replaceValue);
+        code = code.replaceAll(placeholder, replaceValue);
       }
     });
 
