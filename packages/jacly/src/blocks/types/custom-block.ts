@@ -16,8 +16,8 @@ interface BlockExtension {
   callbackVarInputName?: string;
 }
 
-export interface BlockExtended extends Block, BlockExtension { }
-export interface BlockSvgExtended extends BlockSvg, BlockExtension { }
+export interface BlockExtended extends Block, BlockExtension {}
+export interface BlockSvgExtended extends BlockSvg, BlockExtension {}
 
 export interface WorkspaceSvgExtended extends WorkspaceSvg {
   getAllBlocks: (ordered: boolean) => BlockSvgExtended[];

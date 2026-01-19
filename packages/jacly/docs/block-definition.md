@@ -76,7 +76,6 @@ This syntax will automatically create variables for the instances of the objects
 
 You can look at the `keyvalue` library blocks for examples of this feature.
 
-
 Definition of the constructor block:
 
 ```json

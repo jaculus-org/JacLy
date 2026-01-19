@@ -16,11 +16,20 @@ import { generateCodeFromWorkspace } from '../lib/code-generation';
 import '@blockly/toolbox-search';
 import '@blockly/block-plus-minus';
 import '@blockly/field-colour-hsv-sliders';
-import {registerFieldColour} from '@blockly/field-colour';
+import { registerFieldColour } from '@blockly/field-colour';
 import { registerCrossTabCopyPaste } from '../plugins/cross-tab-copy-paste';
+import { shadowBlockConversionChangeListener } from '@blockly/shadow-block-converter';
+
 import '../../blocks/new-blocks/color';
 import '../../blocks/new-blocks/parallel';
 import '../../blocks/new-blocks/loops';
+import '../../blocks/new-blocks/angle';
+import '../../blocks/new-blocks/slider';
+import '../../blocks/new-blocks/procedures';
+
+// Blockly.Msg["BASIC_RUN_PARALLEL_MESSAGE0"] = "run async2 $[TASKS] x";
+
+// Blockly.Msg["BASIC_RUN_PARALLEL_TOOLTIP"] = "Run code when the program starts2";
 
 // import { registerJaclyCustomCategory } from '../lib/custom-category';
 // import '../styles/toolbox.css';
@@ -30,6 +39,7 @@ Object.assign(Blockly.Msg, En);
 interface JaclyEditorProps {
   theme: Theme;
   jaclyBlockFiles: JaclyBlocksFiles;
+  jaclyTranslations?: Record<string, string>;
   initialJson: any;
   onJsonChange: (workspaceJson: object) => void;
   onGeneratedCode: (code: string) => void;
@@ -38,6 +48,7 @@ interface JaclyEditorProps {
 export function JaclyEditor({
   theme,
   jaclyBlockFiles,
+  jaclyTranslations,
   initialJson,
   onJsonChange,
   onGeneratedCode: onGeneratedCode,
@@ -48,16 +59,10 @@ export function JaclyEditor({
   // const isCategoryRegistered = useRef(false);
 
   useEffect(() => {
-    // Register custom category renderer once
-    // if (!isCategoryRegistered.current) {
-    //   registerJaclyCustomCategory();
-    //   isCategoryRegistered.current = true;
-    // }
-
-    (async () => {
-      setToolboxConfiguration(loadToolboxConfiguration(jaclyBlockFiles));
-    })();
-  }, [jaclyBlockFiles]);
+    setToolboxConfiguration(
+      loadToolboxConfiguration(jaclyBlockFiles, jaclyTranslations)
+    );
+  }, [jaclyBlockFiles, jaclyTranslations]);
 
   if (!toolboxConfiguration) {
     return <JaclyLoading />;
@@ -69,6 +74,7 @@ export function JaclyEditor({
 
       registerCrossTabCopyPaste();
       registerFieldColour();
+      workspace.addChangeListener(shadowBlockConversionChangeListener);
 
       listenerRegistrationStatus.current = true;
     }

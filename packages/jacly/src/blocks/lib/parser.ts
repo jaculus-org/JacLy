@@ -24,6 +24,15 @@ export function parseToolboxContentsBlock(
     }
   }
 
+  if (jaclyConfig.contents) {
+    jaclyConfig.contents = jaclyConfig.contents.filter(item => {
+      if (item.kind === 'block') {
+        return item.hideInToolbox !== true;
+      }
+      return true;
+    });
+  }
+
   return {
     kind: 'category',
     ...jaclyConfig,

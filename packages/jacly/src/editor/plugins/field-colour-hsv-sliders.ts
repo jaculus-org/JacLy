@@ -1,5 +1,8 @@
-
-export function colourHexaToRgbObject(hex: string): { r: number; g: number; b: number } {
+export function colourHexaToRgbObject(hex: string): {
+  r: number;
+  g: number;
+  b: number;
+} {
   // Remove the leading '#' if present
   hex = hex.replace(/^#/, '');
 

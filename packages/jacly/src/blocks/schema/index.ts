@@ -28,15 +28,46 @@ const ArgsCheck = z.union([z.string().optional(), z.array(z.string())]);
 
 const ArgOptions = z.array(z.tuple([z.string(), z.string()])).optional();
 
-const InputBlockSchema = z.object({
-  type: Identifier.nonempty('type is required'),
-  fields: z.record(Variable, z.any()).optional(),
-});
+// Forward declaration for recursive shadow/block definitions
+const InputShadowSchema: z.ZodType<{
+  type: string;
+  fields?: Record<string, any>;
+  inputs?: Record<string, { shadow?: any; block?: any }>;
+}> = z.lazy(() =>
+  z.object({
+    type: Identifier.nonempty('type is required'),
+    fields: z.record(Variable, z.any()).optional(),
+    inputs: z
+      .record(
+        Variable,
+        z.object({
+          shadow: InputShadowSchema.optional(),
+          block: InputBlockSchema.optional(),
+        })
+      )
+      .optional(),
+  })
+);
 
-const InputShadowSchema = z.object({
-  type: Identifier.nonempty('type is required'),
-  fields: z.record(Variable, z.any()).optional(),
-});
+const InputBlockSchema: z.ZodType<{
+  type: string;
+  fields?: Record<string, any>;
+  inputs?: Record<string, { shadow?: any; block?: any }>;
+}> = z.lazy(() =>
+  z.object({
+    type: Identifier.nonempty('type is required'),
+    fields: z.record(Variable, z.any()).optional(),
+    inputs: z
+      .record(
+        Variable,
+        z.object({
+          shadow: InputShadowSchema.optional(),
+          block: InputBlockSchema.optional(),
+        })
+      )
+      .optional(),
+  })
+);
 
 // Base schema for all args
 const JaclyArgsBase = z.object({
@@ -181,38 +212,53 @@ const CallbackVarSchema = z.object({
   codeName: z.string().nonempty('codeName is required for code generation'),
 });
 
-// Schema for kind: 'block'
-const JaclyBlockKindBlock = z.object({
-  kind: z.literal('block'),
-  type: Identifier.nonempty('type is required'),
-  message0: z.string().optional(),
-  args0: z.array(JaclyArgs).optional(),
-  tooltip: z.string().optional(),
-  isProgramStart: z.boolean().optional(),
-  code: z.string().optional(),
-  output: z.union([z.string(), z.null()]).optional(),
-  previousStatement: z.union([z.string(), z.null()]).optional(),
-  nextStatement: z.union([z.string(), z.null()]).optional(),
-  inputs: ToolboxInputsSchema.optional(),
-  inputsInline: z.boolean().optional(),
-
-  // auto configured from root config
-  colour: BlocklyColour.optional(),
-  style: z.string().optional(),
-
-  // JacLy extensions
-  constructs: Identifier.optional(),
-  callbackVars: z.array(CallbackVarSchema).optional(),
-}).refine(
-  (data) => {
-    const hasOutput = data.output !== undefined;
-    const hasStatementConnection = data.previousStatement !== undefined || data.nextStatement !== undefined;
-    return !(hasOutput && hasStatementConnection);
-  },
-  {
-    message: 'Block cannot have both "output" and "previousStatement"/"nextStatement" - use output for value blocks OR statement connections for stackable blocks',
-  }
+// "codeConditionals": [{ "condition": [ { "$[UNIT]": "distance" } ], "code": "..." }]
+const CodeConditionalsSchema = z.array(
+  z.object({
+    condition: z.array(z.record(z.string(), z.string())),
+    code: z.string().nonempty('code is required for codeConditional'),
+  })
 );
+
+// Schema for kind: 'block'
+const JaclyBlockKindBlock = z
+  .object({
+    kind: z.literal('block'),
+    type: Identifier.nonempty('type is required'),
+    message0: z.string().optional(),
+    args0: z.array(JaclyArgs).optional(),
+    tooltip: z.string().optional(),
+    isProgramStart: z.boolean().optional(),
+    code: z.string().optional(),
+    codeConditionals: CodeConditionalsSchema.optional(),
+    output: z.union([z.string(), z.null()]).optional(),
+    previousStatement: z.union([z.string(), z.null()]).optional(),
+    nextStatement: z.union([z.string(), z.null()]).optional(),
+    inputs: ToolboxInputsSchema.optional(),
+    inputsInline: z.boolean().optional(),
+
+    // auto configured from root config
+    colour: BlocklyColour.optional(),
+    style: z.string().optional(),
+
+    // JacLy extensions
+    hideInToolbox: z.boolean().optional(),
+    constructs: Identifier.optional(),
+    callbackVars: z.array(CallbackVarSchema).optional(),
+  })
+  .refine(
+    data => {
+      const hasOutput = data.output !== undefined;
+      const hasStatementConnection =
+        data.previousStatement !== undefined ||
+        data.nextStatement !== undefined;
+      return !(hasOutput && hasStatementConnection);
+    },
+    {
+      message:
+        'Block cannot have both "output" and "previousStatement"/"nextStatement" - use output for value blocks OR statement connections for stackable blocks',
+    }
+  );
 
 // Schema for kind: 'category'
 const JaclyBlockKindCategory = z.object({
@@ -233,7 +279,7 @@ const JaclyBlockKindSeparator = z.object({
 const JaclyBlockKindLabel = z.object({
   kind: z.literal('label'),
   text: z.string().nonempty('text is required for label'),
-  "web-class": z.string().optional(),
+  'web-class': z.string().optional(),
 });
 
 // Discriminated union of all block kinds
@@ -244,38 +290,41 @@ export const JaclyBlockSchema = z.discriminatedUnion('kind', [
   JaclyBlockKindLabel,
 ]);
 
-export const JaclyConfigSchema = z.object({
-  "$schema": z.string().optional(),
-  version: SemVer,
-  author: z.string().nonempty('author is required'),
-  github: Url.optional(),
-  license: z.string().nonempty('license is required'),
+export const JaclyConfigSchema = z
+  .object({
+    $schema: z.string().optional(),
+    version: SemVer,
+    author: z.string().nonempty('author is required'),
+    github: Url.optional(),
+    license: z.string().nonempty('license is required'),
 
-  category: Identifier.optional(),
-  parentCategory: Identifier.optional(),
-  name: z.string().nonempty('name is required'),
-  description: z.string().optional(),
-  docs: z.string().optional(),
-  colour: BlocklyColour.optional(),
-  style: z.string().optional(),
-  icon: z.string().optional(),
-  custom: z.string().optional(),
-  categorystyle: z.string().optional(),
-  libraries: z.array(z.string()).optional(),
-  priority: z.number().optional(),
-  priorityCategory: z.number().optional(),
+    category: Identifier.optional(),
+    parentCategory: Identifier.optional(),
+    name: z.string().nonempty('name is required'),
+    description: z.string().optional(),
+    docs: z.string().optional(),
+    colour: BlocklyColour.optional(),
+    style: z.string().optional(),
+    icon: z.string().optional(),
+    custom: z.string().optional(),
+    categorystyle: z.string().optional(),
+    libraries: z.array(z.string()).optional(),
+    priority: z.number().optional(),
+    priorityCategory: z.number().optional(),
 
-  contents: z.array(JaclyBlockSchema).optional(),
-}).refine(
-  (data) => {
-    const hasCategory = !!data.category;
-    const categoryHasParent = !!data.parentCategory;
-    return hasCategory !== categoryHasParent; // XOR: exactly one must be true
-  },
-  {
-    message: 'Exactly one of "category" or "categoryParent" must be provided, not both',
-  }
-);
+    contents: z.array(JaclyBlockSchema).optional(),
+  })
+  .refine(
+    data => {
+      const hasCategory = !!data.category;
+      const categoryHasParent = !!data.parentCategory;
+      return hasCategory !== categoryHasParent; // XOR: exactly one must be true
+    },
+    {
+      message:
+        'Exactly one of "category" or "categoryParent" must be provided, not both',
+    }
+  );
 
 export type JaclyConfig = z.infer<typeof JaclyConfigSchema>;
 export type JaclyBlock = z.infer<typeof JaclyBlockSchema>;
@@ -283,5 +332,5 @@ export type JaclyBlockKindBlock = z.infer<typeof JaclyBlockKindBlock>;
 export type JaclyBlocksArgs = z.infer<typeof JaclyArgs>;
 
 export function jaclyJsonSchema() {
-  return z.toJSONSchema(JaclyConfigSchema, {})
+  return z.toJSONSchema(JaclyConfigSchema, {});
 }

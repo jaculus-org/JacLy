@@ -19,7 +19,7 @@ export async function loadProjectFiles(
         await traverseDirectory(fullPath);
       } else if (entry.isFile()) {
         const content = await fsp.readFile(fullPath, 'utf-8');
-        // Remove leading slash from relative path
+        // remove leading slash from relative path
         const relativePath = fullPath
           .replace(projectPath, '')
           .replace(/^\//, '');

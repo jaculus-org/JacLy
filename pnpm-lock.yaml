@@ -141,9 +141,6 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
-      '@alcyone-labs/zod-to-json-schema':
-        specifier: ^4.0.10
-        version: 4.0.10(zod@4.1.12)
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.23
@@ -432,9 +429,6 @@ importers:
 
   packages/jacly:
     dependencies:
-      '@alcyone-labs/zod-to-json-schema':
-        specifier: ^4.0.10
-        version: 4.0.10(zod@4.1.12)
       '@blockly/block-plus-minus':
         specifier: ^9.0.7
         version: 9.0.7(blockly@12.3.1)
@@ -447,9 +441,15 @@ importers:
       '@blockly/field-colour-hsv-sliders':
         specifier: ^6.0.10
         version: 6.0.10(blockly@12.3.1)
+      '@blockly/field-slider':
+        specifier: ^8.0.8
+        version: 8.0.8(blockly@12.3.1)
       '@blockly/plugin-cross-tab-copy-paste':
         specifier: ^8.0.6
         version: 8.0.6(blockly@12.3.1)
+      '@blockly/shadow-block-converter':
+        specifier: ^7.0.9
+        version: 7.0.9(blockly@12.3.1)
       '@blockly/toolbox-search':
         specifier: ^3.1.7
         version: 3.1.7(blockly@12.3.1)
@@ -525,11 +525,6 @@ packages:
 
   '@adobe/css-tools@4.3.3':
     resolution: {integrity: sha512-rE0Pygv0sEZ4vBWHlAgJLGDU7Pm8xoO6p3wsEceb7GYAjScrOHpEo8KK/eVkAcnSM+slAEtXjA2JpdjLp4fJQQ==}
-
-  '@alcyone-labs/zod-to-json-schema@4.0.10':
-    resolution: {integrity: sha512-TFsSpAPToqmqmT85SGHXuxoCwEeK9zUDvn512O9aBVvWRhSuy+VvAXZkifzsdllD3ncF0ZjUrf4MpBwIEixdWQ==}
-    peerDependencies:
-      zod: ^4.0.5
 
   '@antfu/ni@25.0.0':
     resolution: {integrity: sha512-9q/yCljni37pkMr4sPrI3G4jqdIk074+iukc5aFJl7kmDCCsiJrbZ6zKxnES1Gwg+i9RcDZwvktl23puGslmvA==}
@@ -771,11 +766,23 @@ packages:
     peerDependencies:
       blockly: ^12.0.0
 
+  '@blockly/field-slider@8.0.8':
+    resolution: {integrity: sha512-uG/Vq9eS17TvrRZZyvIEbknDcniwmLRVCP8FpgWmet4pwpCNrqERPTxP4/FQXRzbuHb/r+YeGjhRbXY367xfWw==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      blockly: ^12.0.0
+
   '@blockly/plugin-cross-tab-copy-paste@8.0.6':
     resolution: {integrity: sha512-P1NUt6HhnTF1gSX3J+3a4UpEex/ZCcoypyzxV9OQxh+4dsBQkw3bMpfB4YsESzKwkigNs3Q61MZZ9u21x8nEJA==}
     engines: {node: '>=8.17.0'}
     peerDependencies:
       blockly: ^12.1.0
+
+  '@blockly/shadow-block-converter@7.0.9':
+    resolution: {integrity: sha512-WLi/3w9XN14TaJk+Jsewjksr/mJ2WDv4/Fr7zfuSvqu98unDFA3MbbOlJIA+tAsuAUkhsDoF47G76/QR4AFzxQ==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      blockly: ^12.0.0
 
   '@blockly/toolbox-search@3.1.7':
     resolution: {integrity: sha512-0yUkfGWB97MWR8ltpIXIj6zeXlziYNz3tJytQioaepMAOWrflmiId0RMfvoPK2hHxPTp60B36h2mhzhtoBxqyw==}
@@ -6688,10 +6695,6 @@ snapshots:
   '@adobe/css-tools@4.3.3':
     optional: true
 
-  '@alcyone-labs/zod-to-json-schema@4.0.10(zod@4.1.12)':
-    dependencies:
-      zod: 4.1.12
-
   '@antfu/ni@25.0.0':
     dependencies:
       ansis: 4.2.0
@@ -7033,7 +7036,15 @@ snapshots:
     dependencies:
       blockly: 12.3.1
 
+  '@blockly/field-slider@8.0.8(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
+
   '@blockly/plugin-cross-tab-copy-paste@8.0.6(blockly@12.3.1)':
+    dependencies:
+      blockly: 12.3.1
+
+  '@blockly/shadow-block-converter@7.0.9(blockly@12.3.1)':
     dependencies:
       blockly: 12.3.1
 

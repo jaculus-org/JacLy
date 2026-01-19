@@ -174,7 +174,7 @@ export function PackagesPanel() {
         size="lg"
       >
         <RefreshCw className={isInstalling ? 'animate-spin' : ''} />
-        {isInstalling ? 'Installing...' : 'Install / Update Packages'}
+        {isInstalling ? 'Installing...' : 'Install'}
       </Button>
 
       {/* Error Display */}

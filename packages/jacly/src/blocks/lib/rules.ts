@@ -40,7 +40,11 @@ export function processWorkspaceBlocks(workspace: WorkspaceSvgExtended) {
 
 function applyOutsideEntryRule(block: BlockSvgExtended): void {
   const rootBlock = block.getRootBlock();
-  const isProgramStartActive = !!rootBlock && rootBlock?.isProgramStart;
+
+  // isProgramStartActive might have name starting procedure definition
+  const isProgramStartActive =
+    !!rootBlock &&
+    (rootBlock?.isProgramStart || rootBlock?.type.startsWith('procedures_'));
   const shouldDisable = !isProgramStartActive;
   const hasReason = block.hasDisabledReason(OUTSIDE_ENTRY_DISABLED_REASON);
 

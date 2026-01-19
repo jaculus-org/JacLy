@@ -16,6 +16,9 @@ export function JaclyEditorComponent() {
   const [initialJson, setInitialJson] = useState<object | null>(null);
   const [jaclyBlockFiles, setJaclyBlockFiles] =
     useState<JaclyBlocksFiles | null>(null);
+  const [jaclyTranslations, setJaclyTranslations] = useState<
+    Record<string, string> | undefined
+  >(undefined);
 
   useEffect(() => {
     (async () => {
@@ -43,7 +46,12 @@ export function JaclyEditorComponent() {
           jsonData = {};
         }
         setInitialJson(jsonData);
-        setJaclyBlockFiles(await jacProject.getJaclyBlockFiles());
+
+        const jaclyData = await jacProject.getJaclyData('en');
+        setJaclyBlockFiles(jaclyData.blockFiles);
+        setJaclyTranslations(jaclyData.translations);
+
+        console.log('Jacly editor data loaded successfully.');
       } catch (error) {
         console.error('Failed to load editor data:', error);
         enqueueSnackbar('Failed to load editor data.', { variant: 'error' });
@@ -95,6 +103,7 @@ export function JaclyEditorComponent() {
     <JaclyEditor
       theme={themeNormalized}
       jaclyBlockFiles={jaclyBlockFiles}
+      jaclyTranslations={jaclyTranslations}
       initialJson={initialJson}
       onJsonChange={handleJsonChange}
       onGeneratedCode={handleGeneratedCode}

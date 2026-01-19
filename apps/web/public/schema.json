@@ -138,9 +138,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -168,9 +166,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -184,10 +180,7 @@
                           "type": "boolean"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -230,9 +223,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -260,9 +251,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -282,10 +271,7 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -328,9 +314,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -358,9 +342,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -386,10 +368,7 @@
                           "pattern": "^[a-zA-Z0-9-_]+$"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -432,9 +411,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -462,9 +439,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -473,11 +448,7 @@
                         },
                         "align": {
                           "type": "string",
-                          "enum": [
-                            "LEFT",
-                            "RIGHT",
-                            "CENTRE"
-                          ]
+                          "enum": ["LEFT", "RIGHT", "CENTRE"]
                         },
                         "check": {
                           "anyOf": [
@@ -493,10 +464,7 @@
                           ]
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -539,9 +507,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -569,9 +535,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -580,11 +544,7 @@
                         },
                         "align": {
                           "type": "string",
-                          "enum": [
-                            "LEFT",
-                            "RIGHT",
-                            "CENTRE"
-                          ]
+                          "enum": ["LEFT", "RIGHT", "CENTRE"]
                         },
                         "check": {
                           "anyOf": [
@@ -600,10 +560,7 @@
                           ]
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -646,9 +603,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -676,9 +631,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -687,17 +640,10 @@
                         },
                         "align": {
                           "type": "string",
-                          "enum": [
-                            "LEFT",
-                            "RIGHT",
-                            "CENTRE"
-                          ]
+                          "enum": ["LEFT", "RIGHT", "CENTRE"]
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -740,9 +686,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -770,9 +714,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -780,10 +722,7 @@
                           "const": "input_end_row"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -826,9 +765,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -856,9 +793,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -869,10 +804,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -915,9 +847,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -945,9 +875,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -958,10 +886,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     },
                     {
@@ -1004,9 +929,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "shadow": {
@@ -1034,9 +957,7 @@
                               "additionalProperties": {}
                             }
                           },
-                          "required": [
-                            "type"
-                          ],
+                          "required": ["type"],
                           "additionalProperties": false
                         },
                         "type": {
@@ -1047,10 +968,7 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
+                      "required": ["name", "type"],
                       "additionalProperties": false
                     }
                   ]
@@ -1137,9 +1055,7 @@
                           "additionalProperties": {}
                         }
                       },
-                      "required": [
-                        "type"
-                      ],
+                      "required": ["type"],
                       "additionalProperties": false
                     },
                     "shadow": {
@@ -1167,9 +1083,7 @@
                           "additionalProperties": {}
                         }
                       },
-                      "required": [
-                        "type"
-                      ],
+                      "required": ["type"],
                       "additionalProperties": false
                     }
                   },
@@ -1199,10 +1113,7 @@
                 "pattern": "^[a-zA-Z0-9-_]+$"
               }
             },
-            "required": [
-              "kind",
-              "type"
-            ],
+            "required": ["kind", "type"],
             "additionalProperties": false
           },
           {
@@ -1235,10 +1146,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "kind",
-              "name"
-            ],
+            "required": ["kind", "name"],
             "additionalProperties": false
           },
           {
@@ -1252,9 +1160,7 @@
                 "type": "number"
               }
             },
-            "required": [
-              "kind"
-            ],
+            "required": ["kind"],
             "additionalProperties": false
           },
           {
@@ -1272,21 +1178,13 @@
                 "type": "string"
               }
             },
-            "required": [
-              "kind",
-              "text"
-            ],
+            "required": ["kind", "text"],
             "additionalProperties": false
           }
         ]
       }
     }
   },
-  "required": [
-    "version",
-    "author",
-    "license",
-    "name"
-  ],
+  "required": ["version", "author", "license", "name"],
   "additionalProperties": false
 }

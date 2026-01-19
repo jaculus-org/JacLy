@@ -39,7 +39,7 @@
 }
 
 /* Selected category - primary style */
-.blocklyToolboxCategory[aria-selected="true"] {
+.blocklyToolboxCategory[aria-selected='true'] {
   background-color: oklch(var(--primary));
   color: oklch(var(--primary-foreground));
   border-color: oklch(var(--primary));

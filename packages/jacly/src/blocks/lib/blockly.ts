@@ -1,6 +1,10 @@
 import { Blocks } from 'blockly/core';
 import { JaclyBlock, JaclyBlockKindBlock, JaclyConfig } from '../schema';
-import { BlockExtended, BlockSvgExtended, WorkspaceSvgExtended } from '../types/custom-block';
+import {
+  BlockExtended,
+  BlockSvgExtended,
+  WorkspaceSvgExtended,
+} from '../types/custom-block';
 import * as Blockly from 'blockly/core';
 
 import {
@@ -16,6 +20,17 @@ import {
 } from './constructors';
 import { colourHexaToRgbString } from '@/editor/plugins/field-colour-hsv-sliders';
 
+/**
+ * Registry mapping block types to their required library imports.
+ * Key: block type (e.g., "i2c_setup", "vl53l0x_create")
+ * Value: array of import statements
+ */
+const blockLibraryImports = new Map<string, string[]>();
+
+export function getLibraryImportsForBlock(blockType: string): string[] {
+  return blockLibraryImports.get(blockType) || [];
+}
+
 export function registerBlocklyBlock(
   block: JaclyBlock,
   jaclyConfig: JaclyConfig
@@ -27,23 +42,35 @@ export function registerBlocklyBlock(
   const inputs: JaclyBlockKindBlock['inputs'] = {};
 
   // add callback variable input slots to the block's first line
-  if (block.callbackVars && block.callbackVars.length > 0 && block.args0 && block.message0) {
-    const varInputArgs = block.callbackVars.map((cbVar) => ({
+  if (
+    block.callbackVars &&
+    block.callbackVars.length > 0 &&
+    block.args0 &&
+    block.message0
+  ) {
+    const varInputArgs = block.callbackVars.map(cbVar => ({
       type: 'input_value' as const,
       name: `CALLBACK_VAR_${cbVar.name}`,
       check: cbVar.type,
     }));
 
     // insert before the first input_statement
-    const stmtIndex = block.args0.findIndex(arg => arg.type === 'input_statement');
+    const stmtIndex = block.args0.findIndex(
+      arg => arg.type === 'input_statement'
+    );
 
     if (stmtIndex !== -1) {
       block.args0.splice(stmtIndex, 0, ...varInputArgs);
 
       // update message0 to include the new inputs on the same line as the header
       const stmtPlaceholder = `$[${block.args0[stmtIndex + varInputArgs.length].name}]`;
-      const inputPlaceholders = block.callbackVars.map((cbVar) => `$[CALLBACK_VAR_${cbVar.name}]`).join(' ');
-      block.message0 = block.message0.replace(stmtPlaceholder, `${inputPlaceholders}\n${stmtPlaceholder}`);
+      const inputPlaceholders = block.callbackVars
+        .map(cbVar => `$[CALLBACK_VAR_${cbVar.name}]`)
+        .join(' ');
+      block.message0 = block.message0.replace(
+        stmtPlaceholder,
+        `${inputPlaceholders}\n${stmtPlaceholder}`
+      );
 
       // add callback var getter blocks to inputs
       for (const cbVar of block.callbackVars) {
@@ -139,6 +166,14 @@ export function registerBlocklyBlock(
             if (field && field instanceof Blockly.FieldDropdown) {
               // @ts-ignore
               field.menuGenerator_ = getInstanceDropdownGenerator(systemId);
+
+              // auto-select if exactly one instance exists
+              const options = getInstanceDropdownGenerator(systemId).call(
+                field
+              ) as [string, string][];
+              if (options.length === 1 && options[0][1] !== 'INVALID') {
+                this.setFieldValue(options[0][1], fieldName);
+              }
             }
 
             const existingOnChange = this.onchange;
@@ -206,7 +241,11 @@ function registerCallbackVarGetters(
 
             if (oldParent && moveEvent.oldInputName) {
               const input = oldParent.getInput(moveEvent.oldInputName);
-              if (input && input.connection && !input.connection.targetBlock()) {
+              if (
+                input &&
+                input.connection &&
+                !input.connection.targetBlock()
+              ) {
                 // create a new block to fill the slot we just left
                 const newBlock = workspace.newBlock(this.type);
                 newBlock.callbackVarInputName = this.callbackVarInputName;
@@ -231,53 +270,154 @@ function registerCallbackVarGetters(
   }
 }
 
+/**
+ * Get the replacement value for a placeholder based on the argument type.
+ */
+function getPlaceholderValue(
+  arg: NonNullable<JaclyBlockKindBlock['args0']>[number],
+  codeBlock: BlockExtended,
+  generator: JavascriptGenerator
+): string {
+  switch (arg.type) {
+    // Fields - use getFieldValue
+    case 'field_input':
+    case 'field_number':
+    case 'field_dropdown':
+    case 'field_colour':
+      return codeBlock.getFieldValue(arg.name) || '';
+
+    // Inputs - use valueToCode or statementToCode
+    case 'input_value':
+      return generator.valueToCode(codeBlock, arg.name, Order.NONE) || 'null';
+
+    case 'input_statement':
+      return generator.statementToCode(codeBlock, arg.name) || '';
+
+    case 'field_colour_hsv_sliders':
+      return colourHexaToRgbString(
+        codeBlock.getFieldValue(arg.name) || '#ffffff'
+      );
+
+    case 'color_field_select':
+      return codeBlock.getFieldValue(arg.name) || '#ffffff';
+
+    default:
+      return '';
+  }
+}
+
+/**
+ * Replace all placeholders in the code with their corresponding values.
+ */
+function replacePlaceholders(
+  code: string,
+  args: JaclyBlockKindBlock['args0'],
+  codeBlock: BlockExtended,
+  generator: JavascriptGenerator
+): string {
+  if (!args) return code;
+
+  args.forEach(arg => {
+    const placeholder = `$[${arg.name}]`;
+    if (code.includes(placeholder)) {
+      const replaceValue = getPlaceholderValue(arg, codeBlock, generator);
+      code = code.replaceAll(placeholder, replaceValue);
+    }
+  });
+
+  return code;
+}
+
+/**
+ * Evaluate if all conditions in a condition array match the current block values.
+ * Each condition is an object with placeholder keys and expected values.
+ */
+function evaluateConditions(
+  conditions: Array<Record<string, string>>,
+  args: JaclyBlockKindBlock['args0'],
+  codeBlock: BlockExtended,
+  generator: JavascriptGenerator
+): boolean {
+  if (!conditions || conditions.length === 0) return false;
+
+  return conditions.every(condition => {
+    return Object.entries(condition).every(([placeholder, expectedValue]) => {
+      // Extract field name from placeholder (e.g., "$[UNIT]" -> "UNIT")
+      const match = placeholder.match(/^\$\[(.+)\]$/);
+      if (!match) return false;
+
+      const fieldName = match[1];
+      const arg = args?.find(a => a.name === fieldName);
+      if (!arg) return false;
+
+      const actualValue = getPlaceholderValue(arg, codeBlock, generator);
+      return actualValue === expectedValue;
+    });
+  });
+}
+
+/**
+ * Select the appropriate code template based on conditionals.
+ * Returns the matching conditional's code, or the default block.code if no match.
+ */
+function selectConditionalCode(
+  block: JaclyBlockKindBlock,
+  codeBlock: BlockExtended,
+  generator: JavascriptGenerator
+): string | null {
+  // If there are code conditionals, find the first matching one
+  if (block.codeConditionals && block.codeConditionals.length > 0) {
+    for (const conditional of block.codeConditionals) {
+      if (
+        evaluateConditions(
+          conditional.condition,
+          block.args0,
+          codeBlock,
+          generator
+        )
+      ) {
+        return conditional.code;
+      }
+    }
+    // No conditional matched, fallback to default code if available
+    return block.code || null;
+  }
+
+  // No conditionals, use default code
+  return block.code || null;
+}
+
 export function registerCodeGenerator(
   block: JaclyBlock,
-  _jaclyConfig: JaclyConfig,
+  jaclyConfig: JaclyConfig,
   _libName: string
 ) {
-  if (block.kind != 'block' || !block.code) {
+  if (block.kind != 'block' || (!block.code && !block.codeConditionals)) {
     return;
+  }
+
+  // Register library imports for this block type
+  if (jaclyConfig.libraries && jaclyConfig.libraries.length > 0) {
+    blockLibraryImports.set(block.type, jaclyConfig.libraries);
   }
 
   jsg.forBlock[block.type] = function (
     codeBlock: BlockExtended,
     generator: JavascriptGenerator
   ) {
-    let code = block.code!;
+    // Select the appropriate code template (conditional or default)
+    const codeTemplate = selectConditionalCode(block, codeBlock, generator);
+    if (!codeTemplate) {
+      return block.output ? ['', Order.NONE] : '';
+    }
 
-    block.args0?.forEach(arg => {
-      const placeholder = `$[${arg.name}]`;
-      let replaceValue = '';
-      if (code.includes(placeholder)) {
-        switch (arg.type) {
-          // Fields - use getFieldValue
-          case 'field_input':
-          case 'field_number':
-          case 'field_dropdown':
-          case 'field_colour':
-            replaceValue = codeBlock.getFieldValue(arg.name) || '';
-            break;
-          // Inputs - use valueToCode or statementToCode
-          case 'input_value':
-            replaceValue =
-              generator.valueToCode(codeBlock, arg.name, Order.NONE) || 'null';
-            break;
-          case 'input_statement':
-            replaceValue = generator.statementToCode(codeBlock, arg.name) || '';
-            break;
-
-          case 'field_colour_hsv_sliders':
-            replaceValue = colourHexaToRgbString(codeBlock.getFieldValue(arg.name) || '#ffffff');
-            break;
-          case 'color_field_select':
-            replaceValue = codeBlock.getFieldValue(arg.name) || '#ffffff';
-            break;
-        }
-        code = code.replaceAll(placeholder, replaceValue);
-      }
-    });
-
+    // Replace all placeholders with actual values
+    let code = replacePlaceholders(
+      codeTemplate,
+      block.args0,
+      codeBlock,
+      generator
+    );
 
     if (block.output) {
       return [code, Order.NONE];

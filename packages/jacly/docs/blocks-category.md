@@ -5,7 +5,7 @@ Block definitions are distributed in Jaculus libraries, each library can define 
 
 The category definition files are located in the `blocks` folder of each library.
 
-```json
+````json
 {
   "version": "1.0.0",
   "author": "Jakub Andrysek",
@@ -24,3 +24,4 @@ The category definition files are located in the `blocks` folder of each library
   ],
   "contents": []
 }```
+````

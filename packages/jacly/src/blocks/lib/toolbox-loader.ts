@@ -9,10 +9,17 @@ import {
 } from '../types/errors';
 import { z } from 'zod';
 import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
+import { localizeJaclyConfig, registerTranslations } from './translations';
 
 export function loadToolboxConfiguration(
-  jaclyBlockFiles: JaclyBlocksFiles
+  jaclyBlockFiles: JaclyBlocksFiles,
+  translations?: Record<string, string>
 ): Blockly.utils.toolbox.ToolboxDefinition {
+  // register translations before building the toolbox
+  if (translations) {
+    registerTranslations(translations);
+  }
+
   const toolboxContent: ToolboxItemInfoSort[] = [];
 
   for (const fileKey in jaclyBlockFiles) {
@@ -29,14 +36,14 @@ export function loadToolboxConfiguration(
 
   const toolbox = buildCategoryHierarchy(toolboxContent);
   const search: ToolboxItemInfoSort = {
-      'kind': 'search',
-      'name': 'Search',
-      'contents': [],
+    kind: 'search',
+    name: 'Search',
+    contents: [],
   };
 
   return {
     kind: 'categoryToolbox',
-    contents: [ search, ...toolbox],
+    contents: [search, ...toolbox],
   };
 }
 
@@ -50,7 +57,9 @@ function loadToolboxLibrary(
       `Failed to parse Jacly block file '${libName}': ${z.prettifyError(result.error)}`
     );
   }
-  const jaclyConfig = result.data;4
+  const jaclyConfig = result.data;
+
+  localizeJaclyConfig(jaclyConfig);
 
   if (jaclyConfig.contents) {
     return parseToolboxContentsBlock(jaclyConfig, libName);
@@ -67,7 +76,9 @@ function loadToolboxLibrary(
  * Build a hierarchical category structure from flat toolbox items.
  * Top-level categories are sorted by priority, subcategories alphabetically by name.
  */
-function buildCategoryHierarchy(items: ToolboxItemInfoSort[]): ToolboxItemInfoSort[] {
+function buildCategoryHierarchy(
+  items: ToolboxItemInfoSort[]
+): ToolboxItemInfoSort[] {
   const topLevelCategories: ToolboxItemInfoSort[] = [];
   const subcategoriesMap = new Map<string, ToolboxItemInfoSort[]>();
   const categoryIds = new Set<string>();
