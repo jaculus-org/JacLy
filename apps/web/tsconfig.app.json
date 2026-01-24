@@ -8,6 +8,7 @@
     "types": ["vite/client", "w3c-web-serial"],
     "skipLibCheck": true,
     "baseUrl": ".",
+    "allowJs": true,
     "paths": {
       "@/*": ["./src/*"]
     },

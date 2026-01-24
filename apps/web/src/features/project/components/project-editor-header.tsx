@@ -1,7 +1,9 @@
+import { m } from '@/paraglide/messages';
 import { Build } from '@/features/jac-device/components/build';
 import { BuildFlash } from '@/features/jac-device/components/build-flash';
 import { ConnectionSelector } from '@/features/jac-device/components/connection-selector';
 import { ConsoleSelector } from '@/features/jac-device/components/console-selector';
+import { LocaleSelector } from '@/features/locale/components/locale-selector';
 import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
@@ -18,7 +20,7 @@ export function ProjectEditorHeader() {
               className="font-medium text-blue-900 no-underline transition-colors duration-300 ease-in-out hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-500"
             >
               <HouseIcon className="inline-block mr-1 mb-1 h-4 w-4" />
-              All Projects
+              {m.project_header_all()}
             </Link>
           </nav>
 
@@ -29,6 +31,7 @@ export function ProjectEditorHeader() {
             <ConsoleSelector />
             <ConnectionSelector />
             <ThemeToggle />
+            <LocaleSelector />
           </div>
         </div>
       </div>

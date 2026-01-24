@@ -298,8 +298,9 @@ export const JaclyConfigSchema = z
     github: Url.optional(),
     license: z.string().nonempty('license is required'),
 
-    category: Identifier.optional(),
+    category: Identifier,
     parentCategory: Identifier.optional(),
+
     name: z.string().nonempty('name is required'),
     description: z.string().optional(),
     docs: z.string().optional(),
@@ -313,18 +314,7 @@ export const JaclyConfigSchema = z
     priorityCategory: z.number().optional(),
 
     contents: z.array(JaclyBlockSchema).optional(),
-  })
-  .refine(
-    data => {
-      const hasCategory = !!data.category;
-      const categoryHasParent = !!data.parentCategory;
-      return hasCategory !== categoryHasParent; // XOR: exactly one must be true
-    },
-    {
-      message:
-        'Exactly one of "category" or "categoryParent" must be provided, not both',
-    }
-  );
+  });
 
 export type JaclyConfig = z.infer<typeof JaclyConfigSchema>;
 export type JaclyBlock = z.infer<typeof JaclyBlockSchema>;

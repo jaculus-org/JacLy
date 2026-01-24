@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { Button } from '@/features/shared/components/ui/button';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
@@ -20,7 +21,7 @@ export function ConsoleSelector() {
         className="gap-1 h-8"
       >
         <CableIcon className="h-4 w-4" />
-        Console
+        {m.device_btn_console()}
         {/* <Badge variant="secondary" className="ml-1">
           20+
         </Badge> */}

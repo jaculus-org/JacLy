@@ -1,10 +1,12 @@
+import { m } from '@/paraglide/messages';
+import { LocaleSelector } from '@/features/locale/components/locale-selector';
 import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 
 export function GeneralHeader() {
   const links = [
-    { name: 'Home' as string, path: '/' },
-    { name: 'Projects' as string, path: '/project/' },
+    { name: m.nav_home(), path: '/' },
+    { name: m.nav_projects(), path: '/project/' },
   ];
 
   return (
@@ -26,7 +28,7 @@ export function GeneralHeader() {
           {/* Theme switcher */}
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            {/* <LocaleSwitcher /> */}
+            <LocaleSelector />
           </div>
         </div>
       </div>

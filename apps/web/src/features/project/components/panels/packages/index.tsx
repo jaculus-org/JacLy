@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import logger from '@/features/jac-device/lib/logger';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { Dependencies } from 'node_modules/@jaculus/project/dist/src/project/package';
@@ -55,7 +56,7 @@ export function PackagesPanel() {
         setInstalledLibs(await jacProject.installedLibraries());
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'Failed to load libraries'
+          err instanceof Error ? err.message : m.project_panel_pkg_load_error()
         );
         logger.error('Error loading libraries:' + err);
       }
@@ -84,7 +85,7 @@ export function PackagesPanel() {
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'Failed to load library versions'
+          err instanceof Error ? err.message : m.project_panel_pkg_versions_error()
         );
         logger.error('Error loading library versions:' + err);
       }
@@ -94,7 +95,7 @@ export function PackagesPanel() {
   if (jacProject == null) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-        No project loaded
+        {m.project_panel_pkg_no_project()}
       </div>
     );
   }
@@ -107,7 +108,7 @@ export function PackagesPanel() {
       setInstalledLibs(await jacProject!.installedLibraries());
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to install library'
+        err instanceof Error ? err.message : m.project_panel_pkg_install_error()
       );
       logger.error('Error installing library:' + err);
     } finally {
@@ -120,7 +121,7 @@ export function PackagesPanel() {
       setIsInstalling(true);
       setError(null);
       if (selectedLib == null || availableLibVersions.length === 0) {
-        setError('No library or version selected');
+        setError(m.project_panel_pkg_select_error());
         return;
       }
       const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
@@ -128,11 +129,11 @@ export function PackagesPanel() {
       await jacProject!.install();
       setInstalledLibs(await jacProject!.installedLibraries());
       enqueueSnackbar(
-        `Library '${selectedLib}@${versionToInstall}' added successfully`,
+        m.project_panel_pkg_added({ name: selectedLib, version: versionToInstall }),
         { variant: 'success' }
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add library');
+      setError(err instanceof Error ? err.message : m.project_panel_pkg_add_error());
       logger.error('Error adding library:' + err);
     } finally {
       setIsInstalling(false);
@@ -148,11 +149,11 @@ export function PackagesPanel() {
       await jacProject!.removeLibrary(library);
       await jacProject!.install();
       setInstalledLibs(await jacProject!.installedLibraries());
-      enqueueSnackbar(`Library '${library}' removed successfully`, {
+      enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
         variant: 'success',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to remove library');
+      setError(err instanceof Error ? err.message : m.project_panel_pkg_remove_error());
       logger.error('Error removing library:' + err);
     } finally {
       setIsInstalling(false);
@@ -174,7 +175,7 @@ export function PackagesPanel() {
         size="lg"
       >
         <RefreshCw className={isInstalling ? 'animate-spin' : ''} />
-        {isInstalling ? 'Installing...' : 'Install'}
+        {isInstalling ? m.project_panel_pkg_installing() : m.project_panel_pkg_install()}
       </Button>
 
       {/* Error Display */}
@@ -188,13 +189,13 @@ export function PackagesPanel() {
       <Card className="p-3">
         <div className="mb-2 flex items-center gap-2">
           <Plus className="h-4 w-4" />
-          <h3 className="font-semibold">Add New Package</h3>
+          <h3 className="font-semibold">{m.project_panel_pkg_add_title()}</h3>
         </div>
 
         <div className="space-y-2">
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">
-              Select Package
+              {m.project_panel_pkg_select()}
             </label>
             <Select
               value={selectedLib ?? ''}
@@ -202,14 +203,14 @@ export function PackagesPanel() {
               disabled={isInstalling}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choose package..." />
+                <SelectValue placeholder={m.project_panel_pkg_choose()} />
               </SelectTrigger>
               <SelectContent className="w-full">
                 <div className="p-2">
                   <div className="relative">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search packages..."
+                      placeholder={m.project_panel_pkg_search()}
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                       className="pl-8"
@@ -219,7 +220,7 @@ export function PackagesPanel() {
                 <div className="max-h-60 overflow-y-auto">
                   {filteredAvailableLibs.length === 0 ? (
                     <div className="p-2 text-center text-sm text-muted-foreground">
-                      No packages found
+                      {m.project_panel_pkg_not_found()}
                     </div>
                   ) : (
                     filteredAvailableLibs.map(lib => (
@@ -235,7 +236,7 @@ export function PackagesPanel() {
 
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">
-              Select Version
+              {m.project_panel_pkg_version()}
             </label>
             <Select
               value={selectedLibVersion ?? ''}
@@ -247,7 +248,7 @@ export function PackagesPanel() {
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choose version..." />
+                <SelectValue placeholder={m.project_panel_pkg_version_choose()} />
               </SelectTrigger>
               <SelectContent className="w-full">
                 <div className="max-h-60 overflow-y-auto">
@@ -269,7 +270,7 @@ export function PackagesPanel() {
             className="w-full"
           >
             <Plus />
-            Add Package
+            {m.project_panel_pkg_add()}
           </Button>
         </div>
       </Card>
@@ -281,13 +282,13 @@ export function PackagesPanel() {
         <div className="mb-2 flex items-center gap-2">
           <Package className="h-4 w-4" />
           <h3 className="font-semibold">
-            Installed Packages ({Object.keys(installedLibs).length})
+            {m.project_panel_pkg_installed()} ({Object.keys(installedLibs).length})
           </h3>
         </div>
 
         {Object.keys(installedLibs).length === 0 ? (
           <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-            No packages installed yet
+            {m.project_panel_pkg_empty()}
           </div>
         ) : (
           <div className="h-full overflow-y-auto space-y-2 pr-2">
@@ -312,18 +313,17 @@ export function PackagesPanel() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Remove Package</AlertDialogTitle>
+                      <AlertDialogTitle>{m.project_panel_pkg_remove_title()}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to remove '{name}'? This action
-                        cannot be undone.
+                        {m.project_panel_pkg_remove_desc({ name })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>{m.project_panel_pkg_remove_cancel()}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleRemoveLibrary(name)}
                       >
-                        Remove
+                        {m.project_panel_pkg_remove()}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

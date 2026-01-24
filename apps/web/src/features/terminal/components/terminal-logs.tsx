@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   logKeys,
@@ -99,7 +100,7 @@ export function TerminalLogs() {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      {showTimestamp ? 'Hide timestamps' : 'Show timestamps'}
+                      {showTimestamp ? m.terminal_timestamp_hide() : m.terminal_timestamp_show()}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -116,8 +117,8 @@ export function TerminalLogs() {
                   <TooltipContent>
                     <p>
                       {autoScroll
-                        ? 'Disable auto-scroll'
-                        : 'Enable auto-scroll'}
+                        ? m.terminal_autoscroll_disable()
+                        : m.terminal_autoscroll_enable()}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -133,7 +134,7 @@ export function TerminalLogs() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{copied ? 'Copied!' : 'Copy to clipboard'}</p>
+                    <p>{copied ? m.terminal_copied() : m.terminal_copy()}</p>
                   </TooltipContent>
                 </Tooltip>
 
@@ -144,7 +145,7 @@ export function TerminalLogs() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Clear terminal</p>
+                    <p>{m.terminal_clear()}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -180,7 +181,7 @@ export function TerminalLogs() {
           >
             {filteredEntries.length === 0 ? (
               <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                No log output yet...
+                {m.terminal_logs_empty()}
               </div>
             ) : (
               <div className="space-y-0.5">

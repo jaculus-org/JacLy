@@ -9,6 +9,8 @@ import { LogsPanel } from '../components/panels/logs';
 import { PackagesPanel } from '../components/panels/packages';
 import { BlocklyEditorPanel } from '../components/panels/blockly';
 import { JaculusPanel } from '../components/panels/jaculus';
+import { getPanelTitle } from './flexlayout-defaults';
+import { m } from '@/paraglide/messages';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
@@ -28,7 +30,6 @@ const PANEL_COMPONENTS: Record<
 
 export function factory(node: FlexLayout.TabNode) {
   const component = node.getComponent() as PanelType;
-  const tabName = node.getName();
   const isInBorder = node.getParent() instanceof FlexLayout.BorderNode;
   const isHighlighted = false;
 
@@ -39,7 +40,7 @@ export function factory(node: FlexLayout.TabNode) {
     highlight: boolean = false
   ) => (
     <PanelWrapper
-      name={tabName && showName ? tabName : undefined}
+      name={showName ? getPanelTitle(component) : undefined}
       highlight={highlight}
     >
       {children}
@@ -50,7 +51,7 @@ export function factory(node: FlexLayout.TabNode) {
   const panelContent = panelFactory ? (
     panelFactory(config)
   ) : (
-    <div>Unknown component: {component}</div>
+    <div>{m.project_panel_unknown_component()} {component}</div>
   );
 
   return wrapComponent(panelContent, isInBorder, isHighlighted);

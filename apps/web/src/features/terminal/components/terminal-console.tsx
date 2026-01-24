@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { useState, useEffect, useRef } from 'react';
 import { useTerminal } from '../provider/terminal-provider';
 import { sendToDeviceStr } from '@/features/jac-device/lib/connection';
@@ -102,7 +103,7 @@ export function TerminalConsole() {
             {/* Input Section */}
             <div className="flex items-start gap-1.5">
               <Textarea
-                placeholder="Type a command..."
+                placeholder={m.terminal_placeholder()}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -120,7 +121,7 @@ export function TerminalConsole() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Send command</p>
+                  <p>{m.terminal_send()}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -139,7 +140,7 @@ export function TerminalConsole() {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      {showTimestamp ? 'Hide timestamps' : 'Show timestamps'}
+                      {showTimestamp ? m.terminal_timestamp_hide() : m.terminal_timestamp_show()}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -156,8 +157,8 @@ export function TerminalConsole() {
                   <TooltipContent>
                     <p>
                       {autoScroll
-                        ? 'Disable auto-scroll'
-                        : 'Enable auto-scroll'}
+                        ? m.terminal_autoscroll_disable()
+                        : m.terminal_autoscroll_enable()}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -173,7 +174,7 @@ export function TerminalConsole() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{copied ? 'Copied!' : 'Copy to clipboard'}</p>
+                    <p>{copied ? m.terminal_copied() : m.terminal_copy()}</p>
                   </TooltipContent>
                 </Tooltip>
 
@@ -184,7 +185,7 @@ export function TerminalConsole() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Clear terminal</p>
+                    <p>{m.terminal_clear()}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -205,7 +206,7 @@ export function TerminalConsole() {
           >
             {consoleEntries.length === 0 ? (
               <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
-                No console output yet...
+                {m.terminal_console_empty()}
               </div>
             ) : (
               <div className="space-y-0.5">

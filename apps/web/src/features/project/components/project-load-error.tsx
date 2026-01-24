@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { AlertCircleIcon, ArrowLeftIcon } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
@@ -17,11 +18,10 @@ export function ProjectLoadError({ error }: EditorLoadErrorProps) {
         {/* Error message */}
         <div className="flex flex-col items-center gap-3 text-center">
           <h2 className="text-lg font-semibold text-destructive">
-            Failed to Load Project Filesystem
+            {m.project_error_title()}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {error.message ||
-              'An unknown error occurred while mounting the filesystem'}
+            {error.message || m.project_error_unknown()}
           </p>
         </div>
 
@@ -32,14 +32,14 @@ export function ProjectLoadError({ error }: EditorLoadErrorProps) {
             className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4" />
-            Back to Projects
+            {m.project_loading_back()}
           </Link>
 
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 border border-border rounded-md hover:bg-accent transition-colors text-sm"
           >
-            Reload Page
+            {m.project_error_reload()}
           </button>
         </div>
       </div>

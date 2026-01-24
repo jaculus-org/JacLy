@@ -1,8 +1,6 @@
 import * as Blockly from 'blockly/core';
 import { JaclyBlock, JaclyBlocksArgs, JaclyConfig } from '../schema';
 
-const t = Blockly.utils.parsing.replaceMessageReferences;
-
 /**
  * Registers translations to Blockly.Msg for use with %{BKY_...} message references.
  * This should be called before loading the toolbox so that localizeJaclyConfig works correctly.
@@ -13,62 +11,69 @@ export function registerTranslations(
   Object.assign(Blockly.Msg, translations);
 }
 
+function t(key: string, prefix: string) {
+  if (key == "%t%") {
+    key = `%{BKY_${prefix.toUpperCase()}}`;
+  }
+  return Blockly.utils.parsing.replaceMessageReferences(key);
+}
+
 /**
  * Localizes a JaclyConfig by replacing all Blockly message references (%{BKY_...})
  * with their translated values.
  */
 export function localizeJaclyConfig(config: JaclyConfig): void {
-  config.name = t(config.name);
-  if (config.colour) config.colour = t(config.colour) as typeof config.colour;
-  if (config.description) config.description = t(config.description);
+  config.name = t(config.name, `${config.category}_name`);
+  if (config.colour) config.colour = t(config.colour, `${config.category}_colour`);
+  if (config.description) config.description = t(config.description, `${config.category}_description`);
 
   if (config.contents) {
     for (const item of config.contents) {
-      localizeBlockItem(item);
+      localizeBlockItem(config.category, item);
     }
   }
 }
 
-function localizeBlockItem(item: JaclyBlock): void {
+function localizeBlockItem(prefix: string, item: JaclyBlock): void {
   switch (item.kind) {
     case 'block':
-      localizeBlock(item);
+      localizeBlock(`${item.type}`, item);
       break;
     case 'category':
-      item.name = t(item.name);
-      if (item.colour) item.colour = t(item.colour) as typeof item.colour;
+      item.name = t(item.name, `${prefix}_category_name`);
+      if (item.colour) item.colour = t(item.colour, `${prefix}_category_colour`);
       break;
     case 'label':
-      item.text = t(item.text);
+      item.text = t(item.text, `${prefix}_label_${item.text}`);
       break;
     case 'separator':
       break;
   }
 }
 
-function localizeBlock(block: Extract<JaclyBlock, { kind: 'block' }>): void {
-  if (block.message0) block.message0 = t(block.message0);
-  if (block.tooltip) block.tooltip = t(block.tooltip);
-  if (block.colour) block.colour = t(block.colour) as typeof block.colour;
+function localizeBlock(prefix: string, block: Extract<JaclyBlock, { kind: 'block' }>): void {
+  if (block.message0) block.message0 = t(block.message0, `${prefix}_message0`);
+  if (block.tooltip) block.tooltip = t(block.tooltip, `${prefix}_tooltip`);
+  if (block.colour) block.colour = t(block.colour, `${prefix}_colour`);
   if (block.args0) {
     for (const arg of block.args0) {
-      localizeArg(arg);
+      localizeArg(`${prefix}_args0`, arg);
     }
   }
 }
 
-function localizeArg(arg: JaclyBlocksArgs): void {
+function localizeArg(prefix: string, arg: JaclyBlocksArgs): void {
   switch (arg.type) {
     case 'field_dropdown':
       // translate first element of each tuple (display text)
       if (arg.options) {
         for (const option of arg.options) {
-          option[0] = t(option[0]);
+          option[0] = t(option[0], `${prefix}_field_dropdown_${option[0]}`);
         }
       }
       break;
     case 'field_input':
-      if (arg.text) arg.text = t(arg.text);
+      if (arg.text) arg.text = t(arg.text, `${prefix}_field_input`);
       break;
   }
 }

@@ -1,4 +1,6 @@
+import { m } from '@/paraglide/messages';
 import * as FlexLayout from 'flexlayout-react';
+import type { PanelType } from '../types/flexlayout-type';
 
 export const defaultGlobalSettings: FlexLayout.IGlobalAttributes = {
   tabEnableClose: false,
@@ -20,7 +22,6 @@ export const defaultLayout: FlexLayout.IJsonRowNode = {
       children: [
         {
           type: 'tab',
-          name: 'Blockly Editor',
           component: 'blockly',
           id: 'blockly',
         },
@@ -38,21 +39,18 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
     children: [
       {
         type: 'tab',
-        name: 'File Explorer',
         component: 'file-explorer',
         id: 'file-explorer',
         enableClose: false,
       },
       {
         type: 'tab',
-        name: 'Packages',
         component: 'packages',
         id: 'packages',
         enableClose: false,
       },
       {
         type: 'tab',
-        name: 'Jaculus',
         component: 'jaculus',
         id: 'jaculus',
         enableClose: false,
@@ -67,21 +65,18 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
     children: [
       {
         type: 'tab',
-        name: 'Device Console',
         component: 'console',
         id: 'console',
         enableClose: false,
       },
       {
         type: 'tab',
-        name: 'Generated Code',
         component: 'generated-code',
         id: 'generated-code',
         enableClose: false,
       },
       {
         type: 'tab',
-        name: 'Logs',
         component: 'logs',
         id: 'logs',
         enableClose: false,
@@ -95,3 +90,34 @@ export const flexLayoutDefaultJson: FlexLayout.IJsonModel = {
   borders: defaultBorderLayout,
   layout: defaultLayout,
 };
+
+
+export function getPanelTitle(component: PanelType | undefined): string | undefined {
+  if (component === undefined) {
+    return undefined;
+  }
+
+  switch (component) {
+    case 'blockly':
+      return m.project_panel_blockly();
+    case 'file-explorer':
+      return m.project_panel_fs();
+    case 'packages':
+      return m.project_panel_packages();
+    case 'jaculus':
+      return m.project_panel_jaculus();
+    case 'console':
+      return m.project_panel_console();
+    case 'generated-code':
+      return m.project_panel_code();
+    case 'logs':
+      return m.project_panel_logs();
+    case 'code':
+      return m.project_panel_code_editor();
+    case 'wokwi':
+      return m.project_panel_wokwi();
+    default:
+      const _exhaustive: never = component; // exhaustiveness check
+      return _exhaustive;
+  }
+}

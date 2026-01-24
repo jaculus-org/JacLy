@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { dirname } from 'path';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { JaclyBlocksFiles } from '@jaculus/project';
+import { getLocale } from '@/paraglide/runtime'
 import '../styles/toolbox.css';
 
 export function JaclyEditorComponent() {
@@ -47,7 +48,7 @@ export function JaclyEditorComponent() {
         }
         setInitialJson(jsonData);
 
-        const jaclyData = await jacProject.getJaclyData('en');
+        const jaclyData = await jacProject.getJaclyData(getLocale());
         setJaclyBlockFiles(jaclyData.blockFiles);
         setJaclyTranslations(jaclyData.translations);
 

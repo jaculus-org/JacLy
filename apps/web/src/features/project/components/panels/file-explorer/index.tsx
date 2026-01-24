@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -200,7 +201,7 @@ export function FileExplorerPanel() {
 
   const createNewFile = async (item: FileSystemItem) => {
     const fileName = prompt(
-      `Creating new file under: ${item.path}\nEnter file name:`
+      m.project_panel_fs_create_file_prompt({ path: item.path })
     );
     if (!fileName) return;
     try {
@@ -209,41 +210,41 @@ export function FileExplorerPanel() {
         filePath: `${item.path}/${fileName}`.replace(`${projectPath}/`, ''),
       });
     } catch {
-      enqueueSnackbar('Failed to create file', { variant: 'error' });
+      enqueueSnackbar(m.project_panel_fs_create_file_error(), { variant: 'error' });
     }
   };
 
   const createNewDirectory = async (item: FileSystemItem) => {
     const dirName = prompt(
-      `Creating new folder under: ${item.path}\nEnter folder name:`
+      m.project_panel_fs_create_folder_prompt({ path: item.path })
     );
     if (!dirName) return;
     try {
       await fsp.mkdir(`${item.path}/${dirName}`);
     } catch {
-      enqueueSnackbar('Failed to create folder', { variant: 'error' });
+      enqueueSnackbar(m.project_panel_fs_create_folder_error(), { variant: 'error' });
     }
   };
 
   const renameItem = async (item: FileSystemItem) => {
-    const newName = prompt(`Enter new name for "${item.name}":`, item.name);
+    const newName = prompt(m.project_panel_fs_rename_prompt({ name: item.name }), item.name);
     if (!newName || newName === item.name) return;
     try {
       const newPath = item.path.replace(/[^/]+$/, newName);
       await fsp.rename(item.path, newPath);
     } catch {
-      enqueueSnackbar('Failed to rename', { variant: 'error' });
+      enqueueSnackbar(m.project_panel_fs_rename_error(), { variant: 'error' });
     }
   };
 
   const removeItem = async (item: FileSystemItem) => {
-    if (!confirm(`Delete ${item.name}?`)) return;
+    if (!confirm(m.project_panel_fs_delete_confirm({ name: item.name }))) return;
     try {
       if (item.isDirectory)
         await fsp.rm(item.path, { recursive: true, force: true });
       else await fsp.unlink(item.path);
     } catch {
-      enqueueSnackbar('Failed to delete', { variant: 'error' });
+      enqueueSnackbar(m.project_panel_fs_delete_error(), { variant: 'error' });
     }
   };
 
@@ -253,23 +254,23 @@ export function FileExplorerPanel() {
         {item.isDirectory && (
           <>
             <ContextMenuItem onClick={() => createNewFile(item)}>
-              <FilePlusIcon size={16} className="mr-2" /> New File
+              <FilePlusIcon size={16} className="mr-2" /> {m.project_panel_fs_new_file()}
             </ContextMenuItem>
             <ContextMenuItem onClick={() => createNewDirectory(item)}>
-              <FolderPlusIcon size={16} className="mr-2" /> New Folder
+              <FolderPlusIcon size={16} className="mr-2" /> {m.project_panel_fs_new_folder()}
             </ContextMenuItem>
           </>
         )}
         {!item.isRoot && (
           <>
             <ContextMenuItem onClick={() => renameItem(item)}>
-              <FolderPenIcon size={16} className="mr-2" /> Rename
+              <FolderPenIcon size={16} className="mr-2" /> {m.project_panel_fs_rename()}
             </ContextMenuItem>
             <ContextMenuItem
               onClick={() => removeItem(item)}
               className="text-red-500"
             >
-              <FolderMinusIcon size={16} className="mr-2" /> Delete
+              <FolderMinusIcon size={16} className="mr-2" /> {m.project_panel_fs_delete()}
             </ContextMenuItem>
           </>
         )}
@@ -280,7 +281,7 @@ export function FileExplorerPanel() {
             )
           }
         >
-          <CopyIcon size={16} className="mr-2" /> Copy Path
+          <CopyIcon size={16} className="mr-2" /> {m.project_panel_fs_copy_path()}
         </ContextMenuItem>
       </ContextMenuContent>
     ),
@@ -294,11 +295,11 @@ export function FileExplorerPanel() {
         <div className="flex-1 overflow-auto p-1 min-h-full">
           {loading && fileTree.length === 0 ? (
             <div className="flex items-center justify-center h-20 text-muted-foreground text-sm">
-              Loading files...
+              {m.project_panel_fs_loading()}
             </div>
           ) : fileTree.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground text-sm">
-              No files found
+              {m.project_panel_fs_empty()}
             </div>
           ) : (
             <div className="min-h-full">

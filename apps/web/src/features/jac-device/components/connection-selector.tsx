@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import {
   Select,
   SelectContent,
@@ -41,7 +42,7 @@ export function ConnectionSelector() {
   function onDisconnect() {
     setDevice(null);
     setIsConnected(false);
-    enqueueSnackbar('Device disconnected.', { variant: 'warning' });
+    enqueueSnackbar(m.device_disconnected(), { variant: 'warning' });
   }
 
   async function handleConnect() {
@@ -53,7 +54,7 @@ export function ConnectionSelector() {
       if (error instanceof UnknownConnectionTypeError) {
         enqueueSnackbar(error.message, { variant: 'error' });
       } else {
-        enqueueSnackbar('Failed to connect to device.', { variant: 'error' });
+        enqueueSnackbar(m.device_connect_failed(), { variant: 'error' });
       }
       return;
     }
@@ -68,7 +69,7 @@ export function ConnectionSelector() {
         disabled={isConnected}
       >
         <SelectTrigger className=" h-8">
-          <SelectValue placeholder="Select connection" />
+          <SelectValue placeholder={m.device_connection_placeholder()} />
         </SelectTrigger>
         <SelectContent>
           {availableConnections.map(connection => {
@@ -90,7 +91,7 @@ export function ConnectionSelector() {
         size="sm"
         className="gap-1 h-8"
       >
-        {isConnected ? 'Disconnect' : 'Connect'}
+        {isConnected ? m.device_btn_disconnect() : m.device_btn_connect()}
       </Button>
     </ButtonGroup>
   );

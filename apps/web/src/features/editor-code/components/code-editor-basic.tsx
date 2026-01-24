@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { useTheme } from '@/features/theme/components/theme-provider';
 import Editor from '@monaco-editor/react';
@@ -15,7 +16,7 @@ export function CodeEditorBasic({
   filePath,
   readOnly = false,
   ifNotExists,
-  loadingMessage = 'Loading file...',
+  loadingMessage,
 }: CodeEditorReadOnlyProps) {
   const { fsp, projectPath } = useActiveProject();
   const { themeNormalized } = useTheme();
@@ -79,7 +80,7 @@ export function CodeEditorBasic({
 
   // Show loading spinner when code is undefined or still loading
   if (code === undefined || loading) {
-    return <div>{loadingMessage}</div>;
+    return <div>{loadingMessage ?? m.editor_loading()}</div>;
   }
 
   // Show error state if there's an error and ifNotExists is 'error'
@@ -88,7 +89,7 @@ export function CodeEditorBasic({
       <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 dark:text-red-400 text-sm mb-2">
-            Error loading file
+            {m.editor_error_title()}
           </p>
           <p className="text-slate-600 dark:text-slate-400 text-xs">{error}</p>
         </div>

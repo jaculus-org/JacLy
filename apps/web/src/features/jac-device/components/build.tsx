@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { Button } from '@/features/shared/components/ui/button';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { HammerIcon } from 'lucide-react';
@@ -24,13 +25,13 @@ export function Build() {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
       if (!(await compileProject(projectPath, fs, addEntry))) {
-        enqueueSnackbar('Compilation failed', { variant: 'error' });
+        enqueueSnackbar(m.device_build_compile_failed(), { variant: 'error' });
         return;
       }
-      enqueueSnackbar('Build succeeded', { variant: 'success' });
+      enqueueSnackbar(m.device_build_success(), { variant: 'success' });
     } catch (error) {
       enqueueSnackbar(
-        error instanceof Error ? error.message : 'Build & Flash failed',
+        error instanceof Error ? error.message : m.device_build_flash_failed(),
         { variant: 'error' }
       );
     }
@@ -44,7 +45,7 @@ export function Build() {
         className="gap-1 h-8 bg-blue-800 hover:bg-blue-900 text-white"
       >
         <HammerIcon className="h-4 w-4" />
-        Build
+        {m.device_btn_build()}
       </Button>
     </ButtonGroup>
   );

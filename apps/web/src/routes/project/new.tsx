@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { ProjectCard } from '@/features/shared/components/custom/project-card';
 import {
   Accordion,
@@ -20,7 +21,6 @@ export const Route = createFileRoute('/project/new')({
 });
 
 interface JaculusProjectOptions {
-  // id: JaculusProjectType;
   type: JaculusProjectType;
   title: string;
   description: string;
@@ -31,15 +31,15 @@ interface JaculusProjectOptions {
 const projectOptions: JaculusProjectOptions[] = [
   {
     type: 'jacly',
-    title: 'Jacly Blocks Project',
+    title: m.project_new_blocks_title(),
+    description: m.project_new_blocks_desc(),
     icon: <BlocksIcon />,
-    description: "Design your project using Jacly's visual blocks.",
     templateUrl: 'http://localhost:3737/jacly-template/1.0.0/package.tar.gz',
   },
   {
     type: 'code',
-    title: 'Jaculus Code Project',
-    description: 'Code your project directly in TypeScript.',
+    title: m.project_new_code_title(),
+    description: m.project_new_code_desc(),
     icon: <Code2Icon />,
     templateUrl: 'http://localhost:3737/jaculus-template/1.0.0/package.tar.gz',
   },
@@ -114,7 +114,7 @@ function NewProject() {
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">Create New Project</h1>
+      <h1 className="text-2xl font-bold mb-4">{m.project_new_title()}</h1>
 
       <div className="space-y-6">
         <div>
@@ -122,18 +122,18 @@ function NewProject() {
             htmlFor="projectName"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Project Name
+            {m.project_new_name_label()}
           </label>
           <Input
             id="projectName"
             value={projectName}
             onChange={e => setProjectName(e.target.value)}
-            placeholder="My awesome project"
+            placeholder={m.project_new_name_placeholder()}
           />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-2">Project Type</h2>
+          <h2 className="text-lg font-semibold mb-2">{m.project_new_type_title()}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {projectOptions.map(type => (
               <ProjectCard
@@ -150,7 +150,7 @@ function NewProject() {
 
         <Accordion type="single" collapsible>
           <AccordionItem value="advanced">
-            <AccordionTrigger>Advanced Settings</AccordionTrigger>
+            <AccordionTrigger>{m.project_new_advanced()}</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
                 <div>
@@ -158,7 +158,7 @@ function NewProject() {
                     htmlFor="templateUrl"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Template URL (optional)
+                    {m.project_new_template_label()}
                   </label>
                   <Input
                     id="templateUrl"
@@ -172,8 +172,7 @@ function NewProject() {
                     className="text-sm"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Leave empty to use the default template for the selected
-                    project type.
+                    {m.project_new_template_hint()}
                   </p>
                 </div>
               </div>
@@ -186,7 +185,7 @@ function NewProject() {
           className="w-full"
           disabled={isCreating}
         >
-          {isCreating ? 'Creating...' : 'Create Project'}
+          {isCreating ? m.project_new_btn_creating() : m.project_new_btn_create()}
         </Button>
       </div>
     </div>

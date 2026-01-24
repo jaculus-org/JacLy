@@ -10,21 +10,27 @@ export function processAllTabs(
   model: FlexLayout.IJsonModel,
   callback: (tab: FlexLayoutAttributes) => void
 ) {
+  // Process tabs in borders
   model.borders?.forEach(border => {
     border.children?.forEach(tabNode => {
-      callback(tabNode as FlexLayoutAttributes);
+      if (tabNode.type === 'tab') {
+        callback(tabNode as FlexLayoutAttributes);
+      }
     });
   });
 
-  function processNode(node: FlexLayout.IJsonRowNode) {
-    node.children?.forEach(child => {
-      if (child.type === 'tab') {
-        const tabNode = child as FlexLayout.IJsonTabSetNode;
-        callback(tabNode as FlexLayoutAttributes);
-      } else if (child.type === 'tabset') {
-        processNode(child as FlexLayout.IJsonRowNode);
-      }
-    });
+  function processNode(node: FlexLayout.IJsonTabSetNode | FlexLayout.IJsonRowNode | FlexLayout.IJsonTabNode) {
+    if (!node) return;
+
+    if (node.type === 'tab') {
+      callback(node as FlexLayoutAttributes);
+    } else if (node.type === 'tabset') {
+      const tabset = node as FlexLayout.IJsonTabSetNode;
+      tabset.children?.forEach(child => processNode(child));
+    } else if (node.type === 'row') {
+      const row = node as FlexLayout.IJsonRowNode;
+      row.children?.forEach(child => processNode(child));
+    }
   }
 
   if (model.layout) {
@@ -35,123 +41,160 @@ export function processAllTabs(
 export function findAllTabIds(model: FlexLayout.IJsonModel): Set<string> {
   const tabIds = new Set<string>();
   processAllTabs(model, tab => {
-    tabIds.add(tab.id);
+    if (tab.id) {
+      tabIds.add(tab.id);
+    }
   });
   return tabIds;
+}
+
+// Find a tab by ID in the default model and return it with its location info
+function findDefaultTab(
+  tabId: string
+): { tab: FlexLayoutAttributes; location: 'border' | 'layout'; borderIndex?: number } | null {
+  // Check borders
+  for (let i = 0; i < (flexLayoutDefaultJson.borders?.length ?? 0); i++) {
+    const border = flexLayoutDefaultJson.borders![i];
+    const tab = border.children?.find(
+      child => (child as FlexLayoutAttributes).id === tabId
+    );
+    if (tab) {
+      return { tab: tab as FlexLayoutAttributes, location: 'border', borderIndex: i };
+    }
+  }
+
+  // Check main layout
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function findInNode(node: any): FlexLayoutAttributes | null {
+    if (!node) return null;
+
+    if (node.type === 'tab' && (node as FlexLayoutAttributes).id === tabId) {
+      return node as FlexLayoutAttributes;
+    } else if (node.type === 'tabset') {
+      const tabset = node as FlexLayout.IJsonTabSetNode;
+      for (const child of tabset.children ?? []) {
+        const found = findInNode(child);
+        if (found) return found;
+      }
+    } else if (node.type === 'row') {
+      const row = node as FlexLayout.IJsonRowNode;
+      for (const child of row.children ?? []) {
+        const found = findInNode(child);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  const tab = findInNode(flexLayoutDefaultJson.layout);
+  if (tab) {
+    return { tab, location: 'layout' };
+  }
+
+  return null;
 }
 
 export function getUpdatedLayoutModel(
   json: FlexLayout.IJsonModel | null
 ): FlexLayout.IJsonModel {
   if (!json) {
-    return flexLayoutDefaultJson;
+    return structuredClone(flexLayoutDefaultJson);
   }
 
   const defaultTabIds = findAllTabIds(flexLayoutDefaultJson);
   const currentTabIds = findAllTabIds(json);
 
   // Find tabs to add (in default but not in current)
-  const tabsToAdd = new Set<string>();
+  const tabsToAdd: string[] = [];
   defaultTabIds.forEach(id => {
     if (!currentTabIds.has(id)) {
-      tabsToAdd.add(id);
+      tabsToAdd.push(id);
     }
   });
 
-  // Clone the current model (keep all existing tabs, even if removed from default)
+  // If no tabs to add, return the current model as-is
+  if (tabsToAdd.length === 0) {
+    return json;
+  }
+
+  // Clone the current model
   const updatedModel: FlexLayout.IJsonModel = structuredClone(json);
 
-  // Ensure borders structure exists
-  if (!updatedModel.borders && flexLayoutDefaultJson.borders) {
-    updatedModel.borders = flexLayoutDefaultJson.borders.map(border => ({
-      ...border,
+  // Ensure borders array exists and matches default borders length
+  if (!updatedModel.borders) {
+    updatedModel.borders = [];
+  }
+
+  // Ensure we have the same number of borders as default
+  while (updatedModel.borders.length < (flexLayoutDefaultJson.borders?.length ?? 0)) {
+    const defaultBorder = flexLayoutDefaultJson.borders![updatedModel.borders.length];
+    updatedModel.borders.push({
+      type: 'border',
+      location: defaultBorder.location,
+      size: defaultBorder.size,
+      selected: -1,
       children: [],
-    }));
-  } else if (updatedModel.borders && flexLayoutDefaultJson.borders) {
-    // Ensure all default borders exist
-    flexLayoutDefaultJson.borders.forEach((defaultBorder, borderIndex) => {
-      if (!updatedModel.borders![borderIndex]) {
-        updatedModel.borders![borderIndex] = {
-          ...defaultBorder,
-          children: [],
-        };
-      }
     });
   }
 
-  // Add missing tabs from default layout
-  if (tabsToAdd.size > 0) {
-    flexLayoutDefaultJson.borders?.forEach((defaultBorder, borderIndex) => {
-      defaultBorder.children?.forEach(defaultTab => {
-        const tabNode = defaultTab as FlexLayoutAttributes;
-        if (tabsToAdd.has(tabNode.id) && updatedModel.borders) {
-          if (!updatedModel.borders[borderIndex].children) {
-            updatedModel.borders[borderIndex].children = [];
-          }
-          updatedModel.borders[borderIndex].children?.push(
-            structuredClone(defaultTab)
-          );
-        }
-      });
-    });
+  // Add missing tabs
+  for (const tabId of tabsToAdd) {
+    const defaultTabInfo = findDefaultTab(tabId);
+    if (!defaultTabInfo) continue;
 
-    // Add missing tabs from main layout
-    flexLayoutDefaultJson.layout.children?.forEach(child => {
-      if (child.type === 'tabset') {
-        const tabsetNode = child as FlexLayout.IJsonTabSetNode;
-        const missingTabsForThisTabset: FlexLayout.IJsonTabNode[] = [];
+    const newTab = structuredClone(defaultTabInfo.tab);
 
-        // Collect all missing tabs for this tabset
-        tabsetNode.children?.forEach(defaultTab => {
-          const tabNode = defaultTab as FlexLayoutAttributes;
-          if (tabsToAdd.has(tabNode.id)) {
-            missingTabsForThisTabset.push(structuredClone(defaultTab));
-          }
-        });
+    if (defaultTabInfo.location === 'border' && defaultTabInfo.borderIndex !== undefined) {
+      // Add to the appropriate border
+      const border = updatedModel.borders[defaultTabInfo.borderIndex];
+      if (!border.children) {
+        border.children = [];
+      }
+      border.children.push(newTab);
+    } else {
+      // Add to main layout - find or create main-tabset
+      if (!updatedModel.layout) {
+        updatedModel.layout = structuredClone(flexLayoutDefaultJson.layout);
+      } else {
+        // Find the main-tabset or first available tabset
+        let targetTabset: FlexLayout.IJsonTabSetNode | null = null;
 
-        if (missingTabsForThisTabset.length === 0) return;
-
-        // Try to find corresponding tabset in updatedModel
-        let tabsetFound = false;
-
-        function findAndAddTabs(node: FlexLayout.IJsonRowNode): boolean {
-          let found = false;
-          node.children?.forEach(child => {
-            if (child.type === 'tabset') {
-              const currentTabset = child as FlexLayout.IJsonTabSetNode;
-              if (currentTabset.id === tabsetNode.id) {
-                if (!currentTabset.children) {
-                  currentTabset.children = [];
-                }
-                currentTabset.children.push(...missingTabsForThisTabset);
-                found = true;
-              }
-            } else if (child.type === 'row' || child.type === 'column') {
-              if (findAndAddTabs(child as FlexLayout.IJsonRowNode)) {
-                found = true;
-              }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        function findTabset(node: any): FlexLayout.IJsonTabSetNode | null {
+          if (!node) return null;
+          if (node.type === 'tabset') {
+            return node as FlexLayout.IJsonTabSetNode;
+          } else if (node.type === 'row') {
+            const row = node as FlexLayout.IJsonRowNode;
+            for (const child of row.children ?? []) {
+              const found = findTabset(child);
+              if (found) return found;
             }
-          });
-          return found;
+          }
+          return null;
         }
 
-        if (updatedModel.layout) {
-          tabsetFound = findAndAddTabs(updatedModel.layout);
-        }
+        targetTabset = findTabset(updatedModel.layout);
 
-        // If tabset not found, add the entire tabset from default
-        if (!tabsetFound && updatedModel.layout) {
-          const newTabset = structuredClone(tabsetNode);
-          // Only include the missing tabs
-          newTabset.children = missingTabsForThisTabset;
-
+        if (targetTabset) {
+          if (!targetTabset.children) {
+            targetTabset.children = [];
+          }
+          targetTabset.children.push(newTab);
+        } else {
+          // No tabset found, create one
+          const newTabset: FlexLayout.IJsonTabSetNode = {
+            type: 'tabset',
+            id: 'main-tabset',
+            children: [newTab],
+          };
           if (!updatedModel.layout.children) {
             updatedModel.layout.children = [];
           }
           updatedModel.layout.children.push(newTabset);
         }
       }
-    });
+    }
   }
 
   return updatedModel;

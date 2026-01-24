@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { HomeIcon, ArrowLeftIcon } from 'lucide-react';
 
@@ -19,10 +20,10 @@ export function NotFoundPage() {
         {/* Message */}
         <div className="flex flex-col gap-3">
           <h2 className="text-2xl font-semibold text-foreground">
-            Page Not Found
+            {m.notfound_title()}
           </h2>
           <p className="text-sm text-muted-foreground">
-            The page you're looking for doesn't exist or has been moved.
+            {m.notfound_description()}
           </p>
         </div>
 
@@ -33,7 +34,7 @@ export function NotFoundPage() {
             className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             <HomeIcon className="h-4 w-4" />
-            Go Home
+            {m.notfound_go_home()}
           </Link>
 
           <button
@@ -41,7 +42,7 @@ export function NotFoundPage() {
             className="flex items-center justify-center gap-2 px-6 py-2.5 border border-border rounded-md hover:bg-accent transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4" />
-            Go Back
+            {m.notfound_go_back()}
           </button>
         </div>
       </div>

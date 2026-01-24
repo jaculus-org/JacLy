@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages'
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   Card,
@@ -22,21 +23,18 @@ export const Route = createFileRoute('/')({
 function Root() {
   const features = [
     {
-      title: 'Visual Programming',
-      description:
-        'Design your projects using intuitive visual blocks - no coding required.',
+      title: m.index_feature_visual_title(),
+      description: m.index_feature_visual_desc(),
       icon: BlocksIcon,
     },
     {
-      title: 'TypeScript Code',
-      description:
-        'Write powerful code directly in TypeScript with full editor support.',
+      title: m.index_feature_code_title(),
+      description: m.index_feature_code_desc(),
       icon: Code2Icon,
     },
     {
-      title: 'Fast & Modern',
-      description:
-        'Built with cutting-edge tools for a smooth development experience.',
+      title: m.index_feature_fast_title(),
+      description: m.index_feature_fast_desc(),
       icon: ZapIcon,
     },
   ];
@@ -45,12 +43,11 @@ function Root() {
     <div className="py-12">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
-          Welcome to Jacly
+        <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
+          {m.index_welcome_message()}
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Your journey into visual programming starts here. Build amazing
-          projects with blocks or code.
+          {m.index_hero_subtitle()}
         </p>
 
         {/* Action Buttons */}
@@ -58,13 +55,13 @@ function Root() {
           <Button asChild size="lg" className="gap-2">
             <Link to="/project/new">
               <PlusCircleIcon className="h-5 w-5" />
-              Create New Project
+              {m.index_btn_create_project()}
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="gap-2">
             <Link to="/project">
               <ListIcon className="h-5 w-5" />
-              View Projects
+              {m.index_btn_view_projects()}
             </Link>
           </Button>
         </div>
@@ -96,9 +93,9 @@ function Root() {
       {/* Getting Started Section */}
       <Card className="border-2">
         <CardHeader>
-          <CardTitle className="text-2xl">Get Started</CardTitle>
+          <CardTitle className="text-2xl">{m.index_get_started_title()}</CardTitle>
           <CardDescription className="text-base">
-            Choose your preferred way to build your project
+            {m.index_get_started_subtitle()}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -107,10 +104,9 @@ function Root() {
               <BlocksIcon className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">Visual Blocks</h3>
+              <h3 className="font-semibold mb-1">{m.index_blocks_title()}</h3>
               <p className="text-sm text-muted-foreground">
-                Perfect for beginners or quick prototyping. Drag and drop blocks
-                to build your logic.
+                {m.index_blocks_desc()}
               </p>
             </div>
           </div>
@@ -120,10 +116,9 @@ function Root() {
               <Code2Icon className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">TypeScript Code</h3>
+              <h3 className="font-semibold mb-1">{m.index_typescript_title()}</h3>
               <p className="text-sm text-muted-foreground">
-                Full control with professional TypeScript development.
-                IntelliSense and debugging included.
+                {m.index_typescript_desc()}
               </p>
             </div>
           </div>

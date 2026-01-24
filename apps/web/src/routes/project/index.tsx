@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { downloadProjectAsZip } from '@/features/project/lib/download';
 import { Button } from '@/features/shared/components/ui/button';
 import {
@@ -51,7 +52,7 @@ function EditorList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4 text-center">Projects</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">{m.project_title()}</h1>
 
       <div className="flex justify-center mb-4">
         <Button
@@ -61,7 +62,7 @@ function EditorList() {
           variant="outline"
           size={'lg'}
         >
-          Create New Project
+          {m.project_btn_create()}
         </Button>
       </div>
 
@@ -103,7 +104,7 @@ function EditorList() {
                               className="text-red-600"
                             >
                               <Trash className="w-4 h-4 mr-2" />
-                              Delete Project
+                              {m.project_delete()}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={async e => {
@@ -121,7 +122,7 @@ function EditorList() {
                               }}
                             >
                               <Download className="w-4 h-4 mr-2" />
-                              Download as ZIP
+                              {m.project_download_zip()}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -130,16 +131,13 @@ function EditorList() {
                     <CardContent>
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">
-                          Created At:{' '}
+                          {m.project_created_at()}{' '}
                           {new Date(project.createdAt).toLocaleDateString()}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Updated At:{' '}
+                          {m.project_updated_at()}{' '}
                           {new Date(project.modifiedAt).toLocaleDateString()}
                         </p>
-                        {/* <p className="text-sm text-muted-foreground">
-                          Version: {project.jaculusVersion}
-                        </p> */}
                       </div>
                     </CardContent>
                   </Card>
@@ -151,10 +149,9 @@ function EditorList() {
           <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Delete Project</DialogTitle>
+                <DialogTitle>{m.project_delete_title()}</DialogTitle>
                 <DialogDescription>
-                  Do you really want to delete this project? This action cannot
-                  be undone.
+                  {m.project_delete_description()}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -162,10 +159,10 @@ function EditorList() {
                   variant="outline"
                   onClick={() => setDeleteDialogOpen(false)}
                 >
-                  Cancel
+                  {m.project_delete_cancel()}
                 </Button>
                 <Button variant="destructive" onClick={confirmDelete}>
-                  Perform Delete
+                  {m.project_delete_confirm()}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -173,7 +170,7 @@ function EditorList() {
         </>
       ) : (
         <p className="text-center text-muted-foreground">
-          No projects found. Create a new project to get started.
+          {m.project_empty()}
         </p>
       )}
     </div>

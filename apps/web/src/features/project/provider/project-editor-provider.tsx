@@ -1,9 +1,10 @@
-import { createContext, use, useState, useEffect } from 'react';
+import { m } from '@/paraglide/messages';
+import { createContext, use, useState, useEffect, useCallback } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { Route } from '@/routes/__root';
 import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
 import '@/features/project/components/flex-layout/flexlayout.css';
-import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
+import { flexLayoutDefaultJson, getPanelTitle } from '@/features/project/lib/flexlayout-defaults';
 import {
   controlPanel,
   getUpdatedLayoutModel,
@@ -63,6 +64,21 @@ export function ProjectEditorProvider() {
     }
   }
 
+  // callback to translate panel names at render time
+  const onRenderTab = useCallback(
+    (
+      node: FlexLayout.TabNode,
+      renderValues: { leading: React.ReactNode; content: React.ReactNode; buttons: React.ReactNode[] }
+    ) => {
+      const component = node.getComponent() as PanelType | undefined;
+      const translatedName = getPanelTitle(component);
+      if (translatedName) {
+        renderValues.content = translatedName;
+      }
+    },
+    []
+  );
+
   const value: EditorContextValue = {
     controlPanel: controlPanel.bind(null, model!),
     openPanel: openPanel.bind(null, model!),
@@ -80,6 +96,7 @@ export function ProjectEditorProvider() {
           model={model}
           factory={factory}
           onModelChange={handleModelChange}
+          onRenderTab={onRenderTab}
         />
       </div>
     </EditorContext.Provider>

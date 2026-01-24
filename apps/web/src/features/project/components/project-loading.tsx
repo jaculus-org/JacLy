@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import { Loader2Icon, ArrowLeftIcon } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
@@ -26,7 +27,7 @@ export function ProjectLoadingIndicator({ message }: EditorMountLoadingProps) {
 
         {/* Text */}
         <div className="flex flex-col items-center gap-2">
-          <p className="text-sm font-medium text-foreground">Loading Project</p>
+          <p className="text-sm font-medium text-foreground">{m.project_loading()}</p>
           <p className="text-xs text-muted-foreground animate-pulse">
             {message}
           </p>
@@ -45,7 +46,7 @@ export function ProjectLoadingIndicator({ message }: EditorMountLoadingProps) {
           className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
         >
           <ArrowLeftIcon className="h-4 w-4" />
-          Back to Projects
+          {m.project_loading_back()}
         </Link>
       </div>
     </div>
