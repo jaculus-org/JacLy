@@ -290,31 +290,30 @@ export const JaclyBlockSchema = z.discriminatedUnion('kind', [
   JaclyBlockKindLabel,
 ]);
 
-export const JaclyConfigSchema = z
-  .object({
-    $schema: z.string().optional(),
-    version: SemVer,
-    author: z.string().nonempty('author is required'),
-    github: Url.optional(),
-    license: z.string().nonempty('license is required'),
+export const JaclyConfigSchema = z.object({
+  $schema: z.string().optional(),
+  version: SemVer,
+  author: z.string().nonempty('author is required'),
+  github: Url.optional(),
+  license: z.string().nonempty('license is required'),
 
-    category: Identifier,
-    parentCategory: Identifier.optional(),
+  category: Identifier,
+  parentCategory: Identifier.optional(),
 
-    name: z.string().nonempty('name is required'),
-    description: z.string().optional(),
-    docs: z.string().optional(),
-    colour: BlocklyColour.optional(),
-    style: z.string().optional(),
-    icon: z.string().optional(),
-    custom: z.string().optional(),
-    categorystyle: z.string().optional(),
-    libraries: z.array(z.string()).optional(),
-    priority: z.number().optional(),
-    priorityCategory: z.number().optional(),
+  name: z.string().nonempty('name is required'),
+  description: z.string().optional(),
+  docs: z.string().optional(),
+  colour: BlocklyColour.optional(),
+  style: z.string().optional(),
+  icon: z.string().optional(),
+  custom: z.string().optional(),
+  categorystyle: z.string().optional(),
+  libraries: z.array(z.string()).optional(),
+  priority: z.number().optional(),
+  priorityCategory: z.number().optional(),
 
-    contents: z.array(JaclyBlockSchema).optional(),
-  });
+  contents: z.array(JaclyBlockSchema).optional(),
+});
 
 export type JaclyConfig = z.infer<typeof JaclyConfigSchema>;
 export type JaclyBlock = z.infer<typeof JaclyBlockSchema>;

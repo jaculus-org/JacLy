@@ -19,7 +19,12 @@ export function processAllTabs(
     });
   });
 
-  function processNode(node: FlexLayout.IJsonTabSetNode | FlexLayout.IJsonRowNode | FlexLayout.IJsonTabNode) {
+  function processNode(
+    node:
+      | FlexLayout.IJsonTabSetNode
+      | FlexLayout.IJsonRowNode
+      | FlexLayout.IJsonTabNode
+  ) {
     if (!node) return;
 
     if (node.type === 'tab') {
@@ -51,7 +56,11 @@ export function findAllTabIds(model: FlexLayout.IJsonModel): Set<string> {
 // Find a tab by ID in the default model and return it with its location info
 function findDefaultTab(
   tabId: string
-): { tab: FlexLayoutAttributes; location: 'border' | 'layout'; borderIndex?: number } | null {
+): {
+  tab: FlexLayoutAttributes;
+  location: 'border' | 'layout';
+  borderIndex?: number;
+} | null {
   // Check borders
   for (let i = 0; i < (flexLayoutDefaultJson.borders?.length ?? 0); i++) {
     const border = flexLayoutDefaultJson.borders![i];
@@ -59,7 +68,11 @@ function findDefaultTab(
       child => (child as FlexLayoutAttributes).id === tabId
     );
     if (tab) {
-      return { tab: tab as FlexLayoutAttributes, location: 'border', borderIndex: i };
+      return {
+        tab: tab as FlexLayoutAttributes,
+        location: 'border',
+        borderIndex: i,
+      };
     }
   }
 
@@ -126,8 +139,11 @@ export function getUpdatedLayoutModel(
   }
 
   // Ensure we have the same number of borders as default
-  while (updatedModel.borders.length < (flexLayoutDefaultJson.borders?.length ?? 0)) {
-    const defaultBorder = flexLayoutDefaultJson.borders![updatedModel.borders.length];
+  while (
+    updatedModel.borders.length < (flexLayoutDefaultJson.borders?.length ?? 0)
+  ) {
+    const defaultBorder =
+      flexLayoutDefaultJson.borders![updatedModel.borders.length];
     updatedModel.borders.push({
       type: 'border',
       location: defaultBorder.location,
@@ -144,7 +160,10 @@ export function getUpdatedLayoutModel(
 
     const newTab = structuredClone(defaultTabInfo.tab);
 
-    if (defaultTabInfo.location === 'border' && defaultTabInfo.borderIndex !== undefined) {
+    if (
+      defaultTabInfo.location === 'border' &&
+      defaultTabInfo.borderIndex !== undefined
+    ) {
       // Add to the appropriate border
       const border = updatedModel.borders[defaultTabInfo.borderIndex];
       if (!border.children) {

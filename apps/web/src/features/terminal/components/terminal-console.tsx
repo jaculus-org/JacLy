@@ -140,7 +140,9 @@ export function TerminalConsole() {
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      {showTimestamp ? m.terminal_timestamp_hide() : m.terminal_timestamp_show()}
+                      {showTimestamp
+                        ? m.terminal_timestamp_hide()
+                        : m.terminal_timestamp_show()}
                     </p>
                   </TooltipContent>
                 </Tooltip>

@@ -210,7 +210,9 @@ export function FileExplorerPanel() {
         filePath: `${item.path}/${fileName}`.replace(`${projectPath}/`, ''),
       });
     } catch {
-      enqueueSnackbar(m.project_panel_fs_create_file_error(), { variant: 'error' });
+      enqueueSnackbar(m.project_panel_fs_create_file_error(), {
+        variant: 'error',
+      });
     }
   };
 
@@ -222,12 +224,17 @@ export function FileExplorerPanel() {
     try {
       await fsp.mkdir(`${item.path}/${dirName}`);
     } catch {
-      enqueueSnackbar(m.project_panel_fs_create_folder_error(), { variant: 'error' });
+      enqueueSnackbar(m.project_panel_fs_create_folder_error(), {
+        variant: 'error',
+      });
     }
   };
 
   const renameItem = async (item: FileSystemItem) => {
-    const newName = prompt(m.project_panel_fs_rename_prompt({ name: item.name }), item.name);
+    const newName = prompt(
+      m.project_panel_fs_rename_prompt({ name: item.name }),
+      item.name
+    );
     if (!newName || newName === item.name) return;
     try {
       const newPath = item.path.replace(/[^/]+$/, newName);
@@ -238,7 +245,8 @@ export function FileExplorerPanel() {
   };
 
   const removeItem = async (item: FileSystemItem) => {
-    if (!confirm(m.project_panel_fs_delete_confirm({ name: item.name }))) return;
+    if (!confirm(m.project_panel_fs_delete_confirm({ name: item.name })))
+      return;
     try {
       if (item.isDirectory)
         await fsp.rm(item.path, { recursive: true, force: true });
@@ -254,23 +262,27 @@ export function FileExplorerPanel() {
         {item.isDirectory && (
           <>
             <ContextMenuItem onClick={() => createNewFile(item)}>
-              <FilePlusIcon size={16} className="mr-2" /> {m.project_panel_fs_new_file()}
+              <FilePlusIcon size={16} className="mr-2" />{' '}
+              {m.project_panel_fs_new_file()}
             </ContextMenuItem>
             <ContextMenuItem onClick={() => createNewDirectory(item)}>
-              <FolderPlusIcon size={16} className="mr-2" /> {m.project_panel_fs_new_folder()}
+              <FolderPlusIcon size={16} className="mr-2" />{' '}
+              {m.project_panel_fs_new_folder()}
             </ContextMenuItem>
           </>
         )}
         {!item.isRoot && (
           <>
             <ContextMenuItem onClick={() => renameItem(item)}>
-              <FolderPenIcon size={16} className="mr-2" /> {m.project_panel_fs_rename()}
+              <FolderPenIcon size={16} className="mr-2" />{' '}
+              {m.project_panel_fs_rename()}
             </ContextMenuItem>
             <ContextMenuItem
               onClick={() => removeItem(item)}
               className="text-red-500"
             >
-              <FolderMinusIcon size={16} className="mr-2" /> {m.project_panel_fs_delete()}
+              <FolderMinusIcon size={16} className="mr-2" />{' '}
+              {m.project_panel_fs_delete()}
             </ContextMenuItem>
           </>
         )}
@@ -281,7 +293,8 @@ export function FileExplorerPanel() {
             )
           }
         >
-          <CopyIcon size={16} className="mr-2" /> {m.project_panel_fs_copy_path()}
+          <CopyIcon size={16} className="mr-2" />{' '}
+          {m.project_panel_fs_copy_path()}
         </ContextMenuItem>
       </ContextMenuContent>
     ),

@@ -52,7 +52,9 @@ function EditorList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4 text-center">{m.project_title()}</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        {m.project_title()}
+      </h1>
 
       <div className="flex justify-center mb-4">
         <Button
@@ -169,9 +171,7 @@ function EditorList() {
           </Dialog>
         </>
       ) : (
-        <p className="text-center text-muted-foreground">
-          {m.project_empty()}
-        </p>
+        <p className="text-center text-muted-foreground">{m.project_empty()}</p>
       )}
     </div>
   );

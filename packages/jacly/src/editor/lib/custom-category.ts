@@ -18,30 +18,11 @@ export class JaclyCustomCategory extends Blockly.ToolboxCategory {
    * @override
    */
   protected addColourBorder_(colour: string): void {
+    super.addColourBorder_(colour);
     if (this.rowDiv_) {
       // Store the category color as a custom property for potential use
       this.rowDiv_.style.setProperty('--category-color', colour);
     }
-  }
-
-  /**
-   * Sets the style for the category when it is selected or deselected.
-   * @param {boolean} isSelected True if the category has been selected,
-   *     false otherwise.
-   * @override
-   */
-  setSelected(isSelected: boolean): void {
-    if (!this.rowDiv_) return;
-
-    // CSS handles the visual state via aria-selected attribute
-    // No need to manually set colors - they're controlled by CSS variables
-
-    // This is used for accessibility purposes.
-    Blockly.utils.aria.setState(
-      this.htmlDiv_ as Element,
-      Blockly.utils.aria.State.SELECTED,
-      isSelected
-    );
   }
 
   /**
@@ -53,15 +34,15 @@ export class JaclyCustomCategory extends Blockly.ToolboxCategory {
     const iconContainer = document.createElement('div');
     iconContainer.classList.add('jaclyToolboxCategoryIcon');
 
-    // Get icon name from toolbox definition
+    // get icon name from toolbox definition
     const iconName = (this.toolboxItemDef_ as any).icon;
 
     if (iconName && iconName in LucideIcons) {
-      // Get the SVG string from lucide-static
+      // get the SVG string from lucide-static
       const iconSvg = (LucideIcons as any)[iconName];
       iconContainer.innerHTML = iconSvg;
 
-      // Style the SVG - smaller size for inline display
+      // style the SVG - smaller size for inline display
       const svgElement = iconContainer.querySelector('svg');
       if (svgElement) {
         svgElement.setAttribute('width', '16');
@@ -69,7 +50,6 @@ export class JaclyCustomCategory extends Blockly.ToolboxCategory {
         svgElement.style.color = 'currentColor';
       }
     } else {
-      // Default icon if none specified or not found
       iconContainer.innerHTML = LucideIcons.Box;
       const svgElement = iconContainer.querySelector('svg');
       if (svgElement) {

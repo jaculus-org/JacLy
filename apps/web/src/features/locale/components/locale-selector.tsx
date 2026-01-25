@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/features/shared/components/ui/dropdown-menu';
-import { getLocale, locales, setLocale } from '@/paraglide/runtime'
+import { getLocale, locales, setLocale } from '@/paraglide/runtime';
 
 export function LocaleSelector() {
   return (

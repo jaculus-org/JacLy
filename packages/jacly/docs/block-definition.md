@@ -159,3 +159,148 @@ Usage in other blocks:
     },
 ...
 ```
+
+## Translations
+
+JacLy blocks support internationalization through the `%t%` translation syntax. This allows you to define translatable strings in your block definitions and provide translations in separate language files.
+
+### The `%t%` Syntax
+
+Use `%t%` as a placeholder in any translatable field. The system automatically generates a translation key based on the field location:
+
+| Field Location         | Generated Key Pattern                       |
+| ---------------------- | ------------------------------------------- |
+| Category `name`        | `{CATEGORY}_NAME`                           |
+| Category `description` | `{CATEGORY}_DESCRIPTION`                    |
+| Block `message0`       | `{BLOCK_TYPE}_MESSAGE0`                     |
+| Block `tooltip`        | `{BLOCK_TYPE}_TOOLTIP`                      |
+| Label `text`           | `{CATEGORY}_LABEL_{TEXT}`                   |
+| Dropdown option        | `{BLOCK_TYPE}_ARGS0_FIELD_DROPDOWN_{VALUE}` |
+
+> **Note:** All keys are converted to UPPERCASE. The `{CATEGORY}` is taken from the `category` field, and `{BLOCK_TYPE}` from the block's `type` field.
+
+### Example Block Definition with Translations
+
+```json
+{
+  "category": "basic",
+  "name": "%t%",
+  "description": "%t%",
+  "contents": [
+    {
+      "kind": "block",
+      "type": "basic_onStart",
+      "message0": "%t%",
+      "args0": [
+        {
+          "type": "input_statement",
+          "name": "CODE"
+        }
+      ],
+      "tooltip": "%t%",
+      "code": "$[CODE]\n"
+    },
+    {
+      "kind": "label",
+      "text": "Intervals"
+    }
+  ]
+}
+```
+
+### Translation File Structure
+
+Translation files are stored in a `translations/` subdirectory next to your `*.jacly.json` files. Each language has its own file named `{lang}.lang.json`:
+
+```
+blocks/
+├── basic.jacly.json
+└── translations/
+    ├── en.lang.json
+    └── cs.lang.json
+```
+
+### Example Translation File (`en.lang.json`)
+
+```json
+{
+  "BASIC_NAME": "Basic",
+  "BASIC_DESCRIPTION": "Basic task control blocks.",
+
+  "BASIC_ONSTART_MESSAGE0": "on start",
+  "BASIC_ONSTART_TOOLTIP": "Run code when the program starts",
+
+  "BASIC_LABEL_INTERVALS": "Intervals"
+}
+```
+
+### Key Generation Rules
+
+1. **Category fields**: `{CATEGORY}_NAME`, `{CATEGORY}_DESCRIPTION`
+2. **Block message/tooltip**: `{BLOCK_TYPE}_MESSAGE0`, `{BLOCK_TYPE}_TOOLTIP`
+3. **Labels**: `{CATEGORY}_LABEL_{KEY}` (using `%KEY%` syntax)
+4. **Dropdown options**: `{BLOCK_TYPE}_ARGS0_FIELD_DROPDOWN_{KEY}` (using `%KEY%` syntax)
+
+### Translating Labels
+
+Use the `%KEY%` syntax for label text. The system will look up the translation key `{CATEGORY}_LABEL_{KEY}`:
+
+**In jacly.json:**
+
+```json
+{
+  "kind": "label",
+  "text": "%IN_FUTURE_RELEASES%"
+}
+```
+
+**In translation file:**
+
+```json
+{
+  "I2C_LABEL_IN_FUTURE_RELEASES": "I2C Read/Write will be added in future releases."
+}
+```
+
+> **Note:** The key inside `%...%` becomes the suffix of the translation key. For `%IN_FUTURE_RELEASES%` in category `i2c`, the key is `I2C_LABEL_IN_FUTURE_RELEASES`.
+
+### Translating Dropdown Options
+
+Use the `%KEY%` syntax for dropdown option labels. The system will look up the translation key `{BLOCK_TYPE}_ARGS0_FIELD_DROPDOWN_{KEY}`:
+
+**In jacly.json:**
+
+```json
+{
+  "type": "field_dropdown",
+  "name": "MODE",
+  "options": [
+    ["%OUTPUT%", "gpio.PinMode.OUTPUT"],
+    ["%INPUT%", "gpio.PinMode.INPUT"],
+    ["%DISABLE%", "gpio.PinMode.DISABLE"]
+  ]
+}
+```
+
+**In translation file:**
+
+```json
+{
+  "GPIO_PINMODE_ARGS0_FIELD_DROPDOWN_OUTPUT": "OUTPUT",
+  "GPIO_PINMODE_ARGS0_FIELD_DROPDOWN_INPUT": "INPUT",
+  "GPIO_PINMODE_ARGS0_FIELD_DROPDOWN_DISABLE": "DISABLE"
+}
+```
+
+> **Note:** The key inside `%...%` becomes the suffix of the translation key. For `%OUTPUT%` in block type `gpio_pinMode`, the key is `GPIO_PINMODE_ARGS0_FIELD_DROPDOWN_OUTPUT`.
+
+### Using Placeholders in Translations
+
+Include input placeholders in your translations using the `$[INPUT_NAME]` syntax:
+
+```json
+{
+  "BASIC_PAUSE_MESSAGE0": "pause (ms) $[TIME]",
+  "BASIC_SET_INTERVAL_MESSAGE0": "set interval name $[CONSTRUCTED_VAR_NAME]\n do $[CODE] every $[TIME] ms"
+}
+```

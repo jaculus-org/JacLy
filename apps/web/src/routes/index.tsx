@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages'
+import { m } from '@/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   Card,
@@ -93,7 +93,9 @@ function Root() {
       {/* Getting Started Section */}
       <Card className="border-2">
         <CardHeader>
-          <CardTitle className="text-2xl">{m.index_get_started_title()}</CardTitle>
+          <CardTitle className="text-2xl">
+            {m.index_get_started_title()}
+          </CardTitle>
           <CardDescription className="text-base">
             {m.index_get_started_subtitle()}
           </CardDescription>
@@ -116,7 +118,9 @@ function Root() {
               <Code2Icon className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">{m.index_typescript_title()}</h3>
+              <h3 className="font-semibold mb-1">
+                {m.index_typescript_title()}
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {m.index_typescript_desc()}
               </p>

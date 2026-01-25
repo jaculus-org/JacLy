@@ -133,7 +133,9 @@ function NewProject() {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-2">{m.project_new_type_title()}</h2>
+          <h2 className="text-lg font-semibold mb-2">
+            {m.project_new_type_title()}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {projectOptions.map(type => (
               <ProjectCard
@@ -185,7 +187,9 @@ function NewProject() {
           className="w-full"
           disabled={isCreating}
         >
-          {isCreating ? m.project_new_btn_creating() : m.project_new_btn_create()}
+          {isCreating
+            ? m.project_new_btn_creating()
+            : m.project_new_btn_create()}
         </Button>
       </div>
     </div>

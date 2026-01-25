@@ -24,7 +24,9 @@ function RouteComponent() {
 
         <div className="bg-card rounded-lg border p-6 space-y-4">
           <div className="border-b pb-4">
-            <h2 className="text-2xl font-semibold mb-4">{m.about_build_info()}</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              {m.about_build_info()}
+            </h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">

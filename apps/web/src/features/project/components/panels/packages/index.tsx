@@ -85,7 +85,9 @@ export function PackagesPanel() {
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : m.project_panel_pkg_versions_error()
+          err instanceof Error
+            ? err.message
+            : m.project_panel_pkg_versions_error()
         );
         logger.error('Error loading library versions:' + err);
       }
@@ -129,11 +131,16 @@ export function PackagesPanel() {
       await jacProject!.install();
       setInstalledLibs(await jacProject!.installedLibraries());
       enqueueSnackbar(
-        m.project_panel_pkg_added({ name: selectedLib, version: versionToInstall }),
+        m.project_panel_pkg_added({
+          name: selectedLib,
+          version: versionToInstall,
+        }),
         { variant: 'success' }
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : m.project_panel_pkg_add_error());
+      setError(
+        err instanceof Error ? err.message : m.project_panel_pkg_add_error()
+      );
       logger.error('Error adding library:' + err);
     } finally {
       setIsInstalling(false);
@@ -153,7 +160,9 @@ export function PackagesPanel() {
         variant: 'success',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : m.project_panel_pkg_remove_error());
+      setError(
+        err instanceof Error ? err.message : m.project_panel_pkg_remove_error()
+      );
       logger.error('Error removing library:' + err);
     } finally {
       setIsInstalling(false);
@@ -175,7 +184,9 @@ export function PackagesPanel() {
         size="lg"
       >
         <RefreshCw className={isInstalling ? 'animate-spin' : ''} />
-        {isInstalling ? m.project_panel_pkg_installing() : m.project_panel_pkg_install()}
+        {isInstalling
+          ? m.project_panel_pkg_installing()
+          : m.project_panel_pkg_install()}
       </Button>
 
       {/* Error Display */}
@@ -248,7 +259,9 @@ export function PackagesPanel() {
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={m.project_panel_pkg_version_choose()} />
+                <SelectValue
+                  placeholder={m.project_panel_pkg_version_choose()}
+                />
               </SelectTrigger>
               <SelectContent className="w-full">
                 <div className="max-h-60 overflow-y-auto">
@@ -282,7 +295,8 @@ export function PackagesPanel() {
         <div className="mb-2 flex items-center gap-2">
           <Package className="h-4 w-4" />
           <h3 className="font-semibold">
-            {m.project_panel_pkg_installed()} ({Object.keys(installedLibs).length})
+            {m.project_panel_pkg_installed()} (
+            {Object.keys(installedLibs).length})
           </h3>
         </div>
 
@@ -313,13 +327,17 @@ export function PackagesPanel() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>{m.project_panel_pkg_remove_title()}</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        {m.project_panel_pkg_remove_title()}
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
                         {m.project_panel_pkg_remove_desc({ name })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>{m.project_panel_pkg_remove_cancel()}</AlertDialogCancel>
+                      <AlertDialogCancel>
+                        {m.project_panel_pkg_remove_cancel()}
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleRemoveLibrary(name)}
                       >

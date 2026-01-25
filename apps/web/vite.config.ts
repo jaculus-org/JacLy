@@ -1,4 +1,4 @@
-import { paraglideVitePlugin } from '@inlang/paraglide-js'
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vite';
 import path from 'path';
 import react from '@vitejs/plugin-react';
@@ -38,7 +38,7 @@ export default defineConfig({
             ['en', '/:path(.*)?'],
           ],
         },
-      ]
+      ],
     }),
     githubPagesSetup(),
     buildInfoPlugin(),

@@ -91,8 +91,9 @@ export const flexLayoutDefaultJson: FlexLayout.IJsonModel = {
   layout: defaultLayout,
 };
 
-
-export function getPanelTitle(component: PanelType | undefined): string | undefined {
+export function getPanelTitle(
+  component: PanelType | undefined
+): string | undefined {
   if (component === undefined) {
     return undefined;
   }
@@ -116,8 +117,9 @@ export function getPanelTitle(component: PanelType | undefined): string | undefi
       return m.project_panel_code_editor();
     case 'wokwi':
       return m.project_panel_wokwi();
-    default:
+    default: {
       const _exhaustive: never = component; // exhaustiveness check
       return _exhaustive;
+    }
   }
 }

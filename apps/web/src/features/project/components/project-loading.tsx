@@ -27,7 +27,9 @@ export function ProjectLoadingIndicator({ message }: EditorMountLoadingProps) {
 
         {/* Text */}
         <div className="flex flex-col items-center gap-2">
-          <p className="text-sm font-medium text-foreground">{m.project_loading()}</p>
+          <p className="text-sm font-medium text-foreground">
+            {m.project_loading()}
+          </p>
           <p className="text-xs text-muted-foreground animate-pulse">
             {message}
           </p>

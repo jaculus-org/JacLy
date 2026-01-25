@@ -51,7 +51,9 @@ export function factory(node: FlexLayout.TabNode) {
   const panelContent = panelFactory ? (
     panelFactory(config)
   ) : (
-    <div>{m.project_panel_unknown_component()} {component}</div>
+    <div>
+      {m.project_panel_unknown_component()} {component}
+    </div>
   );
 
   return wrapComponent(panelContent, isInBorder, isHighlighted);

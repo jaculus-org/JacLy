@@ -8,7 +8,7 @@ import { JaclyBlocksFiles } from '@jaculus/project';
 import { loadToolboxConfiguration } from '@/blocks/lib/toolbox-loader';
 import { registerWorkspaceChangeListener } from '@/blocks/lib/rules';
 import { JaclyLoading } from './loading';
-import * as En from 'blockly/msg/en';
+
 import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import { generateCodeFromWorkspace } from '../lib/code-generation';
 
@@ -19,6 +19,7 @@ import '@blockly/field-colour-hsv-sliders';
 import { registerFieldColour } from '@blockly/field-colour';
 import { registerCrossTabCopyPaste } from '../plugins/cross-tab-copy-paste';
 import { shadowBlockConversionChangeListener } from '@blockly/shadow-block-converter';
+import { registerJaclyCustomCategory } from '../lib/custom-category';
 
 import '../../blocks/new-blocks/color';
 import '../../blocks/new-blocks/parallel';
@@ -27,18 +28,12 @@ import '../../blocks/new-blocks/angle';
 import '../../blocks/new-blocks/slider';
 import '../../blocks/new-blocks/procedures';
 
-// Blockly.Msg["BASIC_RUN_PARALLEL_MESSAGE0"] = "run async2 $[TASKS] x";
-
-// Blockly.Msg["BASIC_RUN_PARALLEL_TOOLTIP"] = "Run code when the program starts2";
-
-// import { registerJaclyCustomCategory } from '../lib/custom-category';
-// import '../styles/toolbox.css';
-
-Object.assign(Blockly.Msg, En);
+registerJaclyCustomCategory();
 
 interface JaclyEditorProps {
   theme: Theme;
   jaclyBlockFiles: JaclyBlocksFiles;
+  locale: string;
   jaclyTranslations?: Record<string, string>;
   initialJson: any;
   onJsonChange: (workspaceJson: object) => void;
@@ -48,6 +43,7 @@ interface JaclyEditorProps {
 export function JaclyEditor({
   theme,
   jaclyBlockFiles,
+  locale,
   jaclyTranslations,
   initialJson,
   onJsonChange,
@@ -55,16 +51,42 @@ export function JaclyEditor({
 }: JaclyEditorProps) {
   const [toolboxConfiguration, setToolboxConfiguration] =
     useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
+  const [blocklyMessagesLoaded, setBlocklyMessagesLoaded] = useState(false);
   const listenerRegistrationStatus = useRef(false);
-  // const isCategoryRegistered = useRef(false);
+
+  // load Blockly messages based on locale
+  useEffect(() => {
+    (async () => {
+      try {
+        let messages;
+        if (locale === 'cs') {
+          messages = await import('blockly/msg/cs');
+        } else {
+          // default to English
+          messages = await import('blockly/msg/en');
+        }
+
+        Object.assign(Blockly.Msg, messages.default || messages);
+        setBlocklyMessagesLoaded(true);
+      } catch (error) {
+        console.error('Failed to load Blockly messages:', error);
+        // fallback to English if loading fails
+        const enMessages = await import('blockly/msg/en');
+        Object.assign(Blockly.Msg, enMessages.default || enMessages);
+        setBlocklyMessagesLoaded(true);
+      }
+    })();
+  }, [locale]);
 
   useEffect(() => {
-    setToolboxConfiguration(
-      loadToolboxConfiguration(jaclyBlockFiles, jaclyTranslations)
-    );
-  }, [jaclyBlockFiles, jaclyTranslations]);
+    if (blocklyMessagesLoaded) {
+      setToolboxConfiguration(
+        loadToolboxConfiguration(jaclyBlockFiles, jaclyTranslations)
+      );
+    }
+  }, [jaclyBlockFiles, jaclyTranslations, blocklyMessagesLoaded]);
 
-  if (!toolboxConfiguration) {
+  if (!toolboxConfiguration || !blocklyMessagesLoaded) {
     return <JaclyLoading />;
   }
 
