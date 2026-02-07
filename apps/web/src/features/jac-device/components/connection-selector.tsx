@@ -18,11 +18,13 @@ import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { useActiveProject } from '@/features/project/provider/active-project-provider';
 
 export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
   const { addEntry } = useTerminal();
   const { setDevice } = useJacDevice();
+  const { projectPath, fs } = useActiveProject();
 
   const [selectedConnection, setSelectedConnection] = useState<ConnectionType>(
     availableConnections[0].type
@@ -30,12 +32,11 @@ export function ConnectionSelector() {
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
   async function handleConnection() {
-    if (isConnected) {
+    if (!isConnected) {
+      await handleConnect();
+    } else {
       setDevice(null);
       setIsConnected(false);
-      return;
-    } else {
-      await handleConnect();
     }
   }
 
@@ -48,7 +49,8 @@ export function ConnectionSelector() {
   async function handleConnect() {
     try {
       setDevice(
-        await connectDevice(selectedConnection, addEntry, onDisconnect)
+        await connectDevice(selectedConnection, addEntry, onDisconnect, projectPath, fs),
+        selectedConnection
       );
     } catch (error) {
       if (error instanceof UnknownConnectionTypeError) {

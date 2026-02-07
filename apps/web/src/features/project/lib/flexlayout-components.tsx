@@ -11,6 +11,7 @@ import { BlocklyEditorPanel } from '../components/panels/blockly';
 import { JaculusPanel } from '../components/panels/jaculus';
 import { getPanelTitle } from './flexlayout-defaults';
 import { m } from '@/paraglide/messages';
+import { WokwiPanel } from '../components/panels/wokwi';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
@@ -22,7 +23,7 @@ const PANEL_COMPONENTS: Record<
   'file-explorer': () => <FileExplorerPanel />,
   code: config => <CodePanel filePath={config?.filePath as string} />,
   'generated-code': () => <GeneratedCode />,
-  wokwi: () => <>wokwi</>,
+  wokwi: () => <WokwiPanel />,
   packages: () => <PackagesPanel />,
   logs: () => <LogsPanel />,
   jaculus: () => <JaculusPanel />,

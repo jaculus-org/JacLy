@@ -8,11 +8,13 @@ import { useActiveProject } from '@/features/project/provider/active-project-pro
 import { createWritableStream } from '@/features/terminal/lib/stream';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { enqueueSnackbar } from 'notistack';
+import type { ConnectionType } from '../types/connection';
 
 export interface JacDeviceContextValue {
   jacProject: Project | null;
   device: JacDevice | null;
-  setDevice: (device: JacDevice | null) => void;
+  setDevice: (device: JacDevice | null, connectionType?: ConnectionType) => void;
+  connectionType: ConnectionType | null;
   outStream?: Writable;
   errStream?: Writable;
 }
@@ -29,6 +31,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const { fs, projectPath } = useActiveProject();
   const { addEntry } = useTerminal();
   const [device, setDevice] = useState<JacDevice | null>(null);
+  const [connectionType, setConnectionType] = useState<ConnectionType | null>(null);
 
   const jacProject = useMemo(() => {
     const packageJsonPath = path.join(projectPath, 'package.json');
@@ -66,12 +69,14 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const contextValue: JacDeviceContextValue = {
     jacProject,
     device,
-    setDevice: (newDevice: JacDevice | null) => {
+    setDevice: (newDevice: JacDevice | null, connectionType?: ConnectionType) => {
       if (device) {
         device.destroy();
       }
       setDevice(newDevice);
+      setConnectionType(connectionType || null);
     },
+    connectionType,
   };
 
   return (

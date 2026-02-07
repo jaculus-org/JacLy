@@ -236,6 +236,7 @@ const JaclyBlockKindBlock = z
     nextStatement: z.union([z.string(), z.null()]).optional(),
     inputs: ToolboxInputsSchema.optional(),
     inputsInline: z.boolean().optional(),
+    mutator: z.string().optional(),
 
     // auto configured from root config
     colour: BlocklyColour.optional(),

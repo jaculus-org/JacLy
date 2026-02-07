@@ -12,7 +12,7 @@ export function registerTranslations(
 }
 
 function t(key: string | null, prefix: string) {
-  if (key == '%t%' || key == null) {
+  if (key == '%T%' || key == null) {
     key = `%{BKY_${prefix.toUpperCase()}}`;
   }
   return Blockly.utils.parsing.replaceMessageReferences(key);

@@ -162,11 +162,11 @@ Usage in other blocks:
 
 ## Translations
 
-JacLy blocks support internationalization through the `%t%` translation syntax. This allows you to define translatable strings in your block definitions and provide translations in separate language files.
+JacLy blocks support internationalization through the `%T%` translation syntax. This allows you to define translatable strings in your block definitions and provide translations in separate language files.
 
-### The `%t%` Syntax
+### The `%T%` Syntax
 
-Use `%t%` as a placeholder in any translatable field. The system automatically generates a translation key based on the field location:
+Use `%T%` as a placeholder in any translatable field. The system automatically generates a translation key based on the field location:
 
 | Field Location         | Generated Key Pattern                       |
 | ---------------------- | ------------------------------------------- |
@@ -184,20 +184,20 @@ Use `%t%` as a placeholder in any translatable field. The system automatically g
 ```json
 {
   "category": "basic",
-  "name": "%t%",
-  "description": "%t%",
+  "name": "%T%",
+  "description": "%T%",
   "contents": [
     {
       "kind": "block",
       "type": "basic_onStart",
-      "message0": "%t%",
+      "message0": "%T%",
       "args0": [
         {
           "type": "input_statement",
           "name": "CODE"
         }
       ],
-      "tooltip": "%t%",
+      "tooltip": "%T%",
       "code": "$[CODE]\n"
     },
     {

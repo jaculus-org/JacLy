@@ -81,6 +81,12 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
         id: 'logs',
         enableClose: false,
       },
+      {
+        type: 'tab',
+        component: 'wokwi',
+        id: 'wokwi',
+        enableClose: false,
+      }
     ],
   },
 ];

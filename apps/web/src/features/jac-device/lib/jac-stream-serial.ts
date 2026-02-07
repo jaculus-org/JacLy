@@ -14,7 +14,7 @@ type StreamCallbacks = {
   end?: () => void;
 };
 
-export class JacSerialStream implements Duplex {
+export class JacStreamSerial implements Duplex {
   private callbacks: StreamCallbacks = {};
   private port: SerialPort;
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;

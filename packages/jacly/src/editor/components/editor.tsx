@@ -22,7 +22,7 @@ import { shadowBlockConversionChangeListener } from '@blockly/shadow-block-conve
 import { registerJaclyCustomCategory } from '../lib/custom-category';
 
 import '../../blocks/new-blocks/color';
-import '../../blocks/new-blocks/parallel';
+import '../../blocks/new-blocks/promiseAll';
 import '../../blocks/new-blocks/loops';
 import '../../blocks/new-blocks/angle';
 import '../../blocks/new-blocks/slider';
