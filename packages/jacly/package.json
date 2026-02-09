@@ -40,6 +40,10 @@
     "clean": "rm -rf dist *.tsbuildinfo",
     "clean-node": "pnpm clean && rm -rf node_modules"
   },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
   "dependencies": {
     "@blockly/block-plus-minus": "^9.0.7",
     "@blockly/field-angle": "^6.0.7",
@@ -55,8 +59,6 @@
     "blockly": "^12.3.1",
     "lucide-react": "^0.562.0",
     "lucide-static": "^0.562.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -69,6 +71,8 @@
     "chai": "^6.2.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",

@@ -16,6 +16,10 @@ export async function loadProjectFiles(
       const fullPath = `${currentPath}/${entry.name}`;
 
       if (entry.isDirectory()) {
+        // No fully implemented intelli sesne for modules
+        if (entry.name === 'node_modules' || entry.name === 'build') {
+          continue;
+        }
         await traverseDirectory(fullPath);
       } else if (entry.isFile()) {
         const content = await fsp.readFile(fullPath, 'utf-8');

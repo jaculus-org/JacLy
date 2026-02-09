@@ -20,6 +20,8 @@ import type {
 import { enqueueSnackbar } from 'notistack';
 import { factory } from '@/features/project/lib/flexlayout-components';
 import { ProjectEditorHeader } from '../components/project-editor-header';
+import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
+import { useActiveProject } from './active-project-provider';
 
 export interface EditorContextValue {
   controlPanel: (type: PanelType, action: PanelAction) => void;
@@ -36,14 +38,16 @@ const initialState: EditorContextValue = {
 export const EditorContext = createContext<EditorContextValue>(initialState);
 
 export function ProjectEditorProvider() {
-  const { settingsService } = Route.useRouteContext();
+  const { projectManService } = Route.useRouteContext();
+  const { pkg } = useJacDevice();
+  const { dbProject } = useActiveProject();
   const [model, setModel] = useState<FlexLayout.Model | null>(null);
 
   useEffect(() => {
     const loadLayout = async () => {
       try {
-        const settings = await settingsService.getSettings();
-        const savedLayout = settings.flexLayoutModel;
+        const savedLayout = (await projectManService.getProject(dbProject.id))
+          ?.layout;
         setModel(FlexLayout.Model.fromJson(getUpdatedLayoutModel(savedLayout)));
       } catch (error) {
         console.error('Failed to load layout settings:', error);
@@ -55,12 +59,26 @@ export function ProjectEditorProvider() {
     };
 
     loadLayout();
-  }, [settingsService]);
+  }, [projectManService, dbProject.id]);
+
+  useEffect(() => {
+    if (!model) return;
+
+    if (pkg?.jaculus?.projectType !== 'jacly') {
+      controlPanel(model, 'blockly', 'close');
+      openPanel(model, 'code', { filePath: 'src/index.ts' });
+    }
+  }, [model, dbProject.id, pkg?.jaculus?.projectType]);
 
   async function handleModelChange(newModel: FlexLayout.Model) {
     setModel(newModel);
+
     try {
-      await settingsService.setSettings('flexLayoutModel', newModel.toJson());
+      await projectManService.updateProjectKey(
+        dbProject.id,
+        'layout',
+        newModel.toJson()
+      );
     } catch (_error) {
       console.error('Error saving layout model:', _error);
     }
@@ -76,8 +94,7 @@ export function ProjectEditorProvider() {
         buttons: React.ReactNode[];
       }
     ) => {
-      const component = node.getComponent() as PanelType | undefined;
-      const translatedName = getPanelTitle(component);
+      const translatedName = getPanelTitle(node);
       if (translatedName) {
         renderValues.content = translatedName;
       }

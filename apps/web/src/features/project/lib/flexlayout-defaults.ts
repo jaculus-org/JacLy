@@ -86,7 +86,7 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
         component: 'wokwi',
         id: 'wokwi',
         enableClose: false,
-      }
+      },
     ],
   },
 ];
@@ -97,9 +97,8 @@ export const flexLayoutDefaultJson: FlexLayout.IJsonModel = {
   layout: defaultLayout,
 };
 
-export function getPanelTitle(
-  component: PanelType | undefined
-): string | undefined {
+export function getPanelTitle(node: FlexLayout.TabNode): string | undefined {
+  const component = node.getComponent() as PanelType;
   if (component === undefined) {
     return undefined;
   }
@@ -120,7 +119,7 @@ export function getPanelTitle(
     case 'logs':
       return m.project_panel_logs();
     case 'code':
-      return m.project_panel_code_editor();
+      return node.getName() || m.project_panel_fs();
     case 'wokwi':
       return m.project_panel_wokwi();
     default: {

@@ -1,4 +1,5 @@
 import type { JaculusProjectType } from '@jaculus/project';
+import * as FlexLayout from 'flexlayout-react';
 
 export interface IDbProject {
   id: string;
@@ -7,4 +8,5 @@ export interface IDbProject {
   createdAt: number;
   modifiedAt: number;
   deletedAt: number | null;
+  layout?: FlexLayout.IJsonModel;
 }

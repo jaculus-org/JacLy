@@ -9,10 +9,12 @@ import {
 interface PromiseAllBlock extends BlockExtended {
   itemCount_: number;
   updateShape_: () => void;
-  reconnectChildBlocks_: (connections: Array<Blockly.Connection | null>) => void;
+  reconnectChildBlocks_: (
+    connections: Array<Blockly.Connection | null>
+  ) => void;
 }
 
-interface PromiseAllContainerBlock extends Blockly.Block { }
+interface PromiseAllContainerBlock extends Blockly.Block {}
 
 interface PromiseAllItemBlock extends Blockly.Block {
   statementConnection_?: Blockly.Connection | null;
@@ -32,7 +34,9 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
   /**
    * Returns the state of this block as a JSON serializable object.
    */
-  saveExtraState: function (this: PromiseAllBlock): PromiseAllExtraState | null {
+  saveExtraState: function (
+    this: PromiseAllBlock
+  ): PromiseAllExtraState | null {
     if (this.itemCount_ === 2) {
       return null;
     }
@@ -44,7 +48,10 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
   /**
    * Applies the given state to this block.
    */
-  loadExtraState: function (this: PromiseAllBlock, state: PromiseAllExtraState) {
+  loadExtraState: function (
+    this: PromiseAllBlock,
+    state: PromiseAllExtraState
+  ) {
     this.itemCount_ = state.itemCount ?? 2;
     this.updateShape_();
   },
@@ -77,7 +84,10 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
   /**
    * Reconfigure this block based on the mutator dialog's components.
    */
-  compose: function (this: PromiseAllBlock, containerBlock: PromiseAllContainerBlock) {
+  compose: function (
+    this: PromiseAllBlock,
+    containerBlock: PromiseAllContainerBlock
+  ) {
     let itemBlock = containerBlock.getInputTargetBlock(
       'STACK'
     ) as PromiseAllItemBlock | null;
@@ -129,7 +139,8 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
         continue;
       }
       const input = this.getInput('TASK' + i);
-      itemBlock.statementConnection_ = input?.connection?.targetConnection ?? null;
+      itemBlock.statementConnection_ =
+        input?.connection?.targetConnection ?? null;
       i++;
       itemBlock = itemBlock.getNextBlock() as PromiseAllItemBlock | null;
     }
@@ -146,9 +157,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
 
     // Add new inputs
     for (let i = 0; i < this.itemCount_; i++) {
-      this.appendStatementInput('TASK' + i).appendField(
-        i === 0 ? '' : ''
-      );
+      this.appendStatementInput('TASK' + i).appendField(i === 0 ? '' : '');
     }
   },
 
@@ -180,7 +189,6 @@ Blockly.Extensions.registerMutator(
   ['basic_promise_all_item']
 );
 
-
 // ============================================================================
 // Mutator UI blocks
 // ============================================================================
@@ -194,7 +202,7 @@ Blocks['basic_promise_all_container'] = {
     this.appendStatementInput('STACK');
     this.setTooltip(
       Blockly.Msg['BASIC_PROMISE_ALL_CONTAINER_TOOLTIP'] ||
-      'Add, remove, or reorder task slots'
+        'Add, remove, or reorder task slots'
     );
     this.contextMenu = false;
   },
@@ -209,12 +217,12 @@ Blocks['basic_promise_all_item'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(
-      Blockly.Msg['BASIC_PROMISE_ALL_ITEM_TOOLTIP'] || 'Add a parallel task slot'
+      Blockly.Msg['BASIC_PROMISE_ALL_ITEM_TOOLTIP'] ||
+        'Add a parallel task slot'
     );
     this.contextMenu = false;
   },
 };
-
 
 jsg.forBlock['basic_promise_all'] = function (
   codeBlock: BlockExtended,
@@ -228,9 +236,7 @@ jsg.forBlock['basic_promise_all'] = function (
 
     if (statementCode.trim()) {
       const wrapped =
-        `(async () => {\n` +
-        `  ${statementCode.trim()}\n` +
-        `})()`;
+        `(async () => {\n` + `  ${statementCode.trim()}\n` + `})()`;
       tasks.push(wrapped);
     }
   }

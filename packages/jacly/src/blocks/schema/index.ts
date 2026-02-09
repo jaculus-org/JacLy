@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
 const SemVer = z.string().regex(/^\d+\.\d+\.\d+$/, 'version must be x.y.z');
-const Url = z.url('must be a valid URL');
 const Identifier = z
   .string("must be a valid identifier - letters, numbers, '-', '_'")
-  .regex(/^[a-zA-Z0-9-_]+$/, 'must be a valid identifier');
+  .regex(
+    /^[a-zA-Z0-9-_]+$/,
+    'must be a valid identifier (letters, numbers, -, _)'
+  );
 
 const Variable = Identifier.uppercase('variable must be uppercase identifier');
 
@@ -295,7 +297,7 @@ export const JaclyConfigSchema = z.object({
   $schema: z.string().optional(),
   version: SemVer,
   author: z.string().nonempty('author is required'),
-  github: Url.optional(),
+  github: Identifier.optional(),
   license: z.string().nonempty('license is required'),
 
   category: Identifier,

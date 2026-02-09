@@ -52,7 +52,7 @@ export function PackagesPanel() {
       try {
         setError(null);
         if (jacProject == null || jacProject.registry == null) return;
-        setAvailableLibs(await jacProject.registry.list());
+        setAvailableLibs(await jacProject.registry.listPackages());
         setInstalledLibs(await jacProject.installedLibraries());
       } catch (err) {
         setError(
@@ -106,8 +106,7 @@ export function PackagesPanel() {
     try {
       setIsInstalling(true);
       setError(null);
-      await jacProject!.install();
-      setInstalledLibs(await jacProject!.installedLibraries());
+      setInstalledLibs(await jacProject!.install());
     } catch (err) {
       setError(
         err instanceof Error ? err.message : m.project_panel_pkg_install_error()
@@ -127,9 +126,9 @@ export function PackagesPanel() {
         return;
       }
       const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
-      await jacProject!.addLibraryVersion(selectedLib, versionToInstall);
-      await jacProject!.install();
-      setInstalledLibs(await jacProject!.installedLibraries());
+      setInstalledLibs(
+        await jacProject!.addLibraryVersion(selectedLib, versionToInstall)
+      );
       enqueueSnackbar(
         m.project_panel_pkg_added({
           name: selectedLib,
@@ -153,9 +152,7 @@ export function PackagesPanel() {
     try {
       setIsInstalling(true);
       setError(null);
-      await jacProject!.removeLibrary(library);
-      await jacProject!.install();
-      setInstalledLibs(await jacProject!.installedLibraries());
+      setInstalledLibs(await jacProject!.removeLibrary(library));
       enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
         variant: 'success',
       });

@@ -10,11 +10,14 @@ import { Button } from '@/features/shared/components/ui/button';
 import { Input } from '@/features/shared/components/ui/input';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
-import { Project, type JaculusProjectType } from '@jaculus/project';
+import { Project, Registry, type JaculusProjectType } from '@jaculus/project';
 import type { FSInterface } from '@jaculus/project/fs';
 import { Writable } from 'node:stream';
-import { useState } from 'react';
-import { loadPackageUri } from '@/features/project/lib/request';
+import { useEffect, useState } from 'react';
+import { getRequest } from '@jaculus/jacly/project';
+import { Archive } from '@obsidize/tar-browserify';
+import pako from 'pako';
+import { enqueueSnackbar } from 'notistack';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -25,7 +28,6 @@ interface JaculusProjectOptions {
   title: string;
   description: string;
   icon?: React.ReactNode;
-  templateUrl: string;
 }
 
 const projectOptions: JaculusProjectOptions[] = [
@@ -34,27 +36,62 @@ const projectOptions: JaculusProjectOptions[] = [
     title: m.project_new_blocks_title(),
     description: m.project_new_blocks_desc(),
     icon: <BlocksIcon />,
-    templateUrl: 'http://localhost:3737/jacly-template/1.0.0/package.tar.gz',
   },
   {
     type: 'code',
     title: m.project_new_code_title(),
     description: m.project_new_code_desc(),
     icon: <Code2Icon />,
-    templateUrl: 'http://localhost:3737/jaculus-template/1.0.0/package.tar.gz',
   },
+];
+
+const defaultRegisters = [
+  'http://127.0.0.1:3737/',
+  'https://registry.jaculus.org/',
 ];
 
 function NewProject() {
   const navigate = useNavigate();
-  const { runtimeService, projectFsService } = Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } =
+    Route.useRouteContext();
   const [projectName, setProjectName] = useState('demo-project');
   const [projectOption, setProjectOption] = useState<JaculusProjectOptions>(
     projectOptions[0]
   );
+
+  const [templates, setTemplates] = useState<string[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [registers, setRegisters] = useState<string[]>(defaultRegisters);
+
   const [isCreating, setIsCreating] = useState(false);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const registry = await Registry.create(registers, getRequest);
+        const loadedTemplates = await registry.listTemplates(
+          projectOption.type
+        );
+        setTemplates(loadedTemplates);
+        if (loadedTemplates.length > 0) {
+          setSelectedTemplate(loadedTemplates[0]);
+        } else {
+          setSelectedTemplate(null);
+        }
+      } catch (error) {
+        console.error('Failed to load templates from registry:', error);
+        enqueueSnackbar(m.project_new_template_load_error(), {
+          variant: 'error',
+        });
+      }
+    })();
+  }, [registers, projectOption]);
+
   async function handleProjectCreation() {
+    if (!selectedTemplate) {
+      return;
+    }
+
     setIsCreating(true);
 
     function writableErr(): Writable {
@@ -78,7 +115,30 @@ function NewProject() {
     }
 
     try {
-      const pkg = await loadPackageUri(projectOption.templateUrl);
+      const registry = await Registry.create(registers, getRequest);
+      const versions = await registry.listVersions(selectedTemplate);
+      const tgz = await registry.getPackageTgz(selectedTemplate, versions[0]);
+
+      const dirs: string[] = [];
+      const files: Record<string, Uint8Array> = {};
+
+      const archiveData = pako.ungzip(tgz);
+
+      // Extract the tar archive, remove prefix /package from all entries
+      for await (const entry of Archive.read(archiveData)) {
+        let fileName = entry.fileName;
+        if (fileName.startsWith('package/')) {
+          fileName = fileName.slice('package/'.length);
+        }
+
+        if (entry.isDirectory()) {
+          dirs.push(fileName);
+        } else if (entry.isFile()) {
+          files[fileName] = entry.content!;
+        }
+      }
+
+      const pkg = { dirs, files };
 
       // Create the project in the database
       const newProject = await runtimeService.createProject(
@@ -86,21 +146,15 @@ function NewProject() {
         projectOption.type
       );
 
-      // Temporarily mount the filesystem to write initial files
-      await projectFsService.withMount(
-        newProject.id,
-        async ({ fs, projectPath }) => {
-          // Write test.txt with current timestamp
+      const { fs, projectPath } = await projectFsService.mount(newProject.id);
 
-          const project = new Project(
-            fs as unknown as FSInterface,
-            projectPath,
-            writableOut(),
-            writableErr()
-          );
-          await project.createFromPackage(pkg, false, false);
-        }
+      const project = new Project(
+        fs as unknown as FSInterface,
+        projectPath,
+        writableOut(),
+        writableErr()
       );
+      await project.createFromPackage(pkg, false, false);
 
       navigate({
         to: '/project/$projectId',
@@ -108,6 +162,7 @@ function NewProject() {
       });
     } catch (error) {
       console.error('Failed to create project:', error);
+      enqueueSnackbar(m.project_new_creation_error(), { variant: 'error' });
       setIsCreating(false);
     }
   }
@@ -150,6 +205,33 @@ function NewProject() {
           </div>
         </div>
 
+        <div>
+          <h2 className="text-lg font-semibold mb-2">
+            {m.project_new_template_title()}
+          </h2>
+          <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-2">
+            {templates.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">
+                {m.project_new_template_loading()}
+              </p>
+            ) : (
+              templates.map(template => (
+                <div
+                  key={template}
+                  onClick={() => setSelectedTemplate(template)}
+                  className={`p-3 rounded-md cursor-pointer border transition-colors ${
+                    selectedTemplate === template
+                      ? 'border-primary bg-primary/10'
+                      : 'border-transparent hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <span className="font-medium">{template}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
         <Accordion type="single" collapsible>
           <AccordionItem value="advanced">
             <AccordionTrigger>{m.project_new_advanced()}</AccordionTrigger>
@@ -157,24 +239,23 @@ function NewProject() {
               <div className="space-y-4">
                 <div>
                   <label
-                    htmlFor="templateUrl"
+                    htmlFor="defaultRegisters"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    {m.project_new_template_label()}
+                    {m.project_new_default_registers()}
                   </label>
                   <Input
-                    id="templateUrl"
-                    value={projectOption.templateUrl}
+                    id="defaultRegisters"
+                    value={registers.join('; ')}
                     onChange={e => {
-                      setProjectOption({
-                        ...projectOption,
-                        templateUrl: e.target.value,
-                      });
+                      setRegisters(
+                        e.target.value.split(';').map(s => s.trim())
+                      );
                     }}
                     className="text-sm"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    {m.project_new_template_hint()}
+                    {m.project_new_default_registers_hint()}
                   </p>
                 </div>
               </div>
@@ -185,7 +266,7 @@ function NewProject() {
         <Button
           onClick={handleProjectCreation}
           className="w-full"
-          disabled={isCreating}
+          disabled={!selectedTemplate || isCreating}
         >
           {isCreating
             ? m.project_new_btn_creating()

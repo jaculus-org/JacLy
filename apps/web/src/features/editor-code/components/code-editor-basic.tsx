@@ -1,11 +1,13 @@
 import { m } from '@/paraglide/messages';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { useTheme } from '@/features/theme/components/theme-provider';
-import Editor from '@monaco-editor/react';
-import { useEffect, useState } from 'react';
+import Editor, { useMonaco } from '@monaco-editor/react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { inferLanguageFromPath } from '../lib/language';
+import { editorSyncService } from '../lib/editor-sync-service';
+// import { debounce } from '@/lib/utils/debouncer';
 
-interface CodeEditorReadOnlyProps {
+interface CodeEditorBasicProps {
   readonly filePath: string;
   readonly readOnly?: boolean;
   readonly ifNotExists: 'create' | 'loading' | 'error';
@@ -17,74 +19,111 @@ export function CodeEditorBasic({
   readOnly = false,
   ifNotExists,
   loadingMessage,
-}: CodeEditorReadOnlyProps) {
+}: CodeEditorBasicProps) {
   const { fsp, projectPath } = useActiveProject();
   const { themeNormalized } = useTheme();
+  const monaco = useMonaco();
 
-  const [code, setCode] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fileExists, setFileExists] = useState(true);
 
   const fullPath = `${projectPath}/${filePath}`;
   const readOnlyInternal = filePath.startsWith('build/') ? true : readOnly;
 
+  // Debounced save function that marks saves as editor-originated
+  const saveToFile = useMemo(
+    () => /*debounce(*/ async (path: string, content: string) => {
+      try {
+        editorSyncService.markEditorSave(path);
+        await fsp.writeFile(path, content, 'utf-8');
+      } catch (error) {
+        console.error('Error saving file:', error);
+      }
+    } /*, 500),*/,
+    [fsp]
+  );
+
+  // Handle editor content changes
+  const handleEditorChange = useCallback(
+    (value: string | undefined) => {
+      if (value !== undefined && !readOnlyInternal) {
+        saveToFile(fullPath, value);
+      }
+    },
+    [fullPath, readOnlyInternal, saveToFile]
+  );
+
+  // Initial file load and model setup
   useEffect(() => {
-    async function loadFile() {
+    if (!monaco) return;
+
+    // Capture monaco in local const for TypeScript null-safety
+    const monacoInstance = monaco;
+
+    async function initializeEditor() {
       try {
         setLoading(true);
         setError(null);
-        const data = await fsp.readFile(fullPath, 'utf-8');
-        setCode(data);
-      } catch (error) {
-        console.error('Error loading file:', error);
-        setError(error instanceof Error ? error.message : 'Unknown error');
+
+        // Try to read the file
+        const content = await fsp.readFile(fullPath, 'utf-8');
+        setFileExists(true);
+
+        // Create or update the Monaco model
+        const uri = monacoInstance.Uri.file(fullPath);
+        let model = monacoInstance.editor.getModel(uri);
+
+        if (model) {
+          model.setValue(content);
+        } else {
+          model = monacoInstance.editor.createModel(
+            content,
+            inferLanguageFromPath(filePath),
+            uri
+          );
+        }
+      } catch (err) {
+        console.error('Error loading file:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+        setFileExists(false);
 
         // Handle ifNotExists logic
         if (ifNotExists === 'create') {
-          setCode(''); // Create empty file
-          await fsp.writeFile(fullPath, '', 'utf-8').catch(err => {
-            console.error('Error creating file:', err);
-          });
-        } else if (ifNotExists === 'error') {
-          setCode(undefined);
+          try {
+            editorSyncService.markEditorSave(fullPath);
+            await fsp.writeFile(fullPath, '', 'utf-8');
+            setFileExists(true);
+
+            // Create empty model
+            const uri = monacoInstance.Uri.file(fullPath);
+            const model = monacoInstance.editor.getModel(uri);
+            if (!model) {
+              monacoInstance.editor.createModel(
+                '',
+                inferLanguageFromPath(filePath),
+                uri
+              );
+            }
+          } catch (createErr) {
+            console.error('Error creating file:', createErr);
+          }
         }
       } finally {
         setLoading(false);
       }
     }
 
-    async function watchFile() {
-      try {
-        for await (const change of fsp.watch(fullPath)) {
-          if (change.eventType === 'change') {
-            // File has changed, reload it
-            const data = await fsp.readFile(fullPath, 'utf-8');
-            setCode(data);
-          }
-        }
-      } catch (error) {
-        console.error('Error watching file:', error);
-      }
-    }
+    initializeEditor();
+  }, [filePath, ifNotExists, fsp, fullPath, monaco]);
 
-    loadFile();
-    watchFile();
-  }, [filePath, ifNotExists, fsp, fullPath]);
-
-  async function handleEditorChange(value: string | undefined) {
-    if (value !== undefined && !readOnlyInternal) {
-      setCode(value);
-      await fsp.writeFile(fullPath, value, 'utf-8');
-    }
-  }
-
-  // Show loading spinner when code is undefined or still loading
-  if (code === undefined || loading) {
+  // Show loading state
+  if (loading || !monaco) {
     return <div>{loadingMessage ?? m.editor_loading()}</div>;
   }
 
-  // Show error state if there's an error and ifNotExists is 'error'
-  if (error && ifNotExists === 'error') {
+  // Show error state if file doesn't exist and ifNotExists is 'error'
+  if (!fileExists && ifNotExists === 'error') {
     return (
       <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -96,17 +135,18 @@ export function CodeEditorBasic({
       </div>
     );
   }
+
   return (
     <Editor
       height="100%"
+      path={fullPath}
       language={inferLanguageFromPath(filePath)}
-      // theme="vs-dark"
       theme={themeNormalized === 'dark' ? 'vs-dark' : 'light'}
-      value={code}
       options={{
         readOnly: readOnlyInternal,
         renderValidationDecorations: 'off',
         minimap: { enabled: false },
+        automaticLayout: true,
       }}
       onChange={handleEditorChange}
     />

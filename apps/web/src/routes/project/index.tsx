@@ -32,7 +32,8 @@ export const Route = createFileRoute('/project/')({
 });
 
 function EditorList() {
-  const { runtimeService, projectFsService } = Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } =
+    Route.useRouteContext();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
@@ -56,7 +57,7 @@ function EditorList() {
         {m.project_title()}
       </h1>
 
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-center mb-4 space-x-4">
         <Button
           onClick={() => {
             navigate({ to: '/project/new' });
@@ -65,6 +66,16 @@ function EditorList() {
           size={'lg'}
         >
           {m.project_btn_create()}
+        </Button>
+
+        <Button
+          onClick={() => {
+            navigate({ to: '/project/import' });
+          }}
+          variant="outline"
+          size={'lg'}
+        >
+          {m.project_btn_import()}
         </Button>
       </div>
 

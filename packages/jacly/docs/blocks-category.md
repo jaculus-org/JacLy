@@ -9,7 +9,7 @@ The category definition files are located in the `blocks` folder of each library
 {
   "version": "1.0.0",
   "author": "Jakub Andrysek",
-  "github": "https://github.com/JakubAndrysek",
+  "github": "JakubAndrysek",
   "license": "MIT",
 
   "category": "keyvalue",

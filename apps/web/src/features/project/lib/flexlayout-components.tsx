@@ -41,7 +41,7 @@ export function factory(node: FlexLayout.TabNode) {
     highlight: boolean = false
   ) => (
     <PanelWrapper
-      name={showName ? getPanelTitle(component) : undefined}
+      name={showName ? getPanelTitle(node) : undefined}
       highlight={highlight}
     >
       {children}

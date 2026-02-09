@@ -1,22 +1,36 @@
 import { useMonaco } from '@monaco-editor/react';
 import { enqueueSnackbar } from 'notistack';
 import { inferLanguageFromPath } from './language';
+import { editorSyncService } from './editor-sync-service';
 
 export async function indexMonacoFiles(
   monaco: ReturnType<typeof useMonaco>,
   projectPath: string,
   fsp: typeof import('fs').promises
 ) {
-  // console.log(
-  //   'Indexing Monaco files for project at:',
-  //   projectPath,
-  //   monaco,
-  //   fsp
-  // );
-
   if (!monaco || !projectPath || !fsp) return;
 
-  // monaco.languages.typescript.typescriptDefaults.setCompilerOptions()
+  // Configure TypeScript/JavaScript for IntelliSense
+  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    target: monaco.languages.typescript.ScriptTarget.ESNext,
+    module: monaco.languages.typescript.ModuleKind.ESNext,
+    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    allowJs: true,
+    checkJs: true,
+    strict: false,
+    noEmit: true,
+    esModuleInterop: true,
+    allowSyntheticDefaultImports: true,
+  });
+
+  monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    target: monaco.languages.typescript.ScriptTarget.ESNext,
+    module: monaco.languages.typescript.ModuleKind.ESNext,
+    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    allowJs: true,
+    checkJs: true,
+    noEmit: true,
+  });
 
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
   monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
@@ -60,13 +74,23 @@ export function watchMonacoFiles(
     async (eventType, filename) => {
       if (!filename) return;
 
+      // No fully implemented intelli sesne for modules
+      if (filename.includes('node_modules') || filename.includes('build')) {
+        return;
+      }
+
       // Construct full path - handle both forward and backward slashes
       const fullPath = `${projectPath}/${filename}`.replace(/\\/g, '/');
       const uri = monaco.Uri.file(fullPath);
 
       try {
         if (eventType === 'change') {
-          // File was modified - read and update content
+          // Skip if this change originated from the editor
+          if (editorSyncService.shouldIgnoreWatcherEvent(fullPath)) {
+            return;
+          }
+
+          // File was modified externally - read and update Monaco model
           const content = await fs.promises.readFile(fullPath, 'utf-8');
           const existingModel = monaco.editor.getModel(uri);
 

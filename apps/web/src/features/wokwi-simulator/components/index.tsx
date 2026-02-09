@@ -1,32 +1,25 @@
-import { useJacDevice } from "@/features/jac-device/provider/jac-device-provider";
-
+import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 
 export function WokwiSimulator() {
   const { device, connectionType } = useJacDevice();
 
-
-  if(!device) {
+  if (!device) {
     return (
       <div className="flex items-center justify-center h-full bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">
-        <p>
-          No device connected.
-        </p>
+        <p>No device connected.</p>
         <p>Please connect a Jaculus device to use the Wokwi Simulator.</p>
       </div>
     );
   }
 
-  if(connectionType !== 'wokwi') {
+  if (connectionType !== 'wokwi') {
     return (
       <div className="flex items-center justify-center h-full bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">
-        <p>
-          The connected device is not a Wokwi device.
-        </p>
+        <p>The connected device is not a Wokwi device.</p>
         <p>Please connect a Wokwi device to use the Wokwi Simulator.</p>
       </div>
     );
   }
-
 
   return (
     <div className="flex flex-col h-full bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">

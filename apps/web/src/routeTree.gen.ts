@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectIndexRouteImport } from './routes/project/index'
 import { Route as ProjectNewRouteImport } from './routes/project/new'
+import { Route as ProjectImportRouteImport } from './routes/project/import'
 import { Route as ProjectProjectIdRouteImport } from './routes/project/$projectId'
 
 const NotFoundRoute = NotFoundRouteImport.update({
@@ -41,6 +42,11 @@ const ProjectNewRoute = ProjectNewRouteImport.update({
   path: '/project/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectImportRoute = ProjectImportRouteImport.update({
+  id: '/project/import',
+  path: '/project/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectProjectIdRoute = ProjectProjectIdRouteImport.update({
   id: '/project/$projectId',
   path: '/project/$projectId',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/not-found': typeof NotFoundRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
+  '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
   '/project': typeof ProjectIndexRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/not-found': typeof NotFoundRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
+  '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
   '/project': typeof ProjectIndexRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/not-found': typeof NotFoundRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
+  '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
   '/project/': typeof ProjectIndexRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/not-found'
     | '/project/$projectId'
+    | '/project/import'
     | '/project/new'
     | '/project'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/not-found'
     | '/project/$projectId'
+    | '/project/import'
     | '/project/new'
     | '/project'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/not-found'
     | '/project/$projectId'
+    | '/project/import'
     | '/project/new'
     | '/project/'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   NotFoundRoute: typeof NotFoundRoute
   ProjectProjectIdRoute: typeof ProjectProjectIdRoute
+  ProjectImportRoute: typeof ProjectImportRoute
   ProjectNewRoute: typeof ProjectNewRoute
   ProjectIndexRoute: typeof ProjectIndexRoute
 }
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/project/import': {
+      id: '/project/import'
+      path: '/project/import'
+      fullPath: '/project/import'
+      preLoaderRoute: typeof ProjectImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/project/$projectId': {
       id: '/project/$projectId'
       path: '/project/$projectId'
@@ -160,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   NotFoundRoute: NotFoundRoute,
   ProjectProjectIdRoute: ProjectProjectIdRoute,
+  ProjectImportRoute: ProjectImportRoute,
   ProjectNewRoute: ProjectNewRoute,
   ProjectIndexRoute: ProjectIndexRoute,
 }

@@ -18,6 +18,11 @@ import {
 } from 'blockly/javascript';
 import type { Block } from 'blockly/core';
 
+/** Interface for blocks that have the controls_flow_in_loop_check mixin */
+interface ControlFlowInLoopBlock extends Block {
+  getSurroundLoop(): Block | null;
+}
+
 // Helper to check if a string is a number
 function isNumber(str: string): boolean {
   return /^-?\d+(\.\d+)?$/.test(str);

@@ -1,6 +1,11 @@
 import { type Duplex } from '@jaculus/link/stream';
 import { type Logger } from '@jaculus/common';
-import { MessagePortTransport, APIClient, type APIEvent, type SerialMonitorDataPayload } from '@wokwi/client';
+import {
+  MessagePortTransport,
+  APIClient,
+  type APIEvent,
+  type SerialMonitorDataPayload,
+} from '@wokwi/client';
 
 class WebSerialError extends Error {
   constructor(message: string) {
@@ -30,10 +35,7 @@ export class JacStreamWokwi implements Duplex {
   // bound message handler so we can add/remove the same function reference
   private boundHandleMessage?: (event: MessageEvent) => Promise<void>;
 
-  constructor(
-    logger: Logger,
-    handlers: JacStreamWokwiHandlers
-  ) {
+  constructor(logger: Logger, handlers: JacStreamWokwiHandlers) {
     this.logger = logger;
     this.handlers = handlers;
     this.boundHandleMessage = this.handleMessage.bind(this);
@@ -51,13 +53,16 @@ export class JacStreamWokwi implements Duplex {
       const transport = new MessagePortTransport(event.data.port);
       this.client = new APIClient(transport);
 
-      this.client.onConnected = async (helloMessage) => {
+      this.client.onConnected = async helloMessage => {
         if (!this.client) {
           throw new WebSerialError('Client is not connected');
         }
         console.log('Wokwi client connected', helloMessage);
 
-        await this.client.fileUpload('diagram.json', await this.handlers.handleReadDiagram());
+        await this.client.fileUpload(
+          'diagram.json',
+          await this.handlers.handleReadDiagram()
+        );
 
         await this.client.fileUpload(
           'jaculus.uf2',
@@ -65,12 +70,17 @@ export class JacStreamWokwi implements Duplex {
         );
       };
 
-      this.client.listen('serial-monitor:data', (event: APIEvent<SerialMonitorDataPayload>) => {
+      this.client.listen(
+        'serial-monitor:data',
+        (event: APIEvent<SerialMonitorDataPayload>) => {
           this.callbacks.data?.(new Uint8Array(event.payload.bytes));
-        });
+        }
+      );
 
-      this.client.onError = (error) => {
-        this.handleError(new WebSerialError(`Wokwi API error: ${error.message}`));
+      this.client.onError = error => {
+        this.handleError(
+          new WebSerialError(`Wokwi API error: ${error.message}`)
+        );
       };
 
       this.client.listen('ui:clickStart', async () => {
@@ -84,7 +94,7 @@ export class JacStreamWokwi implements Duplex {
       throw new WebSerialError('Client is not connected');
     }
 
-    const diagram = await this.client.fileDownload('diagram.json')
+    const diagram = await this.client.fileDownload('diagram.json');
     if (diagram instanceof Uint8Array) {
       await this.handlers.handleWriteDiagram(diagram);
     } else {
@@ -94,7 +104,7 @@ export class JacStreamWokwi implements Duplex {
     console.log('Starting simulation');
     await this.client.simStart({
       firmware: 'jaculus.uf2',
-    })
+    });
   }
 
   private handleError(error: Error): void {
@@ -149,7 +159,7 @@ export class JacStreamWokwi implements Duplex {
     }
 
     try {
-     if (this.boundHandleMessage) {
+      if (this.boundHandleMessage) {
         window.removeEventListener('message', this.boundHandleMessage);
       }
 

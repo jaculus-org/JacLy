@@ -1,4 +1,12 @@
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import * as fs from 'fs';
 import type { IDbProject } from '@/types/project';
 import {
@@ -8,7 +16,7 @@ import {
 import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
 import { ProjectLoadError } from '@/features/project/components/project-load-error';
 import { JaclyFiles } from '../types/jacly-files';
-// import { useMonaco } from '@monaco-editor/react';
+
 export interface ActiveProjectContextValue {
   fs: typeof fs;
   fsp: typeof fs.promises;
@@ -36,29 +44,17 @@ export function ActiveProjectProvider({
   );
   const [error, setError] = useState<Error | null>(null);
 
-  // const monaco = useMonaco();
-
+  // Mount filesystem
   useEffect(() => {
-    // if (!monaco) return;
-
     let mounted = true;
 
     async function mountFs() {
       try {
-        const result = await projectFsService.mount(project.id);
+        const interfce = await projectFsService.mount(project.id);
         if (mounted) {
-          // indexMonacoFiles(
-          //   monaco,
-          //   result.projectPath,
-          //   result.fs.promises as unknown as typeof fs.promises
-          // );
-          // watchMonacoFiles(
-          //   monaco,
-          //   result.projectPath,
-          //   result.fs as unknown as typeof fs
-          // );
-
-          setFsInterface(result);
+          // wait extra time to init FS
+          await new Promise(resolve => setTimeout(resolve, 400));
+          setFsInterface(interfce);
         }
       } catch (err) {
         if (mounted) {
@@ -73,28 +69,80 @@ export function ActiveProjectProvider({
 
     return () => {
       mounted = false;
-      // Unmount when leaving the project
       projectFsService.unmount(project.id);
     };
-  }, [project.id, projectFsService /*monaco */]);
+  }, [project.id, projectFsService]);
+
+  // // Initialize Monaco file indexing and watching after filesystem is mounted
+  // useEffect(() => {
+  //   if (!fsInterface) return;
+
+  //   // Capture fsInterface in local const for TypeScript
+  //   const currentFsInterface = fsInterface;
+  //   let cleanupWatcher: (() => void) | undefined;
+
+  //   async function initMonacoIntegration() {
+  //     try {
+  //       // Dynamically import Monaco to avoid issues with SSR
+  //       const { loader } = await import('@monaco-editor/react');
+  //       const monaco = await loader.init();
+
+  //       // Import indexer functions
+  //       const { indexMonacoFiles, watchMonacoFiles } = await import(
+  //         '@/features/editor-code/lib/project-indexer'
+  //       );
+
+  //       // Index all project files for IntelliSense
+  //       await indexMonacoFiles(
+  //         monaco,
+  //         currentFsInterface.projectPath,
+  //         currentFsInterface.fs.promises as unknown as typeof fs.promises
+  //       );
+
+  //       // Watch for external file changes
+  //       cleanupWatcher = watchMonacoFiles(
+  //         monaco,
+  //         currentFsInterface.projectPath,
+  //         currentFsInterface.fs as unknown as typeof fs
+  //       );
+  //     } catch (err) {
+  //       console.error('Failed to initialize Monaco integration:', err);
+  //     }
+  //   }
+
+  //   initMonacoIntegration();
+
+  //   return () => {
+  //     cleanupWatcher?.();
+  //   };
+  // }, [fsInterface]);
+
+  const getFileName = useCallback(
+    (fileType: keyof typeof JaclyFiles) => {
+      return `${fsInterface?.projectPath}/${JaclyFiles[fileType]}`;
+    },
+    [fsInterface?.projectPath]
+  );
+
+  const contextValue = useMemo<ActiveProjectContextValue | null>(() => {
+    if (!fsInterface) return null;
+
+    return {
+      fs: fsInterface.fs as unknown as typeof fs,
+      fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
+      dbProject: project,
+      projectPath: fsInterface.projectPath,
+      getFileName,
+    };
+  }, [fsInterface, project, getFileName]);
 
   if (error) {
     return <ProjectLoadError error={error} />;
   }
 
-  if (!fsInterface) {
+  if (!contextValue) {
     return <ProjectLoadingIndicator message="Mounting filesystem..." />;
   }
-
-  const contextValue: ActiveProjectContextValue = {
-    fs: fsInterface.fs as unknown as typeof fs,
-    fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
-    dbProject: project,
-    projectPath: fsInterface.projectPath,
-    getFileName(fileType) {
-      return `${fsInterface.projectPath}/${JaclyFiles[fileType]}`;
-    },
-  };
 
   return (
     <ActiveProjectContext.Provider value={contextValue}>

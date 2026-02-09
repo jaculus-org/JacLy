@@ -8,7 +8,9 @@ import { enqueueSnackbar } from 'notistack';
 
 export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context, params }) => {
-    const project = await context.runtimeService.getProject(params.projectId);
+    const project = await context.projectManService.getProject(
+      params.projectId
+    );
     if (!project) {
       enqueueSnackbar(m.project_id_not_found(), {
         variant: 'error',

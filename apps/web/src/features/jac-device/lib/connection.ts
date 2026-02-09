@@ -34,7 +34,7 @@ export async function connectDevice(
   addToTerminal: AddToTerminal,
   onDisconnect: () => void,
   projectPath: string,
-  fs: typeof import("fs")
+  fs: typeof import('fs')
 ): Promise<JacDevice> {
   switch (type) {
     case 'serial':
@@ -42,7 +42,12 @@ export async function connectDevice(
     // case 'ble':
     //   return connectDeviceWebBLE();
     case 'wokwi':
-      return connectDeviceWokwiSimulator(addToTerminal, onDisconnect, projectPath, fs);
+      return connectDeviceWokwiSimulator(
+        addToTerminal,
+        onDisconnect,
+        projectPath,
+        fs
+      );
     default:
       return Promise.reject(new UnknownConnectionTypeError(type));
   }
@@ -124,13 +129,15 @@ export async function connectDeviceWokwiSimulator(
   addToTerminal: AddToTerminal,
   _onDisconnect: () => void,
   projectPath: string,
-  fs: typeof import("fs")
+  fs: typeof import('fs')
 ): Promise<JacDevice> {
-
   const stream = new JacStreamWokwi(logger, {
     handleReadDiagram: async () => {
       const diagramPath = `${projectPath}/diagram.json`;
-      return await fs.promises.readFile(diagramPath) || new Uint8Array("{}" .split('').map(c => c.charCodeAt(0)));
+      return (
+        (await fs.promises.readFile(diagramPath)) ||
+        new Uint8Array('{}'.split('').map(c => c.charCodeAt(0)))
+      );
     },
     handleWriteDiagram: async (data: Uint8Array) => {
       const diagramPath = `${projectPath}/diagram.json`;
@@ -139,7 +146,7 @@ export async function connectDeviceWokwiSimulator(
     handleReadFirmware: async () => {
       const firmwareResponse = await fetch('/bin/jaculus-esp32s3-quad.uf2');
       return new Uint8Array(await firmwareResponse.arrayBuffer());
-    }
+    },
   });
 
   return setupJacDevice(stream, addToTerminal);

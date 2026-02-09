@@ -49,7 +49,13 @@ export function ConnectionSelector() {
   async function handleConnect() {
     try {
       setDevice(
-        await connectDevice(selectedConnection, addEntry, onDisconnect, projectPath, fs),
+        await connectDevice(
+          selectedConnection,
+          addEntry,
+          onDisconnect,
+          projectPath,
+          fs
+        ),
         selectedConnection
       );
     } catch (error) {

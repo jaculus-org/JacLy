@@ -1,5 +1,10 @@
-import { createContext, use, useMemo, useState, type ReactNode } from 'react';
-import { loadPackageJsonSync, Project, Registry } from '@jaculus/project';
+import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import {
+  loadPackageJsonSync,
+  Project,
+  Registry,
+  type PackageJson,
+} from '@jaculus/project';
 import { JacDevice } from '@jaculus/device';
 import { getRequest } from '@jaculus/jacly/project';
 import { Writable } from 'node:stream';
@@ -13,10 +18,14 @@ import type { ConnectionType } from '../types/connection';
 export interface JacDeviceContextValue {
   jacProject: Project | null;
   device: JacDevice | null;
-  setDevice: (device: JacDevice | null, connectionType?: ConnectionType) => void;
+  setDevice: (
+    device: JacDevice | null,
+    connectionType?: ConnectionType
+  ) => void;
   connectionType: ConnectionType | null;
   outStream?: Writable;
   errStream?: Writable;
+  pkg: PackageJson | null;
 }
 
 export const JacDeviceContext = createContext<JacDeviceContextValue | null>(
@@ -31,45 +40,89 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const { fs, projectPath } = useActiveProject();
   const { addEntry } = useTerminal();
   const [device, setDevice] = useState<JacDevice | null>(null);
-  const [connectionType, setConnectionType] = useState<ConnectionType | null>(null);
+  const [connectionType, setConnectionType] = useState<ConnectionType | null>(
+    null
+  );
 
-  const jacProject = useMemo(() => {
-    const packageJsonPath = path.join(projectPath, 'package.json');
-    try {
-      if (!fs.existsSync(packageJsonPath)) {
-        enqueueSnackbar(
-          'No package.json found in the project. Please initialize a Jacly project.',
-          { variant: 'warning' }
+  // Track project loading error for useEffect notification
+  const [jacProject, setJacProject] = useState<Project | null>(null);
+  const [pkg, setPkg] = useState<PackageJson | null>(null);
+  const [loadError, setLoadError] = useState<
+    'missing-package-json' | 'load-failed' | null
+  >(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProject() {
+      const packageJsonPath = path.join(projectPath, 'package.json');
+      try {
+        if (!fs.existsSync(packageJsonPath)) {
+          if (!cancelled) {
+            setJacProject(null);
+            setPkg(null);
+            setLoadError('missing-package-json');
+          }
+          return;
+        }
+        const pkgJson = loadPackageJsonSync(fs, packageJsonPath);
+        const registry = await Registry.create(pkgJson.registry, getRequest);
+
+        if (!cancelled) {
+          setJacProject(
+            new Project(
+              fs,
+              projectPath,
+              createWritableStream('runtime-stdout', addEntry),
+              createWritableStream('runtime-stderr', addEntry),
+              registry
+            )
+          );
+          setPkg(pkgJson);
+          setLoadError(null);
+        }
+      } catch (error) {
+        console.error(
+          `Failed to load Jacly project at ${packageJsonPath}:`,
+          error
         );
-        return null;
+        if (!cancelled) {
+          setJacProject(null);
+          setPkg(null);
+          setLoadError('load-failed');
+        }
       }
-      const pkg = loadPackageJsonSync(fs, packageJsonPath);
-      const registry = new Registry(pkg.registry, getRequest);
+    }
 
-      return new Project(
-        fs,
-        projectPath,
-        createWritableStream('runtime-stdout', addEntry),
-        createWritableStream('runtime-stderr', addEntry),
-        registry
-      );
-    } catch (error) {
-      console.error(
-        `Failed to load Jacly project at ${packageJsonPath}:`,
-        error
-      );
+    loadProject();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fs, projectPath, addEntry]);
+
+  // Show notifications in useEffect (after render) rather than during render
+  useEffect(() => {
+    if (loadError === 'missing-package-json') {
       enqueueSnackbar(
-        `Failed to load Jacly project. Please ensure it is a valid Jacly project.`,
+        'No package.json found in the project. Please initialize a Jacly project.',
+        { variant: 'warning' }
+      );
+    } else if (loadError === 'load-failed') {
+      enqueueSnackbar(
+        'Failed to load Jacly project. Please ensure it is a valid Jacly project.',
         { variant: 'error' }
       );
-      return null;
     }
-  }, [fs, projectPath, addEntry]);
+  }, [loadError]);
 
   const contextValue: JacDeviceContextValue = {
     jacProject,
     device,
-    setDevice: (newDevice: JacDevice | null, connectionType?: ConnectionType) => {
+    setDevice: (
+      newDevice: JacDevice | null,
+      connectionType?: ConnectionType
+    ) => {
       if (device) {
         device.destroy();
       }
@@ -77,6 +130,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
       setConnectionType(connectionType || null);
     },
     connectionType,
+    pkg,
   };
 
   return (

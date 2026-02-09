@@ -31,6 +31,7 @@ export class ProjectRepository {
       createdAt: now,
       modifiedAt: now,
       deletedAt: null,
+      layout: undefined,
     };
     await this.db.projects.add(row);
     return row;
@@ -56,6 +57,6 @@ export class ProjectRepository {
     key: keyof IDbProject,
     value: IDbProject[typeof key]
   ): Promise<void> {
-    await this.db.projects.update(id, { [key]: value });
+    await this.db.projects.update(id, { [key]: value } as Partial<IDbProject>);
   }
 }

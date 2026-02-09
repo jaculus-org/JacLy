@@ -1,4 +1,11 @@
-import { createContext, use, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  use,
+  useCallback,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
 export type TerminalStreamType =
   | 'console-in'
@@ -38,7 +45,7 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
   const maxEntries = 1000;
   const [entries, setEntries] = useState<TerminalEntry[]>([]);
 
-  function addEntry(type: TerminalStreamType, content: string) {
+  const addEntry = useCallback((type: TerminalStreamType, content: string) => {
     setEntries(prev => {
       const newEntry: TerminalEntry = {
         timestamp: new Date(),
@@ -51,7 +58,7 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
       }
       return updated;
     });
-  }
+  }, []);
 
   function clear() {
     setEntries([]);

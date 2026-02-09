@@ -54,9 +54,7 @@ export function findAllTabIds(model: FlexLayout.IJsonModel): Set<string> {
 }
 
 // Find a tab by ID in the default model and return it with its location info
-function findDefaultTab(
-  tabId: string
-): {
+function findDefaultTab(tabId: string): {
   tab: FlexLayoutAttributes;
   location: 'border' | 'layout';
   borderIndex?: number;
@@ -108,7 +106,7 @@ function findDefaultTab(
 }
 
 export function getUpdatedLayoutModel(
-  json: FlexLayout.IJsonModel | null
+  json: FlexLayout.IJsonModel | undefined
 ): FlexLayout.IJsonModel {
   if (!json) {
     return structuredClone(flexLayoutDefaultJson);
@@ -290,22 +288,6 @@ export function openPanel(
         return;
       }
 
-      let tabset = model.getNodeById('main-tabset');
-      if (!tabset) {
-        model.doAction(
-          FlexLayout.Actions.addNode(
-            {
-              type: 'tabset',
-              id: 'main-tabset',
-            },
-            model.getRoot().getId(),
-            FlexLayout.DockLocation.CENTER,
-            -1
-          )
-        );
-        tabset = model.getNodeById('main-tabset') as FlexLayout.TabSetNode;
-      }
-
       const toNode: FlexLayout.IJsonTabNode = {
         type: 'tab',
         name: props?.filePath?.split('/').pop() || 'Unnamed',
@@ -314,14 +296,48 @@ export function openPanel(
         enableClose: true,
         config: { filePath: props?.filePath },
       };
-      model.doAction(
-        FlexLayout.Actions.addNode(
-          toNode,
-          tabset.getId(),
-          FlexLayout.DockLocation.CENTER,
-          -1
-        )
-      );
+
+      // Try to find an existing tabset to add to
+      let tabset = model.getNodeById('main-tabset');
+
+      // If main-tabset doesn't exist, find any tabset in the layout
+      if (!tabset) {
+        const root = model.getRoot();
+        root.getChildren().forEach(child => {
+          if (!tabset && child.getType() === 'tabset') {
+            tabset = child;
+          } else if (child.getType() === 'row') {
+            // Search in row children
+            child.getChildren().forEach(rowChild => {
+              if (!tabset && rowChild.getType() === 'tabset') {
+                tabset = rowChild;
+              }
+            });
+          }
+        });
+      }
+
+      if (tabset) {
+        // Add to existing tabset
+        model.doAction(
+          FlexLayout.Actions.addNode(
+            toNode,
+            tabset.getId(),
+            FlexLayout.DockLocation.CENTER,
+            -1
+          )
+        );
+      } else {
+        // No tabset exists - add directly to root, which will create a new tabset
+        model.doAction(
+          FlexLayout.Actions.addNode(
+            toNode,
+            model.getRoot().getId(),
+            FlexLayout.DockLocation.CENTER,
+            -1
+          )
+        );
+      }
 
       break;
     }
