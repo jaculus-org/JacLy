@@ -20,25 +20,8 @@ export default defineConfig({
     paraglideVitePlugin({
       project: './project.inlang',
       outdir: './src/paraglide',
-      strategy: ['url', 'cookie', 'preferredLanguage', 'baseLocale'],
-      urlPatterns: [
-        {
-          pattern: '/',
-          localized: [
-            ['en', '/'],
-            ['cs', '/cs'],
-          ],
-        },
-        {
-          pattern: '/:path(.*)?',
-          localized: [
-            ['cs', '/cs/:path(.*)?'],
-
-            // en path has to be last since it is catch-all
-            ['en', '/:path(.*)?'],
-          ],
-        },
-      ],
+      // Use cookie/localStorage for locale - URL stays the same regardless of language
+      strategy: ['cookie', 'localStorage', 'preferredLanguage', 'baseLocale'],
     }),
     githubPagesSetup(),
     buildInfoPlugin(),
