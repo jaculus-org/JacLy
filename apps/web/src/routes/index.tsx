@@ -1,7 +1,20 @@
+import { m } from '@/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight, Blocks, Code, Terminal } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/features/shared/components/ui/card';
+import { Button } from '@/features/shared/components/ui/button';
+import {
+  BlocksIcon,
+  Code2Icon,
+  ZapIcon,
+  ListIcon,
+  PlusCircleIcon,
+} from 'lucide-react';
 
 export const Route = createFileRoute('/')({
   component: Root,
@@ -10,68 +23,111 @@ export const Route = createFileRoute('/')({
 function Root() {
   const features = [
     {
-      title: 'Visual Programming',
-      description: 'Create visual programming interfaces with ease.',
-      icon: Blocks,
+      title: m.index_feature_visual_title(),
+      description: m.index_feature_visual_desc(),
+      icon: BlocksIcon,
     },
     {
-      title: 'Code Generation',
-      description: 'Generate code from visual blocks effortlessly.',
-      icon: Code,
+      title: m.index_feature_code_title(),
+      description: m.index_feature_code_desc(),
+      icon: Code2Icon,
     },
     {
-      title: 'Integrated Terminal',
-      description: 'Access a powerful terminal directly within the editor.',
-      icon: Terminal,
+      title: m.index_feature_fast_title(),
+      description: m.index_feature_fast_desc(),
+      icon: ZapIcon,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-background to-secondary/20">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-12 space-y-4">
-          <h1 className="text-5xl font-bold text-foreground mb-4 leading-tight">
-            Welcome to JacLy
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Your visual programming environment for creating amazing projects
-            with blocks
-          </p>
-        </div>
+    <div className="py-12">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
+          {m.index_welcome_message()}
+        </h1>
+        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          {m.index_hero_subtitle()}
+        </p>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {features.map(({ title, description, icon: Icon }) => (
-            <Card
-              key={title}
-              className="transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg"
-            >
-              <CardContent>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold text-card-foreground mb-2">
-                  {title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center">
-          <Button asChild size="sm" className="text-lg px-8 py-3 h-auto">
-            <Link to="/editor/new">
-              Create Your First Project
-              <ArrowRight className="ml-2 w-5 h-5" />
+        {/* Action Buttons */}
+        <div className="flex gap-4 justify-center flex-wrap">
+          <Button asChild size="lg" className="gap-2">
+            <Link to="/project/new">
+              <PlusCircleIcon className="h-5 w-5" />
+              {m.index_btn_create_project()}
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="gap-2">
+            <Link to="/project">
+              <ListIcon className="h-5 w-5" />
+              {m.index_btn_view_projects()}
             </Link>
           </Button>
         </div>
       </div>
+
+      {/* Features Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {features.map(feature => {
+          const Icon = feature.icon;
+          return (
+            <Card
+              key={feature.title}
+              className="transition-all hover:shadow-lg hover:-translate-y-1"
+            >
+              <CardHeader>
+                <div className="mb-4 p-3 rounded-lg bg-primary/10 w-fit">
+                  <Icon className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">{feature.title}</CardTitle>
+                <CardDescription className="text-base">
+                  {feature.description}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Getting Started Section */}
+      <Card className="border-2">
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            {m.index_get_started_title()}
+          </CardTitle>
+          <CardDescription className="text-base">
+            {m.index_get_started_subtitle()}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start gap-4 p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors">
+            <div className="p-2 rounded-md bg-primary/10">
+              <BlocksIcon className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold mb-1">{m.index_blocks_title()}</h3>
+              <p className="text-sm text-muted-foreground">
+                {m.index_blocks_desc()}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors">
+            <div className="p-2 rounded-md bg-primary/10">
+              <Code2Icon className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold mb-1">
+                {m.index_typescript_title()}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {m.index_typescript_desc()}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

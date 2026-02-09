@@ -1,5 +1,7 @@
+import { m } from '@/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
-import { useBuildInfo } from '@/hooks/useBuildInfo';
+import { useBuildInfo } from '@/hooks/use-build-info';
+import { LinkIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/about')({
   component: RouteComponent,
@@ -13,82 +15,62 @@ function RouteComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-          About JacLy
-        </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-          JacLy is a web-based IDE for the Jaculus embedded systems platform.
+        <h1 className="text-4xl font-bold mb-2">{m.about_title()}</h1>
+        <p className="text-lg text-muted-foreground mb-8">
+          {m.about_description()}
         </p>
 
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 space-y-4">
-          <div className="border-b dark:border-slate-700 pb-4">
-            <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-              Build Information
+        <div className="bg-card rounded-lg border p-6 space-y-4">
+          <div className="border-b pb-4">
+            <h2 className="text-2xl font-semibold mb-4">
+              {m.about_build_info()}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Version
+              <label className="text-sm font-medium text-muted-foreground">
+                {m.about_version()}
               </label>
-              <p className="text-lg text-slate-900 dark:text-slate-100 font-mono">
-                {buildInfo.version}
-              </p>
+              <p className="text-lg font-mono">{buildInfo.version}</p>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Build Time
+              <label className="text-sm font-medium text-muted-foreground">
+                {m.about_build_time()}
               </label>
-              <p className="text-lg text-slate-900 dark:text-slate-100">
-                {formatDate(buildInfo.buildTime)}
-              </p>
+              <p className="text-lg">{formatDate(buildInfo.buildTime)}</p>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Commit Hash
+              <label className="text-sm font-medium text-muted-foreground">
+                {m.about_commit_hash()}
               </label>
-              <p className="text-lg text-slate-900 dark:text-slate-100 font-mono">
+              <p className="text-lg font-mono">
                 {buildInfo.commitHash.slice(0, 7)}
               </p>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Repository
+              <label className="text-sm font-medium text-muted-foreground">
+                {m.about_repository()}
               </label>
-              <p className="text-lg text-slate-900 dark:text-slate-100 font-mono">
-                {buildInfo.repository}
-              </p>
+              <p className="text-lg font-mono">{buildInfo.repository}</p>
             </div>
           </div>
 
           {buildInfo.commitLink && (
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t">
               <a
                 href={buildInfo.commitLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-md transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
-                View Commit on GitHub
-                <svg
-                  className="ml-2 w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
+                {m.about_view_commit()}
+                <LinkIcon className="h-4 w-4" />
               </a>
             </div>
           )}

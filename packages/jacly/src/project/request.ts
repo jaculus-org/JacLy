@@ -10,16 +10,12 @@ export const getRequest: RequestFunction = async (
     const response = await fetch(new URL(libFile, baseUri), {
       cache: 'no-store',
     });
-    console.log(response);
     if (!response.ok) {
       throw new Error(
         `Failed to fetch ${baseUri}: ${response.status} ${response.statusText}`
       );
     }
     const arrayBuffer = await response.arrayBuffer();
-    console.log(
-      `Successfully fetched data: ${response.status} ${response.statusText}`
-    );
     return new Uint8Array(arrayBuffer);
   } else if (baseUri.startsWith('file:')) {
     const uri = path.join(baseUri, libFile);

@@ -15,25 +15,20 @@
       "import": "./dist/editor/index.js",
       "default": "./dist/editor/index.js"
     },
-    "./blocks": {
-      "types": "./dist/blocks/index.d.ts",
-      "import": "./dist/blocks/index.js",
-      "default": "./dist/blocks/index.js"
-    },
     "./project": {
       "types": "./dist/project/index.d.ts",
       "import": "./dist/project/index.js",
       "default": "./dist/project/index.js"
     },
-    "./config": {
-      "types": "./dist/config/index.d.ts",
-      "import": "./dist/config/index.js",
-      "default": "./dist/config/index.js"
+    "./blocks": {
+      "types": "./dist/blocks/index.d.ts",
+      "import": "./dist/blocks/index.js",
+      "default": "./dist/blocks/index.js"
     }
   },
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build": "tsc && tsc-alias",
+    "build:watch": "tsc --watch & tsc-alias --watch",
     "type-check": "tsc --noEmit",
     "lint": "echo 'No linting configured for this package'",
     "lint:fix": "echo 'No linting configured for this package'",
@@ -45,18 +40,25 @@
     "clean": "rm -rf dist *.tsbuildinfo",
     "clean-node": "pnpm clean && rm -rf node_modules"
   },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
   "dependencies": {
-    "@alcyone-labs/zod-to-json-schema": "^4.0.10",
+    "@blockly/block-plus-minus": "^9.0.7",
+    "@blockly/field-angle": "^6.0.7",
+    "@blockly/field-colour": "^6.0.10",
+    "@blockly/field-colour-hsv-sliders": "^6.0.10",
+    "@blockly/field-slider": "^8.0.8",
+    "@blockly/plugin-cross-tab-copy-paste": "^8.0.6",
+    "@blockly/shadow-block-converter": "^7.0.9",
+    "@blockly/toolbox-search": "^3.1.7",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",
-    "@obsidize/tar-browserify": "^6.3.2",
-    "@zenfs/core": "^2.4.2",
-    "@zenfs/dom": "^1.2.5",
     "blockly": "^12.3.1",
-    "fflate": "^0.8.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "lucide-react": "^0.562.0",
+    "lucide-static": "^0.562.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -69,23 +71,11 @@
     "chai": "^6.2.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "vite": "^7.1.12"
-  },
-  "peerDependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "blockly": {
-      "optional": true
-    }
   }
 }

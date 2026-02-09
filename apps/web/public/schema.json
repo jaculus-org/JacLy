@@ -1,0 +1,1190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1
+    },
+    "github": {
+      "type": "string",
+      "format": "uri"
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9-_]+$"
+    },
+    "parentCategory": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9-_]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "docs": {
+      "type": "string"
+    },
+    "colour": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:[0-9]|[1-9]\\d|[12]\\d{2}|3[0-5]\\d|360)$"
+        }
+      ]
+    },
+    "style": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "custom": {
+      "type": "string"
+    },
+    "categorystyle": {
+      "type": "string"
+    },
+    "libraries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "priority": {
+      "type": "number"
+    },
+    "priorityCategory": {
+      "type": "number"
+    },
+    "contents": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "block"
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9-_]+$"
+              },
+              "message0": {
+                "type": "string"
+              },
+              "args0": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "field_input"
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "spellcheck": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "field_number"
+                        },
+                        "value": {
+                          "type": "number"
+                        },
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        },
+                        "precision": {
+                          "type": "number"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "field_dropdown"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "prefixItems": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          }
+                        },
+                        "instanceof": {
+                          "type": "string",
+                          "pattern": "^[a-zA-Z0-9-_]+$"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "input_value"
+                        },
+                        "align": {
+                          "type": "string",
+                          "enum": ["LEFT", "RIGHT", "CENTRE"]
+                        },
+                        "check": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "input_statement"
+                        },
+                        "align": {
+                          "type": "string",
+                          "enum": ["LEFT", "RIGHT", "CENTRE"]
+                        },
+                        "check": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "input_dummy"
+                        },
+                        "align": {
+                          "type": "string",
+                          "enum": ["LEFT", "RIGHT", "CENTRE"]
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "input_end_row"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "field_colour"
+                        },
+                        "colour": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "field_colour_hsv_sliders"
+                        },
+                        "colour": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "format": "uppercase",
+                          "allOf": [
+                            {
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            {
+                              "pattern": "^[^a-z]*$"
+                            }
+                          ]
+                        },
+                        "block": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "shadow": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-_]+$"
+                            },
+                            "fields": {
+                              "type": "object",
+                              "propertyNames": {
+                                "type": "string",
+                                "format": "uppercase",
+                                "allOf": [
+                                  {
+                                    "pattern": "^[a-zA-Z0-9-_]+$"
+                                  },
+                                  {
+                                    "pattern": "^[^a-z]*$"
+                                  }
+                                ]
+                              },
+                              "additionalProperties": {}
+                            }
+                          },
+                          "required": ["type"],
+                          "additionalProperties": false
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "color_field_select"
+                        },
+                        "colour": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "type"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "tooltip": {
+                "type": "string"
+              },
+              "isProgramStart": {
+                "type": "boolean"
+              },
+              "code": {
+                "type": "string"
+              },
+              "output": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "previousStatement": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "nextStatement": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "inputs": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "format": "uppercase",
+                  "allOf": [
+                    {
+                      "pattern": "^[a-zA-Z0-9-_]+$"
+                    },
+                    {
+                      "pattern": "^[^a-z]*$"
+                    }
+                  ]
+                },
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "block": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "minLength": 1,
+                          "pattern": "^[a-zA-Z0-9-_]+$"
+                        },
+                        "fields": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string",
+                            "format": "uppercase",
+                            "allOf": [
+                              {
+                                "pattern": "^[a-zA-Z0-9-_]+$"
+                              },
+                              {
+                                "pattern": "^[^a-z]*$"
+                              }
+                            ]
+                          },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false
+                    },
+                    "shadow": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "minLength": 1,
+                          "pattern": "^[a-zA-Z0-9-_]+$"
+                        },
+                        "fields": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string",
+                            "format": "uppercase",
+                            "allOf": [
+                              {
+                                "pattern": "^[a-zA-Z0-9-_]+$"
+                              },
+                              {
+                                "pattern": "^[^a-z]*$"
+                              }
+                            ]
+                          },
+                          "additionalProperties": {}
+                        }
+                      },
+                      "required": ["type"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "inputsInline": {
+                "type": "boolean"
+              },
+              "colour": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^(?:[0-9]|[1-9]\\d|[12]\\d{2}|3[0-5]\\d|360)$"
+                  }
+                ]
+              },
+              "style": {
+                "type": "string"
+              },
+              "constructs": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9-_]+$"
+              }
+            },
+            "required": ["kind", "type"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "category"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "colour": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^(?:[0-9]|[1-9]\\d|[12]\\d{2}|3[0-5]\\d|360)$"
+                  }
+                ]
+              },
+              "categorystyle": {
+                "type": "string"
+              },
+              "custom": {
+                "type": "string"
+              }
+            },
+            "required": ["kind", "name"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "separator"
+              },
+              "gap": {
+                "type": "number"
+              }
+            },
+            "required": ["kind"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "label"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "web-class": {
+                "type": "string"
+              }
+            },
+            "required": ["kind", "text"],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required": ["version", "author", "license", "name"],
+  "additionalProperties": false
+}

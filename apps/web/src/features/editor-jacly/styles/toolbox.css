@@ -1,0 +1,172 @@
+/* =============================================
+   TOOLBOX CONTAINER
+   ============================================= */
+
+.blocklyToolboxDiv {
+  background-color: oklch(var(--sidebar));
+  border-right: 1px solid oklch(var(--sidebar-border));
+  padding: 0.25rem;
+}
+
+/* Category group container */
+.blocklyToolboxContents {
+  padding: 0.25rem;
+}
+
+/* =============================================
+   CATEGORY ROW (main clickable item)
+   ============================================= */
+
+.blocklyToolboxCategory {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  margin-bottom: 0.125rem;
+  border-radius: var(--radius-lg);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  height: auto !important;
+  min-height: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  color: oklch(var(--sidebar-foreground));
+  background-color: transparent;
+}
+
+.blocklyToolboxCategory:hover {
+  background-color: oklch(var(--sidebar-accent));
+  color: oklch(var(--sidebar-accent-foreground));
+}
+
+.blocklyToolboxCategory[aria-selected='true'] {
+  background-color: var(--category-color) !important;
+  color: oklch(var(--primary-foreground)) !important;
+  border-color: transparent;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* =============================================
+   CATEGORY ICON
+   ============================================= */
+
+.jaclyToolboxCategoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.25rem;
+  opacity: 0.9;
+  margin-left: 0.25rem;
+  transition: opacity 0.15s ease;
+
+  color: var(--category-color);
+}
+
+.blocklyToolboxCategoryContainer:hover .jaclyToolboxCategoryIcon {
+  opacity: 1;
+}
+
+.blocklyToolboxCategoryContainer[aria-selected='true']
+  .jaclyToolboxCategoryIcon {
+  opacity: 1;
+  color: oklch(var(--primary-foreground)) !important;
+}
+
+.jaclyToolboxCategoryIcon svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 2;
+}
+
+/* =============================================
+   CATEGORY LABEL
+   ============================================= */
+
+.blocklyToolboxCategoryLabel {
+  color: currentColor;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =============================================
+   NESTED CATEGORIES - EXPAND/COLLAPSE ARROW
+   ============================================= */
+
+/* Container for the expand/collapse icon */
+.blocklyTreeRowContentContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Hide default Blockly expand icon (we use custom styling) */
+.blocklyTreeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.25rem;
+  font-size: 0;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Custom arrow using CSS - collapsed state (pointing right) */
+.blocklyTreeIcon::before {
+  content: '';
+  display: block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  opacity: 0.6;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.blocklyToolboxCategory:hover .blocklyTreeIcon::before {
+  opacity: 0.9;
+}
+
+/* Expanded state - arrow pointing down */
+.blocklyToolboxCategory.blocklyHasCategories[aria-expanded='true']
+  .blocklyTreeIcon::before {
+  transform: rotate(45deg);
+  opacity: 0.9;
+}
+
+/* =============================================
+   NESTED CATEGORY INDENTATION
+   ============================================= */
+
+.blocklyToolboxCategoryGroup {
+  padding-left: 0.75rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  margin-left: 0.2rem;
+  border-left: 1px solid oklch(var(--sidebar-border));
+}
+
+/* =============================================
+   SEPARATOR / DIVIDER
+   ============================================= */
+
+.blocklyToolboxSeparator {
+  height: 1px;
+  margin: 0.5rem 0.625rem;
+  background-color: oklch(var(--sidebar-border));
+  border: none;
+}

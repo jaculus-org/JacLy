@@ -1,3 +1,4 @@
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { defineConfig } from 'vite';
 import path from 'path';
 import react from '@vitejs/plugin-react';
@@ -16,6 +17,29 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
+    paraglideVitePlugin({
+      project: './project.inlang',
+      outdir: './src/paraglide',
+      strategy: ['url', 'cookie', 'preferredLanguage', 'baseLocale'],
+      urlPatterns: [
+        {
+          pattern: '/',
+          localized: [
+            ['en', '/'],
+            ['cs', '/cs'],
+          ],
+        },
+        {
+          pattern: '/:path(.*)?',
+          localized: [
+            ['cs', '/cs/:path(.*)?'],
+
+            // en path has to be last since it is catch-all
+            ['en', '/:path(.*)?'],
+          ],
+        },
+      ],
+    }),
     githubPagesSetup(),
     buildInfoPlugin(),
     nodePolyfills(),
@@ -24,8 +48,14 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   server: {
+    port: 5445,
+    strictPort: true,
+    allowedHosts: true,
+  },
+  preview: {
     port: 5445,
     strictPort: true,
   },

@@ -9,21 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EditorIndexRouteImport } from './routes/editor/index'
-import { Route as EditorNewRouteImport } from './routes/editor/new'
-import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
+import { Route as ProjectIndexRouteImport } from './routes/project/index'
+import { Route as ProjectNewRouteImport } from './routes/project/new'
+import { Route as ProjectImportRouteImport } from './routes/project/import'
+import { Route as ProjectProjectIdRouteImport } from './routes/project/$projectId'
 
+const NotFoundRoute = NotFoundRouteImport.update({
+  id: '/not-found',
+  path: '/not-found',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const R404Route = R404RouteImport.update({
-  id: '/404',
-  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,91 +32,109 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EditorIndexRoute = EditorIndexRouteImport.update({
-  id: '/editor/',
-  path: '/editor/',
+const ProjectIndexRoute = ProjectIndexRouteImport.update({
+  id: '/project/',
+  path: '/project/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EditorNewRoute = EditorNewRouteImport.update({
-  id: '/editor/new',
-  path: '/editor/new',
+const ProjectNewRoute = ProjectNewRouteImport.update({
+  id: '/project/new',
+  path: '/project/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EditorProjectIdRoute = EditorProjectIdRouteImport.update({
-  id: '/editor/$projectId',
-  path: '/editor/$projectId',
+const ProjectImportRoute = ProjectImportRouteImport.update({
+  id: '/project/import',
+  path: '/project/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectProjectIdRoute = ProjectProjectIdRouteImport.update({
+  id: '/project/$projectId',
+  path: '/project/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/404': typeof R404Route
   '/about': typeof AboutRoute
-  '/editor/$projectId': typeof EditorProjectIdRoute
-  '/editor/new': typeof EditorNewRoute
-  '/editor': typeof EditorIndexRoute
+  '/not-found': typeof NotFoundRoute
+  '/project/$projectId': typeof ProjectProjectIdRoute
+  '/project/import': typeof ProjectImportRoute
+  '/project/new': typeof ProjectNewRoute
+  '/project': typeof ProjectIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/404': typeof R404Route
   '/about': typeof AboutRoute
-  '/editor/$projectId': typeof EditorProjectIdRoute
-  '/editor/new': typeof EditorNewRoute
-  '/editor': typeof EditorIndexRoute
+  '/not-found': typeof NotFoundRoute
+  '/project/$projectId': typeof ProjectProjectIdRoute
+  '/project/import': typeof ProjectImportRoute
+  '/project/new': typeof ProjectNewRoute
+  '/project': typeof ProjectIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/404': typeof R404Route
   '/about': typeof AboutRoute
-  '/editor/$projectId': typeof EditorProjectIdRoute
-  '/editor/new': typeof EditorNewRoute
-  '/editor/': typeof EditorIndexRoute
+  '/not-found': typeof NotFoundRoute
+  '/project/$projectId': typeof ProjectProjectIdRoute
+  '/project/import': typeof ProjectImportRoute
+  '/project/new': typeof ProjectNewRoute
+  '/project/': typeof ProjectIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/404'
     | '/about'
-    | '/editor/$projectId'
-    | '/editor/new'
-    | '/editor'
+    | '/not-found'
+    | '/project/$projectId'
+    | '/project/import'
+    | '/project/new'
+    | '/project'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/404' | '/about' | '/editor/$projectId' | '/editor/new' | '/editor'
+  to:
+    | '/'
+    | '/about'
+    | '/not-found'
+    | '/project/$projectId'
+    | '/project/import'
+    | '/project/new'
+    | '/project'
   id:
     | '__root__'
     | '/'
-    | '/404'
     | '/about'
-    | '/editor/$projectId'
-    | '/editor/new'
-    | '/editor/'
+    | '/not-found'
+    | '/project/$projectId'
+    | '/project/import'
+    | '/project/new'
+    | '/project/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  R404Route: typeof R404Route
   AboutRoute: typeof AboutRoute
-  EditorProjectIdRoute: typeof EditorProjectIdRoute
-  EditorNewRoute: typeof EditorNewRoute
-  EditorIndexRoute: typeof EditorIndexRoute
+  NotFoundRoute: typeof NotFoundRoute
+  ProjectProjectIdRoute: typeof ProjectProjectIdRoute
+  ProjectImportRoute: typeof ProjectImportRoute
+  ProjectNewRoute: typeof ProjectNewRoute
+  ProjectIndexRoute: typeof ProjectIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/not-found': {
+      id: '/not-found'
+      path: '/not-found'
+      fullPath: '/not-found'
+      preLoaderRoute: typeof NotFoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/404': {
-      id: '/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -125,25 +144,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/editor/': {
-      id: '/editor/'
-      path: '/editor'
-      fullPath: '/editor'
-      preLoaderRoute: typeof EditorIndexRouteImport
+    '/project/': {
+      id: '/project/'
+      path: '/project'
+      fullPath: '/project'
+      preLoaderRoute: typeof ProjectIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/editor/new': {
-      id: '/editor/new'
-      path: '/editor/new'
-      fullPath: '/editor/new'
-      preLoaderRoute: typeof EditorNewRouteImport
+    '/project/new': {
+      id: '/project/new'
+      path: '/project/new'
+      fullPath: '/project/new'
+      preLoaderRoute: typeof ProjectNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/editor/$projectId': {
-      id: '/editor/$projectId'
-      path: '/editor/$projectId'
-      fullPath: '/editor/$projectId'
-      preLoaderRoute: typeof EditorProjectIdRouteImport
+    '/project/import': {
+      id: '/project/import'
+      path: '/project/import'
+      fullPath: '/project/import'
+      preLoaderRoute: typeof ProjectImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/project/$projectId': {
+      id: '/project/$projectId'
+      path: '/project/$projectId'
+      fullPath: '/project/$projectId'
+      preLoaderRoute: typeof ProjectProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -151,11 +177,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  R404Route: R404Route,
   AboutRoute: AboutRoute,
-  EditorProjectIdRoute: EditorProjectIdRoute,
-  EditorNewRoute: EditorNewRoute,
-  EditorIndexRoute: EditorIndexRoute,
+  NotFoundRoute: NotFoundRoute,
+  ProjectProjectIdRoute: ProjectProjectIdRoute,
+  ProjectImportRoute: ProjectImportRoute,
+  ProjectNewRoute: ProjectNewRoute,
+  ProjectIndexRoute: ProjectIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

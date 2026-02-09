@@ -1,23 +1,19 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { Header } from '@/components/layout/header';
-import { Page404 } from '@/components/404/404';
-// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { createRootRouteWithContext, redirect } from '@tanstack/react-router';
+import { NotFoundPage } from '@/routes/not-found';
+import type { RouterContext } from '@/router/router-context';
+import { RootLayout } from '@/app/root-layout';
+import { getLocale, shouldRedirect } from '@/paraglide/runtime';
 
-function RootLayout() {
-  return (
-    <div className="min-h-screen bg-blue-50 text-blue-900 transition-colors duration-300 ease-in-out dark:bg-slate-900 dark:text-slate-100">
-      <Header />
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async () => {
+    document.documentElement.setAttribute('lang', getLocale());
 
-      <main>
-        <Outlet />
-      </main>
+    const decision = await shouldRedirect({ url: window.location.href });
 
-      {/* <TanStackRouterDevtools /> */}
-    </div>
-  );
-}
-
-export const Route = createRootRoute({
+    if (decision.redirectUrl) {
+      throw redirect({ href: decision.redirectUrl.href });
+    }
+  },
   component: RootLayout,
-  notFoundComponent: Page404,
+  notFoundComponent: NotFoundPage,
 });
