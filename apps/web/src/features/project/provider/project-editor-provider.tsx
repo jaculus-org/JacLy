@@ -62,13 +62,14 @@ export function ProjectEditorProvider() {
   }, [projectManService, dbProject.id]);
 
   useEffect(() => {
-    if (!model) return;
+    if (!model || !pkg?.jaculus) return;
 
-    if (pkg?.jaculus?.projectType !== 'jacly') {
+    if (pkg.jaculus.projectType !== 'jacly') {
+      console.log('Opening Code setup');
       controlPanel(model, 'blockly', 'close');
       openPanel(model, 'code', { filePath: 'src/index.ts' });
     }
-  }, [model, dbProject.id, pkg?.jaculus?.projectType]);
+  }, [model, pkg?.jaculus]);
 
   async function handleModelChange(newModel: FlexLayout.Model) {
     setModel(newModel);

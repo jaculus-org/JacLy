@@ -30,7 +30,7 @@ import {
 import { RefreshCw, Plus, Trash2, Package, Search } from 'lucide-react';
 
 export function PackagesPanel() {
-  const { jacProject } = useJacDevice();
+  const { jacProject, reloadNodeModules } = useJacDevice();
   const [installedLibs, setInstalledLibs] = useState<Dependencies>({});
   const [availableLibs, setAvailableLibs] = useState<string[]>([]);
   const [availableLibVersions, setAvailableLibVersions] = useState<string[]>(
@@ -107,6 +107,7 @@ export function PackagesPanel() {
       setIsInstalling(true);
       setError(null);
       setInstalledLibs(await jacProject!.install());
+      reloadNodeModules();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : m.project_panel_pkg_install_error()
@@ -129,6 +130,7 @@ export function PackagesPanel() {
       setInstalledLibs(
         await jacProject!.addLibraryVersion(selectedLib, versionToInstall)
       );
+      reloadNodeModules();
       enqueueSnackbar(
         m.project_panel_pkg_added({
           name: selectedLib,
@@ -153,6 +155,7 @@ export function PackagesPanel() {
       setIsInstalling(true);
       setError(null);
       setInstalledLibs(await jacProject!.removeLibrary(library));
+      reloadNodeModules();
       enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
         variant: 'success',
       });

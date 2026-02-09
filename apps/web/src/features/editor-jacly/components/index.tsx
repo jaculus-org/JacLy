@@ -12,7 +12,7 @@ import '../styles/toolbox.css';
 export function JaclyEditorComponent() {
   const { themeNormalized } = useTheme();
   const { fs, fsp, getFileName } = useActiveProject();
-  const { jacProject } = useJacDevice();
+  const { jacProject, nodeModulesVersion } = useJacDevice();
 
   const [initialJson, setInitialJson] = useState<object | null>(null);
   const [jaclyBlockFiles, setJaclyBlockFiles] =
@@ -60,7 +60,7 @@ export function JaclyEditorComponent() {
         setJaclyBlockFiles({});
       }
     })();
-  }, [fs, fsp, getFileName, jacProject]);
+  }, [fs, fsp, getFileName, jacProject, nodeModulesVersion]);
 
   async function handleJsonChange(workspaceJson: object) {
     try {

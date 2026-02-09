@@ -26,6 +26,10 @@ export interface JacDeviceContextValue {
   outStream?: Writable;
   errStream?: Writable;
   pkg: PackageJson | null;
+
+  // version counter that increments when node_modules changes
+  nodeModulesVersion: number;
+  reloadNodeModules: () => void;
 }
 
 export const JacDeviceContext = createContext<JacDeviceContextValue | null>(
@@ -44,12 +48,12 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     null
   );
 
-  // Track project loading error for useEffect notification
   const [jacProject, setJacProject] = useState<Project | null>(null);
   const [pkg, setPkg] = useState<PackageJson | null>(null);
   const [loadError, setLoadError] = useState<
     'missing-package-json' | 'load-failed' | null
   >(null);
+  const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +135,8 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     },
     connectionType,
     pkg,
+    nodeModulesVersion,
+    reloadNodeModules: () => setNodeModulesVersion(v => v + 1),
   };
 
   return (

@@ -52,8 +52,6 @@ export function ActiveProjectProvider({
       try {
         const interfce = await projectFsService.mount(project.id);
         if (mounted) {
-          // wait extra time to init FS
-          await new Promise(resolve => setTimeout(resolve, 400));
           setFsInterface(interfce);
         }
       } catch (err) {

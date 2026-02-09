@@ -1,4 +1,11 @@
-import { configure, fs, mounts, umount } from '@zenfs/core';
+import {
+  configure,
+  fs,
+  mount,
+  mounts,
+  resolveMountConfig,
+  umount,
+} from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import { Zip } from '@zenfs/archives';
 
@@ -7,94 +14,97 @@ export interface ProjectFsInterface {
   projectPath: string;
 }
 
-export class ProjectFsService {
-  private getMountPath(projectId: string): string {
-    return `/${projectId}`;
-  }
+// Base filesystem initialization (singleton pattern)
+let initPromise: Promise<void> | null = null;
 
-  private getStoreName(projectId: string): string {
-    return `jacly-${projectId}`;
-  }
-
-  isMounted(projectId: string): boolean {
-    const mountPath = this.getMountPath(projectId);
-    // Check both with and without trailing slash as ZenFS may normalize paths differently
-    return mounts.has(mountPath) || mounts.has(`${mountPath}/`);
-  }
-
-  async mount(projectId: string): Promise<ProjectFsInterface> {
-    const mountPath = this.getMountPath(projectId);
-    const storeName = this.getStoreName(projectId);
-
-    // Check if already mounted - return existing fs
-    if (this.isMounted(projectId)) {
-      return {
-        fs,
-        projectPath: mountPath,
-      };
-    }
-
-    try {
+async function ensureBaseFs(): Promise<void> {
+  if (!initPromise) {
+    initPromise = (async () => {
       const res = await fetch('/tsLibs.zip');
       await configure({
         mounts: {
-          [mountPath]: {
-            backend: IndexedDB,
-            storeName,
-          },
           '/tsLibs': { backend: Zip, data: await res.arrayBuffer() },
         },
       });
-    } catch (error) {
-      // If mount already exists (race condition), that's fine - use it
-      if (error instanceof Error && error.message.includes('already in use')) {
-        return {
-          fs,
-          projectPath: mountPath,
-        };
-      }
-      throw error;
-    }
+    })();
+  }
+  return initPromise;
+}
 
-    window.fs = fs;
-    window.fsp = fs.promises;
+// Helper functions
+const getMountPath = (projectId: string) => `/${projectId}`;
+const getStoreName = (projectId: string) => `jacly-${projectId}`;
 
-    return {
-      fs,
-      projectPath: mountPath,
-    };
+export function isMounted(projectId: string): boolean {
+  const path = getMountPath(projectId);
+  return mounts.has(path) || mounts.has(`${path}/`);
+}
+
+export async function mountProject(
+  projectId: string
+): Promise<ProjectFsInterface> {
+  await ensureBaseFs();
+
+  const mountPath = getMountPath(projectId);
+
+  if (isMounted(projectId)) {
+    return { fs, projectPath: mountPath };
   }
 
-  unmount(projectId: string): void {
-    const mountPath = this.getMountPath(projectId);
+  try {
+    const backend = await resolveMountConfig({
+      backend: IndexedDB,
+      storeName: getStoreName(projectId),
+    });
+    mount(mountPath, backend);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('already in use')) {
+      return { fs, projectPath: mountPath };
+    }
+    throw error;
+  }
 
+  // test to ensure IndexedDB is ready
+  await fs.promises.readdir(mountPath);
+
+  // Expose globally for debugging
+  window.fs = fs;
+  window.fsp = fs.promises;
+
+  return { fs, projectPath: mountPath };
+}
+
+export function unmountProject(projectId: string): void {
+  const mountPath = getMountPath(projectId);
+  if (isMounted(projectId)) {
     try {
-      if (this.isMounted(projectId)) {
-        umount(mountPath);
-      }
-    } catch (error) {
-      // Ignore unmount errors - mount may already be gone
-      console.warn(`Failed to unmount ${mountPath}:`, error);
+      umount(mountPath);
+    } catch {
+      // Mount may already be gone
     }
   }
+}
 
-  /**
-   * Temporarily mount a project fs, perform an action, then unmount.
-   * Useful for project creation where we need to write initial files.
-   */
+/**
+ * Service class for dependency injection in React context.
+ * Wraps the module functions for easier testing and provider usage.
+ */
+export class ProjectFsService {
+  isMounted = isMounted;
+  mount = mountProject;
+  unmount = unmountProject;
+
   async withMount<T>(
     projectId: string,
     action: (fsInterface: ProjectFsInterface) => Promise<T>
   ): Promise<T> {
-    const wasAlreadyMounted = this.isMounted(projectId);
-    const fsInterface = await this.mount(projectId);
-
+    const wasMounted = isMounted(projectId);
+    const fsInterface = await mountProject(projectId);
     try {
       return await action(fsInterface);
     } finally {
-      // Only unmount if we mounted it ourselves
-      if (!wasAlreadyMounted) {
-        this.unmount(projectId);
+      if (!wasMounted) {
+        unmountProject(projectId);
       }
     }
   }
