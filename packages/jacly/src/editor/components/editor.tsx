@@ -102,7 +102,6 @@ export function JaclyEditor({
     }
 
     onGeneratedCode(generateCodeFromWorkspace(workspace));
-    Blockly.Events.BLOCK_MOVE;
   };
 
   return (

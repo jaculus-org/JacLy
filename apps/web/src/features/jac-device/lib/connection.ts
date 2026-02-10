@@ -116,7 +116,8 @@ export async function connectDeviceWebSerial(
 // WEB BLE
 
 export function isWebBLEAvailable(): boolean {
-  return 'bluetooth' in navigator;
+  // return 'bluetooth' in navigator;
+  return false;
 }
 
 // WOKWI SIMULATOR

@@ -1,12 +1,11 @@
 import { m } from '@/paraglide/messages';
-import { Build } from '@/features/jac-device/components/build';
-import { BuildFlash } from '@/features/jac-device/components/build-flash';
 import { ConnectionSelector } from '@/features/jac-device/components/connection-selector';
-import { ConsoleSelector } from '@/features/jac-device/components/console-selector';
 import { LocaleSelector } from '@/features/locale/components/locale-selector';
 import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
+import { ConnectedDevice } from '@/features/jac-device/components/connected-device';
+import { Badge } from '@/features/shared/components/ui/badge';
 
 export function ProjectEditorHeader() {
   return (
@@ -15,6 +14,7 @@ export function ProjectEditorHeader() {
         <div className="flex justify-between items-center py-3 px-1 pl-3">
           {/* Navigation */}
           <nav className="flex gap-6">
+            {import.meta.env.DEV && <Badge variant="destructive">Live</Badge>}
             <Link
               to={'/project'}
               className="font-medium text-blue-900 no-underline transition-colors duration-300 ease-in-out hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-500"
@@ -25,10 +25,8 @@ export function ProjectEditorHeader() {
           </nav>
 
           {/* Theme switcher */}
-          <div className="flex items-center gap-4">
-            <Build />
-            <BuildFlash />
-            <ConsoleSelector />
+          <div className="flex items-center gap-2">
+            <ConnectedDevice />
             <ConnectionSelector />
             <ThemeToggle />
             <LocaleSelector />

@@ -4,49 +4,55 @@ import { Button } from '@/features/shared/components/ui/button';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
+import { useCallback } from 'react';
 import { compileProject } from '../lib/compilation';
-import { flashProject } from '../lib/flash';
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { uploadCode } from '../lib/device';
 
 export function BuildFlash() {
   const { projectPath, fs } = useActiveProject();
   const { addEntry } = useTerminal();
-  const { device, jacProject } = useJacDevice();
+  const { device, jacProject, pkg } = useJacDevice();
 
-  if (!device || !jacProject) {
-    return;
-  }
-
-  async function handleBuildAndFlash() {
+  const handleBuildAndFlash = useCallback(async () => {
     if (!device) {
       enqueueSnackbar(m.device_error_no_device(), { variant: 'error' });
       return;
     }
 
     try {
-      if (!(await compileProject(projectPath, fs, addEntry))) {
-        enqueueSnackbar(m.device_build_compile_failed(), { variant: 'error' });
-        return;
+      if (pkg?.jaculus?.projectType == 'code') {
+        if (!(await compileProject(projectPath, fs, addEntry))) {
+          enqueueSnackbar(m.device_build_compile_failed(), {
+            variant: 'error',
+          });
+          return;
+        }
       }
+
       const files = await jacProject!.getFlashFiles();
       console.log(`Files to flash: ${Object.keys(files).length}`);
       for (const [filePath, content] of Object.entries(files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
-      await flashProject(files, device);
+      await uploadCode(files, device);
     } catch (error) {
       enqueueSnackbar(
         error instanceof Error ? error.message : m.device_build_flash_failed(),
         { variant: 'error' }
       );
     }
+  }, [device, pkg, projectPath, fs, addEntry, jacProject]);
+
+  if (!device || !jacProject) {
+    return;
   }
 
   return (
     <ButtonGroup>
       <Button
-        onClick={async () => handleBuildAndFlash()}
+        onClick={handleBuildAndFlash}
         size="sm"
         className="gap-1 h-8 bg-blue-800 hover:bg-blue-900 text-white"
       >

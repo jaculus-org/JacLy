@@ -35,20 +35,20 @@ export function ConnectionSelector() {
     if (!isConnected) {
       await handleConnect();
     } else {
-      setDevice(null);
+      await setDevice(null);
       setIsConnected(false);
     }
   }
 
-  function onDisconnect() {
-    setDevice(null);
+  async function onDisconnect() {
+    await setDevice(null);
     setIsConnected(false);
     enqueueSnackbar(m.device_disconnected(), { variant: 'warning' });
   }
 
   async function handleConnect() {
     try {
-      setDevice(
+      await setDevice(
         await connectDevice(
           selectedConnection,
           addEntry,
@@ -59,6 +59,7 @@ export function ConnectionSelector() {
         selectedConnection
       );
     } catch (error) {
+      console.error(error);
       if (error instanceof UnknownConnectionTypeError) {
         enqueueSnackbar(error.message, { variant: 'error' });
       } else {

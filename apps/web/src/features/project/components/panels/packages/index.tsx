@@ -3,7 +3,7 @@ import logger from '@/features/jac-device/lib/logger';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { Dependencies } from 'node_modules/@jaculus/project/dist/src/project/package';
 import { enqueueSnackbar } from 'notistack';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/features/shared/components/ui/button';
 import { Input } from '@/features/shared/components/ui/input';
 import { Card } from '@/features/shared/components/ui/card';
@@ -28,9 +28,12 @@ import {
   AlertDialogTrigger,
 } from '@/features/shared/components/ui/alert-dialog';
 import { RefreshCw, Plus, Trash2, Package, Search } from 'lucide-react';
+import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import path from 'path';
 
 export function PackagesPanel() {
   const { jacProject, reloadNodeModules } = useJacDevice();
+  const { fs, projectPath } = useActiveProject();
   const [installedLibs, setInstalledLibs] = useState<Dependencies>({});
   const [availableLibs, setAvailableLibs] = useState<string[]>([]);
   const [availableLibVersions, setAvailableLibVersions] = useState<string[]>(
@@ -44,8 +47,85 @@ export function PackagesPanel() {
   );
 
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
-
   const [error, setError] = useState<string | null>(null);
+
+  const handleInstall = useCallback(async () => {
+    try {
+      setIsInstalling(true);
+      setError(null);
+      setInstalledLibs(await jacProject!.install());
+      reloadNodeModules();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : m.project_panel_pkg_install_error()
+      );
+      logger.error('Error installing library:' + err);
+    } finally {
+      setIsInstalling(false);
+    }
+  }, [jacProject, reloadNodeModules]);
+
+  const handleAddLibrary = useCallback(async () => {
+    try {
+      setIsInstalling(true);
+      setError(null);
+      if (selectedLib == null || availableLibVersions.length === 0) {
+        setError(m.project_panel_pkg_select_error());
+        return;
+      }
+      const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
+      setInstalledLibs(
+        await jacProject!.addLibraryVersion(selectedLib, versionToInstall)
+      );
+      reloadNodeModules();
+      enqueueSnackbar(
+        m.project_panel_pkg_added({
+          name: selectedLib,
+          version: versionToInstall,
+        }),
+        { variant: 'success' }
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : m.project_panel_pkg_add_error()
+      );
+      logger.error('Error adding library:' + err);
+    } finally {
+      setIsInstalling(false);
+      setSelectedLib(null);
+      setSelectedLibVersion(null);
+    }
+  }, [
+    jacProject,
+    selectedLib,
+    selectedLibVersion,
+    availableLibVersions,
+    reloadNodeModules,
+  ]);
+
+  const handleRemoveLibrary = useCallback(
+    async (library: string) => {
+      try {
+        setIsInstalling(true);
+        setError(null);
+        setInstalledLibs(await jacProject!.removeLibrary(library));
+        reloadNodeModules();
+        enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
+          variant: 'success',
+        });
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : m.project_panel_pkg_remove_error()
+        );
+        logger.error('Error removing library:' + err);
+      } finally {
+        setIsInstalling(false);
+      }
+    },
+    [jacProject, reloadNodeModules]
+  );
 
   useEffect(() => {
     (async () => {
@@ -62,6 +142,18 @@ export function PackagesPanel() {
       }
     })();
   }, [jacProject]);
+
+  useEffect(() => {
+    (async () => {
+      if (jacProject == null || jacProject.registry == null) return;
+      if (!fs.existsSync(path.join(projectPath, 'node_modules'))) {
+        await handleInstall();
+        enqueueSnackbar(m.project_panel_pkg_load_success(), {
+          variant: 'success',
+        });
+      }
+    })();
+  }, [fs, jacProject, handleInstall, projectPath]);
 
   useEffect(() => {
     (async () => {
@@ -100,73 +192,6 @@ export function PackagesPanel() {
         {m.project_panel_pkg_no_project()}
       </div>
     );
-  }
-
-  async function handleInstall() {
-    try {
-      setIsInstalling(true);
-      setError(null);
-      setInstalledLibs(await jacProject!.install());
-      reloadNodeModules();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : m.project_panel_pkg_install_error()
-      );
-      logger.error('Error installing library:' + err);
-    } finally {
-      setIsInstalling(false);
-    }
-  }
-
-  async function handleAddLibrary() {
-    try {
-      setIsInstalling(true);
-      setError(null);
-      if (selectedLib == null || availableLibVersions.length === 0) {
-        setError(m.project_panel_pkg_select_error());
-        return;
-      }
-      const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
-      setInstalledLibs(
-        await jacProject!.addLibraryVersion(selectedLib, versionToInstall)
-      );
-      reloadNodeModules();
-      enqueueSnackbar(
-        m.project_panel_pkg_added({
-          name: selectedLib,
-          version: versionToInstall,
-        }),
-        { variant: 'success' }
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : m.project_panel_pkg_add_error()
-      );
-      logger.error('Error adding library:' + err);
-    } finally {
-      setIsInstalling(false);
-      setSelectedLib(null);
-      setSelectedLibVersion(null);
-    }
-  }
-
-  async function handleRemoveLibrary(library: string) {
-    try {
-      setIsInstalling(true);
-      setError(null);
-      setInstalledLibs(await jacProject!.removeLibrary(library));
-      reloadNodeModules();
-      enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
-        variant: 'success',
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : m.project_panel_pkg_remove_error()
-      );
-      logger.error('Error removing library:' + err);
-    } finally {
-      setIsInstalling(false);
-    }
   }
 
   // show only available libraries that are not installed yet

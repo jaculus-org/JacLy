@@ -2,7 +2,7 @@ import { useActiveProject } from '@/features/project/provider/active-project-pro
 import { useTheme } from '@/features/theme/components/theme-provider';
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
 import { enqueueSnackbar } from 'notistack';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { dirname } from 'path';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { JaclyBlocksFiles } from '@jaculus/project';
@@ -21,29 +21,50 @@ export function JaclyEditorComponent() {
     Record<string, string> | undefined
   >(undefined);
 
+  const ensureDirectory = useCallback(
+    async (dirPath: string) => {
+      try {
+        await fsp.mkdir(dirPath, { recursive: true });
+      } catch (error: unknown) {
+        const err = error as { code?: string };
+        if (err?.code !== 'EEXIST') {
+          throw error;
+        }
+      }
+    },
+    [fsp]
+  );
+
+  const writeFileWithRetry = useCallback(
+    async (filePath: string, content: string) => {
+      try {
+        await fsp.writeFile(filePath, content, 'utf-8');
+      } catch (error: unknown) {
+        const err = error as { code?: string };
+        if (err?.code === 'EEXIST') {
+          await fsp.writeFile(filePath, content, 'utf-8');
+        } else {
+          throw error;
+        }
+      }
+    },
+    [fsp]
+  );
+
   useEffect(() => {
     (async () => {
       try {
-        if (!jacProject) {
-          enqueueSnackbar('No Jacly project loaded.', { variant: 'error' });
-          setInitialJson({});
-          setJaclyBlockFiles({});
-          return;
-        }
+        if (!jacProject) return;
 
-        // Load initial JSON
         const jaclyFile = getFileName('JACLY_INDEX');
-        const dirnamePath = dirname(jaclyFile);
-        if (!fs.existsSync(dirnamePath)) {
-          await fsp.mkdir(dirnamePath, { recursive: true });
-        }
+        await ensureDirectory(dirname(jaclyFile));
 
         let jsonData;
         if (fs.existsSync(jaclyFile)) {
           const data = fs.readFileSync(jaclyFile, 'utf-8');
           jsonData = JSON.parse(data);
         } else {
-          await fsp.writeFile(jaclyFile, JSON.stringify({}, null, 2), 'utf-8');
+          await writeFileWithRetry(jaclyFile, JSON.stringify({}, null, 2));
           jsonData = {};
         }
         setInitialJson(jsonData);
@@ -60,43 +81,47 @@ export function JaclyEditorComponent() {
         setJaclyBlockFiles({});
       }
     })();
-  }, [fs, fsp, getFileName, jacProject, nodeModulesVersion]);
+  }, [
+    fs,
+    getFileName,
+    jacProject,
+    nodeModulesVersion,
+    ensureDirectory,
+    writeFileWithRetry,
+  ]);
 
-  async function handleJsonChange(workspaceJson: object) {
-    try {
-      const filePath = getFileName('JACLY_INDEX');
-      const dirnamePath = dirname(filePath);
-      if (!fs.existsSync(dirnamePath)) {
-        await fsp.mkdir(dirnamePath, { recursive: true });
+  const handleJsonChange = useCallback(
+    async (workspaceJson: object) => {
+      try {
+        const filePath = getFileName('JACLY_INDEX');
+        await ensureDirectory(dirname(filePath));
+        await writeFileWithRetry(
+          filePath,
+          JSON.stringify(workspaceJson, null, 2)
+        );
+      } catch (error) {
+        console.error('Failed to save JSON:', error);
+        enqueueSnackbar('Failed to save JSON.', { variant: 'error' });
       }
+    },
+    [getFileName, ensureDirectory, writeFileWithRetry]
+  );
 
-      await fsp.writeFile(
-        filePath,
-        JSON.stringify(workspaceJson, null, 2),
-        'utf-8'
-      );
-    } catch (error) {
-      enqueueSnackbar('Failed to save JSON.', { variant: 'error' });
-      console.error('Failed to save JSON:', error);
-    }
-  }
-
-  async function handleGeneratedCode(code: string) {
-    try {
-      const filePath = getFileName('GENERATED_CODE');
-      const dirnamePath = dirname(filePath);
-      if (!fs.existsSync(dirnamePath)) {
-        await fsp.mkdir(dirnamePath, { recursive: true });
+  const handleGeneratedCode = useCallback(
+    async (code: string) => {
+      try {
+        const filePath = getFileName('GENERATED_CODE');
+        await ensureDirectory(dirname(filePath));
+        await writeFileWithRetry(filePath, code);
+      } catch (error) {
+        console.error('Failed to save generated code:', error);
+        enqueueSnackbar('Failed to save generated code.', { variant: 'error' });
       }
+    },
+    [getFileName, ensureDirectory, writeFileWithRetry]
+  );
 
-      await fsp.writeFile(filePath, code, 'utf-8');
-    } catch (error) {
-      enqueueSnackbar('Failed to save generated code.', { variant: 'error' });
-      console.error('Failed to save generated code:', error);
-    }
-  }
-
-  if (!initialJson || !jaclyBlockFiles) {
+  if (!initialJson || !jaclyBlockFiles || !jaclyTranslations) {
     return <JaclyLoading />;
   }
 

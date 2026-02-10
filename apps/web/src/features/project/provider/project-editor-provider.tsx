@@ -22,6 +22,7 @@ import { factory } from '@/features/project/lib/flexlayout-components';
 import { ProjectEditorHeader } from '../components/project-editor-header';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import { useActiveProject } from './active-project-provider';
+import { useKeyboardShortcut } from '../hooks/use-keyboard-shortcut';
 
 export interface EditorContextValue {
   controlPanel: (type: PanelType, action: PanelAction) => void;
@@ -42,6 +43,22 @@ export function ProjectEditorProvider() {
   const { pkg } = useJacDevice();
   const { dbProject } = useActiveProject();
   const [model, setModel] = useState<FlexLayout.Model | null>(null);
+
+  useKeyboardShortcut({ key: 'p', ctrl: true, meta: true }, async () => {
+    controlPanel(model!, 'packages', 'focus');
+  });
+
+  useKeyboardShortcut({ key: 'e', ctrl: true, meta: true }, async () => {
+    controlPanel(model!, 'file-explorer', 'focus');
+  });
+
+  useKeyboardShortcut({ key: 'l', ctrl: true, meta: true }, async () => {
+    controlPanel(model!, 'logs', 'focus');
+  });
+
+  useKeyboardShortcut({ key: 's', ctrl: true, meta: true }, async () => {
+    controlPanel(model!, 'console', 'focus');
+  });
 
   useEffect(() => {
     const loadLayout = async () => {

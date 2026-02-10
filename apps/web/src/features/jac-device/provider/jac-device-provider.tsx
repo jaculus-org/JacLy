@@ -14,6 +14,9 @@ import { createWritableStream } from '@/features/terminal/lib/stream';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { enqueueSnackbar } from 'notistack';
 import type { ConnectionType } from '../types/connection';
+import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
+import { m } from '@/paraglide/messages';
+import { restart, uploadCode } from '../lib/device';
 
 export interface JacDeviceContextValue {
   jacProject: Project | null;
@@ -21,7 +24,7 @@ export interface JacDeviceContextValue {
   setDevice: (
     device: JacDevice | null,
     connectionType?: ConnectionType
-  ) => void;
+  ) => Promise<void>;
   connectionType: ConnectionType | null;
   outStream?: Writable;
   errStream?: Writable;
@@ -54,6 +57,23 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     'missing-package-json' | 'load-failed' | null
   >(null);
   const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
+
+  useKeyboardShortcut(
+    { key: 'r', ctrl: true, meta: true, shift: false },
+    async () => {
+      if (!device) return;
+      await restart(device);
+      enqueueSnackbar(m.jac_device_provider_restart(), { variant: 'success' });
+    }
+  );
+
+  useKeyboardShortcut({ key: 'u', ctrl: true, meta: true }, async () => {
+    if (!device) return;
+    await uploadCode(await jacProject!.getFlashFiles(), device);
+    enqueueSnackbar(m.jac_device_provider_upload_code(), {
+      variant: 'success',
+    });
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -120,15 +140,28 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     }
   }, [loadError]);
 
+  // Cleanup device on provider unmount
+  useEffect(() => {
+    return () => {
+      if (device) {
+        device
+          .destroy()
+          .catch(err =>
+            console.error('Failed to destroy device on unmount:', err)
+          );
+      }
+    };
+  }, [device]);
+
   const contextValue: JacDeviceContextValue = {
     jacProject,
     device,
-    setDevice: (
+    setDevice: async (
       newDevice: JacDevice | null,
       connectionType?: ConnectionType
     ) => {
       if (device) {
-        device.destroy();
+        await device.destroy();
       }
       setDevice(newDevice);
       setConnectionType(connectionType || null);

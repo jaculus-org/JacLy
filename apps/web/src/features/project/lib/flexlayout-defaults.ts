@@ -35,18 +35,18 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
     type: 'border',
     location: 'left',
     size: 250,
-    selected: -1,
+    selected: 0,
     children: [
-      {
-        type: 'tab',
-        component: 'file-explorer',
-        id: 'file-explorer',
-        enableClose: false,
-      },
       {
         type: 'tab',
         component: 'packages',
         id: 'packages',
+        enableClose: false,
+      },
+      {
+        type: 'tab',
+        component: 'file-explorer',
+        id: 'file-explorer',
         enableClose: false,
       },
       {

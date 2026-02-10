@@ -10,10 +10,10 @@ import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 
 export function Build() {
   const { projectPath, fs } = useActiveProject();
-  const { jacProject } = useJacDevice();
+  const { jacProject, pkg } = useJacDevice();
   const { addEntry } = useTerminal();
 
-  if (jacProject == null) {
+  if (jacProject == null || pkg?.jaculus?.projectType != 'code') {
     return;
   }
 
