@@ -22,9 +22,6 @@ export function ConsoleSelector() {
       >
         <CableIcon className="h-4 w-4" />
         {m.device_btn_console()}
-        {/* <Badge variant="secondary" className="ml-1">
-          20+
-        </Badge> */}
       </Button>
     </ButtonGroup>
   );

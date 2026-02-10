@@ -18,6 +18,7 @@ import type {
   PanelType,
 } from '@/features/project/types/flexlayout-type';
 import { enqueueSnackbar } from 'notistack';
+import { m } from '@/paraglide/messages';
 import { factory } from '@/features/project/lib/flexlayout-components';
 import { ProjectEditorHeader } from '../components/project-editor-header';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
@@ -68,7 +69,7 @@ export function ProjectEditorProvider() {
         setModel(FlexLayout.Model.fromJson(getUpdatedLayoutModel(savedLayout)));
       } catch (error) {
         console.error('Failed to load layout settings:', error);
-        enqueueSnackbar('Failed to load layout settings, using default.', {
+        enqueueSnackbar(m.project_layout_load_error(), {
           variant: 'info',
         });
         setModel(FlexLayout.Model.fromJson(flexLayoutDefaultJson));

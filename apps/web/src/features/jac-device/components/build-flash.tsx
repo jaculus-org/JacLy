@@ -1,10 +1,10 @@
 import { m } from '@/paraglide/messages';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
-import { Button } from '@/features/shared/components/ui/button';
+import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { compileProject } from '../lib/compilation';
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
@@ -13,9 +13,11 @@ import { uploadCode } from '../lib/device';
 export function BuildFlash() {
   const { projectPath, fs } = useActiveProject();
   const { addEntry } = useTerminal();
-  const { device, jacProject, pkg } = useJacDevice();
+  const { device, jacProject, pkg, isWokwiInitializing } = useJacDevice();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleBuildAndFlash = useCallback(async () => {
+    setIsProcessing(true);
     if (!device) {
       enqueueSnackbar(m.device_error_no_device(), { variant: 'error' });
       return;
@@ -42,6 +44,8 @@ export function BuildFlash() {
         error instanceof Error ? error.message : m.device_build_flash_failed(),
         { variant: 'error' }
       );
+    } finally {
+      setIsProcessing(false);
     }
   }, [device, pkg, projectPath, fs, addEntry, jacProject]);
 
@@ -51,14 +55,15 @@ export function BuildFlash() {
 
   return (
     <ButtonGroup>
-      <Button
+      <ButtonLoading
         onClick={handleBuildAndFlash}
         size="sm"
         className="gap-1 h-8 bg-blue-800 hover:bg-blue-900 text-white"
+        loading={isProcessing || isWokwiInitializing}
+        icon={<SquareArrowRightIcon className="h-4 w-4" />}
       >
-        <SquareArrowRightIcon className="h-4 w-4" />
         {m.device_btn_build_flash()}
-      </Button>
+      </ButtonLoading>
     </ButtonGroup>
   );
 }

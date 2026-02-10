@@ -1,5 +1,6 @@
 import { useMonaco } from '@monaco-editor/react';
 import { enqueueSnackbar } from 'notistack';
+import { m } from '@/paraglide/messages';
 import { inferLanguageFromPath } from './language';
 import { editorSyncService } from './editor-sync-service';
 
@@ -55,7 +56,7 @@ export async function indexMonacoFiles(
     });
   } catch (error) {
     console.error('Error indexing project files:', error);
-    enqueueSnackbar('Error indexing project files', { variant: 'error' });
+    enqueueSnackbar(m.editor_code_index_error(), { variant: 'error' });
   }
 }
 
@@ -137,7 +138,7 @@ export function watchMonacoFiles(
         }
       } catch (error) {
         console.error('Error updating Monaco model for file:', filename, error);
-        enqueueSnackbar(`Error updating file: ${filename}`, {
+        enqueueSnackbar(m.editor_code_file_update_error(), {
           variant: 'error',
         });
       }

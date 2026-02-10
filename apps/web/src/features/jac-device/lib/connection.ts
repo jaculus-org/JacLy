@@ -6,6 +6,7 @@ import { JacStreamSerial } from './jac-stream-serial';
 import type { Duplex } from '@jaculus/link/stream';
 import type { AddToTerminal } from '@/features/terminal/provider/terminal-provider';
 import { JacStreamWokwi } from './jac-stream-wokwi';
+import { getDefaultDiagram } from '@/features/wokwi-simulator/lib/wowki';
 
 export function getAvailableConnectionTypes(): ConnectionInfo[] {
   const types: ConnectionInfo[] = [];
@@ -135,12 +136,14 @@ export async function connectDeviceWokwiSimulator(
   const stream = new JacStreamWokwi(logger, {
     handleReadDiagram: async () => {
       const diagramPath = `${projectPath}/diagram.json`;
-      return (
-        (await fs.promises.readFile(diagramPath)) ||
-        new Uint8Array('{}'.split('').map(c => c.charCodeAt(0)))
-      );
+      try {
+        const content = await fs.promises.readFile(diagramPath);
+        return content.toString();
+      } catch {
+        return JSON.stringify(getDefaultDiagram());
+      }
     },
-    handleWriteDiagram: async (data: Uint8Array) => {
+    handleWriteDiagram: async (data: Uint8Array | string) => {
       const diagramPath = `${projectPath}/diagram.json`;
       await fs.promises.writeFile(diagramPath, data);
     },

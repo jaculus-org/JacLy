@@ -21,8 +21,8 @@ type StreamCallbacks = {
 };
 
 interface JacStreamWokwiHandlers {
-  handleReadDiagram: () => Promise<Uint8Array>;
-  handleWriteDiagram: (data: Uint8Array) => Promise<void>;
+  handleReadDiagram: () => Promise<Uint8Array | string>;
+  handleWriteDiagram: (data: Uint8Array | string) => Promise<void>;
   handleReadFirmware: () => Promise<Uint8Array>;
 }
 
@@ -59,20 +59,40 @@ export class JacStreamWokwi implements Duplex {
         }
         console.log('Wokwi client connected', helloMessage);
 
-        await this.client.fileUpload(
-          'diagram.json',
-          await this.handlers.handleReadDiagram()
-        );
+        try {
+          await this.client.fileUpload(
+            'diagram.json',
+            await this.handlers.handleReadDiagram()
+          );
 
-        await this.client.fileUpload(
-          'jaculus.uf2',
-          await this.handlers.handleReadFirmware()
-        );
+          await this.client.fileUpload(
+            'jaculus.uf2',
+            await this.handlers.handleReadFirmware()
+          );
+
+          await this.client.serialMonitorListen();
+
+          this.client.listen('diagram:change', async event => {
+            const eventTyp = event as unknown as {
+              payload: { content: string };
+            };
+            await this.handlers.handleWriteDiagram(eventTyp.payload.content);
+          });
+          await this.client.sendCommand('diagram:listen');
+          await this.handleStart();
+        } catch (error) {
+          this.handleError(
+            new WebSerialError(
+              `Failed to upload files: ${error instanceof Error ? error.message : 'unknown error'}`
+            )
+          );
+        }
       };
 
       this.client.listen(
         'serial-monitor:data',
         (event: APIEvent<SerialMonitorDataPayload>) => {
+          console.log('Received serial data from Wokwi', event.payload);
           this.callbacks.data?.(new Uint8Array(event.payload.bytes));
         }
       );
@@ -92,13 +112,6 @@ export class JacStreamWokwi implements Duplex {
   private async handleStart(): Promise<void> {
     if (!this.client) {
       throw new WebSerialError('Client is not connected');
-    }
-
-    const diagram = await this.client.fileDownload('diagram.json');
-    if (diagram instanceof Uint8Array) {
-      await this.handlers.handleWriteDiagram(diagram);
-    } else {
-      await this.handlers.handleWriteDiagram(new TextEncoder().encode(diagram));
     }
 
     console.log('Starting simulation');

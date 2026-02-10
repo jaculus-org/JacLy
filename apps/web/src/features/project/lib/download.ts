@@ -1,3 +1,4 @@
+import { m } from '@/paraglide/messages';
 import type { FSInterface } from '@jaculus/project/fs';
 import { zipSync } from 'fflate';
 import { enqueueSnackbar } from 'notistack';
@@ -46,7 +47,7 @@ export async function downloadProjectAsZip(
 
     if (Object.keys(files).length === 0) {
       console.warn('No files found in project');
-      enqueueSnackbar('No files found in project to download', {
+      enqueueSnackbar(m.project_download_no_files(), {
         variant: 'warning',
       });
     }

@@ -2,6 +2,7 @@ import type { JacDevice } from '@jaculus/device';
 import logger from './logger';
 import { enqueueSnackbar } from 'notistack';
 import { dirname } from 'path';
+import { m } from '@/paraglide/messages';
 
 async function withLLockedDevice<T>(
   device: JacDevice,
@@ -27,7 +28,7 @@ export async function stop(device: JacDevice) {
       await dev.controller.stop();
     });
   } catch (err) {
-    enqueueSnackbar('Failed to stop program', { variant: 'error' });
+    enqueueSnackbar(m.device_stop_failed(), { variant: 'error' });
     logger.verbose('Error stopping device: ' + err);
     throw err;
   }
@@ -39,7 +40,7 @@ export async function start(device: JacDevice, entryFile: string) {
       await dev.controller.start(entryFile);
     });
   } catch (err) {
-    enqueueSnackbar('Failed to start program', { variant: 'error' });
+    enqueueSnackbar(m.device_start_failed(), { variant: 'error' });
     logger.verbose('Error starting device: ' + err);
     throw err;
   }
@@ -52,7 +53,7 @@ export async function restart(device: JacDevice) {
       await dev.controller.start('index.js');
     });
   } catch (err) {
-    enqueueSnackbar('Failed to restart program', { variant: 'error' });
+    enqueueSnackbar(m.device_restart_failed(), { variant: 'error' });
     logger.verbose('Error restarting device: ' + err);
     throw err;
   }
@@ -64,7 +65,7 @@ export async function version(device: JacDevice): Promise<string[]> {
       return await dev.controller.version();
     });
   } catch (err) {
-    enqueueSnackbar('Failed to get device version', { variant: 'error' });
+    enqueueSnackbar(m.device_version_failed(), { variant: 'error' });
     logger.verbose('Error getting device version: ' + err);
     throw err;
   }
@@ -120,7 +121,7 @@ export async function uploadCode(
       });
     });
   } catch (error) {
-    enqueueSnackbar('Failed to upload code', { variant: 'error' });
+    enqueueSnackbar(m.device_upload_code_failed(), { variant: 'error' });
     logger.verbose('Error uploading code: ' + error);
     throw error;
   }

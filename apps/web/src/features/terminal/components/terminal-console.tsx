@@ -21,17 +21,26 @@ import {
   ClockFadingIcon,
   Copy,
   Check,
+  ChevronUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Textarea } from '@/features/shared/components/ui/textarea';
 
-export function TerminalConsole() {
+interface TerminalConsoleProps {
+  tooltipCollapsed?: boolean;
+}
+
+export function TerminalConsole({
+  tooltipCollapsed = false,
+}: TerminalConsoleProps) {
   const { addEntry, consoleEntries, clear } = useTerminal();
   const { device } = useJacDevice();
   const [input, setInput] = useState('');
   const [showTimestamp, setShowTimestamp] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [isToolbarCollapsed, setIsToolbarCollapsed] =
+    useState(tooltipCollapsed);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -99,9 +108,9 @@ export function TerminalConsole() {
       <div className="flex h-full flex-col gap-1.5 p-1.5">
         {/* Toolbar */}
         <Card className="p-1.5">
-          <div className="flex flex-col gap-1.5">
-            {/* Input Section */}
-            <div className="flex items-start gap-1.5">
+          {isToolbarCollapsed ? (
+            /* Minimal Toolbar */
+            <div className="flex items-center gap-1.5">
               <Textarea
                 placeholder={m.terminal_placeholder()}
                 value={input}
@@ -124,80 +133,137 @@ export function TerminalConsole() {
                   <p>{m.terminal_send()}</p>
                 </TooltipContent>
               </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={() => setIsToolbarCollapsed(false)}
+                  >
+                    <ChevronDown />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{m.terminal_expand()}</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
-
-            {/* Control Buttons Row */}
-            <div className="flex items-center gap-1.5">
-              <div className="flex items-center gap-1">
+          ) : (
+            /* Full Toolbar */
+            <div className="flex flex-col gap-1.5">
+              {/* Input Section */}
+              <div className="flex items-start gap-1.5">
+                <Textarea
+                  placeholder={m.terminal_placeholder()}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="min-h-8 flex-1 resize-none py-1.5"
+                  rows={1}
+                />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant={showTimestamp ? 'default' : 'outline'}
-                      onClick={() => setShowTimestamp(!showTimestamp)}
+                      onClick={handleSubmit}
+                      size="default"
+                      disabled={!device}
                     >
-                      {showTimestamp ? <Clock /> : <ClockFadingIcon />}
+                      <Send />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>
-                      {showTimestamp
-                        ? m.terminal_timestamp_hide()
-                        : m.terminal_timestamp_show()}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant={autoScroll ? 'default' : 'outline'}
-                      onClick={() => setAutoScroll(!autoScroll)}
-                    >
-                      {autoScroll ? <ChevronsDown /> : <ChevronDown />}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      {autoScroll
-                        ? m.terminal_autoscroll_disable()
-                        : m.terminal_autoscroll_enable()}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant={copied ? 'default' : 'outline'}
-                      onClick={handleCopyToClipboard}
-                      disabled={consoleEntries.length === 0}
-                    >
-                      {copied ? <Check /> : <Copy />}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{copied ? m.terminal_copied() : m.terminal_copy()}</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="destructive" onClick={clear}>
-                      <Trash2 />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{m.terminal_clear()}</p>
+                    <p>{m.terminal_send()}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
 
-              {/* Entry Count Badge */}
-              <Badge variant="outline" className="ml-auto text-xs">
-                {consoleEntries.length}
-              </Badge>
+              {/* Control Buttons Row */}
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsToolbarCollapsed(true)}
+                      >
+                        <ChevronUp />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{m.terminal_collapse()}</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={showTimestamp ? 'default' : 'outline'}
+                        onClick={() => setShowTimestamp(!showTimestamp)}
+                      >
+                        {showTimestamp ? <Clock /> : <ClockFadingIcon />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {showTimestamp
+                          ? m.terminal_timestamp_hide()
+                          : m.terminal_timestamp_show()}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={autoScroll ? 'default' : 'outline'}
+                        onClick={() => setAutoScroll(!autoScroll)}
+                      >
+                        {autoScroll ? <ChevronsDown /> : <ChevronDown />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {autoScroll
+                          ? m.terminal_autoscroll_disable()
+                          : m.terminal_autoscroll_enable()}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={copied ? 'default' : 'outline'}
+                        onClick={handleCopyToClipboard}
+                        disabled={consoleEntries.length === 0}
+                      >
+                        {copied ? <Check /> : <Copy />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{copied ? m.terminal_copied() : m.terminal_copy()}</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="destructive" onClick={clear}>
+                        <Trash2 />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{m.terminal_clear()}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
+                {/* Entry Count Badge */}
+                <Badge variant="outline" className="ml-auto text-xs">
+                  {consoleEntries.length}
+                </Badge>
+              </div>
             </div>
-          </div>
+          )}
         </Card>
 
         {/* Terminal Output */}

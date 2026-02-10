@@ -7,6 +7,7 @@ import { dirname } from 'path';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
 import type { JaclyBlocksFiles } from '@jaculus/project';
 import { getLocale } from '@/paraglide/runtime';
+import { m } from '@/paraglide/messages';
 import '../styles/toolbox.css';
 
 export function JaclyEditorComponent() {
@@ -76,7 +77,7 @@ export function JaclyEditorComponent() {
         console.log('Jacly editor data loaded successfully.');
       } catch (error) {
         console.error('Failed to load editor data:', error);
-        enqueueSnackbar('Failed to load editor data.', { variant: 'error' });
+        enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
         setInitialJson({});
         setJaclyBlockFiles({});
       }
@@ -101,7 +102,7 @@ export function JaclyEditorComponent() {
         );
       } catch (error) {
         console.error('Failed to save JSON:', error);
-        enqueueSnackbar('Failed to save JSON.', { variant: 'error' });
+        enqueueSnackbar(m.editor_jacly_save_json_error(), { variant: 'error' });
       }
     },
     [getFileName, ensureDirectory, writeFileWithRetry]
@@ -115,7 +116,7 @@ export function JaclyEditorComponent() {
         await writeFileWithRetry(filePath, code);
       } catch (error) {
         console.error('Failed to save generated code:', error);
-        enqueueSnackbar('Failed to save generated code.', { variant: 'error' });
+        enqueueSnackbar(m.editor_jacly_save_code_error(), { variant: 'error' });
       }
     },
     [getFileName, ensureDirectory, writeFileWithRetry]

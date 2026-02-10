@@ -147,13 +147,27 @@ export function PackagesPanel() {
     (async () => {
       if (jacProject == null || jacProject.registry == null) return;
       if (!fs.existsSync(path.join(projectPath, 'node_modules'))) {
-        await handleInstall();
-        enqueueSnackbar(m.project_panel_pkg_load_success(), {
-          variant: 'success',
-        });
+        try {
+          setIsInstalling(true);
+          setError(null);
+          setInstalledLibs(await jacProject.install());
+          reloadNodeModules();
+          enqueueSnackbar(m.project_panel_pkg_load_success(), {
+            variant: 'success',
+          });
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : m.project_panel_pkg_install_error()
+          );
+          logger.error('Error installing library:' + err);
+        } finally {
+          setIsInstalling(false);
+        }
       }
     })();
-  }, [fs, jacProject, handleInstall, projectPath]);
+  }, [fs, jacProject, projectPath, reloadNodeModules]);
 
   useEffect(() => {
     (async () => {

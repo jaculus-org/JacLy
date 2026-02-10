@@ -33,6 +33,10 @@ export interface JacDeviceContextValue {
   // version counter that increments when node_modules changes
   nodeModulesVersion: number;
   reloadNodeModules: () => void;
+
+  // Wokwi initialization state
+  isWokwiInitializing: boolean;
+  setIsWokwiInitializing: (isInitializing: boolean) => void;
 }
 
 export const JacDeviceContext = createContext<JacDeviceContextValue | null>(
@@ -57,6 +61,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     'missing-package-json' | 'load-failed' | null
   >(null);
   const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
+  const [isWokwiInitializing, setIsWokwiInitializing] = useState(false);
 
   useKeyboardShortcut(
     { key: 'r', ctrl: true, meta: true, shift: false },
@@ -170,6 +175,8 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     pkg,
     nodeModulesVersion,
     reloadNodeModules: () => setNodeModulesVersion(v => v + 1),
+    isWokwiInitializing,
+    setIsWokwiInitializing,
   };
 
   return (

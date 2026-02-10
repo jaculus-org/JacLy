@@ -19,11 +19,13 @@ import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { uploadCode } from '../lib/device';
 
 export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
   const { addEntry } = useTerminal();
-  const { setDevice } = useJacDevice();
+  const { setDevice, setIsWokwiInitializing } = useJacDevice();
+  const { jacProject } = useJacDevice();
   const { projectPath, fs } = useActiveProject();
 
   const [selectedConnection, setSelectedConnection] = useState<ConnectionType>(
@@ -48,16 +50,24 @@ export function ConnectionSelector() {
 
   async function handleConnect() {
     try {
-      await setDevice(
-        await connectDevice(
-          selectedConnection,
-          addEntry,
-          onDisconnect,
-          projectPath,
-          fs
-        ),
-        selectedConnection
+      const dev = await connectDevice(
+        selectedConnection,
+        addEntry,
+        onDisconnect,
+        projectPath,
+        fs
       );
+
+      await setDevice(dev, selectedConnection);
+
+      if (selectedConnection === 'wokwi') {
+        if (!projectPath) return;
+        setIsWokwiInitializing(true);
+        setTimeout(async () => {
+          await uploadCode(await jacProject!.getFlashFiles(), dev);
+          setIsWokwiInitializing(false);
+        }, 8000);
+      }
     } catch (error) {
       console.error(error);
       if (error instanceof UnknownConnectionTypeError) {
