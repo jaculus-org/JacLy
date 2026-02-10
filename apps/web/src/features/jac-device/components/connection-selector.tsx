@@ -20,6 +20,7 @@ import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { uploadCode } from '../lib/device';
+import { useEditor } from '@/features/project/provider/project-editor-provider';
 
 export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
@@ -27,6 +28,7 @@ export function ConnectionSelector() {
   const { setDevice, setIsWokwiInitializing } = useJacDevice();
   const { jacProject } = useJacDevice();
   const { projectPath, fs } = useActiveProject();
+  const { controlPanel } = useEditor();
 
   const [selectedConnection, setSelectedConnection] = useState<ConnectionType>(
     availableConnections[0].type
@@ -62,11 +64,15 @@ export function ConnectionSelector() {
 
       if (selectedConnection === 'wokwi') {
         if (!projectPath) return;
+        controlPanel('wokwi', 'expand');
+
         setIsWokwiInitializing(true);
         setTimeout(async () => {
           await uploadCode(await jacProject!.getFlashFiles(), dev);
           setIsWokwiInitializing(false);
         }, 8000);
+      } else {
+        controlPanel('console', 'expand');
       }
     } catch (error) {
       console.error(error);

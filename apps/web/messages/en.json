@@ -150,7 +150,6 @@
   "editor_loading": "Loading file...",
   "editor_error_title": "Error loading file",
   "project_panel_pkg_load_error": "Failed to load libraries",
-  "project_panel_pkg_load_success": "All libraries successfully installed",
   "project_panel_pkg_versions_error": "Failed to load library versions",
   "project_panel_pkg_install_error": "Failed to install library",
   "project_panel_pkg_select_error": "No library or version selected",

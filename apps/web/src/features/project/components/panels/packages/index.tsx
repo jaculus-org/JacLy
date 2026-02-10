@@ -152,9 +152,6 @@ export function PackagesPanel() {
           setError(null);
           setInstalledLibs(await jacProject.install());
           reloadNodeModules();
-          enqueueSnackbar(m.project_panel_pkg_load_success(), {
-            variant: 'success',
-          });
         } catch (err) {
           setError(
             err instanceof Error
@@ -167,7 +164,8 @@ export function PackagesPanel() {
         }
       }
     })();
-  }, [fs, jacProject, projectPath, reloadNodeModules]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fs, jacProject, projectPath]);
 
   useEffect(() => {
     (async () => {

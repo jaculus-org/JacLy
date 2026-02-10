@@ -150,7 +150,6 @@
   "editor_loading": "Načítání souboru...",
   "editor_error_title": "Chyba při načítání souboru",
   "project_panel_pkg_load_error": "Nepodařilo se načíst knihovny",
-  "project_panel_pkg_load_success": "Všechny knihovny úspěšně nainstalovány",
   "project_panel_pkg_versions_error": "Nepodařilo se načíst verze knihovny",
   "project_panel_pkg_install_error": "Nepodařilo se nainstalovat knihovnu",
   "project_panel_pkg_select_error": "Není vybrána žádná knihovna nebo verze",
