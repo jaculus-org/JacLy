@@ -6,6 +6,7 @@ import { JacStreamSerial } from './jac-stream-serial';
 import type { Duplex } from '@jaculus/link/stream';
 import type { AddToTerminal } from '@/features/terminal/provider/terminal-provider';
 import { JacStreamWokwi } from './jac-stream-wokwi';
+import { JacStreamBle } from './jac-stream-ble';
 import { getDefaultDiagram } from '@/features/wokwi-simulator/lib/wowki';
 
 export function getAvailableConnectionTypes(): ConnectionInfo[] {
@@ -40,8 +41,8 @@ export async function connectDevice(
   switch (type) {
     case 'serial':
       return connectDeviceWebSerial(addToTerminal, onDisconnect);
-    // case 'ble':
-    //   return connectDeviceWebBLE();
+    case 'ble':
+      return connectDeviceWebBLE(addToTerminal, onDisconnect);
     case 'wokwi':
       return connectDeviceWokwiSimulator(
         addToTerminal,
@@ -103,22 +104,38 @@ export async function connectDeviceWebSerial(
 ): Promise<JacDevice> {
   const port = await navigator.serial.requestPort();
   await port.open({ baudRate: 921600 });
+
   const stream = new JacStreamSerial(port, logger);
+  const device = setupJacDevice(stream, addToTerminal);
+  stream.onEnd(() => onDisconnect());
 
-  navigator.serial.addEventListener('disconnect', event => {
-    if (event.target === port) {
-      onDisconnect();
-    }
-  });
-
-  return setupJacDevice(stream, addToTerminal);
+  return device;
 }
 
 // WEB BLE
 
 export function isWebBLEAvailable(): boolean {
-  // return 'bluetooth' in navigator;
-  return false;
+  return 'bluetooth' in navigator;
+}
+
+export async function connectDeviceWebBLE(
+  addToTerminal: AddToTerminal,
+  onDisconnect: () => void
+): Promise<JacDevice> {
+  const bleDevice = await navigator.bluetooth.requestDevice({
+    filters: [
+      {
+        services: [0xffe0], // Jaculus BLE UART service
+      },
+    ],
+    optionalServices: [],
+  });
+
+  const stream = new JacStreamBle(bleDevice, logger);
+  const device = setupJacDevice(stream, addToTerminal);
+  stream.onEnd(() => onDisconnect());
+
+  return device;
 }
 
 // WOKWI SIMULATOR
@@ -129,7 +146,7 @@ export function isWokwiAvailable(): boolean {
 
 export async function connectDeviceWokwiSimulator(
   addToTerminal: AddToTerminal,
-  _onDisconnect: () => void,
+  onDisconnect: () => void,
   projectPath: string,
   fs: typeof import('fs')
 ): Promise<JacDevice> {
@@ -153,5 +170,8 @@ export async function connectDeviceWokwiSimulator(
     },
   });
 
-  return setupJacDevice(stream, addToTerminal);
+  const device = setupJacDevice(stream, addToTerminal);
+  stream.onEnd(() => onDisconnect());
+
+  return device;
 }

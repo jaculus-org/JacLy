@@ -1,44 +1,40 @@
 import { type Duplex } from '@jaculus/link/stream';
 import { type Logger } from '@jaculus/common';
+import { JacStreamBase, JacStreamError } from './jac-stream-base';
 
-class WebSerialError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'WebSerialError';
-  }
-}
-
-type StreamCallbacks = {
-  data?: (data: Uint8Array) => void;
-  error?: (err: Error) => void;
-  end?: () => void;
-};
-
-export class JacStreamSerial implements Duplex {
-  private callbacks: StreamCallbacks = {};
+export class JacStreamSerial extends JacStreamBase implements Duplex {
   private port: SerialPort;
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
-  private isDestroyed = false;
   private readingPromise: Promise<void> | null = null;
-  private logger: Logger;
+  private disconnectHandler: ((event: Event) => void) | null = null;
 
   constructor(port: SerialPort, logger: Logger) {
+    super(logger);
     this.port = port;
-    this.logger = logger;
+    this.setupDisconnectHandler();
     this.initializeStreams();
+  }
+
+  private setupDisconnectHandler(): void {
+    this.disconnectHandler = (event: Event) => {
+      if ((event as Event & { target: SerialPort }).target === this.port) {
+        this.cleanupConnection('USB device removed');
+      }
+    };
+    navigator.serial.addEventListener('disconnect', this.disconnectHandler);
   }
 
   private async initializeStreams(): Promise<void> {
     try {
       const reader = this.port.readable?.getReader();
       if (!reader) {
-        throw new WebSerialError('Cannot open reader');
+        throw new JacStreamError('Cannot open reader', 'WebSerialError');
       }
 
       const writer = this.port.writable?.getWriter();
       if (!writer) {
-        throw new WebSerialError('Cannot open writer');
+        throw new JacStreamError('Cannot open writer', 'WebSerialError');
       }
 
       this.reader = reader;
@@ -57,14 +53,12 @@ export class JacStreamSerial implements Duplex {
         const { value, done } = await this.reader.read();
 
         if (done) {
-          this.handleEnd();
+          this.cleanupConnection('Serial port closed');
           break;
         }
 
         if (value) {
-          if (this.callbacks.data) {
-            this.callbacks.data(value);
-          }
+          this.handleData(value);
         }
       }
     } catch (error) {
@@ -74,23 +68,26 @@ export class JacStreamSerial implements Duplex {
     }
   }
 
-  private handleError(error: Error): void {
-    if (this.callbacks.error) {
-      this.callbacks.error(error);
-    } else {
-      this.logger.error(`JacStreamSerial error: ${error.message}`);
-    }
-  }
+  private cleanupConnection(reason: string): void {
+    if (this.isDestroyed) return;
+    this.isDestroyed = true;
 
-  private handleEnd(): void {
-    if (this.callbacks.end) {
-      this.callbacks.end();
+    this.logger.warn(`Serial connection ended: ${reason}`);
+
+    if (this.disconnectHandler) {
+      navigator.serial.removeEventListener(
+        'disconnect',
+        this.disconnectHandler
+      );
+      this.disconnectHandler = null;
     }
+
+    this.handleEnd();
   }
 
   public async put(c: number): Promise<void> {
     if (this.isDestroyed || !this.writer) {
-      throw new WebSerialError('Stream is destroyed');
+      throw new JacStreamError('Stream is destroyed', 'WebSerialError');
     }
 
     try {
@@ -104,7 +101,7 @@ export class JacStreamSerial implements Duplex {
 
   public async write(buf: Uint8Array): Promise<void> {
     if (this.isDestroyed || !this.writer) {
-      throw new WebSerialError('Stream is destroyed');
+      throw new JacStreamError('Stream is destroyed', 'WebSerialError');
     }
 
     try {
@@ -115,52 +112,38 @@ export class JacStreamSerial implements Duplex {
     }
   }
 
-  public onData(callback?: (data: Uint8Array) => void): void {
-    this.callbacks.data = callback;
-  }
-
-  public onEnd(callback?: () => void): void {
-    this.callbacks.end = callback;
-  }
-
-  public onError(callback?: (err: Error) => void): void {
-    this.callbacks.error = callback;
-  }
-
   public async destroy(): Promise<void> {
-    if (this.isDestroyed) {
-      return;
-    }
-
+    if (this.isDestroyed) return;
     this.isDestroyed = true;
 
+    if (this.disconnectHandler) {
+      navigator.serial.removeEventListener(
+        'disconnect',
+        this.disconnectHandler
+      );
+      this.disconnectHandler = null;
+    }
+
     try {
-      // Cancel the reading operation
       if (this.reader) {
         await this.reader.cancel();
         this.reader.releaseLock();
         this.reader = null;
       }
 
-      // Abort the writing operation
       if (this.writer) {
         await this.writer.abort();
         this.writer.releaseLock();
         this.writer = null;
       }
 
-      // Wait for reading to complete
       if (this.readingPromise) {
-        await this.readingPromise.catch(() => {}); // Ignore errors during cleanup
+        await this.readingPromise.catch(() => {});
       }
 
-      // Close the port
       if (this.port.readable || this.port.writable) {
         await this.port.close();
       }
-
-      // Clear callbacks to prevent memory leaks
-      this.callbacks = {};
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : 'unknown error';
       this.logger.error(`Error during JacStreamSerial destruction: ${errMsg}`);

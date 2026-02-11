@@ -67,6 +67,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/w3c-web-serial": "^1.0.8",
+    "@types/web-bluetooth": "^0.0.21",
     "@vitejs/plugin-react": "^5.1.2",
     "chai": "^6.2.2",
     "eslint": "^9.39.2",
