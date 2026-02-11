@@ -237,15 +237,25 @@ export function controlPanel(
       break;
     case 'expand':
       if (isInBorder) {
-        // For border panels, just select them to make them visible
-        model.doAction(FlexLayout.Actions.selectTab(node.getId()));
+        // For border panels, only select if not already visible
+        const border = parent as FlexLayout.BorderNode;
+        const selectedNode = border.getSelectedNode();
+        if (selectedNode?.getId() !== node.getId()) {
+          model.doAction(FlexLayout.Actions.selectTab(node.getId()));
+        }
       } else {
+        // Only expand if currently collapsed (size is 0)
+        const tabNode = node as FlexLayout.TabNode;
+        const currentSize = tabNode.getRect()?.height ?? 0;
+        if (currentSize === 0) {
+          model.doAction(
+            FlexLayout.Actions.updateNodeAttributes(node.getId(), {
+              size: 100,
+            })
+          );
+        }
+        // Always focus the tab
         model.doAction(FlexLayout.Actions.selectTab(node.getId()));
-        model.doAction(
-          FlexLayout.Actions.updateNodeAttributes(node.getId(), {
-            size: 100,
-          })
-        );
       }
       break;
     case 'collapse':
@@ -265,7 +275,7 @@ export function controlPanel(
         );
       }
       break;
-    case 'focus':
+    case 'toggle':
       model.doAction(FlexLayout.Actions.selectTab(node.getId()));
       break;
   }

@@ -46,19 +46,19 @@ export function ProjectEditorProvider() {
   const [model, setModel] = useState<FlexLayout.Model | null>(null);
 
   useKeyboardShortcut({ key: 'p', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'packages', 'focus');
+    controlPanel(model!, 'packages', 'toggle');
   });
 
   useKeyboardShortcut({ key: 'e', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'file-explorer', 'focus');
+    controlPanel(model!, 'file-explorer', 'toggle');
   });
 
   useKeyboardShortcut({ key: 'l', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'logs', 'focus');
+    controlPanel(model!, 'logs', 'toggle');
   });
 
   useKeyboardShortcut({ key: 's', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'console', 'focus');
+    controlPanel(model!, 'console', 'toggle');
   });
 
   useEffect(() => {
