@@ -12,20 +12,20 @@ import {
   getAvailableConnectionTypes,
   UnknownConnectionTypeError,
 } from '../lib/connection';
-import { Button } from '@/features/shared/components/ui/button';
 import type { ConnectionType } from '../types/connection';
 import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
-import { uploadCode } from '../lib/device';
+import { testConnection, uploadCode } from '../lib/device';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
 
 export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
   const { addEntry } = useTerminal();
-  const { setDevice, setIsWokwiInitializing } = useJacDevice();
+  const { setDevice, connectionStatus, setConnectionStatus } = useJacDevice();
   const { jacProject } = useJacDevice();
   const { projectPath, fs } = useActiveProject();
   const { controlPanel } = useEditor();
@@ -33,20 +33,20 @@ export function ConnectionSelector() {
   const [selectedConnection, setSelectedConnection] = useState<ConnectionType>(
     availableConnections[0].type
   );
-  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   async function handleConnection() {
-    if (!isConnected) {
+    if (connectionStatus !== 'connected') {
+      setConnectionStatus('connecting');
       await handleConnect();
     } else {
       await setDevice(null);
-      setIsConnected(false);
+      setConnectionStatus('disconnected');
     }
   }
 
   async function onDisconnect() {
     await setDevice(null);
-    setIsConnected(false);
+    setConnectionStatus('disconnected');
     enqueueSnackbar(m.device_disconnected(), { variant: 'warning' });
   }
 
@@ -66,13 +66,26 @@ export function ConnectionSelector() {
         if (!projectPath) return;
         controlPanel('wokwi', 'expand');
 
-        setIsWokwiInitializing(true);
         setTimeout(async () => {
           await uploadCode(await jacProject!.getFlashFiles(), dev);
-          setIsWokwiInitializing(false);
         }, 8000);
       } else {
-        controlPanel('console', 'expand');
+        const connectionStatus = await testConnection(dev);
+
+        if (connectionStatus) {
+          controlPanel('console', 'expand');
+        } else {
+          if (selectedConnection != 'serial') {
+            enqueueSnackbar(m.installer_msg_serial_required(), {
+              variant: 'info',
+            });
+            return;
+          }
+
+          onDisconnect();
+          enqueueSnackbar(m.installer_msg_no_firmware(), { variant: 'error' });
+          controlPanel('installer', 'expand');
+        }
       }
     } catch (error) {
       console.error(error);
@@ -82,8 +95,9 @@ export function ConnectionSelector() {
         enqueueSnackbar(m.device_connect_failed(), { variant: 'error' });
       }
       return;
+    } finally {
+      setConnectionStatus('connected');
     }
-    setIsConnected(true);
   }
 
   return (
@@ -91,7 +105,9 @@ export function ConnectionSelector() {
       <Select
         value={selectedConnection}
         onValueChange={value => setSelectedConnection(value as ConnectionType)}
-        disabled={isConnected}
+        disabled={
+          connectionStatus === 'connected' || connectionStatus === 'connecting'
+        }
       >
         <SelectTrigger className=" h-8">
           <SelectValue placeholder={m.device_connection_placeholder()} />
@@ -103,7 +119,9 @@ export function ConnectionSelector() {
               <SelectItem key={connection.type} value={connection.type}>
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4" />
-                  {!isConnected && <span>{connection.name}</span>}
+                  {connectionStatus !== 'connected' && (
+                    <span>{connection.name}</span>
+                  )}
                 </div>
               </SelectItem>
             );
@@ -111,13 +129,16 @@ export function ConnectionSelector() {
         </SelectContent>
       </Select>
 
-      <Button
+      <ButtonLoading
         onClick={async () => await handleConnection()}
         size="sm"
         className="gap-1 h-8"
+        loading={connectionStatus === 'connecting'}
       >
-        {isConnected ? m.device_btn_disconnect() : m.device_btn_connect()}
-      </Button>
+        {connectionStatus === 'connected'
+          ? m.device_btn_disconnect()
+          : m.device_btn_connect()}
+      </ButtonLoading>
     </ButtonGroup>
   );
 }

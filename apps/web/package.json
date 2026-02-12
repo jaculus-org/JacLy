@@ -28,6 +28,7 @@
     "@jaculus/common": "workspace:*",
     "@jaculus/device": "workspace:*",
     "@jaculus/jacly": "workspace:*",
+    "@jaculus/firmware": "workspace:*",
     "@jaculus/link": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@monaco-editor/react": "^4.7.0",

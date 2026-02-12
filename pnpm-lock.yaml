@@ -217,6 +217,9 @@ importers:
       '@jaculus/device':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/device
+      '@jaculus/firmware':
+        specifier: workspace:*
+        version: link:../../../Jaculus-tools/packages/firmware
       '@jaculus/jacly':
         specifier: workspace:*
         version: link:../../packages/jacly

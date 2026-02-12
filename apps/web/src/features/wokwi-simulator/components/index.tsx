@@ -3,7 +3,7 @@ import { Loader2, AlertCircle, Unplug } from 'lucide-react';
 import { m } from '@/paraglide/messages';
 
 export function WokwiSimulator() {
-  const { device, connectionType, isWokwiInitializing } = useJacDevice();
+  const { device, connectionType, connectionStatus } = useJacDevice();
 
   if (!device) {
     return (
@@ -34,6 +34,9 @@ export function WokwiSimulator() {
       </div>
     );
   }
+
+  const isWokwiInitializing =
+    connectionStatus === 'connecting' && connectionType === 'wokwi';
 
   return (
     <div className="relative flex flex-col h-full bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">

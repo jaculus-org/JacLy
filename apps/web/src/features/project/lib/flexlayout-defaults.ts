@@ -87,6 +87,12 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
         id: 'wokwi',
         enableClose: false,
       },
+      {
+        type: 'tab',
+        component: 'installer',
+        id: 'installer',
+        enableClose: false,
+      },
     ],
   },
 ];
@@ -122,6 +128,8 @@ export function getPanelTitle(node: FlexLayout.TabNode): string | undefined {
       return node.getName() || m.project_panel_fs();
     case 'wokwi':
       return m.project_panel_wokwi();
+    case 'installer':
+      return m.project_panel_installer();
     default: {
       const _exhaustive: never = component; // exhaustiveness check
       return _exhaustive;

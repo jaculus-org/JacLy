@@ -13,7 +13,7 @@ import { useActiveProject } from '@/features/project/provider/active-project-pro
 import { createWritableStream } from '@/features/terminal/lib/stream';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { enqueueSnackbar } from 'notistack';
-import type { ConnectionType } from '../types/connection';
+import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
 import { m } from '@/paraglide/messages';
 import { restart, uploadCode } from '../lib/device';
@@ -34,9 +34,9 @@ export interface JacDeviceContextValue {
   nodeModulesVersion: number;
   reloadNodeModules: () => void;
 
-  // Wokwi initialization state
-  isWokwiInitializing: boolean;
-  setIsWokwiInitializing: (isInitializing: boolean) => void;
+  // Device initialization state
+  connectionStatus: ConnectionStatus;
+  setConnectionStatus: (status: ConnectionStatus) => void;
 }
 
 export const JacDeviceContext = createContext<JacDeviceContextValue | null>(
@@ -61,7 +61,8 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     'missing-package-json' | 'load-failed' | null
   >(null);
   const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
-  const [isWokwiInitializing, setIsWokwiInitializing] = useState(false);
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>('disconnected');
 
   useKeyboardShortcut(
     { key: 'r', ctrl: true, meta: true, shift: false },
@@ -175,8 +176,8 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     pkg,
     nodeModulesVersion,
     reloadNodeModules: () => setNodeModulesVersion(v => v + 1),
-    isWokwiInitializing,
-    setIsWokwiInitializing,
+    connectionStatus,
+    setConnectionStatus,
   };
 
   return (

@@ -14,6 +14,7 @@ export type PanelType =
   | 'wokwi'
   | 'packages'
   | 'logs'
+  | 'installer'
   | 'jaculus';
 
 export type PanelAction =

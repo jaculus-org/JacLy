@@ -56,7 +56,7 @@ import { useJacDevice } from '../provider/jac-device-provider';
 type WifiModalMode = 'network' | 'ap' | 'remove' | null;
 
 export function DeviceConfig() {
-  const { device } = useJacDevice();
+  const { device, connectionStatus } = useJacDevice();
   const [expandedSections, setExpandedSections] = useState({
     info: true,
     control: true,
@@ -116,13 +116,13 @@ export function DeviceConfig() {
   }, [device]);
 
   useEffect(() => {
-    if (device) {
+    if (device && connectionStatus === 'connected') {
       setTimeout(() => {
         handleGetDeviceInfo();
         handleGetWifiInfo();
       }, 1000);
     }
-  }, [device, handleGetDeviceInfo, handleGetWifiInfo]);
+  }, [device, connectionStatus, handleGetDeviceInfo, handleGetWifiInfo]);
 
   useEffect(() => {
     return () => {
@@ -132,7 +132,7 @@ export function DeviceConfig() {
     };
   }, []);
 
-  if (!device) {
+  if (!device || connectionStatus !== 'connected') {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 bg-slate-100 dark:bg-gray-900 text-slate-900 dark:text-gray-100">
         <Unplug className="h-16 w-16 text-slate-400 dark:text-gray-600" />

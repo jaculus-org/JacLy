@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as NotFoundRouteImport } from './routes/not-found'
+import { Route as InstallerRouteImport } from './routes/installer'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectIndexRouteImport } from './routes/project/index'
@@ -20,6 +21,11 @@ import { Route as ProjectProjectIdRouteImport } from './routes/project/$projectI
 const NotFoundRoute = NotFoundRouteImport.update({
   id: '/not-found',
   path: '/not-found',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallerRoute = InstallerRouteImport.update({
+  id: '/installer',
+  path: '/installer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -56,6 +62,7 @@ const ProjectProjectIdRoute = ProjectProjectIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/installer'
     | '/not-found'
     | '/project/$projectId'
     | '/project/import'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/installer'
     | '/not-found'
     | '/project/$projectId'
     | '/project/import'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/installer'
     | '/not-found'
     | '/project/$projectId'
     | '/project/import'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  InstallerRoute: typeof InstallerRoute
   NotFoundRoute: typeof NotFoundRoute
   ProjectProjectIdRoute: typeof ProjectProjectIdRoute
   ProjectImportRoute: typeof ProjectImportRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/not-found'
       fullPath: '/not-found'
       preLoaderRoute: typeof NotFoundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/installer': {
+      id: '/installer'
+      path: '/installer'
+      fullPath: '/installer'
+      preLoaderRoute: typeof InstallerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  InstallerRoute: InstallerRoute,
   NotFoundRoute: NotFoundRoute,
   ProjectProjectIdRoute: ProjectProjectIdRoute,
   ProjectImportRoute: ProjectImportRoute,

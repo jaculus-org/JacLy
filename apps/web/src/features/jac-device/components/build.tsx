@@ -14,7 +14,7 @@ export function Build() {
   const { jacProject, pkg } = useJacDevice();
   const { addEntry } = useTerminal();
   const [isBuilding, setIsBuilding] = useState(false);
-  const { isWokwiInitializing } = useJacDevice();
+  const { connectionStatus } = useJacDevice();
 
   if (jacProject == null || pkg?.jaculus?.projectType != 'code') {
     return;
@@ -49,7 +49,7 @@ export function Build() {
         onClick={async () => handleBuild()}
         size="sm"
         className="gap-1 h-8 bg-blue-800 hover:bg-blue-900 text-white"
-        loading={isBuilding || isWokwiInitializing}
+        loading={isBuilding || connectionStatus === 'connecting'}
         icon={<HammerIcon className="h-4 w-4" />}
       >
         {m.device_btn_build()}
