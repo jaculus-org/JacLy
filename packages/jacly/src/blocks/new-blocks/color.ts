@@ -197,7 +197,7 @@ jsg.forBlock['dynamic_color_rgb'] = function (
       const l = codeBlock.getInput('L_INPUT')
         ? generator.valueToCode(codeBlock, 'L_INPUT', Order.NONE) || '0'
         : '0';
-      code = `colour.hsl_to_rgb({ h: ${h}, s: ${s}, l: ${l} })`;
+      code = `colors.hslToRgb({ h: ${h}, s: ${s}, l: ${l} })`;
       break;
     }
 

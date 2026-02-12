@@ -75,6 +75,7 @@ export function JaclyEditor({
         Object.assign(Blockly.Msg, enMessages.default || enMessages);
         setBlocklyMessagesLoaded(true);
       }
+      console.log('Messages loaded');
     })();
   }, [locale]);
 
@@ -83,6 +84,7 @@ export function JaclyEditor({
       setToolboxConfiguration(
         loadToolboxConfiguration(jaclyBlockFiles, jaclyTranslations)
       );
+      console.log('Toolbox configuration loaded');
     }
   }, [jaclyBlockFiles, jaclyTranslations, blocklyMessagesLoaded]);
 

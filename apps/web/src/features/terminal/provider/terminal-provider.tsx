@@ -60,13 +60,13 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
     });
   }, []);
 
-  function clear() {
+  const clear = useCallback(() => {
     setEntries([]);
-  }
+  }, []);
 
-  function clearType(type: TerminalStreamType) {
+  const clearType = useCallback((type: TerminalStreamType) => {
     setEntries(prev => prev.filter(entry => entry.type !== type));
-  }
+  }, []);
 
   const consoleEntries = useMemo(
     () => entries.filter(entry => entry.type.startsWith('console')),
@@ -79,14 +79,16 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
     [entries]
   );
 
-  const contextValue: TerminalContextValue = {
-    consoleEntries,
-    logEntries,
-
-    addEntry,
-    clear,
-    clearType,
-  };
+  const contextValue = useMemo<TerminalContextValue>(
+    () => ({
+      consoleEntries,
+      logEntries,
+      addEntry,
+      clear,
+      clearType,
+    }),
+    [consoleEntries, logEntries, addEntry, clear, clearType]
+  );
 
   return (
     <TerminalContext.Provider value={contextValue}>

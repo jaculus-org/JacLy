@@ -57,6 +57,8 @@ export function JaclyEditorComponent() {
       try {
         if (!jacProject) return;
 
+        console.log('Loading Jacly editor data...');
+
         const jaclyFile = getFileName('JACLY_INDEX');
         await ensureDirectory(dirname(jaclyFile));
 
@@ -110,6 +112,7 @@ export function JaclyEditorComponent() {
 
   const handleGeneratedCode = useCallback(
     async (code: string) => {
+      console.log('Generated code received, saving to file...');
       try {
         const filePath = getFileName('GENERATED_CODE');
         await ensureDirectory(dirname(filePath));

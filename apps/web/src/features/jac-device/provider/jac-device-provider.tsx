@@ -1,4 +1,12 @@
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   loadPackageJsonSync,
   Project,
@@ -159,26 +167,52 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     };
   }, [device]);
 
-  const contextValue: JacDeviceContextValue = {
-    jacProject,
-    device,
-    setDevice: async (
-      newDevice: JacDevice | null,
-      connectionType?: ConnectionType
-    ) => {
-      if (device) {
-        await device.destroy();
-      }
-      setDevice(newDevice);
+  const handleSetDevice = useCallback(
+    async (newDevice: JacDevice | null, connectionType?: ConnectionType) => {
+      setDevice(prev => {
+        if (prev) {
+          prev
+            .destroy()
+            .catch(err =>
+              console.error('Failed to destroy previous device:', err)
+            );
+        }
+        return newDevice;
+      });
       setConnectionType(connectionType || null);
     },
-    connectionType,
-    pkg,
-    nodeModulesVersion,
-    reloadNodeModules: () => setNodeModulesVersion(v => v + 1),
-    connectionStatus,
-    setConnectionStatus,
-  };
+    []
+  );
+
+  const reloadNodeModules = useCallback(
+    () => setNodeModulesVersion(v => v + 1),
+    []
+  );
+
+  const contextValue = useMemo<JacDeviceContextValue>(
+    () => ({
+      jacProject,
+      device,
+      setDevice: handleSetDevice,
+      connectionType,
+      pkg,
+      nodeModulesVersion,
+      reloadNodeModules,
+      connectionStatus,
+      setConnectionStatus,
+    }),
+    [
+      jacProject,
+      device,
+      handleSetDevice,
+      connectionType,
+      pkg,
+      nodeModulesVersion,
+      reloadNodeModules,
+      connectionStatus,
+      setConnectionStatus,
+    ]
+  );
 
   return (
     <JacDeviceContext.Provider value={contextValue}>
