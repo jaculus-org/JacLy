@@ -264,5 +264,18 @@
   "installer_msg_connection_failed": "Připojení selhalo: {message}",
   "installer_msg_flash_success": "Firmware úspěšně nahrán!",
   "installer_msg_flash_failed": "Nahrávání selhalo: {message}",
-  "installer_msg_disconnected": "Odpojeno od programátoru"
+  "installer_msg_disconnected": "Odpojeno od programátoru",
+  "installer_msg_connecting": "Připojování k zařízení...",
+  "installer_msg_timeout_bootloader": "Připojení vypršelo. Ujistěte se, že je zařízení v režimu bootloaderu a zkuste to znovu. Pro vstup do režimu bootloaderu podržte tlačítko \"BOOT\" a zároveň stiskněte tlačítko \"RESET\" (EN) na zařízení, poté uvolněte tlačítko \"RESET\" a následně tlačítko \"BOOT\".",
+  "installer_msg_unsupported_chip": "Nepodporovaný čip: {chipName}. Podporovány jsou pouze čipy rodiny ESP32.",
+  "installer_msg_connected_terminal": "Připojeno k {chipName}",
+  "installer_msg_flash_size": "Velikost flash: {size}KB",
+  "installer_msg_unknown_error": "Neznámá chyba",
+  "installer_msg_flash_starting": "=== Zahájení procesu nahrávání ===",
+  "installer_msg_flash_firmware": "Firmware: {variant} {version}",
+  "installer_msg_flash_reset_hint": "Pokud jste přepnuli zařízení do režimu bootloaderu (tlačítka BOOT a RESET), stiskněte prosím tlačítko reset na zařízení pro návrat do normálního režimu.",
+  "installer_msg_disconnected_terminal": "Odpojeno od zařízení.",
+  "installer_msg_disconnected_hint": "Nyní můžete zařízení programovat a bavit se!",
+  "installer_dialog_title": "Informace",
+  "installer_dialog_confirm": "Potvrdit"
 }

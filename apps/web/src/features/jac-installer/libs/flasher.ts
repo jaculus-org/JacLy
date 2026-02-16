@@ -202,13 +202,13 @@ export class ESP32Flasher {
     });
 
     this.terminal.writeLine('\n=== Flashing complete! ===');
-    this.terminal.writeLine('Resetting device...');
+    // this.terminal.writeLine('Resetting device...');
 
-    await this.esploader.transport.setDTR(false);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await this.esploader.transport.setDTR(true);
+    // await this.esploader.transport.setDTR(false);
+    // await new Promise(resolve => setTimeout(resolve, 100));
+    // await this.esploader.transport.setDTR(true);
 
-    this.terminal.writeLine('Device reset complete.\n');
+    // this.terminal.writeLine('Device reset complete.\n');
   }
 
   /**

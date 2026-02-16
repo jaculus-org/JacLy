@@ -33,10 +33,25 @@ import {
   type BoardVariant,
   type BoardVersion,
 } from '@jaculus/firmware/boards';
+
+import { baudrates } from '@jaculus/firmware/config';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
 import { enqueueSnackbar } from 'notistack';
 import { ESP32Flasher, type FlashProgress } from '../libs/flasher';
 import { ScrollArea } from '@/features/shared/components/ui/scroll-area';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/features/shared/components/ui/alert-dialog';
+import {
+  executeWithTimeout,
+  TimeoutError,
+} from '@/features/shared/lib/timeout';
 
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;
@@ -46,8 +61,7 @@ export function Installer() {
   const [transport, setTransport] = useState<Transport | null>(null);
   const [flasher, setFlasher] = useState<ESP32Flasher | null>(null);
 
-  const boudratesUpload = [921600, 460800, 230400, 115200];
-  const [baudrate, setBaudrate] = useState<number>(921600);
+  const [baudrate, setBaudrate] = useState<number>(Number(baudrates[0]));
 
   const [chipList, setChipList] = useState<BoardsIndex[]>([]);
   const [selectedChip, setSelectedChip] = useState<string | null>(null);
@@ -70,6 +84,7 @@ export function Installer() {
     null
   );
   const [terminalOutput, setTerminalOutput] = useState<string[]>([]);
+  const [showPopupText, setShowPopupText] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
   const handleChangeVariant = useCallback(
@@ -170,7 +185,7 @@ export function Installer() {
       const newTransport = new Transport(device, true, true);
       setTransport(newTransport);
 
-      terminal.writeLine('Connecting to device...');
+      terminal.writeLine(m.installer_msg_connecting());
 
       const flashOptions: LoaderOptions = {
         transport: newTransport,
@@ -179,19 +194,31 @@ export function Installer() {
         romBaudrate: 115200,
       };
       const newEsploader = new ESPLoader(flashOptions);
-      await newEsploader.main();
+
+      try {
+        await executeWithTimeout(newEsploader.main(), 3000);
+      } catch (error) {
+        if (error instanceof TimeoutError) {
+          terminal.writeLine(m.installer_msg_timeout_bootloader());
+          setShowPopupText(m.installer_msg_timeout_bootloader());
+          await newEsploader.transport.disconnect();
+        }
+        throw error;
+      }
 
       const chipName = newEsploader.chip.CHIP_NAME;
 
       // Verify it's an ESP32 family chip
       if (!chipName.startsWith('ESP32')) {
-        throw new Error(
-          `Unsupported chip: ${chipName}. Only ESP32 family chips are supported.`
-        );
+        throw new Error(m.installer_msg_unsupported_chip({ chipName }));
       }
 
-      terminal.writeLine(`Connected to ${chipName}`);
-      terminal.writeLine(`Flash size: ${await newEsploader.getFlashSize()}KB`);
+      terminal.writeLine(m.installer_msg_connected_terminal({ chipName }));
+      terminal.writeLine(
+        m.installer_msg_flash_size({
+          size: (await newEsploader.getFlashSize()).toString(),
+        })
+      );
 
       // Create flasher instance
       const newFlasher = new ESP32Flasher(terminal, setFlashProgress);
@@ -228,7 +255,10 @@ export function Installer() {
         variant: 'success',
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+      const message =
+        error instanceof Error
+          ? error.message
+          : m.installer_msg_unknown_error();
       terminal.writeLine(`Error: ${message}`);
       enqueueSnackbar(m.installer_msg_connection_failed({ message: message }), {
         variant: 'error',
@@ -250,21 +280,28 @@ export function Installer() {
         selectedVariant.id,
         selectedVersion
       );
-      terminal.writeLine(`\n=== Starting flash process ===`);
+      terminal.writeLine(`\n${m.installer_msg_flash_starting()}`);
       terminal.writeLine(
-        `Firmware: ${selectedVariant.name} ${selectedVersion}`
+        m.installer_msg_flash_firmware({
+          variant: selectedVariant.name,
+          version: selectedVersion,
+        })
       );
 
       await flasher.flash(firmwareUrl, !eraseFlash);
 
       enqueueSnackbar(m.installer_msg_flash_success(), { variant: 'success' });
+      setShowPopupText(m.installer_msg_flash_reset_hint());
 
       // Auto-disconnect after successful flash
       setTimeout(() => {
         handleDisconnect();
       }, 2000);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+      const message =
+        error instanceof Error
+          ? error.message
+          : m.installer_msg_unknown_error();
       terminal.writeLine(`Error: ${message}`);
       enqueueSnackbar(m.installer_msg_flash_failed({ message: message }), {
         variant: 'error',
@@ -279,8 +316,8 @@ export function Installer() {
     if (flasher) {
       try {
         await flasher.disconnect();
-        terminal.writeLine('\nDisconnected from device.');
-        terminal.writeLine('\nYou can now program device and have a fun!');
+        terminal.writeLine(`\n${m.installer_msg_disconnected_terminal()}`);
+        terminal.writeLine(`\n${m.installer_msg_disconnected_hint()}`);
       } catch (error) {
         console.error('Disconnect error:', error);
       }
@@ -332,7 +369,7 @@ export function Installer() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{m.installer_baudrate_label()}</SelectLabel>
-                {boudratesUpload.map(baud => (
+                {baudrates.map(baud => (
                   <SelectItem key={baud} value={baud.toString()}>
                     {baud} bps
                   </SelectItem>
@@ -552,6 +589,23 @@ export function Installer() {
           </div>
         </ScrollArea>
       </Field>
+
+      <AlertDialog
+        open={!!showPopupText}
+        onOpenChange={open => !open && setShowPopupText(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{m.installer_dialog_title()}</AlertDialogTitle>
+            <AlertDialogDescription>{showPopupText}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>
+              {m.installer_dialog_confirm()}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </FieldSet>
   );
 }
