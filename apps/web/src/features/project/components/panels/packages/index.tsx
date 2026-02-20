@@ -1,7 +1,6 @@
 import { m } from '@/paraglide/messages';
 import logger from '@/features/jac-device/lib/logger';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
-import type { Dependencies } from 'node_modules/@jaculus/project/dist/src/project/package';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/features/shared/components/ui/button';
@@ -30,10 +29,35 @@ import {
 import { RefreshCw, Plus, Trash2, Package, Search } from 'lucide-react';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import path from 'path';
+import type { Dependencies } from '@jaculus/project/package';
+import { InvalidPackageJsonFormatError } from '@jaculus/project/package';
+import { ProjectDependencyError } from '@jaculus/project';
+import { RegistryFetchError } from '@jaculus/project/registry';
 
 export function PackagesPanel() {
   const { jacProject, reloadNodeModules } = useJacDevice();
   const { fs, projectPath } = useActiveProject();
+
+  function classifyError(err: unknown, fallback: string): string {
+    if (err instanceof ProjectDependencyError) {
+      if (err.conflictingLib && err.requested && err.resolved) {
+        return (
+          m.project_panel_pkg_dependency_conflict() +
+          ': ' +
+          m.project_panel_pkg_dependency_conflict_detail({
+            lib: err.conflictingLib,
+            requested: err.requested,
+            resolved: err.resolved,
+          })
+        );
+      }
+      return m.project_panel_pkg_dependency_conflict() + ` (${err.message})`;
+    }
+    if (err instanceof RegistryFetchError)
+      return m.project_panel_pkg_fetch_error() + ` (${err.message})`;
+    if (err instanceof InvalidPackageJsonFormatError) return err.message;
+    return err instanceof Error ? err.message : fallback;
+  }
   const [installedLibs, setInstalledLibs] = useState<Dependencies>({});
   const [availableLibs, setAvailableLibs] = useState<string[]>([]);
   const [availableLibVersions, setAvailableLibVersions] = useState<string[]>(
@@ -56,9 +80,7 @@ export function PackagesPanel() {
       setInstalledLibs(await jacProject!.install());
       reloadNodeModules();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : m.project_panel_pkg_install_error()
-      );
+      setError(classifyError(err, m.project_panel_pkg_install_error()));
       logger.error('Error installing library:' + err);
     } finally {
       setIsInstalling(false);
@@ -86,9 +108,7 @@ export function PackagesPanel() {
         { variant: 'success' }
       );
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : m.project_panel_pkg_add_error()
-      );
+      setError(classifyError(err, m.project_panel_pkg_add_error()));
       logger.error('Error adding library:' + err);
     } finally {
       setIsInstalling(false);
@@ -114,11 +134,7 @@ export function PackagesPanel() {
           variant: 'success',
         });
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : m.project_panel_pkg_remove_error()
-        );
+        setError(classifyError(err, m.project_panel_pkg_remove_error()));
         logger.error('Error removing library:' + err);
       } finally {
         setIsInstalling(false);
@@ -135,9 +151,7 @@ export function PackagesPanel() {
         setAvailableLibs(await jacProject.registry.listPackages());
         setInstalledLibs(await jacProject.installedLibraries());
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : m.project_panel_pkg_load_error()
-        );
+        setError(classifyError(err, m.project_panel_pkg_load_error()));
         logger.error('Error loading libraries:' + err);
       }
     })();
@@ -153,11 +167,7 @@ export function PackagesPanel() {
           setInstalledLibs(await jacProject.install());
           reloadNodeModules();
         } catch (err) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : m.project_panel_pkg_install_error()
-          );
+          setError(classifyError(err, m.project_panel_pkg_install_error()));
           logger.error('Error installing library:' + err);
         } finally {
           setIsInstalling(false);
@@ -170,7 +180,6 @@ export function PackagesPanel() {
   useEffect(() => {
     (async () => {
       try {
-        setError(null);
         if (
           jacProject == null ||
           selectedLib == null ||
@@ -179,6 +188,7 @@ export function PackagesPanel() {
           setAvailableLibVersions([]);
           return;
         }
+        setError(null);
         const versions = await jacProject.registry.listVersions(selectedLib);
         setAvailableLibVersions(versions);
 
@@ -188,11 +198,7 @@ export function PackagesPanel() {
           setSelectedLibVersion(null);
         }
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : m.project_panel_pkg_versions_error()
-        );
+        setError(classifyError(err, m.project_panel_pkg_versions_error()));
         logger.error('Error loading library versions:' + err);
       }
     })();

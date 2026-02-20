@@ -34,7 +34,6 @@ import {
   type BoardVersion,
 } from '@jaculus/firmware/boards';
 
-import { baudrates } from '@jaculus/firmware/config';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
 import { enqueueSnackbar } from 'notistack';
 import { ESP32Flasher, type FlashProgress } from '../libs/flasher';
@@ -56,6 +55,8 @@ import {
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;
 }
+
+export const baudrates = ['921600', '460800', '230400', '115200'];
 
 export function Installer() {
   const [transport, setTransport] = useState<Transport | null>(null);

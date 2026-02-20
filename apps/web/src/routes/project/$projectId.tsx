@@ -1,10 +1,10 @@
 import { m } from '@/paraglide/messages';
 import { JacDeviceProvider } from '@/features/jac-device/provider/jac-device-provider';
-import { ProjectEditorComponent } from '@/features/project/components';
 import { ActiveProjectProvider } from '@/features/project/provider/active-project-provider';
 import { TerminalProvider } from '@/features/terminal/provider/terminal-provider';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
+import { ProjectEditorProvider } from '@/features/project/provider/project-editor-provider';
 
 export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context, params }) => {
@@ -33,7 +33,7 @@ function ProjectEditorRoute() {
     >
       <TerminalProvider>
         <JacDeviceProvider>
-          <ProjectEditorComponent />
+          <ProjectEditorProvider />
         </JacDeviceProvider>
       </TerminalProvider>
     </ActiveProjectProvider>

@@ -46,8 +46,12 @@ export function TerminalLogs() {
     }
   }, [logEntries, autoScroll]);
 
-  const getEntryColor = (type: Partial<TerminalStreamType>) => {
+  const getEntryColor = (type: TerminalStreamType) => {
     switch (type) {
+      case 'console-in':
+      case 'console-out':
+      case 'console-err':
+        return 'text-foreground';
       case 'compiler-stdout':
         return 'text-blue-400';
       case 'compiler-stderr':
@@ -56,8 +60,6 @@ export function TerminalLogs() {
         return 'text-green-400';
       case 'runtime-stderr':
         return 'text-red-400';
-      default:
-        return 'text-foreground';
     }
   };
 

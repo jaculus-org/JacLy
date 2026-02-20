@@ -1,3 +1,5 @@
+import type { ProjectError } from '../provider/active-project-provider';
+
 export type FlexLayoutAttributes = {
   type: string;
   name: string;
@@ -15,7 +17,8 @@ export type PanelType =
   | 'packages'
   | 'logs'
   | 'installer'
-  | 'jaculus';
+  | 'jaculus'
+  | 'error';
 
 export type PanelAction =
   | 'close' // close the panel (remove from layout)
@@ -23,6 +26,15 @@ export type PanelAction =
   | 'collapse' // close tab but keep it in the layout
   | 'toggle'; // toggle between expand and collapse
 
+export interface CodePanelProps {
+  filePath: string;
+}
+
+export interface ErrorPanelProps {
+  error: ProjectError;
+}
+
 export type NewPanelProps = {
-  code: { filePath?: string };
+  code: CodePanelProps;
+  error: ErrorPanelProps;
 };

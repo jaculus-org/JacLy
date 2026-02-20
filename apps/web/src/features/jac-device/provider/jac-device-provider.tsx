@@ -7,12 +7,6 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import {
-  loadPackageJsonSync,
-  Project,
-  Registry,
-  type PackageJson,
-} from '@jaculus/project';
 import { JacDevice } from '@jaculus/device';
 import { getRequest } from '@jaculus/jacly/project';
 import { Writable } from 'node:stream';
@@ -25,6 +19,13 @@ import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
 import { m } from '@/paraglide/messages';
 import { restart, uploadCode } from '../lib/device';
+import {
+  InvalidPackageJsonFormatError,
+  loadPackageJson,
+  type PackageJson,
+} from '@jaculus/project/package';
+import { Project } from '@jaculus/project';
+import { Registry } from '@jaculus/project/registry';
 
 export interface JacDeviceContextValue {
   jacProject: Project | null;
@@ -37,8 +38,6 @@ export interface JacDeviceContextValue {
   outStream?: Writable;
   errStream?: Writable;
   pkg: PackageJson | null;
-
-  // version counter that increments when node_modules changes
   nodeModulesVersion: number;
   reloadNodeModules: () => void;
 
@@ -56,7 +55,7 @@ interface JacDeviceProviderProps {
 }
 
 export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
-  const { fs, projectPath } = useActiveProject();
+  const { fs, projectPath, setError } = useActiveProject();
   const { addEntry } = useTerminal();
   const [device, setDevice] = useState<JacDevice | null>(null);
   const [connectionType, setConnectionType] = useState<ConnectionType | null>(
@@ -65,9 +64,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
 
   const [jacProject, setJacProject] = useState<Project | null>(null);
   const [pkg, setPkg] = useState<PackageJson | null>(null);
-  const [loadError, setLoadError] = useState<
-    'missing-package-json' | 'load-failed' | null
-  >(null);
+
   const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>('disconnected');
@@ -89,6 +86,32 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     });
   });
 
+  const fixMissingPackageJson = useCallback(
+    async (packageJsonPath: string) => {
+      const defaultPackageJson: PackageJson = {
+        name: 'jacly-project',
+        version: '1.0.0',
+        dependencies: {},
+      };
+      try {
+        await fs.promises.writeFile(
+          packageJsonPath,
+          JSON.stringify(defaultPackageJson, null, 2),
+          'utf-8'
+        );
+        setError(null);
+        enqueueSnackbar(m.project_error_fix(), { variant: 'success' });
+        setInterval(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        console.error('Failed to create default package.json:', error);
+        enqueueSnackbar(m.project_error_unknown(), { variant: 'error' });
+      }
+    },
+    [fs, setError]
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -99,12 +122,19 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
           if (!cancelled) {
             setJacProject(null);
             setPkg(null);
-            setLoadError('missing-package-json');
+            setError({
+              reason: 'missing-package-json',
+              seriousness: 'recoverable',
+              fixCallback: () => fixMissingPackageJson(packageJsonPath),
+            });
           }
           return;
         }
-        const pkgJson = loadPackageJsonSync(fs, packageJsonPath);
-        const registry = await Registry.create(pkgJson.registry, getRequest);
+        const pkgJson = await loadPackageJson(fs, packageJsonPath);
+        const registry = Registry.createWithoutValidation(
+          pkgJson.registry,
+          getRequest
+        );
 
         if (!cancelled) {
           setJacProject(
@@ -117,17 +147,26 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
             )
           );
           setPkg(pkgJson);
-          setLoadError(null);
         }
       } catch (error) {
-        console.error(
-          `Failed to load Jacly project at ${packageJsonPath}:`,
-          error
-        );
-        if (!cancelled) {
-          setJacProject(null);
-          setPkg(null);
-          setLoadError('load-failed');
+        console.error('Error loading project:', error);
+        if (error instanceof InvalidPackageJsonFormatError) {
+          setError({
+            reason: 'invalid-package-json',
+            seriousness: 'recoverable',
+            details: error.message,
+            fixCallback: () => fixMissingPackageJson(packageJsonPath),
+          });
+        } else {
+          console.error(
+            `Failed to load Jacly project at ${packageJsonPath}:`,
+            error
+          );
+          if (!cancelled) {
+            setJacProject(null);
+            setPkg(null);
+            setError({ reason: 'load-failed', seriousness: 'recoverable' });
+          }
         }
       }
     }
@@ -137,22 +176,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, [fs, projectPath, addEntry]);
-
-  // Show notifications in useEffect (after render) rather than during render
-  useEffect(() => {
-    if (loadError === 'missing-package-json') {
-      enqueueSnackbar(
-        'No package.json found in the project. Please initialize a Jacly project.',
-        { variant: 'warning' }
-      );
-    } else if (loadError === 'load-failed') {
-      enqueueSnackbar(
-        'Failed to load Jacly project. Please ensure it is a valid Jacly project.',
-        { variant: 'error' }
-      );
-    }
-  }, [loadError]);
+  }, [fs, projectPath, addEntry, fixMissingPackageJson, setError]);
 
   // Cleanup device on provider unmount
   useEffect(() => {

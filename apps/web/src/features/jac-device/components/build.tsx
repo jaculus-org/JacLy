@@ -8,9 +8,11 @@ import { useActiveProject } from '@/features/project/provider/active-project-pro
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { useState } from 'react';
+import { useEditor } from '@/features/project/provider/project-editor-provider';
 
 export function Build() {
   const { projectPath, fs } = useActiveProject();
+  const { controlPanel } = useEditor();
   const { jacProject, pkg } = useJacDevice();
   const { addEntry } = useTerminal();
   const [isBuilding, setIsBuilding] = useState(false);
@@ -34,6 +36,7 @@ export function Build() {
       }
       enqueueSnackbar(m.device_build_success(), { variant: 'success' });
     } catch (error) {
+      controlPanel('logs', 'expand');
       enqueueSnackbar(
         error instanceof Error ? error.message : m.device_build_flash_failed(),
         { variant: 'error' }

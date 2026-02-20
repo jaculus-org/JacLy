@@ -2,7 +2,7 @@ import { m } from '@/paraglide/messages';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { useTheme } from '@/features/theme/components/theme-provider';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { inferLanguageFromPath } from '../lib/language';
 import { editorSyncService } from '../lib/editor-sync-service';
 // import { debounce } from '@/lib/utils/debouncer';
@@ -27,6 +27,7 @@ export function CodeEditorBasic({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fileExists, setFileExists] = useState(true);
+  const applyingExternalChangeRef = useRef(false);
 
   const fullPath = `${projectPath}/${filePath}`;
   const readOnlyInternal = filePath.startsWith('build/') ? true : readOnly;
@@ -47,7 +48,11 @@ export function CodeEditorBasic({
   // Handle editor content changes
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
-      if (value !== undefined && !readOnlyInternal) {
+      if (
+        value !== undefined &&
+        !readOnlyInternal &&
+        !applyingExternalChangeRef.current
+      ) {
         saveToFile(fullPath, value);
       }
     },
@@ -117,12 +122,44 @@ export function CodeEditorBasic({
     initializeEditor();
   }, [filePath, ifNotExists, fsp, fullPath, monaco]);
 
+  // Keep model in sync with non-editor writes (e.g., Jacly regeneration)
+  useEffect(() => {
+    if (!monaco) return;
+
+    const unsubscribe = editorSyncService.onExternalChange(
+      (changedPath, content) => {
+        if (changedPath !== fullPath) return;
+
+        const uri = monaco.Uri.file(fullPath);
+        const model = monaco.editor.getModel(uri);
+
+        if (!model) {
+          monaco.editor.createModel(
+            content,
+            inferLanguageFromPath(filePath),
+            uri
+          );
+          return;
+        }
+
+        if (model.getValue() === content) return;
+
+        applyingExternalChangeRef.current = true;
+        model.setValue(content);
+        window.setTimeout(() => {
+          applyingExternalChangeRef.current = false;
+        }, 0);
+      }
+    );
+
+    return unsubscribe;
+  }, [filePath, fullPath, monaco]);
+
   // Show loading state
   if (loading || !monaco) {
     return <div>{loadingMessage ?? m.editor_loading()}</div>;
   }
 
-  // Show error state if file doesn't exist and ifNotExists is 'error'
   if (!fileExists && ifNotExists === 'error') {
     return (
       <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">

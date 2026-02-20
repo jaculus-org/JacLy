@@ -4,7 +4,7 @@ import 'blockly/blocks';
 import { Theme } from '@/editor/types/theme';
 import { useState, useEffect, useRef } from 'react';
 import { getBlocklyTheme } from '@/editor/lib/theme';
-import { JaclyBlocksFiles } from '@jaculus/project';
+import { JaclyBlocksData } from '@jaculus/project';
 import { loadToolboxConfiguration } from '@/blocks/lib/toolbox-loader';
 import { registerWorkspaceChangeListener } from '@/blocks/lib/rules';
 import { JaclyLoading } from './loading';
@@ -31,20 +31,18 @@ import '../../blocks/new-blocks/procedures';
 registerJaclyCustomCategory();
 
 interface JaclyEditorProps {
+  jaclyBlocksData: JaclyBlocksData;
   theme: Theme;
-  jaclyBlockFiles: JaclyBlocksFiles;
   locale: string;
-  jaclyTranslations?: Record<string, string>;
   initialJson: any;
   onJsonChange: (workspaceJson: object) => void;
   onGeneratedCode: (code: string) => void;
 }
 
 export function JaclyEditor({
+  jaclyBlocksData,
   theme,
-  jaclyBlockFiles,
   locale,
-  jaclyTranslations,
   initialJson,
   onJsonChange,
   onGeneratedCode: onGeneratedCode,
@@ -81,12 +79,10 @@ export function JaclyEditor({
 
   useEffect(() => {
     if (blocklyMessagesLoaded) {
-      setToolboxConfiguration(
-        loadToolboxConfiguration(jaclyBlockFiles, jaclyTranslations)
-      );
+      setToolboxConfiguration(loadToolboxConfiguration(jaclyBlocksData));
       console.log('Toolbox configuration loaded');
     }
-  }, [jaclyBlockFiles, jaclyTranslations, blocklyMessagesLoaded]);
+  }, [jaclyBlocksData, blocklyMessagesLoaded]);
 
   if (!toolboxConfiguration || !blocklyMessagesLoaded) {
     return <JaclyLoading />;

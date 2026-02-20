@@ -8,7 +8,6 @@ import {
 import { FieldSlider } from '@blockly/field-slider';
 import { Blocks, FieldNumber } from 'blockly/core';
 
-// default slider configuration
 const DEFAULT_SLIDER_MIN = 0;
 const DEFAULT_SLIDER_MAX = 100;
 const DEFAULT_SLIDER_STEP = 1;
@@ -23,16 +22,14 @@ interface DynamicSliderBlock extends BlockExtended {
 
 Blocks['jacly_field_slider'] = {
   init: function (this: DynamicSliderBlock) {
-    // add hidden configuration fields - these can be set via toolbox shadow block definitions
     this.appendDummyInput('CONFIG_INPUT')
       .appendField(new FieldNumber(DEFAULT_SLIDER_MIN), 'SLIDER_MIN')
       .appendField(new FieldNumber(DEFAULT_SLIDER_MAX), 'SLIDER_MAX')
       .appendField(new FieldNumber(DEFAULT_SLIDER_STEP), 'SLIDER_STEP');
 
-    // hide the config input
     this.getInput('CONFIG_INPUT')?.setVisible(false);
 
-    // create slider with defaults initially
+    // create slider
     this.appendDummyInput('SLIDER_INPUT')
       .appendField('slider: ')
       .appendField(
@@ -47,7 +44,7 @@ Blocks['jacly_field_slider'] = {
     this.setOutput(true, 'Number');
     this.setColour(230);
 
-    // defer reading config values until after blockly has set field values from toolbox
+    // set default values for dynamic fields
     setTimeout(() => {
       const min =
         Number(this.getFieldValue('SLIDER_MIN')) || DEFAULT_SLIDER_MIN;
@@ -58,7 +55,7 @@ Blocks['jacly_field_slider'] = {
       const currentValue =
         Number(this.getFieldValue('VALUE')) || DEFAULT_SLIDER_VALUE;
 
-      // only rebuild if config differs from defaults
+      // rebuild if changes
       if (
         min !== DEFAULT_SLIDER_MIN ||
         max !== DEFAULT_SLIDER_MAX ||

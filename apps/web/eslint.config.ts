@@ -23,5 +23,17 @@ export default defineConfig(
       ...reactHooks.configs['recommended-latest'].rules,
       'react-refresh/only-export-components': 'off',
     },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+    },
   }
 );

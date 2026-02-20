@@ -28,7 +28,8 @@ import { useKeyboardShortcut } from '../hooks/use-keyboard-shortcut';
 export interface EditorContextValue {
   controlPanel: (type: PanelType, action: PanelAction) => void;
   openPanel: {
-    (type: 'code', props?: NewPanelProps['code']): void;
+    (type: 'code', props: NewPanelProps['code']): void;
+    (type: 'error', props: NewPanelProps['error']): void;
   };
 }
 
@@ -42,24 +43,25 @@ export const EditorContext = createContext<EditorContextValue>(initialState);
 export function ProjectEditorProvider() {
   const { projectManService } = Route.useRouteContext();
   const { pkg } = useJacDevice();
-  const { dbProject } = useActiveProject();
+  const { dbProject, error } = useActiveProject();
   const [model, setModel] = useState<FlexLayout.Model | null>(null);
 
-  useKeyboardShortcut({ key: 'p', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'packages', 'toggle');
-  });
-
-  useKeyboardShortcut({ key: 'e', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'file-explorer', 'toggle');
-  });
-
-  useKeyboardShortcut({ key: 'l', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'logs', 'toggle');
-  });
-
-  useKeyboardShortcut({ key: 's', ctrl: true, meta: true }, async () => {
-    controlPanel(model!, 'console', 'toggle');
-  });
+  useKeyboardShortcut(
+    { key: 'p', ctrl: true, meta: true, enabled: !!model },
+    () => model && controlPanel(model, 'packages', 'toggle')
+  );
+  useKeyboardShortcut(
+    { key: 'e', ctrl: true, meta: true, enabled: !!model },
+    () => model && controlPanel(model, 'file-explorer', 'toggle')
+  );
+  useKeyboardShortcut(
+    { key: 'l', ctrl: true, meta: true, enabled: !!model },
+    () => model && controlPanel(model, 'logs', 'toggle')
+  );
+  useKeyboardShortcut(
+    { key: 's', ctrl: true, meta: true, enabled: !!model },
+    () => model && controlPanel(model, 'console', 'toggle')
+  );
 
   useEffect(() => {
     const loadLayout = async () => {
@@ -80,14 +82,23 @@ export function ProjectEditorProvider() {
   }, [projectManService, dbProject.id]);
 
   useEffect(() => {
-    if (!model || !pkg?.jaculus) return;
+    if (!model) return;
+    const projectType = pkg?.jaculus?.projectType;
+    if (!projectType) return;
 
-    if (pkg.jaculus.projectType !== 'jacly') {
-      console.log('Opening Code setup');
+    if (error) {
+      controlPanel(model, 'blockly', 'close');
+      openPanel(model, 'error', { error });
+      return;
+    } else {
+      controlPanel(model, 'error', 'close');
+    }
+
+    if (projectType !== 'jacly') {
       controlPanel(model, 'blockly', 'close');
       openPanel(model, 'code', { filePath: 'src/index.ts' });
     }
-  }, [model, pkg?.jaculus]);
+  }, [model, pkg, error]);
 
   async function handleModelChange(newModel: FlexLayout.Model) {
     setModel(newModel);
@@ -123,10 +134,19 @@ export function ProjectEditorProvider() {
 
   const value: EditorContextValue = {
     controlPanel: controlPanel.bind(null, model!),
-    openPanel: openPanel.bind(null, model!),
+    openPanel: ((
+      type: 'code' | 'error',
+      props: NewPanelProps['code'] | NewPanelProps['error']
+    ) =>
+      openPanel(
+        model!,
+        type as never,
+        props as never
+      )) as EditorContextValue['openPanel'],
   };
 
   if (!model) {
+    // TODO: translate
     return <ProjectLoadingIndicator message="Loading layout..." />;
   }
 

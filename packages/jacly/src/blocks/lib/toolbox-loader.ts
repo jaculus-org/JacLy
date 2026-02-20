@@ -1,4 +1,4 @@
-import { JaclyBlocksFiles } from '@jaculus/project';
+import { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
 import { ToolboxItemInfoSort } from '../types/toolbox';
 import { JaclyConfigSchema } from '../schema';
@@ -12,18 +12,17 @@ import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
 import { localizeJaclyConfig, registerTranslations } from './translations';
 
 export function loadToolboxConfiguration(
-  jaclyBlockFiles: JaclyBlocksFiles,
-  translations?: Record<string, string>
+  jaclyBlocksData: JaclyBlocksData
 ): Blockly.utils.toolbox.ToolboxDefinition {
   // register translations before building the toolbox
-  if (translations) {
-    registerTranslations(translations);
+  if (jaclyBlocksData.translations) {
+    registerTranslations(jaclyBlocksData.translations);
   }
 
   const toolboxContent: ToolboxItemInfoSort[] = [];
 
-  for (const fileKey in jaclyBlockFiles) {
-    const file = jaclyBlockFiles[fileKey];
+  for (const fileKey in jaclyBlocksData.blockFiles) {
+    const file = jaclyBlocksData.blockFiles[fileKey];
     try {
       const libToolbox = loadToolboxLibrary(fileKey, file);
       toolboxContent.push(libToolbox);

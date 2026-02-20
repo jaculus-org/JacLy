@@ -17,11 +17,27 @@ import { ProjectLoadingIndicator } from '@/features/project/components/project-l
 import { ProjectLoadError } from '@/features/project/components/project-load-error';
 import { JaclyFiles } from '../types/jacly-files';
 
+export type ProjectErrorReason =
+  | 'fs-mount-failed'
+  | 'missing-package-json'
+  | 'invalid-package-json'
+  | 'load-failed'
+  | 'unknown-error';
+
+export interface ProjectError {
+  reason: ProjectErrorReason;
+  details?: string;
+  seriousness: 'unrecoverable' | 'recoverable';
+  fixCallback?: () => void;
+}
+
 export interface ActiveProjectContextValue {
   fs: typeof fs;
   fsp: typeof fs.promises;
   dbProject: IDbProject;
   projectPath: string;
+  error: ProjectError | null;
+  setError: (error: ProjectError | null) => void;
   getFileName(fileType: keyof typeof JaclyFiles): string;
 }
 
@@ -42,7 +58,7 @@ export function ActiveProjectProvider({
   const [fsInterface, setFsInterface] = useState<ProjectFsInterface | null>(
     null
   );
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<ProjectError | null>(null);
 
   // Mount filesystem
   useEffect(() => {
@@ -54,11 +70,9 @@ export function ActiveProjectProvider({
         if (mounted) {
           setFsInterface(interfce);
         }
-      } catch (err) {
+      } catch {
         if (mounted) {
-          setError(
-            err instanceof Error ? err : new Error('Failed to mount filesystem')
-          );
+          setError({ reason: 'fs-mount-failed', seriousness: 'unrecoverable' });
         }
       }
     }
@@ -68,6 +82,7 @@ export function ActiveProjectProvider({
     return () => {
       mounted = false;
       projectFsService.unmount(project.id);
+      setError(null);
     };
   }, [project.id, projectFsService]);
 
@@ -130,11 +145,13 @@ export function ActiveProjectProvider({
       fsp: fsInterface.fs.promises as unknown as typeof fs.promises,
       dbProject: project,
       projectPath: fsInterface.projectPath,
+      error,
+      setError,
       getFileName,
     };
-  }, [fsInterface, project, getFileName]);
+  }, [fsInterface, project, getFileName, error, setError]);
 
-  if (error) {
+  if (error && error.seriousness === 'unrecoverable') {
     return <ProjectLoadError error={error} />;
   }
 

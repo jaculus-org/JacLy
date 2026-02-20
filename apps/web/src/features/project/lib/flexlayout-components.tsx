@@ -13,6 +13,7 @@ import { getPanelTitle } from './flexlayout-defaults';
 import { m } from '@/paraglide/messages';
 import { WokwiPanel } from '../components/panels/wokwi';
 import { InstallerPanel } from '../components/panels/installer';
+import { ErrorPanel } from '../components/panels/error';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<
@@ -29,6 +30,7 @@ const PANEL_COMPONENTS: Record<
   logs: () => <LogsPanel />,
   jaculus: () => <JaculusPanel />,
   installer: () => <InstallerPanel />,
+  error: () => <ErrorPanel />,
 };
 
 export function factory(node: FlexLayout.TabNode) {

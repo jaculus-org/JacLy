@@ -1,7 +1,7 @@
 import { ESPLoader, type IEspLoaderTerminal } from 'esptool-js';
 import pako from 'pako';
 import { Archive } from '@obsidize/tar-browserify';
-import { Manifest, parseManifest } from '@jaculus/firmware/manifest';
+import { type Manifest, parseManifest } from '@jaculus/firmware/manifest';
 
 export interface FlashProgress {
   stage: 'downloading' | 'extracting' | 'flashing';
@@ -90,11 +90,11 @@ export class ESP32Flasher {
     }
 
     this.terminal.writeLine(
-      `Found manifest: ${manifest.getBoard()} ${manifest.getVersion()}`
+      `Found manifest: ${manifest.board} ${manifest.version}`
     );
 
-    if (manifest.getPlatform() !== 'esp32') {
-      throw new Error(`Unsupported platform: ${manifest.getPlatform()}`);
+    if (manifest.platform !== 'esp32') {
+      throw new Error(`Unsupported platform: ${manifest.platform}`);
     }
 
     this.terminal.writeLine(`Extracted ${Object.keys(files).length} files`);
@@ -127,7 +127,7 @@ export class ESP32Flasher {
 
     // Verify chip type
     const detectedChip = this.esploader.chip.CHIP_NAME;
-    const expectedChip = manifest.getConfig().chip;
+    const expectedChip = manifest.config.chip;
 
     if (detectedChip !== expectedChip) {
       throw new Error(
@@ -137,7 +137,7 @@ export class ESP32Flasher {
 
     // Prepare files for flashing
     const fileArray: { data: string; address: number; fileName: string }[] = [];
-    const partitions = manifest.getConfig().partitions;
+    const partitions = manifest.config.partitions;
 
     for (const partition of partitions) {
       // Skip storage partitions if noErase is enabled
@@ -202,13 +202,6 @@ export class ESP32Flasher {
     });
 
     this.terminal.writeLine('\n=== Flashing complete! ===');
-    // this.terminal.writeLine('Resetting device...');
-
-    // await this.esploader.transport.setDTR(false);
-    // await new Promise(resolve => setTimeout(resolve, 100));
-    // await this.esploader.transport.setDTR(true);
-
-    // this.terminal.writeLine('Device reset complete.\n');
   }
 
   /**

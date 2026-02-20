@@ -130,8 +130,10 @@ export function getPanelTitle(node: FlexLayout.TabNode): string | undefined {
       return m.project_panel_wokwi();
     case 'installer':
       return m.project_panel_installer();
+    case 'error':
+      return undefined;
     default: {
-      const _exhaustive: never = component; // exhaustiveness check
+      const _exhaustive: never = component;
       return _exhaustive;
     }
   }

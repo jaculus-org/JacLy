@@ -10,14 +10,15 @@ import { Button } from '@/features/shared/components/ui/button';
 import { Input } from '@/features/shared/components/ui/input';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
-import { Project, Registry, type JaculusProjectType } from '@jaculus/project';
 import type { FSInterface } from '@jaculus/project/fs';
 import { Writable } from 'node:stream';
 import { useEffect, useState } from 'react';
 import { getRequest } from '@jaculus/jacly/project';
-import { Archive } from '@obsidize/tar-browserify';
-import pako from 'pako';
 import { enqueueSnackbar } from 'notistack';
+import type { JaculusProjectType } from '@jaculus/project/package';
+import { Registry } from '@jaculus/project/registry';
+import { Project } from '@jaculus/project';
+import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -119,26 +120,13 @@ function NewProject() {
       const versions = await registry.listVersions(selectedTemplate);
       const tgz = await registry.getPackageTgz(selectedTemplate, versions[0]);
 
-      const dirs: string[] = [];
-      const files: Record<string, Uint8Array> = {};
+      // Load package using unified utility - convert Uint8Array to File
+      const file = new File([new Uint8Array(tgz)], 'package.tar.gz', {
+        type: 'application/gzip',
+      });
 
-      const archiveData = pako.ungzip(tgz);
-
-      // Extract the tar archive, remove prefix /package from all entries
-      for await (const entry of Archive.read(archiveData)) {
-        let fileName = entry.fileName;
-        if (fileName.startsWith('package/')) {
-          fileName = fileName.slice('package/'.length);
-        }
-
-        if (entry.isDirectory()) {
-          dirs.push(fileName);
-        } else if (entry.isFile()) {
-          files[fileName] = entry.content!;
-        }
-      }
-
-      const pkg = { dirs, files };
+      const importResult = await loadPackageFromFile(file);
+      const pkg = importResult.package;
 
       // Create the project in the database
       const newProject = await runtimeService.createProject(

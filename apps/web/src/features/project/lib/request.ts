@@ -1,4 +1,4 @@
-import { type ProjectPackage } from '@jaculus/project';
+import type { ProjectPackage } from '@jaculus/project';
 import type { FSPromisesInterface } from '@jaculus/project/fs';
 import { Archive } from '@obsidize/tar-browserify';
 import pako from 'pako';

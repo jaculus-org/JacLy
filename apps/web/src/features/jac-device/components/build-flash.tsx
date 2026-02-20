@@ -9,9 +9,11 @@ import { compileProject } from '../lib/compilation';
 import { useJacDevice } from '../provider/jac-device-provider';
 import { useTerminal } from '@/features/terminal/provider/terminal-provider';
 import { uploadCode } from '../lib/device';
+import { useEditor } from '@/features/project/provider/project-editor-provider';
 
 export function BuildFlash() {
   const { projectPath, fs } = useActiveProject();
+  const { controlPanel } = useEditor();
   const { addEntry } = useTerminal();
   const { device, jacProject, pkg, connectionStatus } = useJacDevice();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,6 +42,7 @@ export function BuildFlash() {
       }
       await uploadCode(files, device);
     } catch (error) {
+      controlPanel('logs', 'expand');
       enqueueSnackbar(
         error instanceof Error ? error.message : m.device_build_flash_failed(),
         { variant: 'error' }
@@ -47,7 +50,7 @@ export function BuildFlash() {
     } finally {
       setIsProcessing(false);
     }
-  }, [device, pkg, projectPath, fs, addEntry, jacProject]);
+  }, [device, pkg, projectPath, fs, addEntry, jacProject, controlPanel]);
 
   if (!device || !jacProject) {
     return;

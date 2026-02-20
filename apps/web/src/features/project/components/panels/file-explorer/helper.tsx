@@ -60,6 +60,8 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
   const iconProps = { size: 16, className: 'text-blue-400' };
 
   switch (ext) {
+    case undefined:
+      return <File {...iconProps} />;
     case 'js':
     case 'ts':
     case 'jsx':

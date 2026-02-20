@@ -5,10 +5,11 @@ import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect, useCallback } from 'react';
 import { dirname } from 'path';
 import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
-import type { JaclyBlocksFiles } from '@jaculus/project';
 import { getLocale } from '@/paraglide/runtime';
 import { m } from '@/paraglide/messages';
+import { editorSyncService } from '@/features/editor-code/lib/editor-sync-service';
 import '../styles/toolbox.css';
+import type { JaclyBlocksData } from '@jaculus/project';
 
 export function JaclyEditorComponent() {
   const { themeNormalized } = useTheme();
@@ -16,11 +17,8 @@ export function JaclyEditorComponent() {
   const { jacProject, nodeModulesVersion } = useJacDevice();
 
   const [initialJson, setInitialJson] = useState<object | null>(null);
-  const [jaclyBlockFiles, setJaclyBlockFiles] =
-    useState<JaclyBlocksFiles | null>(null);
-  const [jaclyTranslations, setJaclyTranslations] = useState<
-    Record<string, string> | undefined
-  >(undefined);
+  const [jaclyBlocksData, setJaclyBlocksData] =
+    useState<JaclyBlocksData | null>(null);
 
   const ensureDirectory = useCallback(
     async (dirPath: string) => {
@@ -73,15 +71,14 @@ export function JaclyEditorComponent() {
         setInitialJson(jsonData);
 
         const jaclyData = await jacProject.getJaclyData(getLocale());
-        setJaclyBlockFiles(jaclyData.blockFiles);
-        setJaclyTranslations(jaclyData.translations);
+        setJaclyBlocksData(jaclyData);
 
         console.log('Jacly editor data loaded successfully.');
       } catch (error) {
         console.error('Failed to load editor data:', error);
         enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
         setInitialJson({});
-        setJaclyBlockFiles({});
+        setJaclyBlocksData(null);
       }
     })();
   }, [
@@ -117,6 +114,7 @@ export function JaclyEditorComponent() {
         const filePath = getFileName('GENERATED_CODE');
         await ensureDirectory(dirname(filePath));
         await writeFileWithRetry(filePath, code);
+        editorSyncService.notifyExternalChange(filePath, code);
       } catch (error) {
         console.error('Failed to save generated code:', error);
         enqueueSnackbar(m.editor_jacly_save_code_error(), { variant: 'error' });
@@ -125,16 +123,16 @@ export function JaclyEditorComponent() {
     [getFileName, ensureDirectory, writeFileWithRetry]
   );
 
-  if (!initialJson || !jaclyBlockFiles || !jaclyTranslations) {
+  if (!initialJson || !jaclyBlocksData) {
+    // TODO: replace it
     return <JaclyLoading />;
   }
 
   return (
     <JaclyEditor
       theme={themeNormalized}
-      jaclyBlockFiles={jaclyBlockFiles}
+      jaclyBlocksData={jaclyBlocksData}
       locale={getLocale()}
-      jaclyTranslations={jaclyTranslations}
       initialJson={initialJson}
       onJsonChange={handleJsonChange}
       onGeneratedCode={handleGeneratedCode}
