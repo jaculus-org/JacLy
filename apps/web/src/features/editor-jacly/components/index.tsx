@@ -8,7 +8,6 @@ import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider
 import { getLocale } from '@/paraglide/runtime';
 import { m } from '@/paraglide/messages';
 import { editorSyncService } from '@/features/editor-code/lib/editor-sync-service';
-import '../styles/toolbox.css';
 import type { JaclyBlocksData } from '@jaculus/project';
 
 export function JaclyEditorComponent() {

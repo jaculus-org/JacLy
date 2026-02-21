@@ -9,6 +9,8 @@ import { loadToolboxConfiguration } from '@/blocks/lib/toolbox-loader';
 import { registerWorkspaceChangeListener } from '@/blocks/lib/rules';
 import { JaclyLoading } from './loading';
 
+import '../styles/toolbox.css';
+
 import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import { generateCodeFromWorkspace } from '../lib/code-generation';
 

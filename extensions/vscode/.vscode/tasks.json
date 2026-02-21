@@ -15,16 +15,6 @@
       }
     },
     {
-      "label": "watch-web",
-      "dependsOn": ["npm: watch-web:tsc", "npm: watch-web:esbuild"],
-      "presentation": {
-        "reveal": "never"
-      },
-      "group": {
-        "kind": "build"
-      }
-    },
-    {
       "type": "npm",
       "script": "watch:esbuild",
       "group": "build",
@@ -50,30 +40,6 @@
     },
     {
       "type": "npm",
-      "script": "watch-web:esbuild",
-      "group": "build",
-      "problemMatcher": "$esbuild-watch",
-      "isBackground": true,
-      "label": "npm: watch-web:esbuild",
-      "presentation": {
-        "group": "watch-web",
-        "reveal": "never"
-      }
-    },
-    {
-      "type": "npm",
-      "script": "watch-web:tsc",
-      "group": "build",
-      "problemMatcher": "$tsc-watch",
-      "isBackground": true,
-      "label": "npm: watch-web:tsc",
-      "presentation": {
-        "group": "watch-web",
-        "reveal": "never"
-      }
-    },
-    {
-      "type": "npm",
       "script": "watch-tests",
       "problemMatcher": "$tsc-watch",
       "isBackground": true,
@@ -82,24 +48,6 @@
         "group": "watchers"
       },
       "group": "build"
-    },
-    {
-      "type": "npm",
-      "script": "compile",
-      "problemMatcher": ["$tsc", "$esbuild"],
-      "label": "npm: compile"
-    },
-    {
-      "type": "npm",
-      "script": "compile-web",
-      "problemMatcher": ["$tsc", "$esbuild"],
-      "label": "npm: compile-web"
-    },
-    {
-      "type": "npm",
-      "script": "pretest",
-      "problemMatcher": ["$tsc", "$esbuild"],
-      "label": "npm: pretest"
     },
     {
       "label": "tasks: watch-tests",

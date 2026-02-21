@@ -27,7 +27,7 @@
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias && cp -r src/editor/styles dist/editor/",
     "build:watch": "tsc --watch & tsc-alias --watch",
     "type-check": "tsc --noEmit",
     "lint": "echo 'No linting configured for this package'",

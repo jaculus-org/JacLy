@@ -5,5 +5,5 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected';
 export type ConnectionInfo = {
   type: ConnectionType;
   name: string;
-  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  icon: React.ElementType;
 };

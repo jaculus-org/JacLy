@@ -1,13 +1,10 @@
 {
   "compilerOptions": {
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "target": "ES2022",
     "lib": ["ES2022", "DOM"],
-    "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
     "sourceMap": true,
     "rootDir": "src",
     "strict": true /* enable all strict type-checking options */
