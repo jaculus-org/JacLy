@@ -61,7 +61,7 @@ function loadToolboxLibrary(
   localizeJaclyConfig(jaclyConfig);
 
   if (jaclyConfig.contents) {
-    return parseToolboxContentsBlock(jaclyConfig, libName);
+    return parseToolboxContentsBlock(jaclyConfig);
   } else if (jaclyConfig.custom) {
     return parseToolboxCustomBlock(jaclyConfig);
   } else {

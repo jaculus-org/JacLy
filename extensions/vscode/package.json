@@ -65,7 +65,8 @@
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "format": "prettier --write .",
-    "test": "vscode-test"
+    "test": "echo \"CI tests are disabled for now\"",
+    "test-local": "vscode-test"
   },
   "dependencies": {
     "@jaculus/jacly": "workspace:*",

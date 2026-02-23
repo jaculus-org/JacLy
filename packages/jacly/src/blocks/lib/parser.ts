@@ -1,10 +1,14 @@
 import { JaclyConfig } from '../schema';
 import { ToolboxItemInfoSort } from '../types/toolbox';
-import { registerBlocklyBlock, registerCodeGenerator } from './blockly';
+import {
+  editInternalBlocks,
+  registerBlocklyBlock,
+  registerCodeGenerator,
+  registryLibraryImport,
+} from './blockly';
 
 export function parseToolboxContentsBlock(
-  jaclyConfig: JaclyConfig,
-  libName: string
+  jaclyConfig: JaclyConfig
 ): ToolboxItemInfoSort {
   for (const item of jaclyConfig.contents!) {
     if (item.kind !== 'block') {
@@ -18,9 +22,13 @@ export function parseToolboxContentsBlock(
       item.args0 !== undefined ||
       item.code !== undefined;
 
+    registryLibraryImport(item, jaclyConfig);
+
     if (isCustomBlock) {
       registerBlocklyBlock(item, jaclyConfig);
-      registerCodeGenerator(item, jaclyConfig, libName);
+      registerCodeGenerator(item, jaclyConfig);
+    } else {
+      editInternalBlocks(item, jaclyConfig);
     }
   }
 

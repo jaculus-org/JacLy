@@ -11,7 +11,7 @@ export function registerTranslations(
   Object.assign(Blockly.Msg, translations);
 }
 
-function t(key: string | null, prefix: string) {
+export function t(prefix: string, key: string | null = null): string {
   if (key == '%T%' || key == null) {
     key = `%{BKY_${prefix.toUpperCase()}}`;
   }
@@ -33,13 +33,13 @@ function tRegex(key: string, prefix: string): string {
  * with their translated values.
  */
 export function localizeJaclyConfig(config: JaclyConfig): void {
-  config.name = t(config.name, `${config.category}_name`);
+  config.name = t(`${config.category}_name`, config.name);
   if (config.colour)
-    config.colour = t(config.colour, `${config.category}_colour`);
+    config.colour = t(`${config.category}_colour`, config.colour);
   if (config.description)
     config.description = t(
-      config.description,
-      `${config.category}_description`
+      `${config.category}_description`,
+      config.description
     );
 
   if (config.contents) {
@@ -55,9 +55,9 @@ function localizeBlockItem(prefix: string, item: JaclyBlock): void {
       localizeBlock(`${item.type}`, item);
       break;
     case 'category':
-      item.name = t(item.name, `${prefix}_category_name`);
+      item.name = t(`${prefix}_category_name`, item.name);
       if (item.colour)
-        item.colour = t(item.colour, `${prefix}_category_colour`);
+        item.colour = t(`${prefix}_category_colour`, item.colour);
       break;
     case 'label':
       item.text = tRegex(item.text, `${prefix}_label`);
@@ -71,9 +71,9 @@ function localizeBlock(
   prefix: string,
   block: Extract<JaclyBlock, { kind: 'block' }>
 ): void {
-  if (block.message0) block.message0 = t(block.message0, `${prefix}_message0`);
-  if (block.tooltip) block.tooltip = t(block.tooltip, `${prefix}_tooltip`);
-  if (block.colour) block.colour = t(block.colour, `${prefix}_colour`);
+  if (block.message0) block.message0 = t(`${prefix}_message0`, block.message0);
+  if (block.tooltip) block.tooltip = t(`${prefix}_tooltip`, block.tooltip);
+  if (block.colour) block.colour = t(`${prefix}_colour`, block.colour);
   if (block.args0) {
     for (const arg of block.args0) {
       localizeArg(`${prefix}_args0`, arg);
@@ -91,7 +91,7 @@ function localizeArg(prefix: string, arg: JaclyBlocksArgs): void {
       }
       break;
     case 'field_input':
-      if (arg.text) arg.text = t(arg.text, `${prefix}_field_input`);
+      if (arg.text) arg.text = t(`${prefix}_field_input`, arg.text);
       break;
   }
 }

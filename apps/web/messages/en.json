@@ -299,5 +299,8 @@
   "installer_msg_disconnected_hint": "You can now program device and have fun!",
   "installer_dialog_title": "Info",
   "installer_dialog_confirm": "Confirm",
-  "editor_jacly_loading_header": "Loading Jacly Editor"
+  "editor_jacly_loading_header": "Loading Jacly Editor",
+  "keyvalue_component": "Key-Value",
+  "keyvalue_sort_time": "Time",
+  "keyvalue_clear_tooltip": "Clear key-value store"
 }

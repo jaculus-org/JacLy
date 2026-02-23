@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Textarea } from '@/features/shared/components/ui/textarea';
+import { KeyValueDisplay } from '@/features/keyValue/components/keyValue';
 
 interface TerminalConsoleProps {
   tooltipCollapsed?: boolean;
@@ -106,7 +107,6 @@ export function TerminalConsole({
   return (
     <TooltipProvider>
       <div className="flex h-full flex-col gap-1.5 p-1.5">
-        {/* Toolbar */}
         <Card className="p-1.5">
           {isToolbarCollapsed ? (
             /* Minimal Toolbar */
@@ -151,7 +151,6 @@ export function TerminalConsole({
           ) : (
             /* Full Toolbar */
             <div className="flex flex-col gap-1.5">
-              {/* Input Section */}
               <div className="flex items-start gap-1.5">
                 <Textarea
                   placeholder={m.terminal_placeholder()}
@@ -265,6 +264,8 @@ export function TerminalConsole({
             </div>
           )}
         </Card>
+
+        <KeyValueDisplay />
 
         {/* Terminal Output */}
         <Card className="flex-1 overflow-hidden">

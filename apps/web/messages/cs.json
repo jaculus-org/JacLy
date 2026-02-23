@@ -63,12 +63,12 @@
   "project_panel_fs": "Průzkumník souborů",
   "project_panel_packages": "Balíčky",
   "project_panel_jaculus": "Jaculus",
-  "project_panel_console": "Konzole zařízení",
+  "project_panel_console": "Konzole",
   "project_panel_code": "Generovaný kód",
   "project_panel_logs": "Logy",
-  "project_panel_installer": "Instalátor firmwaru",
+  "project_panel_installer": "Instalátor",
   "project_panel_code_editor": "Editor kódu",
-  "project_panel_wokwi": "Wokwi simulátor",
+  "project_panel_wokwi": "Simulátor",
   "project_panel_fs_loading": "Načítání souborů...",
   "project_panel_fs_empty": "Žádné soubory nenalezeny",
   "project_panel_fs_new_file": "Nový soubor",
@@ -298,5 +298,8 @@
   "installer_msg_disconnected_hint": "Nyní můžete zařízení programovat a bavit se!",
   "installer_dialog_title": "Informace",
   "installer_dialog_confirm": "Potvrdit",
-  "editor_jacly_loading_header": "Načítání Jacly editoru"
+  "editor_jacly_loading_header": "Načítání Jacly editoru",
+  "keyvalue_component": "Klíč-Hodnota",
+  "keyvalue_sort_time": "Čas",
+  "keyvalue_clear_tooltip": "Vymazat úložiště klíč-hodnota"
 }

@@ -279,14 +279,12 @@ function getPlaceholderValue(
   generator: JavascriptGenerator
 ): string {
   switch (arg.type) {
-    // Fields - use getFieldValue
     case 'field_input':
     case 'field_number':
     case 'field_dropdown':
     case 'field_colour':
       return codeBlock.getFieldValue(arg.name) || '';
 
-    // Inputs - use valueToCode or statementToCode
     case 'input_value':
       return generator.valueToCode(codeBlock, arg.name, Order.NONE) || 'null';
 
@@ -365,7 +363,6 @@ function selectConditionalCode(
   codeBlock: BlockExtended,
   generator: JavascriptGenerator
 ): string | null {
-  // If there are code conditionals, find the first matching one
   if (block.codeConditionals && block.codeConditionals.length > 0) {
     for (const conditional of block.codeConditionals) {
       if (
@@ -379,24 +376,20 @@ function selectConditionalCode(
         return conditional.code;
       }
     }
-    // No conditional matched, fallback to default code if available
     return block.code || null;
   }
 
-  // No conditionals, use default code
   return block.code || null;
 }
 
 export function registerCodeGenerator(
   block: JaclyBlock,
-  jaclyConfig: JaclyConfig,
-  _libName: string
+  jaclyConfig: JaclyConfig
 ) {
   if (block.kind != 'block' || (!block.code && !block.codeConditionals)) {
     return;
   }
 
-  // Register library imports for this block type
   if (jaclyConfig.libraries && jaclyConfig.libraries.length > 0) {
     blockLibraryImports.set(block.type, jaclyConfig.libraries);
   }
@@ -405,13 +398,11 @@ export function registerCodeGenerator(
     codeBlock: BlockExtended,
     generator: JavascriptGenerator
   ) {
-    // Select the appropriate code template (conditional or default)
     const codeTemplate = selectConditionalCode(block, codeBlock, generator);
     if (!codeTemplate) {
       return block.output ? ['', Order.NONE] : '';
     }
 
-    // Replace all placeholders with actual values
     let code = replacePlaceholders(
       codeTemplate,
       block.args0,
@@ -428,4 +419,48 @@ export function registerCodeGenerator(
       return code;
     }
   };
+}
+
+export function registryLibraryImport(
+  block: JaclyBlock,
+  jaclyConfig: JaclyConfig
+) {
+  if (
+    block.kind == 'block' &&
+    jaclyConfig.libraries &&
+    jaclyConfig.libraries.length > 0
+  ) {
+    blockLibraryImports.set(block.type, jaclyConfig.libraries);
+  }
+}
+
+export function editInternalBlocks(
+  block: JaclyBlock,
+  jaclyConfig: JaclyConfig
+) {
+  if (block.kind !== 'block') {
+    return;
+  }
+
+  const colour = block.colour ?? jaclyConfig.colour;
+  const style = block.style ?? jaclyConfig.style;
+
+  if (colour) {
+    block.colour = colour;
+  }
+  if (style) {
+    block.style = style;
+  }
+
+  if ((colour || style) && Blocks[block.type]) {
+    const originalInit = Blocks[block.type].init;
+    Blocks[block.type] = {
+      ...Blocks[block.type],
+      init(this: BlockExtended) {
+        if (originalInit) originalInit.call(this);
+        if (colour) this.setColour(colour);
+        if (style) this.setStyle(style);
+      },
+    };
+  }
 }

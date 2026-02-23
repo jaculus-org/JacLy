@@ -7,7 +7,21 @@ import {
   javascriptGenerator as jsg,
   Order,
 } from 'blockly/javascript';
-import { colourHexaToRgbString } from '@/editor/plugins/field-colour-hsv-sliders';
+import { t } from '../lib/translations';
+
+const DYNAMIC_TYPES = ['NAMES', 'RGB', 'HSL', 'HEX', 'PALETTE'] as const;
+const COLOR_NAMES: string[] = [
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'light_blue',
+  'blue',
+  'purple',
+  'pink',
+  'white',
+  'off',
+] as const;
 
 interface DynamicColorBlock extends BlockExtended {
   mode_: string;
@@ -19,25 +33,23 @@ interface DynamicColorBlock extends BlockExtended {
 Blocks['dynamic_color_rgb'] = {
   init(this: DynamicColorBlock) {
     this.appendDummyInput()
-      .appendField('color')
+      .appendField(t('dynamic_color_rgb_message0'))
       .appendField(
         new Blockly.FieldDropdown(
-          [
-            ['Palette', 'PALETTE'],
-            ['RGB', 'RGB'],
-            ['HSL', 'HSL'],
-            ['Hex', 'HEX'],
-          ],
+          DYNAMIC_TYPES.map(type => [
+            t('dynamic_color_rgb_dropdown_' + type.toLowerCase()),
+            type,
+          ]),
           this.updateShape.bind(this)
         ),
         'MODE'
       );
 
-    this.setOutput(true, 'ColorRGB');
+    this.setOutput(true, 'Color');
     this.setColour(140);
 
-    this.mode_ = 'PALETTE';
-    this.updateShape('PALETTE');
+    this.mode_ = 'NAMES';
+    this.updateShape('NAMES');
     this.setInputsInline(true);
   },
 
@@ -51,9 +63,9 @@ Blocks['dynamic_color_rgb'] = {
     const newMode =
       typeof mode === 'string' ? mode : this.getFieldValue('MODE');
 
-    if (this.mode_ === newMode && this.getInput('PALETTE_INPUT'))
-      return undefined;
+    if (this.mode_ === newMode) return undefined;
 
+    if (this.getInput('NAMES_INPUT')) this.removeInput('NAMES_INPUT');
     if (this.getInput('PALETTE_INPUT')) this.removeInput('PALETTE_INPUT');
     if (this.getInput('R_INPUT')) this.removeInput('R_INPUT');
     if (this.getInput('G_INPUT')) this.removeInput('G_INPUT');
@@ -65,7 +77,15 @@ Blocks['dynamic_color_rgb'] = {
 
     this.mode_ = newMode;
 
-    if (this.mode_ === 'PALETTE') {
+    if (this.mode_ === 'NAMES') {
+      this.setInputsInline(true);
+      this.appendDummyInput('NAMES_INPUT').appendField(
+        new Blockly.FieldDropdown(
+          COLOR_NAMES.map(name => [t('dynamic_color_' + name), name])
+        ),
+        'COLOR_NAME'
+      );
+    } else if (this.mode_ === 'PALETTE') {
       this.setInputsInline(true);
       this.appendDummyInput('PALETTE_INPUT').appendField(
         new FieldColour('#ff0000'),
@@ -83,13 +103,15 @@ Blocks['dynamic_color_rgb'] = {
       this.addShadowNumber('B_INPUT', 0);
     } else if (this.mode_ === 'HSL') {
       this.setInputsInline(false);
-      this.appendValueInput('H_INPUT').setCheck('Number').appendField('Hue');
+      this.appendValueInput('H_INPUT')
+        .setCheck('Number')
+        .appendField('Hue (0-360)');
       this.appendValueInput('S_INPUT')
         .setCheck('Number')
-        .appendField('Saturation');
+        .appendField('Saturation (0-100) %');
       this.appendValueInput('L_INPUT')
         .setCheck('Number')
-        .appendField('Lightness');
+        .appendField('Lightness (0-100) %');
 
       // Add shadow blocks for empty inputs
       this.addShadowNumber('H_INPUT', 0);
@@ -106,17 +128,25 @@ Blocks['dynamic_color_rgb'] = {
     return undefined;
   },
 
-  saveExtraState: function () {
-    return {
-      mode: this.mode_,
-    };
+  saveExtraState: function (this: DynamicColorBlock) {
+    const state: Record<string, string> = { mode: this.mode_ };
+    if (this.mode_ === 'NAMES') {
+      state.colorName = this.getFieldValue('COLOR_NAME') ?? 'red';
+    }
+    return state;
   },
 
-  loadExtraState: function (state: { mode: string }) {
-    this.getField('MODE').setValue(state.mode);
+  loadExtraState: function (
+    this: DynamicColorBlock,
+    state: { mode: string; colorName?: string }
+  ) {
+    this.getField('MODE')?.setValue(state.mode);
     // Reset mode_ to force updateShape to rebuild the inputs
     this.mode_ = '';
     this.updateShape(state.mode);
+    if (state.mode === 'NAMES' && state.colorName) {
+      this.getField('COLOR_NAME')?.setValue(state.colorName);
+    }
   },
 
   /**
@@ -168,10 +198,17 @@ jsg.forBlock['dynamic_color_rgb'] = function (
   let code = '';
 
   switch (mode) {
-    case 'PALETTE':
-      const colorVal = codeBlock.getFieldValue('COLOR_VAL') || '#ffffff';
-      code = colourHexaToRgbString(colorVal);
+    case 'NAMES': {
+      const colorName = codeBlock.getFieldValue('COLOR_NAME') || 'red';
+      code = `colors.${colorName}`;
       break;
+    }
+
+    case 'PALETTE': {
+      const colorVal = codeBlock.getFieldValue('COLOR_VAL') || '#ffffff';
+      code = `colors.hexToRgb("${colorVal}")`;
+      break;
+    }
 
     case 'RGB': {
       const r = codeBlock.getInput('R_INPUT')
@@ -183,7 +220,7 @@ jsg.forBlock['dynamic_color_rgb'] = function (
       const b = codeBlock.getInput('B_INPUT')
         ? generator.valueToCode(codeBlock, 'B_INPUT', Order.NONE) || '0'
         : '0';
-      code = `{ r: ${r}, g: ${g}, b: ${b} }`;
+      code = `colors.rgb(${r}, ${g}, ${b})`;
       break;
     }
 
@@ -197,7 +234,7 @@ jsg.forBlock['dynamic_color_rgb'] = function (
       const l = codeBlock.getInput('L_INPUT')
         ? generator.valueToCode(codeBlock, 'L_INPUT', Order.NONE) || '0'
         : '0';
-      code = `colors.hslToRgb({ h: ${h}, s: ${s}, l: ${l} })`;
+      code = `colors.hslToRgb(${h}, ${s}, ${l})`;
       break;
     }
 
@@ -206,12 +243,12 @@ jsg.forBlock['dynamic_color_rgb'] = function (
         ? generator.valueToCode(codeBlock, 'HEX_INPUT', Order.NONE) ||
           '"#ffffff"'
         : '"#ffffff"';
-      code = colourHexaToRgbString(hex.replace(/['"]/g, ''));
+      code = `colors.hexToRgb(${hex})`;
       break;
     }
 
     default:
-      code = colourHexaToRgbString('#ffffff');
+      code = 'colors.off';
   }
 
   return [code, Order.NONE];

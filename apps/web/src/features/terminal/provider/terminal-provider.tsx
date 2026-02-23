@@ -1,3 +1,5 @@
+import { parseKeyValue } from '@/features/keyValue/lib/parser/kvParser';
+import type { KeyValueMap } from '@/features/keyValue/lib/types';
 import {
   createContext,
   use,
@@ -31,6 +33,7 @@ export interface TerminalContextValue {
   addEntry: AddToTerminal;
   clear(): void;
   clearType(type: TerminalStreamType): void;
+  keyValueEntries: KeyValueMap;
 }
 
 export const TerminalContext = createContext<TerminalContextValue | null>(null);
@@ -44,14 +47,24 @@ interface TerminalProviderProps {
 export function TerminalProvider({ children }: TerminalProviderProps) {
   const maxEntries = 1000;
   const [entries, setEntries] = useState<TerminalEntry[]>([]);
+  const [keyValueEntries, setKeyValueEntries] = useState<KeyValueMap>({});
+
+  function parseTerminalEntry(entry: TerminalEntry) {
+    if (entry.type === 'console-out' || entry.type === 'console-err') {
+      const parsed = parseKeyValue(entry.content);
+      setKeyValueEntries(prev => ({ ...prev, ...parsed }));
+    }
+  }
 
   const addEntry = useCallback((type: TerminalStreamType, content: string) => {
+    const newEntry: TerminalEntry = {
+      timestamp: new Date(),
+      type,
+      content,
+    };
+    parseTerminalEntry(newEntry);
+
     setEntries(prev => {
-      const newEntry: TerminalEntry = {
-        timestamp: new Date(),
-        type,
-        content,
-      };
       const updated = [...prev, newEntry];
       if (updated.length > maxEntries) {
         updated.shift();
@@ -62,6 +75,7 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
 
   const clear = useCallback(() => {
     setEntries([]);
+    setKeyValueEntries({});
   }, []);
 
   const clearType = useCallback((type: TerminalStreamType) => {
@@ -83,11 +97,12 @@ export function TerminalProvider({ children }: TerminalProviderProps) {
     () => ({
       consoleEntries,
       logEntries,
+      keyValueEntries,
       addEntry,
       clear,
       clearType,
     }),
-    [consoleEntries, logEntries, addEntry, clear, clearType]
+    [consoleEntries, logEntries, keyValueEntries, addEntry, clear, clearType]
   );
 
   return (
