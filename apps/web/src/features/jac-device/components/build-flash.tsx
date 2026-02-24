@@ -7,14 +7,18 @@ import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { compileProject } from '../lib/compilation';
 import { useJacDevice } from '../provider/jac-device-provider';
-import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { useStream } from '@/features/stream';
 import { uploadCode } from '../lib/device';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { Route } from '@/routes/__root';
 
 export function BuildFlash() {
+  const { streamBusService } = Route.useRouteContext();
   const { projectPath, fs } = useActiveProject();
   const { controlPanel } = useEditor();
-  const { addEntry } = useTerminal();
+  const {
+    meta: { channel },
+  } = useStream();
   const { device, jacProject, pkg, connectionStatus } = useJacDevice();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -27,7 +31,18 @@ export function BuildFlash() {
 
     try {
       if (pkg?.jaculus?.projectType == 'code') {
-        if (!(await compileProject(projectPath, fs, addEntry))) {
+        const compilerStreams = streamBusService.createWritablePair(
+          channel,
+          'compiler'
+        );
+        if (
+          !(await compileProject(
+            projectPath,
+            fs,
+            compilerStreams.out,
+            compilerStreams.err
+          ))
+        ) {
           enqueueSnackbar(m.device_build_compile_failed(), {
             variant: 'error',
           });
@@ -50,7 +65,16 @@ export function BuildFlash() {
     } finally {
       setIsProcessing(false);
     }
-  }, [device, pkg, projectPath, fs, addEntry, jacProject, controlPanel]);
+  }, [
+    device,
+    pkg,
+    projectPath,
+    fs,
+    streamBusService,
+    channel,
+    jacProject,
+    controlPanel,
+  ]);
 
   if (!device || !jacProject) {
     return;

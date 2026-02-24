@@ -42,8 +42,11 @@ function ImportProject() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const initialUrl = search.url ?? '';
-  const { projectManService: runtimeService, projectFsService } =
-    Route.useRouteContext();
+  const {
+    projectManService: runtimeService,
+    projectFsService,
+    streamBusService,
+  } = Route.useRouteContext();
 
   const [projectName, setProjectName] = useState('imported-project');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -87,10 +90,9 @@ function ImportProject() {
 
       if (activeTab === 'file') {
         if (!selectedFile) {
-          enqueueSnackbar(
-            m.project_import_invalid_file?.() ?? 'Please select a file',
-            { variant: 'error' }
-          );
+          enqueueSnackbar(m.project_import_invalid_file(), {
+            variant: 'error',
+          });
           setIsImporting(false);
           return;
         }
@@ -110,16 +112,21 @@ function ImportProject() {
       );
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
+      const importStreams = streamBusService.createWritablePair(
+        'global:import',
+        'compiler'
+      );
 
       await createProjectFromPackage(
         fs as unknown as FSInterface,
         projectPath,
-        importResult.package
+        importResult.package,
+        importStreams.out,
+        importStreams.err
       );
 
       enqueueSnackbar(
-        m.project_import_success?.() ??
-          `Successfully imported ${importResult.fileCount} files`,
+        m.project_import_success({ fileCount: importResult.fileCount }),
         { variant: 'success' }
       );
 
@@ -129,19 +136,14 @@ function ImportProject() {
       });
     } catch (error) {
       console.error('Failed to import project:', error);
-      enqueueSnackbar(
-        m.project_import_error?.() ?? 'Failed to import project',
-        { variant: 'error' }
-      );
+      enqueueSnackbar(m.project_import_error(), { variant: 'error' });
       setIsImporting(false);
     }
   }
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">
-        {m.project_import_title?.() ?? 'Import Project'}
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">{m.project_import_title()}</h1>
 
       <div className="space-y-6">
         <div>
@@ -167,23 +169,20 @@ function ImportProject() {
           <TabsList className="grid w-full grid-cols-2" variant={'default'}>
             <TabsTrigger value="file">
               <UploadIcon className="w-4 h-4 mr-2" />
-              {m.project_import_tab_file?.() ?? 'File'}
+              {m.project_import_tab_file()}
             </TabsTrigger>
             <TabsTrigger value="url">
               <LinkIcon className="w-4 h-4 mr-2" />
-              {m.project_import_tab_url?.() ?? 'URL'}
+              {m.project_import_tab_url()}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="file" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  {m.project_import_file_title?.() ?? 'Select Archive File'}
-                </CardTitle>
+                <CardTitle>{m.project_import_file_title()}</CardTitle>
                 <CardDescription>
-                  {m.project_import_file_description?.() ??
-                    'Upload a ZIP or TAR.GZ archive file containing your project. The project type will be automatically detected.'}
+                  {m.project_import_file_description()}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -204,12 +203,10 @@ function ImportProject() {
                   ) : (
                     <div>
                       <p className="text-muted-foreground mb-1">
-                        {m.project_import_click_hint?.() ??
-                          'Click to select an archive file'}
+                        {m.project_import_click_hint()}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {m.project_import_supported_formats?.() ??
-                          'Supported formats: ZIP, TAR, TAR.GZ'}
+                        {m.project_import_supported_formats()}
                       </p>
                     </div>
                   )}
@@ -221,12 +218,9 @@ function ImportProject() {
           <TabsContent value="url" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  {m.project_import_url_title?.() ?? 'Package URL'}
-                </CardTitle>
+                <CardTitle>{m.project_import_url_title()}</CardTitle>
                 <CardDescription>
-                  {m.project_import_url_description?.() ??
-                    'Import a project from a remote URL. Provide a direct link to a ZIP or TAR.GZ archive file.'}
+                  {m.project_import_url_description()}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -234,15 +228,11 @@ function ImportProject() {
                   type="url"
                   value={packageUrl}
                   onChange={e => setPackageUrl(e.target.value)}
-                  placeholder={
-                    m.project_import_url_placeholder?.() ??
-                    'https://example.com/package.zip'
-                  }
+                  placeholder={m.project_import_url_placeholder()}
                   className="w-full"
                 />
                 <p className="text-xs text-muted-foreground">
-                  {m.project_import_url_hint?.() ??
-                    'Enter a URL to a ZIP or TAR.GZ file'}
+                  {m.project_import_url_hint()}
                 </p>
               </CardContent>
             </Card>
@@ -259,8 +249,8 @@ function ImportProject() {
           }
         >
           {isImporting
-            ? (m.project_import_btn_importing?.() ?? 'Importing...')
-            : (m.project_import_btn_import?.() ?? 'Import Project')}
+            ? m.project_import_btn_importing()
+            : m.project_import_btn_import()}
         </Button>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { Card } from '@/features/shared/components/ui/card';
 import { Separator } from '@/features/shared/components/ui/separator';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { ChevronDown, ChevronUp, Trash2Icon } from 'lucide-react';
-import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { useStream } from '@/features/stream';
 import {
   Tooltip,
   TooltipContent,
@@ -16,18 +16,18 @@ import { m } from '@/paraglide/messages';
 type SortMode = 'alpha' | 'time';
 
 export function KeyValueDisplay() {
-  const { keyValueEntries, clear } = useTerminal();
+  const { state, actions } = useStream();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sortBy, setSortBy] = useState<SortMode>('time');
 
   const entries = useMemo(() => {
-    const all = Object.entries(keyValueEntries);
+    const all = Object.entries(state.keyValueEntries);
     if (sortBy === 'alpha') {
       return all.sort(([a], [b]) => a.localeCompare(b));
     }
     // time: newest first
     return all.sort(([, a], [, b]) => b.timestamp - a.timestamp);
-  }, [keyValueEntries, sortBy]);
+  }, [state.keyValueEntries, sortBy]);
 
   if (entries.length === 0) return null;
 
@@ -83,9 +83,7 @@ export function KeyValueDisplay() {
                 variant="ghost"
                 size="sm"
                 className="h-5 w-7 p-0"
-                onClick={() => {
-                  clear();
-                }}
+                onClick={actions.clear}
               >
                 <Trash2Icon className="h-3.5 w-3.5" />
               </Button>

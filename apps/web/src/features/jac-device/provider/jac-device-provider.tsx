@@ -12,8 +12,7 @@ import { getRequest } from '@jaculus/jacly/project';
 import { Writable } from 'node:stream';
 import path from 'path';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
-import { createWritableStream } from '@/features/terminal/lib/stream';
-import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { useStream } from '@/features/stream';
 import { enqueueSnackbar } from 'notistack';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
@@ -26,6 +25,7 @@ import {
 } from '@jaculus/project/package';
 import { Project } from '@jaculus/project';
 import { Registry } from '@jaculus/project/registry';
+import { Route } from '@/routes/__root';
 
 export interface JacDeviceContextValue {
   jacProject: Project | null;
@@ -55,8 +55,11 @@ interface JacDeviceProviderProps {
 }
 
 export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
+  const { streamBusService } = Route.useRouteContext();
   const { fs, projectPath, setError } = useActiveProject();
-  const { addEntry } = useTerminal();
+  const {
+    meta: { channel },
+  } = useStream();
   const [device, setDevice] = useState<JacDevice | null>(null);
   const [connectionType, setConnectionType] = useState<ConnectionType | null>(
     null
@@ -137,12 +140,16 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         );
 
         if (!cancelled) {
+          const runtimeStreams = streamBusService.createWritablePair(
+            channel,
+            'runtime'
+          );
           setJacProject(
             new Project(
               fs,
               projectPath,
-              createWritableStream('runtime-stdout', addEntry),
-              createWritableStream('runtime-stderr', addEntry),
+              runtimeStreams.out,
+              runtimeStreams.err,
               registry
             )
           );
@@ -176,7 +183,14 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, [fs, projectPath, addEntry, fixMissingPackageJson, setError]);
+  }, [
+    fs,
+    projectPath,
+    streamBusService,
+    channel,
+    fixMissingPackageJson,
+    setError,
+  ]);
 
   // Cleanup device on provider unmount
   useEffect(() => {

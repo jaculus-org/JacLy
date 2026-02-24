@@ -4,7 +4,7 @@ import { JacDevice } from '@jaculus/device';
 import logger from './logger';
 import { JacStreamSerial } from './jac-stream-serial';
 import type { Duplex } from '@jaculus/link/stream';
-import type { AddToTerminal } from '@/features/terminal/provider/terminal-provider';
+import type { AddToStream } from '@/features/stream/types';
 import { JacStreamWokwi } from './jac-stream-wokwi';
 import { JacStreamBle } from './jac-stream-ble';
 import { getDefaultDiagram } from '@/features/wokwi-simulator/lib/wowki';
@@ -33,19 +33,19 @@ export class UnknownConnectionTypeError extends Error {
 
 export async function connectDevice(
   type: ConnectionType,
-  addToTerminal: AddToTerminal,
+  addToStream: AddToStream,
   onDisconnect: () => void,
   projectPath: string,
   fs: typeof import('fs')
 ): Promise<JacDevice> {
   switch (type) {
     case 'serial':
-      return connectDeviceWebSerial(addToTerminal, onDisconnect);
+      return connectDeviceWebSerial(addToStream, onDisconnect);
     case 'ble':
-      return connectDeviceWebBLE(addToTerminal, onDisconnect);
+      return connectDeviceWebBLE(addToStream, onDisconnect);
     case 'wokwi':
       return connectDeviceWokwiSimulator(
-        addToTerminal,
+        addToStream,
         onDisconnect,
         projectPath,
         fs
@@ -55,20 +55,17 @@ export async function connectDevice(
   }
 }
 
-function setupJacDevice(
-  stream: Duplex,
-  addToTerminal: AddToTerminal
-): JacDevice {
+function setupJacDevice(stream: Duplex, addToStream: AddToStream): JacDevice {
   const device = new JacDevice(stream, logger);
 
   device.programOutput.onData(data => {
     const msg = String.fromCharCode(...data);
-    addToTerminal('console-out', msg);
+    addToStream('console-out', msg);
   });
 
   device.programError.onData(data => {
     const msg = String.fromCharCode(...data);
-    addToTerminal('console-err', msg);
+    addToStream('console-err', msg);
   });
 
   return device;
@@ -77,18 +74,18 @@ function setupJacDevice(
 export function sendToDevice(
   device: JacDevice,
   input: Uint8Array,
-  addToTerminal: AddToTerminal
+  addToStream: AddToStream
 ): void {
-  addToTerminal('console-in', new TextDecoder().decode(input));
+  addToStream('console-in', new TextDecoder().decode(input));
   device.programInput.write(input);
 }
 
 export function sendToDeviceStr(
   device: JacDevice,
   input: string,
-  addToTerminal: AddToTerminal
+  addToStream: AddToStream
 ): void {
-  addToTerminal('console-in', input);
+  addToStream('console-in', input);
   device.programInput.write(new TextEncoder().encode(input));
 }
 
@@ -99,14 +96,14 @@ export function isWebSerialAvailable(): boolean {
 }
 
 export async function connectDeviceWebSerial(
-  addToTerminal: AddToTerminal,
+  addToStream: AddToStream,
   onDisconnect: () => void
 ): Promise<JacDevice> {
   const port = await navigator.serial.requestPort();
   await port.open({ baudRate: 921600 });
 
   const stream = new JacStreamSerial(port, logger);
-  const device = setupJacDevice(stream, addToTerminal);
+  const device = setupJacDevice(stream, addToStream);
   stream.onEnd(() => onDisconnect());
 
   return device;
@@ -119,7 +116,7 @@ export function isWebBLEAvailable(): boolean {
 }
 
 export async function connectDeviceWebBLE(
-  addToTerminal: AddToTerminal,
+  addToStream: AddToStream,
   onDisconnect: () => void
 ): Promise<JacDevice> {
   const bleDevice = await navigator.bluetooth.requestDevice({
@@ -132,7 +129,7 @@ export async function connectDeviceWebBLE(
   });
 
   const stream = new JacStreamBle(bleDevice, logger);
-  const device = setupJacDevice(stream, addToTerminal);
+  const device = setupJacDevice(stream, addToStream);
   stream.onEnd(() => onDisconnect());
 
   return device;
@@ -145,7 +142,7 @@ export function isWokwiAvailable(): boolean {
 }
 
 export async function connectDeviceWokwiSimulator(
-  addToTerminal: AddToTerminal,
+  addToStream: AddToStream,
   onDisconnect: () => void,
   projectPath: string,
   fs: typeof import('fs')
@@ -170,7 +167,7 @@ export async function connectDeviceWokwiSimulator(
     },
   });
 
-  const device = setupJacDevice(stream, addToTerminal);
+  const device = setupJacDevice(stream, addToStream);
   stream.onEnd(() => onDisconnect());
 
   return device;

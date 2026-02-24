@@ -1,5 +1,5 @@
-import { TerminalConsole } from '@/features/terminal/components/terminal-console';
+import { Stream } from '@/features/stream';
 
 export function ConsolePanel() {
-  return <TerminalConsole />;
+  return <Stream.Console />;
 }

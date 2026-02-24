@@ -6,15 +6,19 @@ import { enqueueSnackbar } from 'notistack';
 import { compileProject } from '../lib/compilation';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { useJacDevice } from '../provider/jac-device-provider';
-import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { useStream } from '@/features/stream';
 import { useState } from 'react';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { Route } from '@/routes/__root';
 
 export function Build() {
+  const { streamBusService } = Route.useRouteContext();
   const { projectPath, fs } = useActiveProject();
   const { controlPanel } = useEditor();
   const { jacProject, pkg } = useJacDevice();
-  const { addEntry } = useTerminal();
+  const {
+    meta: { channel },
+  } = useStream();
   const [isBuilding, setIsBuilding] = useState(false);
   const { connectionStatus } = useJacDevice();
 
@@ -30,7 +34,18 @@ export function Build() {
       for (const [filePath, content] of Object.entries(files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
-      if (!(await compileProject(projectPath, fs, addEntry))) {
+      const compilerStreams = streamBusService.createWritablePair(
+        channel,
+        'compiler'
+      );
+      if (
+        !(await compileProject(
+          projectPath,
+          fs,
+          compilerStreams.out,
+          compilerStreams.err
+        ))
+      ) {
         enqueueSnackbar(m.device_build_compile_failed(), { variant: 'error' });
         return;
       }

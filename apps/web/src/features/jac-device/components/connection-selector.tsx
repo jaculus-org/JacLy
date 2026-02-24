@@ -16,7 +16,7 @@ import type { ConnectionType } from '../types/connection';
 import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useJacDevice } from '../provider/jac-device-provider';
-import { useTerminal } from '@/features/terminal/provider/terminal-provider';
+import { useStream } from '@/features/stream';
 import { useActiveProject } from '@/features/project/provider/active-project-provider';
 import { testConnection, uploadCode } from '../lib/device';
 import { useEditor } from '@/features/project/provider/project-editor-provider';
@@ -24,7 +24,9 @@ import { ButtonLoading } from '@/features/shared/components/custom/button-loadin
 
 export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
-  const { addEntry } = useTerminal();
+  const {
+    actions: { addEntry },
+  } = useStream();
   const { setDevice, connectionStatus, setConnectionStatus } = useJacDevice();
   const { jacProject } = useJacDevice();
   const { projectPath, fs } = useActiveProject();

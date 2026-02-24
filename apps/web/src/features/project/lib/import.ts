@@ -19,26 +19,6 @@ export interface ImportResult {
   fileCount: number;
 }
 
-export function createWritableErr(): Writable {
-  const stream = new Writable({
-    write(chunk, _encoding, callback) {
-      console.log('ERR:', chunk.toString());
-      callback();
-    },
-  });
-  return stream;
-}
-
-export function createWritableOut(): Writable {
-  const stream = new Writable({
-    write(chunk, _encoding, callback) {
-      console.log('OUT:', chunk.toString());
-      callback();
-    },
-  });
-  return stream;
-}
-
 /**
  * Parse a zip file and extract its contents
  */
@@ -76,13 +56,10 @@ export function parseZipFile(zipData: Uint8Array): ImportResult {
 export async function createProjectFromPackage(
   fs: FSInterface,
   projectPath: string,
-  pkg: ImportPackage
+  pkg: ImportPackage,
+  outStream: Writable,
+  errStream: Writable
 ): Promise<void> {
-  const project = new Project(
-    fs,
-    projectPath,
-    createWritableOut(),
-    createWritableErr()
-  );
+  const project = new Project(fs, projectPath, outStream, errStream);
   await project.createFromPackage(pkg, false, false);
 }

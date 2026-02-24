@@ -1,7 +1,7 @@
-import { TerminalLogs } from "@/features/terminal/components/terminal-logs";
+import { Stream } from '@/features/stream';
 
 export function LogsPanel() {
 	return (
-		<TerminalLogs />
+		<Stream.Logs />
 	)
 }

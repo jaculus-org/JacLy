@@ -11,7 +11,6 @@ import { Input } from '@/features/shared/components/ui/input';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
 import type { FSInterface } from '@jaculus/project/fs';
-import { Writable } from 'node:stream';
 import { useEffect, useState } from 'react';
 import { getRequest } from '@jaculus/jacly/project';
 import { enqueueSnackbar } from 'notistack';
@@ -19,6 +18,7 @@ import type { JaculusProjectType } from '@jaculus/project/package';
 import { Registry } from '@jaculus/project/registry';
 import { Project } from '@jaculus/project';
 import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
+import { Stream } from '@/features/stream';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -53,8 +53,11 @@ const defaultRegisters = [
 
 function NewProject() {
   const navigate = useNavigate();
-  const { projectManService: runtimeService, projectFsService } =
-    Route.useRouteContext();
+  const {
+    projectManService: runtimeService,
+    projectFsService,
+    streamBusService,
+  } = Route.useRouteContext();
   const [projectName, setProjectName] = useState('demo-project');
   const [projectOption, setProjectOption] = useState<JaculusProjectOptions>(
     projectOptions[0]
@@ -94,26 +97,7 @@ function NewProject() {
     }
 
     setIsCreating(true);
-
-    function writableErr(): Writable {
-      const stream = new Writable({
-        write(chunk, _encoding, callback) {
-          console.log('ERR:', chunk.toString());
-          callback();
-        },
-      });
-      return stream;
-    }
-
-    function writableOut(): Writable {
-      const stream = new Writable({
-        write(chunk, _encoding, callback) {
-          console.log('OUT:', chunk.toString());
-          callback();
-        },
-      });
-      return stream;
-    }
+    streamBusService.clear('global:new-project');
 
     try {
       const registry = await Registry.create(registers, getRequest);
@@ -135,12 +119,16 @@ function NewProject() {
       );
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
+      const creationStreams = streamBusService.createWritablePair(
+        'global:new-project',
+        'compiler'
+      );
 
       const project = new Project(
         fs as unknown as FSInterface,
         projectPath,
-        writableOut(),
-        writableErr()
+        creationStreams.out,
+        creationStreams.err
       );
       await project.createFromPackage(pkg, false, false);
 
@@ -260,6 +248,8 @@ function NewProject() {
             ? m.project_new_btn_creating()
             : m.project_new_btn_create()}
         </Button>
+
+        <Stream.CreateNewLogs streamBusService={streamBusService} />
       </div>
     </div>
   );
