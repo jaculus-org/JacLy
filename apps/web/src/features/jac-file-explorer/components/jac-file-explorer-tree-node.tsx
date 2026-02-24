@@ -1,15 +1,16 @@
-import { cn } from '@/lib/utils/cn';
-import { ChevronDown, ChevronRight, FolderOpen, Folder } from 'lucide-react';
-import { memo } from 'react';
-import { getFileIcon } from './helper';
-import type { FileTreeNodeProps } from './types';
+'use client';
 
+import { memo } from 'react';
+import { ChevronDown, ChevronRight, FolderOpen, Folder } from 'lucide-react';
+import { cn } from '@/lib/utils/cn';
+import { getFileIcon } from '../file-explorer-helpers';
+import type { FileTreeNodeProps } from '../file-explorer-types';
 import {
   ContextMenu,
   ContextMenuTrigger,
 } from '@/features/shared/components/ui/context-menu';
 
-export const FileTreeNode = memo(
+export const JacFileExplorerTreeNode = memo(
   ({
     item,
     depth,
@@ -44,7 +45,6 @@ export const FileTreeNode = memo(
                 onToggle(item);
               }}
             >
-              {/* Expand/Collapse Chevron */}
               <div
                 className={cn(
                   'flex items-center justify-center w-4 h-4 shrink-0',
@@ -65,7 +65,6 @@ export const FileTreeNode = memo(
                   ))}
               </div>
 
-              {/* Icon */}
               {item.isDirectory ? (
                 isExpanded ? (
                   <FolderOpen size={16} className="text-blue-500 shrink-0" />
@@ -78,18 +77,16 @@ export const FileTreeNode = memo(
                 </span>
               )}
 
-              {/* Filename */}
               <span className="truncate flex-1 ml-1">{item.name}</span>
             </div>
           </ContextMenuTrigger>
           <ContextMenuComponent item={item} />
         </ContextMenu>
 
-        {/* Recursive Render */}
         {item.isDirectory && isExpanded && item.children && (
           <div>
             {item.children.map(child => (
-              <FileTreeNode
+              <JacFileExplorerTreeNode
                 key={child.path}
                 item={child}
                 depth={depth + 1}
@@ -108,4 +105,4 @@ export const FileTreeNode = memo(
   }
 );
 
-FileTreeNode.displayName = 'FileTreeNode';
+JacFileExplorerTreeNode.displayName = 'JacFileExplorerTreeNode';

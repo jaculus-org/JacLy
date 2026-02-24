@@ -1,4 +1,6 @@
-import type { JSX } from 'react';
+'use client';
+
+import type { ComponentType } from 'react';
 
 export interface FileSystemItem {
   isRoot: boolean;
@@ -16,5 +18,5 @@ export interface FileTreeNodeProps {
   onToggle: (item: FileSystemItem) => void;
   onOpen: (item: FileSystemItem) => void;
   onSelect: (path: string) => void;
-  ContextMenuComponent: (props: { item: FileSystemItem }) => JSX.Element;
+  ContextMenuComponent: ComponentType<{ item: FileSystemItem }>;
 }

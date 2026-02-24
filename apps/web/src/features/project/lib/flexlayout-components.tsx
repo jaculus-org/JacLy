@@ -6,14 +6,17 @@ import {
   CodePanel,
   ConsolePanel,
   ErrorPanel,
-  FileExplorerPanel,
   GeneratedCode,
   InstallerPanel,
   JaculusPanel,
   LogsPanel,
-  PackagesPanel,
   WokwiPanel,
 } from '@/features/project/panels';
+import { JacPackagesPanel, JacPackagesProvider } from '@/features/jac-packages';
+import {
+  JacFileExplorerPanel,
+  JacFileExplorerProvider,
+} from '@/features/jac-file-explorer';
 import { getPanelTitle } from './flexlayout-defaults';
 import { m } from '@/paraglide/messages';
 
@@ -24,11 +27,19 @@ const PANEL_COMPONENTS: Record<
 > = {
   blockly: () => <BlocklyEditorPanel />,
   console: () => <ConsolePanel />,
-  'file-explorer': () => <FileExplorerPanel />,
+  'file-explorer': () => (
+    <JacFileExplorerProvider>
+      <JacFileExplorerPanel />
+    </JacFileExplorerProvider>
+  ),
   code: config => <CodePanel filePath={config?.filePath as string} />,
   'generated-code': () => <GeneratedCode />,
   wokwi: () => <WokwiPanel />,
-  packages: () => <PackagesPanel />,
+  packages: () => (
+    <JacPackagesProvider>
+      <JacPackagesPanel />
+    </JacPackagesProvider>
+  ),
   logs: () => <LogsPanel />,
   jaculus: () => <JaculusPanel />,
   installer: () => <InstallerPanel />,

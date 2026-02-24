@@ -1,14 +1,16 @@
+'use client';
+
 import {
+  Blocks,
   File,
-  FileText,
+  FileAudio,
   FileCode,
   FileImage,
+  FileText,
   FileVideo,
-  FileAudio,
-  Blocks,
 } from 'lucide-react';
-import type { FileSystemItem } from './types';
 import type fs from 'fs';
+import type { FileSystemItem } from './file-explorer-types';
 
 export async function buildFileTree(
   fsp: typeof fs.promises,
@@ -53,7 +55,7 @@ export async function loadDirectoryChildren(
 }
 
 export function getFileIcon(fileName: string, isDirectory: boolean) {
-  if (isDirectory) return null; // Will be handled separately
+  if (isDirectory) return null;
 
   const ext = fileName.split('.').pop()?.toLowerCase();
   const doubleExts = fileName.toLowerCase().split('.').slice(-2).join('.');
