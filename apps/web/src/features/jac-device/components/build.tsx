@@ -4,23 +4,26 @@ import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { compileProject } from '../lib/compilation';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
-import { useJacDevice } from '../provider/jac-device-provider';
+import { useActiveProject } from '@/features/project/active-project';
+import { useJacDevice } from '../device';
 import { useStream } from '@/features/stream';
 import { useState } from 'react';
-import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { useProjectEditor } from '@/features/project/editor';
 import { Route } from '@/routes/__root';
 
 export function Build() {
   const { streamBusService } = Route.useRouteContext();
-  const { projectPath, fs } = useActiveProject();
-  const { controlPanel } = useEditor();
-  const { jacProject, pkg } = useJacDevice();
+  const {
+    state: { projectPath, fs },
+  } = useActiveProject();
+  const { actions } = useProjectEditor();
+  const { controlPanel } = actions;
+  const { state: jacState } = useJacDevice();
+  const { jacProject, pkg, connectionStatus } = jacState;
   const {
     meta: { channel },
   } = useStream();
   const [isBuilding, setIsBuilding] = useState(false);
-  const { connectionStatus } = useJacDevice();
 
   if (jacProject == null || pkg?.jaculus?.projectType != 'code') {
     return;

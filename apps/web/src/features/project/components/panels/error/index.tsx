@@ -1,8 +1,10 @@
 import { ProjectLoadError } from '../../project-load-error';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 
 export function ErrorPanel() {
-  const { error } = useActiveProject();
+  const {
+    state: { error },
+  } = useActiveProject();
   if (!error) return;
 
   return <ProjectLoadError error={error} />;

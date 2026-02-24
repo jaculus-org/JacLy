@@ -15,11 +15,11 @@ import {
 import type { ConnectionType } from '../types/connection';
 import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
-import { useJacDevice } from '../provider/jac-device-provider';
+import { useJacDevice } from '../device';
 import { useStream } from '@/features/stream';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import { testConnection, uploadCode } from '../lib/device';
-import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { useProjectEditor } from '@/features/project/editor';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
 
 export function ConnectionSelector() {
@@ -27,10 +27,14 @@ export function ConnectionSelector() {
   const {
     actions: { addEntry },
   } = useStream();
-  const { setDevice, connectionStatus, setConnectionStatus } = useJacDevice();
-  const { jacProject } = useJacDevice();
-  const { projectPath, fs } = useActiveProject();
-  const { controlPanel } = useEditor();
+  const { state: jacState, actions: jacActions } = useJacDevice();
+  const { connectionStatus, jacProject } = jacState;
+  const { setDevice, setConnectionStatus } = jacActions;
+  const {
+    state: { projectPath, fs },
+  } = useActiveProject();
+  const { actions } = useProjectEditor();
+  const { controlPanel } = actions;
 
   const [selectedConnection, setSelectedConnection] = useState<ConnectionType>(
     availableConnections[0].type

@@ -1,10 +1,10 @@
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import { useTheme } from '@/features/theme/components/theme-provider';
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
 import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect, useCallback } from 'react';
 import { dirname } from 'path';
-import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
+import { useJacDevice } from '@/features/jac-device/device';
 import { getLocale } from '@/paraglide/runtime';
 import { m } from '@/paraglide/messages';
 import { editorSyncService } from '@/features/editor-code/lib/editor-sync-service';
@@ -12,8 +12,13 @@ import type { JaclyBlocksData } from '@jaculus/project';
 
 export function JaclyEditorComponent() {
   const { themeNormalized } = useTheme();
-  const { fs, fsp, getFileName } = useActiveProject();
-  const { jacProject, nodeModulesVersion } = useJacDevice();
+  const {
+    state: { fs, fsp },
+    actions,
+  } = useActiveProject();
+  const { getFileName } = actions;
+  const { state: jacState } = useJacDevice();
+  const { jacProject, nodeModulesVersion } = jacState;
 
   const [initialJson, setInitialJson] = useState<object | null>(null);
   const [jaclyBlocksData, setJaclyBlocksData] =

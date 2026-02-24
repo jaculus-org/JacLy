@@ -15,15 +15,18 @@ import {
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { FileSystemItem } from './types';
 import { buildFileTree, loadDirectoryChildren } from './helper';
-import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { useProjectEditor } from '@/features/project/editor';
 import { enqueueSnackbar } from 'notistack';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import { debounce } from '@/lib/utils/debouncer';
 import { FileTreeNode } from './file-tree-node';
 
 export function FileExplorerPanel() {
-  const { fsp, projectPath } = useActiveProject();
-  const { openPanel } = useEditor();
+  const {
+    state: { fsp, projectPath },
+  } = useActiveProject();
+  const { actions } = useProjectEditor();
+  const { openPanel } = actions;
 
   const [fileTree, setFileTree] = useState<FileSystemItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);

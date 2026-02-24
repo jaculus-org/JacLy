@@ -1,25 +1,29 @@
 import { m } from '@/paraglide/messages';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { compileProject } from '../lib/compilation';
-import { useJacDevice } from '../provider/jac-device-provider';
+import { useJacDevice } from '../device';
 import { useStream } from '@/features/stream';
 import { uploadCode } from '../lib/device';
-import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { useProjectEditor } from '@/features/project/editor';
 import { Route } from '@/routes/__root';
 
 export function BuildFlash() {
   const { streamBusService } = Route.useRouteContext();
-  const { projectPath, fs } = useActiveProject();
-  const { controlPanel } = useEditor();
+  const {
+    state: { projectPath, fs },
+  } = useActiveProject();
+  const { actions } = useProjectEditor();
+  const { controlPanel } = actions;
   const {
     meta: { channel },
   } = useStream();
-  const { device, jacProject, pkg, connectionStatus } = useJacDevice();
+  const { state: jacState } = useJacDevice();
+  const { device, jacProject, pkg, connectionStatus } = jacState;
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleBuildAndFlash = useCallback(async () => {

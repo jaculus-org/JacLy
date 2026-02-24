@@ -6,7 +6,7 @@ import {
   ToolCaseIcon,
 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import type { ProjectError } from '../provider/active-project-provider';
+import type { ProjectError } from '../active-project';
 
 interface EditorLoadErrorProps {
   error: ProjectError;

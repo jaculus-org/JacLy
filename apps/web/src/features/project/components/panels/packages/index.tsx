@@ -1,6 +1,6 @@
 import { m } from '@/paraglide/messages';
 import logger from '@/features/jac-device/lib/logger';
-import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
+import { useJacDevice } from '@/features/jac-device/device';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/features/shared/components/ui/button';
@@ -27,7 +27,7 @@ import {
   AlertDialogTrigger,
 } from '@/features/shared/components/ui/alert-dialog';
 import { RefreshCw, Plus, Trash2, Package, Search } from 'lucide-react';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import path from 'path';
 import type { Dependencies } from '@jaculus/project/package';
 import { InvalidPackageJsonFormatError } from '@jaculus/project/package';
@@ -35,8 +35,12 @@ import { ProjectDependencyError } from '@jaculus/project';
 import { RegistryFetchError } from '@jaculus/project/registry';
 
 export function PackagesPanel() {
-  const { jacProject, reloadNodeModules } = useJacDevice();
-  const { fs, projectPath } = useActiveProject();
+  const { state: jacState, actions: jacActions } = useJacDevice();
+  const { jacProject } = jacState;
+  const { reloadNodeModules } = jacActions;
+  const {
+    state: { projectPath, fs },
+  } = useActiveProject();
 
   function classifyError(err: unknown, fallback: string): string {
     if (err instanceof ProjectDependencyError) {

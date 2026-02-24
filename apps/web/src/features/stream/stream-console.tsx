@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { useStream } from './stream-context';
 import { sendToDeviceStr } from '@/features/jac-device/lib/connection';
-import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
+import { useJacDevice } from '@/features/jac-device/device';
 import { Card } from '@/features/shared/components/ui/card';
 import { TooltipProvider } from '@/features/shared/components/ui/tooltip';
 import { KeyValueDisplay } from '@/features/keyValue/components/keyValue';
@@ -20,7 +20,8 @@ export function StreamConsole({
   tooltipCollapsed = false,
 }: StreamConsoleProps) {
   const { state, actions } = useStream();
-  const { device } = useJacDevice();
+  const { state: jacState } = useJacDevice();
+  const { device } = jacState;
   const [input, setInput] = useState('');
   const [showTimestamp, setShowTimestamp] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);

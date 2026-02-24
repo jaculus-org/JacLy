@@ -1,4 +1,4 @@
-import type { ProjectError } from '../provider/active-project-provider';
+import type { ProjectError } from '../active-project';
 
 export type FlexLayoutAttributes = {
   type: string;

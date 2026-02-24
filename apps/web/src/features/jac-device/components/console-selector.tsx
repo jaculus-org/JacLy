@@ -1,13 +1,16 @@
 import { m } from '@/paraglide/messages';
 import { Button } from '@/features/shared/components/ui/button';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
-import { useEditor } from '@/features/project/provider/project-editor-provider';
+import { useProjectEditor } from '@/features/project/editor';
 import { CableIcon } from 'lucide-react';
-import { useJacDevice } from '../provider/jac-device-provider';
+import { useJacDevice } from '../device';
 
 export function ConsoleSelector() {
-  const { device } = useJacDevice();
-  const { controlPanel } = useEditor();
+  const {
+    state: { device },
+  } = useJacDevice();
+  const { actions } = useProjectEditor();
+  const { controlPanel } = actions;
 
   if (!device) {
     return;

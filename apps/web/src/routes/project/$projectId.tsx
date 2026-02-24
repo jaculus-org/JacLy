@@ -1,10 +1,10 @@
 import { m } from '@/paraglide/messages';
-import { JacDeviceProvider } from '@/features/jac-device/provider/jac-device-provider';
-import { ActiveProjectProvider } from '@/features/project/provider/active-project-provider';
+import { JacDevice } from '@/features/jac-device/device';
+import { ActiveProject } from '@/features/project/active-project';
 import { Stream } from '@/features/stream';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
-import { ProjectEditorProvider } from '@/features/project/provider/project-editor-provider';
+import { ProjectEditor } from '@/features/project/editor';
 
 export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context, params }) => {
@@ -24,10 +24,11 @@ export const Route = createFileRoute('/project/$projectId')({
 
 function ProjectEditorRoute() {
   const project = Route.useLoaderData();
-  const { projectFsService, streamBusService } = Route.useRouteContext();
+  const { projectFsService, projectManService, streamBusService } =
+    Route.useRouteContext();
 
   return (
-    <ActiveProjectProvider
+    <ActiveProject.Provider
       dbProject={project}
       projectFsService={projectFsService}
     >
@@ -35,10 +36,13 @@ function ProjectEditorRoute() {
         channel={`project:${project.id}`}
         streamBusService={streamBusService}
       >
-        <JacDeviceProvider>
-          <ProjectEditorProvider />
-        </JacDeviceProvider>
+        <JacDevice.Provider>
+          <ProjectEditor.Provider projectManService={projectManService}>
+            <ProjectEditor.Header />
+            <ProjectEditor.Layout />
+          </ProjectEditor.Provider>
+        </JacDevice.Provider>
       </Stream.Provider>
-    </ActiveProjectProvider>
+    </ActiveProject.Provider>
   );
 }

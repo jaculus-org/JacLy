@@ -6,10 +6,12 @@ import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
 import { ConnectedDevice } from '@/features/jac-device/components/connected-device';
 import { Badge } from '@/features/shared/components/ui/badge';
-import { useActiveProject } from '../provider/active-project-provider';
+import { useActiveProject } from '../active-project';
 
 export function ProjectEditorHeader() {
-  const { dbProject } = useActiveProject();
+  const {
+    state: { dbProject },
+  } = useActiveProject();
   return (
     <header className="relative backdrop-blur-sm bg-white border-b border-blue-100 dark:bg-slate-800 dark:border-slate-700">
       <div className="max-w-full">

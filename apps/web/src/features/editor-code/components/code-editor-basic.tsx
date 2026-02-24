@@ -1,5 +1,5 @@
 import { m } from '@/paraglide/messages';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import { useTheme } from '@/features/theme/components/theme-provider';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
@@ -20,7 +20,9 @@ export function CodeEditorBasic({
   ifNotExists,
   loadingMessage,
 }: CodeEditorBasicProps) {
-  const { fsp, projectPath } = useActiveProject();
+  const {
+    state: { fsp, projectPath },
+  } = useActiveProject();
   const { themeNormalized } = useTheme();
   const monaco = useMonaco();
 

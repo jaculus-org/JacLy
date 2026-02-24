@@ -1,9 +1,11 @@
-import { useJacDevice } from '@/features/jac-device/provider/jac-device-provider';
+import { useJacDevice } from '@/features/jac-device/device';
 import { Loader2, AlertCircle, Unplug } from 'lucide-react';
 import { m } from '@/paraglide/messages';
 
 export function WokwiSimulator() {
-  const { device, connectionType, connectionStatus } = useJacDevice();
+  const {
+    state: { device, connectionType, connectionStatus },
+  } = useJacDevice();
 
   if (!device) {
     return (

@@ -51,12 +51,13 @@ import {
   setWifiApPassword,
   getCurrentWifiIp,
 } from '../lib/device';
-import { useJacDevice } from '../provider/jac-device-provider';
+import { useJacDevice } from '../device';
 
 type WifiModalMode = 'network' | 'ap' | 'remove' | null;
 
 export function DeviceConfig() {
-  const { device, connectionStatus } = useJacDevice();
+  const { state: jacState } = useJacDevice();
+  const { device, connectionStatus } = jacState;
   const [expandedSections, setExpandedSections] = useState({
     info: true,
     control: true,

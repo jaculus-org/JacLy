@@ -1,7 +1,7 @@
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { debounce } from '@/lib/utils/debouncer';
 import { useMemo, useRef } from 'react';
-import { useActiveProject } from '@/features/project/provider/active-project-provider';
+import { useActiveProject } from '@/features/project/active-project';
 import { inferLanguageFromPath } from '../lib/language';
 
 interface CodeEditorProps {
@@ -10,7 +10,9 @@ interface CodeEditorProps {
 }
 
 export function CodeEditor({ filePath, readOnly = false }: CodeEditorProps) {
-  const { fsp, projectPath } = useActiveProject();
+  const {
+    state: { fsp, projectPath },
+  } = useActiveProject();
   const saveFile = useMemo(
     () =>
       debounce(async (path: string, content: string) => {
