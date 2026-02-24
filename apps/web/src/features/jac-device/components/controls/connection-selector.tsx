@@ -74,12 +74,13 @@ export function ConnectionSelector() {
 
         setTimeout(async () => {
           await uploadCode(await jacProject!.getFlashFiles(), dev);
-        }, 8000);
+        }, 10_000);
       } else {
-        const connectionStatus = await testConnection(dev);
+        const connectionSuccess = await testConnection(dev, 3000);
 
-        if (connectionStatus) {
+        if (connectionSuccess) {
           controlPanel('console', 'expand');
+          controlPanel('packages', 'collapse');
         } else {
           if (selectedConnection != 'serial') {
             enqueueSnackbar(m.installer_msg_serial_required(), {
@@ -95,15 +96,21 @@ export function ConnectionSelector() {
       }
     } catch (error) {
       console.error(error);
-      if (error instanceof UnknownConnectionTypeError) {
+      if (
+        error instanceof DOMException &&
+        error.name === 'NotFoundError' &&
+        error.message.includes('requestPort')
+      ) {
+        enqueueSnackbar(m.device_connect_cancelled(), { variant: 'info' });
+      } else if (error instanceof UnknownConnectionTypeError) {
         enqueueSnackbar(error.message, { variant: 'error' });
       } else {
         enqueueSnackbar(m.device_connect_failed(), { variant: 'error' });
       }
+      setConnectionStatus('disconnected');
       return;
-    } finally {
-      setConnectionStatus('connected');
     }
+    setConnectionStatus('connected');
   }
 
   return (

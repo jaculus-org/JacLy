@@ -14,7 +14,6 @@ export {
   ConnectedDevice,
   ConnectionSelector,
   ConsoleSelector,
-  DeviceConfig,
 } from './components';
 
 export type { ConnectionStatus, ConnectionType } from './types/connection';

@@ -17,8 +17,9 @@ export function BuildFlash() {
   const {
     state: { projectPath, fs },
   } = useActiveProject();
-  const { actions } = useProjectEditor();
-  const { controlPanel } = actions;
+  const {
+    actions: { controlPanel },
+  } = useProjectEditor();
   const {
     meta: { channel },
   } = useStream();

@@ -13,10 +13,12 @@ import { StreamConsoleToolbar } from './stream-console-toolbar';
 import { StreamOutput } from './stream-output';
 
 interface StreamConsoleProps {
+  displayKeyValue?: boolean;
   tooltipCollapsed?: boolean;
 }
 
 export function StreamConsole({
+  displayKeyValue = true,
   tooltipCollapsed = false,
 }: StreamConsoleProps) {
   const { state, actions } = useStream();
@@ -100,7 +102,7 @@ export function StreamConsole({
           )}
         </Card>
 
-        <KeyValueDisplay />
+        {displayKeyValue && <KeyValueDisplay />}
 
         <StreamOutput
           entries={state.consoleEntries}

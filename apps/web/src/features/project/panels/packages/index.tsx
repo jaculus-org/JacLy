@@ -1,13 +1,22 @@
+'use client';
+
 import { m } from '@/paraglide/messages';
 import logger from '@/features/jac-device/lib/logger';
 import { useJacDevice } from '@/features/jac-device';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/features/shared/components/ui/button';
-import { Input } from '@/features/shared/components/ui/input';
 import { Card } from '@/features/shared/components/ui/card';
 import { Badge } from '@/features/shared/components/ui/badge';
 import { Separator } from '@/features/shared/components/ui/separator';
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/features/shared/components/ui/combobox';
 import {
   Select,
   SelectContent,
@@ -26,16 +35,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/features/shared/components/ui/alert-dialog';
-import { RefreshCw, Plus, Trash2, Package, Search } from 'lucide-react';
+import { RefreshCw, Plus, Trash2, Package } from 'lucide-react';
 import { useActiveProject } from '@/features/project/active-project';
 import path from 'path';
 import type { Dependencies } from '@jaculus/project/package';
 import { InvalidPackageJsonFormatError } from '@jaculus/project/package';
 import { ProjectDependencyError } from '@jaculus/project';
 import { RegistryFetchError } from '@jaculus/project/registry';
+import { useProjectEditor } from '../..';
 
 export function PackagesPanel() {
   const { state: jacState, actions: jacActions } = useJacDevice();
+  const {
+    actions: { controlPanel },
+  } = useProjectEditor();
   const { jacProject } = jacState;
   const { reloadNodeModules } = jacActions;
   const {
@@ -68,7 +81,6 @@ export function PackagesPanel() {
     []
   );
 
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedLib, setSelectedLib] = useState<string | null>(null);
   const [selectedLibVersion, setSelectedLibVersion] = useState<string | null>(
     null
@@ -77,6 +89,14 @@ export function PackagesPanel() {
   const [isInstalling, setIsInstalling] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const setErrorAndLogPanel = useCallback(
+    (message: string) => {
+      setError(message);
+      controlPanel('logs', 'expand');
+    },
+    [controlPanel]
+  );
+
   const handleInstall = useCallback(async () => {
     try {
       setIsInstalling(true);
@@ -84,19 +104,21 @@ export function PackagesPanel() {
       setInstalledLibs(await jacProject!.install());
       reloadNodeModules();
     } catch (err) {
-      setError(classifyError(err, m.project_panel_pkg_install_error()));
+      setErrorAndLogPanel(
+        classifyError(err, m.project_panel_pkg_install_error())
+      );
       logger.error('Error installing library:' + err);
     } finally {
       setIsInstalling(false);
     }
-  }, [jacProject, reloadNodeModules]);
+  }, [jacProject, reloadNodeModules, setErrorAndLogPanel]);
 
   const handleAddLibrary = useCallback(async () => {
     try {
       setIsInstalling(true);
       setError(null);
       if (selectedLib == null || availableLibVersions.length === 0) {
-        setError(m.project_panel_pkg_select_error());
+        setErrorAndLogPanel(m.project_panel_pkg_select_error());
         return;
       }
       const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
@@ -112,7 +134,7 @@ export function PackagesPanel() {
         { variant: 'success' }
       );
     } catch (err) {
-      setError(classifyError(err, m.project_panel_pkg_add_error()));
+      setErrorAndLogPanel(classifyError(err, m.project_panel_pkg_add_error()));
       logger.error('Error adding library:' + err);
     } finally {
       setIsInstalling(false);
@@ -125,6 +147,7 @@ export function PackagesPanel() {
     selectedLibVersion,
     availableLibVersions,
     reloadNodeModules,
+    setErrorAndLogPanel,
   ]);
 
   const handleRemoveLibrary = useCallback(
@@ -138,13 +161,15 @@ export function PackagesPanel() {
           variant: 'success',
         });
       } catch (err) {
-        setError(classifyError(err, m.project_panel_pkg_remove_error()));
+        setErrorAndLogPanel(
+          classifyError(err, m.project_panel_pkg_remove_error())
+        );
         logger.error('Error removing library:' + err);
       } finally {
         setIsInstalling(false);
       }
     },
-    [jacProject, reloadNodeModules]
+    [jacProject, reloadNodeModules, setErrorAndLogPanel]
   );
 
   useEffect(() => {
@@ -155,11 +180,13 @@ export function PackagesPanel() {
         setAvailableLibs(await jacProject.registry.listPackages());
         setInstalledLibs(await jacProject.installedLibraries());
       } catch (err) {
-        setError(classifyError(err, m.project_panel_pkg_load_error()));
+        setErrorAndLogPanel(
+          classifyError(err, m.project_panel_pkg_load_error())
+        );
         logger.error('Error loading libraries:' + err);
       }
     })();
-  }, [jacProject]);
+  }, [jacProject, setErrorAndLogPanel]);
 
   useEffect(() => {
     (async () => {
@@ -171,7 +198,9 @@ export function PackagesPanel() {
           setInstalledLibs(await jacProject.install());
           reloadNodeModules();
         } catch (err) {
-          setError(classifyError(err, m.project_panel_pkg_install_error()));
+          setErrorAndLogPanel(
+            classifyError(err, m.project_panel_pkg_install_error())
+          );
           logger.error('Error installing library:' + err);
         } finally {
           setIsInstalling(false);
@@ -202,11 +231,13 @@ export function PackagesPanel() {
           setSelectedLibVersion(null);
         }
       } catch (err) {
-        setError(classifyError(err, m.project_panel_pkg_versions_error()));
+        setErrorAndLogPanel(
+          classifyError(err, m.project_panel_pkg_versions_error())
+        );
         logger.error('Error loading library versions:' + err);
       }
     })();
-  }, [selectedLib, jacProject]);
+  }, [selectedLib, jacProject, setErrorAndLogPanel]);
 
   if (jacProject == null) {
     return (
@@ -217,9 +248,9 @@ export function PackagesPanel() {
   }
 
   // show only available libraries that are not installed yet
-  const filteredAvailableLibs = availableLibs
-    .filter(lib => !(lib in installedLibs))
-    .filter(lib => lib.toLowerCase().includes(searchQuery.toLowerCase()));
+  const availableLibChoices = availableLibs.filter(
+    lib => !(lib in installedLibs)
+  );
 
   return (
     <div className="flex h-full flex-col gap-2 p-2">
@@ -255,41 +286,29 @@ export function PackagesPanel() {
             <label className="mb-1 block text-sm text-muted-foreground">
               {m.project_panel_pkg_select()}
             </label>
-            <Select
+            <Combobox
+              items={availableLibChoices}
               value={selectedLib ?? ''}
-              onValueChange={setSelectedLib}
+              onValueChange={value => setSelectedLib(value || null)}
               disabled={isInstalling}
+              autoHighlight
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={m.project_panel_pkg_choose()} />
-              </SelectTrigger>
-              <SelectContent className="w-full">
-                <div className="p-2">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder={m.project_panel_pkg_search()}
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      className="pl-8"
-                    />
-                  </div>
-                </div>
-                <div className="max-h-60 overflow-y-auto">
-                  {filteredAvailableLibs.length === 0 ? (
-                    <div className="p-2 text-center text-sm text-muted-foreground">
-                      {m.project_panel_pkg_not_found()}
-                    </div>
-                  ) : (
-                    filteredAvailableLibs.map(lib => (
-                      <SelectItem key={lib} value={lib}>
-                        {lib}
-                      </SelectItem>
-                    ))
+              <ComboboxInput
+                placeholder={m.project_panel_pkg_search()}
+                className="w-full"
+                disabled={isInstalling}
+              />
+              <ComboboxContent>
+                <ComboboxEmpty>{m.project_panel_pkg_not_found()}</ComboboxEmpty>
+                <ComboboxList>
+                  {item => (
+                    <ComboboxItem key={item} value={item}>
+                      {item}
+                    </ComboboxItem>
                   )}
-                </div>
-              </SelectContent>
-            </Select>
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
           </div>
 
           <div>

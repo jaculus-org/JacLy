@@ -1,6 +1,4 @@
 import { JaculusRequestError, RequestFunction } from '@jaculus/project/fs';
-import * as path from 'path';
-import * as fs from 'fs';
 
 export const getRequest: RequestFunction = async (
   baseUri: string,
@@ -26,10 +24,12 @@ export const getRequest: RequestFunction = async (
     const arrayBuffer = await response.arrayBuffer();
     return new Uint8Array(arrayBuffer);
   } else if (baseUri.startsWith('file:')) {
+    const path = await import('path');
     const uri = path.join(baseUri, libFile);
     const filePath = uri.replace(/^file:/, '');
     try {
-      return new Uint8Array(await fs.promises.readFile(filePath));
+      const fs = await import('fs');
+      return new Uint8Array(fs.readFileSync(filePath));
     } catch (error) {
       throw new JaculusRequestError(
         `Failed to read ${filePath}: ${(error as Error).message}`

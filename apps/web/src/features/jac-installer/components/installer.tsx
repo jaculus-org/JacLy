@@ -578,7 +578,7 @@ export function Installer() {
           className="h-46 w-full rounded-md border border-gray-700"
           id="terminal-output"
         >
-          <div className="bg-black text-green-400 font-mono text-sm p-4">
+          <div className="bg-secondary text-green-400 font-mono text-sm p-4">
             {terminalOutput.length === 0 ? (
               <div className="text-gray-500">
                 {m.installer_terminal_empty()}

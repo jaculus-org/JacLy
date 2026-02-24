@@ -1,7 +1,7 @@
 import { m } from '@/paraglide/messages';
 import { ConnectionSelector } from '@/features/jac-device';
 import { LocaleSelector } from '@/features/locale';
-import { ThemeToggle } from '@/features/theme';
+import { ThemeToggle } from '@/features/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
 import { ConnectedDevice } from '@/features/jac-device';

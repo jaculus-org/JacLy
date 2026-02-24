@@ -1,5 +1,9 @@
-import { DeviceConfig } from '@/features/jac-device';
+import { JacDeviceControl } from '@/features/jac-device-control';
 
 export function JaculusPanel() {
-  return <DeviceConfig />;
+  return (
+    <JacDeviceControl.Provider>
+      <JacDeviceControl.Panel />
+    </JacDeviceControl.Provider>
+  );
 }

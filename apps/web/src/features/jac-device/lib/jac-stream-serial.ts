@@ -2,6 +2,7 @@ import { type Duplex } from '@jaculus/link/stream';
 import { type Logger } from '@jaculus/common';
 import { JacStreamBase, JacStreamError } from './jac-stream-base';
 
+// TODO: change setupDisconnectHandler and cleanupConnection and destroy behavior
 export class JacStreamSerial extends JacStreamBase implements Duplex {
   private port: SerialPort;
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;

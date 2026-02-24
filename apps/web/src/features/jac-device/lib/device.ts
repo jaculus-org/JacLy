@@ -22,10 +22,16 @@ async function withLLockedDevice<T>(
   }
 }
 
-export async function testConnection(device: JacDevice): Promise<boolean> {
+export async function testConnection(
+  device: JacDevice,
+  timeoutMs: number
+): Promise<boolean> {
   try {
     const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Connection test timed out')), 1500)
+      setTimeout(
+        () => reject(new Error('Connection test timed out')),
+        timeoutMs
+      )
     );
 
     await Promise.race([withLLockedDevice(device, async () => {}), timeout]);

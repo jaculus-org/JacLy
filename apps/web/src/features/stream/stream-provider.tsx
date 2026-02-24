@@ -73,6 +73,7 @@ export function StreamProvider({
     [entries]
   );
 
+  // TODO: do I need to memoize this? Is React compiler smart enough to not re-render it incorrectly?
   const value = useMemo<StreamContextValue>(
     () => ({
       state: {

@@ -1,4 +1,4 @@
-import { WokwiSimulator } from '@/features/wokwi-simulator/components';
+import { WokwiSimulator } from '@/features/wokwi-simulator';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -14,7 +14,7 @@ export function WokwiPanel() {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize="25%">
-        <Stream.Console tooltipCollapsed={true} />
+        <Stream.Console tooltipCollapsed={true} displayKeyValue={false} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );
