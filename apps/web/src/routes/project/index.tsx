@@ -21,11 +21,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/features/shared/components/ui/dropdown-menu';
+import { Input } from '@/features/shared/components/ui/input';
 import type { FSInterface } from '@jaculus/project/fs';
+import path from 'path';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Blocks, Code, Download, MoreVertical, Trash } from 'lucide-react';
+import {
+  Blocks,
+  Code,
+  Download,
+  MoreVertical,
+  Pencil,
+  Trash,
+} from 'lucide-react';
 import { useState } from 'react';
+import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
 
 export const Route = createFileRoute('/project/')({
   component: EditorList,
@@ -36,6 +46,13 @@ function EditorList() {
     Route.useRouteContext();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+  const [projectToRename, setProjectToRename] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renameError, setRenameError] = useState<string | null>(null);
 
   const projects = useLiveQuery(
     () => runtimeService.listProjects(),
@@ -49,6 +66,66 @@ function EditorList() {
     }
     setDeleteDialogOpen(false);
     setProjectToDelete(null);
+  }
+
+  const projectNamePattern = /^[a-zA-Z0-9-_ ]+$/;
+  const projectNamePatternJson = /^[a-z0-9-_]+$/;
+
+  function startRename(projectId: string, projectName: string) {
+    setProjectToRename({ id: projectId, name: projectName });
+    setRenameValue(projectName);
+    setRenameError(null);
+    setRenameDialogOpen(true);
+  }
+
+  async function confirmRename() {
+    if (!projectToRename) return;
+    const nextName = renameValue.trim();
+
+    if (!nextName) {
+      setRenameError(m.project_rename_required());
+      return;
+    }
+
+    if (!projectNamePattern.test(nextName)) {
+      setRenameError(m.project_rename_invalid());
+      return;
+    }
+
+    setRenameError(null);
+
+    try {
+      const projectId = projectToRename.id;
+
+      if (nextName === projectToRename.name) {
+        setRenameDialogOpen(false);
+        setProjectToRename(null);
+        return;
+      }
+      const nextNamePackage = nextName.replace(/[^a-zA-Z0-9-_]/g, '-');
+
+      if (projectNamePatternJson.test(nextNamePackage)) {
+        await projectFsService.withMount(
+          projectId,
+          async ({ fs, projectPath }) => {
+            const packageJsonPath = path.join(projectPath, 'package.json');
+            const pkgJson = await loadPackageJson(fs, packageJsonPath);
+            await savePackageJson(fs, packageJsonPath, {
+              ...pkgJson,
+              name: nextName,
+            });
+          }
+        );
+      }
+
+      await runtimeService.renameProject(projectId, nextName);
+
+      setRenameDialogOpen(false);
+      setProjectToRename(null);
+    } catch (error) {
+      console.error('Failed to rename project:', error);
+      setRenameError(m.project_rename_failed());
+    }
   }
 
   return (
@@ -120,6 +197,15 @@ function EditorList() {
                               {m.project_delete()}
                             </DropdownMenuItem>
                             <DropdownMenuItem
+                              onClick={e => {
+                                e.stopPropagation();
+                                startRename(project.id, project.name);
+                              }}
+                            >
+                              <Pencil className="w-4 h-4 mr-2" />
+                              {m.project_rename()}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               onClick={async e => {
                                 e.stopPropagation();
                                 await projectFsService.withMount(
@@ -176,6 +262,47 @@ function EditorList() {
                 </Button>
                 <Button variant="destructive" onClick={confirmDelete}>
                   {m.project_delete_confirm()}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog
+            open={renameDialogOpen}
+            onOpenChange={open => {
+              setRenameDialogOpen(open);
+              if (!open) {
+                setRenameError(null);
+                setProjectToRename(null);
+              }
+            }}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{m.project_rename_title()}</DialogTitle>
+                <DialogDescription>
+                  {m.project_rename_description()}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-2">
+                <Input
+                  value={renameValue}
+                  onChange={e => setRenameValue(e.target.value)}
+                  placeholder={m.project_rename_placeholder()}
+                />
+                {renameError && (
+                  <p className="text-sm text-destructive">{renameError}</p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setRenameDialogOpen(false)}
+                >
+                  {m.project_rename_cancel()}
+                </Button>
+                <Button onClick={confirmRename}>
+                  {m.project_rename_confirm()}
                 </Button>
               </DialogFooter>
             </DialogContent>

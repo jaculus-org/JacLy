@@ -30,6 +30,14 @@ export class ProjectManagementService {
     await this.repo.rename(id, newName);
   }
 
+  async renameProjectWithId(
+    oldId: string,
+    newId: string,
+    newName: string
+  ): Promise<void> {
+    await this.repo.renameWithId(oldId, newId, newName);
+  }
+
   async listProjects(): Promise<IDbProject[]> {
     return await this.repo.list();
   }

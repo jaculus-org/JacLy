@@ -44,6 +44,34 @@ export class ProjectRepository {
     });
   }
 
+  async renameWithId(
+    oldId: string,
+    newId: string,
+    newName: string
+  ): Promise<void> {
+    if (oldId === newId) {
+      await this.rename(oldId, newName);
+      return;
+    }
+
+    const project = await this.db.projects.get(oldId);
+    if (!project) throw new Error('Project not found');
+
+    const existing = await this.db.projects.get(newId);
+    if (existing) throw new Error('Project already exists');
+
+    const now = Date.now();
+    await this.db.transaction('rw', this.db.projects, async () => {
+      await this.db.projects.add({
+        ...project,
+        id: newId,
+        name: newName,
+        modifiedAt: now,
+      });
+      await this.db.projects.delete(oldId);
+    });
+  }
+
   async touch(id: string): Promise<void> {
     await this.db.projects.update(id, { modifiedAt: Date.now() });
   }

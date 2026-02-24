@@ -8,9 +8,11 @@ import {
 } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import { Zip } from '@zenfs/archives';
+import { enqueueSnackbar } from 'notistack';
+import { copyFolder, type FSInterface } from '@jaculus/project/fs';
 
 export interface ProjectFsInterface {
-  fs: typeof fs;
+  fs: FSInterface;
   projectPath: string;
 }
 
@@ -48,7 +50,7 @@ export async function mountProject(
   const mountPath = getMountPath(projectId);
 
   if (isMounted(projectId)) {
-    return { fs, projectPath: mountPath };
+    return { fs: fs as unknown as FSInterface, projectPath: mountPath };
   }
 
   try {
@@ -59,7 +61,7 @@ export async function mountProject(
     mount(mountPath, backend);
   } catch (error) {
     if (error instanceof Error && error.message.includes('already in use')) {
-      return { fs, projectPath: mountPath };
+      return { fs: fs as unknown as FSInterface, projectPath: mountPath };
     }
     throw error;
   }
@@ -71,7 +73,7 @@ export async function mountProject(
   window.fs = fs;
   window.fsp = fs.promises;
 
-  return { fs, projectPath: mountPath };
+  return { fs: fs as unknown as FSInterface, projectPath: mountPath };
 }
 
 export function unmountProject(projectId: string): void {
@@ -86,6 +88,53 @@ export function unmountProject(projectId: string): void {
 }
 
 /**
+ * Delete the IndexedDB store backing a project.
+ * The project must be unmounted first.
+ */
+function deleteProjectStore(projectId: string): Promise<void> {
+  const storeName = getStoreName(projectId);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.deleteDatabase(storeName);
+    req.onsuccess = () => resolve();
+    req.onerror = event => reject(event);
+    req.onblocked = () => {
+      const message = `Deletion of IndexedDB store "${storeName}" is blocked. Reloading page in 3 seconds...`;
+      console.warn(message);
+      enqueueSnackbar(message, { variant: 'warning' });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    };
+  });
+}
+
+/**
+ * Rename a project by copying its filesystem to a new IndexedDB store
+ * and deleting the old one.
+ *
+ * 1. Mount both old and new projects
+ * 2. Copy all files using copyFolder
+ * 3. Unmount both
+ * 4. Delete the old IndexedDB store
+ */
+export async function renameProject(
+  oldProjectId: string,
+  newProjectId: string
+): Promise<void> {
+  const oldFs = await mountProject(oldProjectId);
+  const newFs = await mountProject(newProjectId);
+
+  try {
+    await copyFolder(oldFs.fs, oldFs.projectPath, newFs.fs, newFs.projectPath);
+  } finally {
+    unmountProject(newProjectId);
+    unmountProject(oldProjectId);
+  }
+
+  await deleteProjectStore(oldProjectId);
+}
+
+/**
  * Service class for dependency injection in React context.
  * Wraps the module functions for easier testing and provider usage.
  */
@@ -93,6 +142,7 @@ export class ProjectFsService {
   isMounted = isMounted;
   mount = mountProject;
   unmount = unmountProject;
+  rename = renameProject;
 
   async withMount<T>(
     projectId: string,
