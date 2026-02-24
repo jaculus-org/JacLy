@@ -1,5 +1,5 @@
-import type { KeyValueMap } from '@/features/keyValue/lib/types';
-import { createContext, use } from 'react';
+import type { KeyValueMap } from '@/features/keyValue';
+import { createContext, useContext } from 'react';
 import type {
   AddToStream,
   StreamEntry,
@@ -38,7 +38,7 @@ export const streamLogKeys: ReadonlyArray<StreamLogKey> = [
 ];
 
 export function useStream(): StreamContextValue {
-  const context = use(StreamContext);
+  const context = useContext(StreamContext);
   if (!context) {
     throw new Error('Stream.* components must be within Stream.Provider');
   }

@@ -8,9 +8,8 @@ import {
 import * as FlexLayout from 'flexlayout-react';
 import { enqueueSnackbar } from 'notistack';
 import { m } from '@/paraglide/messages';
-import { useJacDevice } from '@/features/jac-device/device';
+import { useJacDevice } from '@/features/jac-device';
 import { useActiveProject } from '@/features/project/active-project';
-import '@/features/project/components/flex-layout/flexlayout.css';
 import {
   flexLayoutDefaultJson,
   getPanelTitle,
@@ -26,7 +25,7 @@ import type {
   PanelType,
 } from '@/features/project/types/flexlayout-type';
 import type { ProjectManagementService } from '@/services/project-runtime-service';
-import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
+import { ProjectLoadingIndicator } from '@/features/project/components';
 import { useKeyboardShortcut } from '../hooks/use-keyboard-shortcut';
 import {
   ProjectEditorContext,

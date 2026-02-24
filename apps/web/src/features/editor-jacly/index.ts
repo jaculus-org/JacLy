@@ -1,0 +1,1 @@
+export { JaclyEditorComponent } from './components';

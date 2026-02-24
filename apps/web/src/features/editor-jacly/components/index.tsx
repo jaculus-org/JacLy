@@ -1,10 +1,10 @@
 import { useActiveProject } from '@/features/project/active-project';
-import { useTheme } from '@/features/theme/components/theme-provider';
+import { useTheme } from '@/features/theme';
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
 import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect, useCallback } from 'react';
 import { dirname } from 'path';
-import { useJacDevice } from '@/features/jac-device/device';
+import { useJacDevice } from '@/features/jac-device';
 import { getLocale } from '@/paraglide/runtime';
 import { m } from '@/paraglide/messages';
 import { editorSyncService } from '@/features/editor-code/lib/editor-sync-service';

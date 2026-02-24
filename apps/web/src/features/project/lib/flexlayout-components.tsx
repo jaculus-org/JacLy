@@ -1,19 +1,21 @@
 import * as FlexLayout from 'flexlayout-react';
 import type { PanelType } from '@/features/project/types/flexlayout-type';
-import { PanelWrapper } from '@/features/project/components/panel-warpper';
-import { FileExplorerPanel } from '../components/panels/file-explorer';
-import { CodePanel } from '../components/panels/code';
-import { GeneratedCode } from '../components/panels/generated-code';
-import { ConsolePanel } from '../components/panels/console';
-import { LogsPanel } from '../components/panels/logs';
-import { PackagesPanel } from '../components/panels/packages';
-import { BlocklyEditorPanel } from '../components/panels/blockly';
-import { JaculusPanel } from '../components/panels/jaculus';
+import { PanelWrapper } from '@/features/project/components';
+import {
+  BlocklyEditorPanel,
+  CodePanel,
+  ConsolePanel,
+  ErrorPanel,
+  FileExplorerPanel,
+  GeneratedCode,
+  InstallerPanel,
+  JaculusPanel,
+  LogsPanel,
+  PackagesPanel,
+  WokwiPanel,
+} from '@/features/project/panels';
 import { getPanelTitle } from './flexlayout-defaults';
 import { m } from '@/paraglide/messages';
-import { WokwiPanel } from '../components/panels/wokwi';
-import { InstallerPanel } from '../components/panels/installer';
-import { ErrorPanel } from '../components/panels/error';
 
 // Component registry - map panel types to component factory functions
 const PANEL_COMPONENTS: Record<

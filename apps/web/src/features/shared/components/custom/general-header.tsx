@@ -1,6 +1,6 @@
 import { m } from '@/paraglide/messages';
-import { LocaleSelector } from '@/features/locale/components/locale-selector';
-import { ThemeToggle } from '@/features/theme/components/theme-toggle';
+import { LocaleSelector } from '@/features/locale';
+import { ThemeToggle } from '@/features/theme';
 import { Link } from '@tanstack/react-router';
 
 export function GeneralHeader() {

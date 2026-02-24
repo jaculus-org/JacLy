@@ -11,8 +11,10 @@ import {
   ProjectFsService,
   type ProjectFsInterface,
 } from '@/services/project-fs-service';
-import { ProjectLoadingIndicator } from '@/features/project/components/project-loading';
-import { ProjectLoadError } from '@/features/project/components/project-load-error';
+import {
+  ProjectLoadingIndicator,
+  ProjectLoadError,
+} from '@/features/project/components';
 import { JaclyFiles } from '../types/jacly-files';
 import {
   ActiveProjectContext,

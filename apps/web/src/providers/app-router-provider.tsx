@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '@/features/theme/components/theme-provider';
+import { ThemeProvider } from '@/features/theme';
 
 export function AppRouterProviders({
   children,

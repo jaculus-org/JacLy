@@ -1,10 +1,10 @@
 import { m } from '@/paraglide/messages';
-import { ConnectionSelector } from '@/features/jac-device/components/connection-selector';
-import { LocaleSelector } from '@/features/locale/components/locale-selector';
-import { ThemeToggle } from '@/features/theme/components/theme-toggle';
+import { ConnectionSelector } from '@/features/jac-device';
+import { LocaleSelector } from '@/features/locale';
+import { ThemeToggle } from '@/features/theme';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
-import { ConnectedDevice } from '@/features/jac-device/components/connected-device';
+import { ConnectedDevice } from '@/features/jac-device';
 import { Badge } from '@/features/shared/components/ui/badge';
 import { useActiveProject } from '../active-project';
 
@@ -18,8 +18,6 @@ export function ProjectEditorHeader() {
         <div className="flex justify-between items-center py-3 px-1 pl-3">
           {/* Navigation */}
           <nav className="flex gap-6 items-center">
-            {import.meta.env.DEV && <Badge variant="destructive">Live</Badge>}
-
             <Link
               to={'/project'}
               className="font-medium text-blue-900 no-underline transition-colors duration-300 ease-in-out hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-500"
@@ -32,6 +30,10 @@ export function ProjectEditorHeader() {
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 pl-4 border-l border-blue-200 dark:border-slate-600">
                 {dbProject.name}
               </span>
+            )}
+
+            {import.meta.env.DEV && (
+              <Badge variant="destructive">Dev server</Badge>
             )}
           </nav>
 

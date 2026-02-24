@@ -1,4 +1,4 @@
-import { Installer } from '@/features/jac-installer/components/installer';
+import { Installer } from '@/features/jac-installer';
 import { m } from '@/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
 

@@ -2,10 +2,12 @@ export { useStream, streamLogKeys } from './stream-context';
 export type { StreamContextValue } from './stream-context';
 export { StreamProvider } from './stream-provider';
 export type { StreamProviderProps } from './stream-provider';
-export { StreamConsole } from './stream-console';
-export { StreamLogs } from './stream-logs';
-export { StreamOutput } from './stream-output';
-export { StreamCreateNewLogs } from './stream-create-new-logs';
+export {
+  StreamConsole,
+  StreamCreateNewLogs,
+  StreamLogs,
+  StreamOutput,
+} from './components';
 export type {
   AddToStream,
   StreamEntry,
@@ -25,12 +27,10 @@ export {
   getStreamType,
   isConsoleStream,
   isLogStream,
-} from './types';
+} from './stream-utils';
 
 import { StreamProvider } from './stream-provider';
-import { StreamConsole } from './stream-console';
-import { StreamLogs } from './stream-logs';
-import { StreamCreateNewLogs } from './stream-create-new-logs';
+import { StreamConsole, StreamCreateNewLogs, StreamLogs } from './components';
 
 export const Stream = {
   Provider: StreamProvider,

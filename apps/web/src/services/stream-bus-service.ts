@@ -1,11 +1,10 @@
 import { Writable } from 'node:stream';
 import {
-  getStreamPair,
-  getStreamType,
   type StreamEntry,
   type StreamOutputScope,
   type StreamType,
 } from '@/features/stream/types';
+import { getStreamPair, getStreamType } from '@/features/stream';
 
 type StreamListener = (entries: StreamEntry[]) => void;
 

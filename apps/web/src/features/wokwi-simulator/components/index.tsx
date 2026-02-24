@@ -1,4 +1,4 @@
-import { useJacDevice } from '@/features/jac-device/device';
+import { useJacDevice } from '@/features/jac-device';
 import { Loader2, AlertCircle, Unplug } from 'lucide-react';
 import { m } from '@/paraglide/messages';
 

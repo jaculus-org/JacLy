@@ -1,6 +1,6 @@
 import { m } from '@/paraglide/messages';
 import { useActiveProject } from '@/features/project/active-project';
-import { useTheme } from '@/features/theme/components/theme-provider';
+import { useTheme } from '@/features/theme';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { inferLanguageFromPath } from '../lib/language';

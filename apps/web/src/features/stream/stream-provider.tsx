@@ -1,6 +1,6 @@
 import type { StreamBusService } from '@/services/stream-bus-service';
 import { StreamTelemetryService } from '@/features/stream/services/stream-telemetry-service';
-import type { KeyValueMap } from '@/features/keyValue/lib/types';
+import type { KeyValueMap } from '@/features/keyValue';
 import {
   useCallback,
   useEffect,
@@ -8,13 +8,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import {
-  type AddToStream,
-  type StreamEntry,
-  type StreamType,
-  isConsoleStream,
-  isLogStream,
-} from './types';
+import { type AddToStream, type StreamEntry, type StreamType } from './types';
+import { isConsoleStream, isLogStream } from './stream-utils';
 import {
   streamLogKeys,
   StreamContext,

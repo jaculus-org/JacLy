@@ -1,6 +1,6 @@
 import { m } from '@/paraglide/messages';
 import { Moon, Sun, Monitor } from 'lucide-react';
-import { useTheme } from '@/features/theme/components/theme-provider';
+import { useTheme } from '@/features/theme';
 import {
   DropdownMenu,
   DropdownMenuContent,

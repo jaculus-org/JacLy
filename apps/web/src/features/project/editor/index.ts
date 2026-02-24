@@ -7,9 +7,9 @@ export {
   type ProjectEditorState,
 } from './project-editor-context';
 export { ProjectEditorProvider } from './project-editor-provider';
-export { ProjectEditorHeader } from '../components/project-editor-header';
+export { ProjectEditorHeader } from '@/features/project/components';
 
-import { ProjectEditorHeader } from '../components/project-editor-header';
+import { ProjectEditorHeader } from '@/features/project/components';
 import { ProjectEditorLayout } from './project-editor-layout';
 import { ProjectEditorProvider } from './project-editor-provider';
 
