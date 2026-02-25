@@ -32,6 +32,8 @@ import '../../blocks/new-blocks/loops';
 import '../../blocks/new-blocks/angle';
 import '../../blocks/new-blocks/slider';
 import '../../blocks/new-blocks/procedures';
+import { registerConstCategoryCallback } from '../../blocks/new-blocks/typed-variables/constants';
+import { registerVariableCategoryCallback } from '../../blocks/new-blocks/typed-variables/variables';
 
 registerJaclyCustomCategory();
 interface JaclyEditorProps {
@@ -99,6 +101,8 @@ export function JaclyEditor({
       registerCrossTabCopyPaste();
       registerFieldColour();
       registerDocsCallbacks(workspace);
+      registerVariableCategoryCallback(workspace);
+      registerConstCategoryCallback(workspace);
       workspace.addChangeListener(shadowBlockConversionChangeListener);
 
       listenerRegistrationStatus.current = true;

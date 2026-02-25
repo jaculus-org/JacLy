@@ -58,7 +58,7 @@ function NewProject() {
     projectFsService,
     streamBusService,
   } = Route.useRouteContext();
-  const [projectName, setProjectName] = useState('demo-project');
+  const [projectName, setProjectName] = useState('');
   const [projectOption, setProjectOption] = useState<JaculusProjectOptions>(
     projectOptions[0]
   );
@@ -93,6 +93,12 @@ function NewProject() {
 
   async function handleProjectCreation() {
     if (!selectedTemplate) {
+      return;
+    }
+
+    // not allow empty project name
+    if (projectName.trim() === '') {
+      enqueueSnackbar(m.project_new_name_required(), { variant: 'warning' });
       return;
     }
 

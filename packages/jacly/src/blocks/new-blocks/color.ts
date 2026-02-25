@@ -8,6 +8,7 @@ import {
   Order,
 } from 'blockly/javascript';
 import { t } from '../lib/translations';
+import { addShadowNumber, addShadowText } from '../lib/shadow-blocks';
 
 const DYNAMIC_TYPES = ['NAMES', 'RGB', 'HSL', 'HEX', 'PALETTE'] as const;
 const COLOR_NAMES: string[] = [
@@ -26,8 +27,6 @@ const COLOR_NAMES: string[] = [
 interface DynamicColorBlock extends BlockExtended {
   mode_: string;
   updateShape: (mode: string | null) => string | null | undefined;
-  addShadowNumber: (inputName: string, defaultValue: number) => void;
-  addShadowText: (inputName: string, defaultValue: string) => void;
 }
 
 Blocks['dynamic_color_rgb'] = {
@@ -98,9 +97,9 @@ Blocks['dynamic_color_rgb'] = {
       this.appendValueInput('B_INPUT').setCheck('Number').appendField('B');
 
       // Add shadow blocks for empty inputs
-      this.addShadowNumber('R_INPUT', 0);
-      this.addShadowNumber('G_INPUT', 0);
-      this.addShadowNumber('B_INPUT', 0);
+      addShadowNumber(this, 'R_INPUT', 0);
+      addShadowNumber(this, 'G_INPUT', 0);
+      addShadowNumber(this, 'B_INPUT', 0);
     } else if (this.mode_ === 'HSL') {
       this.setInputsInline(false);
       this.appendValueInput('H_INPUT')
@@ -114,15 +113,15 @@ Blocks['dynamic_color_rgb'] = {
         .appendField('Lightness (0-100) %');
 
       // Add shadow blocks for empty inputs
-      this.addShadowNumber('H_INPUT', 0);
-      this.addShadowNumber('S_INPUT', 100);
-      this.addShadowNumber('L_INPUT', 50);
+      addShadowNumber(this, 'H_INPUT', 0);
+      addShadowNumber(this, 'S_INPUT', 100);
+      addShadowNumber(this, 'L_INPUT', 50);
     } else if (this.mode_ === 'HEX') {
       this.setInputsInline(true);
       this.appendValueInput('HEX_INPUT').setCheck('String').appendField('Hex');
 
       // Add shadow block for empty input
-      this.addShadowText('HEX_INPUT', '#ff0000');
+      addShadowText(this, 'HEX_INPUT', '#ff0000');
     }
 
     return undefined;
@@ -147,46 +146,6 @@ Blocks['dynamic_color_rgb'] = {
     if (state.mode === 'NAMES' && state.colorName) {
       this.getField('COLOR_NAME')?.setValue(state.colorName);
     }
-  },
-
-  /**
-   * Adds a shadow number block to an input if it's empty.
-   */
-  addShadowNumber: function (
-    this: DynamicColorBlock,
-    inputName: string,
-    defaultValue: number
-  ) {
-    const input = this.getInput(inputName);
-    if (!input || input.connection?.targetBlock()) return;
-
-    const shadowBlock = this.workspace.newBlock(
-      'math_number'
-    ) as Blockly.BlockSvg;
-    shadowBlock.setShadow(true);
-    shadowBlock.setFieldValue(String(defaultValue), 'NUM');
-    shadowBlock.initSvg();
-    shadowBlock.render();
-    input.connection?.connect(shadowBlock.outputConnection!);
-  },
-
-  /**
-   * Adds a shadow text block to an input if it's empty.
-   */
-  addShadowText: function (
-    this: DynamicColorBlock,
-    inputName: string,
-    defaultValue: string
-  ) {
-    const input = this.getInput(inputName);
-    if (!input || input.connection?.targetBlock()) return;
-
-    const shadowBlock = this.workspace.newBlock('text') as Blockly.BlockSvg;
-    shadowBlock.setShadow(true);
-    shadowBlock.setFieldValue(defaultValue, 'TEXT');
-    shadowBlock.initSvg();
-    shadowBlock.render();
-    input.connection?.connect(shadowBlock.outputConnection!);
   },
 };
 

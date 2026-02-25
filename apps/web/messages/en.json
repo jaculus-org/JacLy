@@ -59,6 +59,7 @@
   "project_new_blocks_desc": "Design your project using Jacly's visual blocks.",
   "project_new_code_title": "Jaculus Code Project",
   "project_new_code_desc": "Code your project directly in TypeScript.",
+  "project_new_name_required": "Project name is required.",
   "project_new_creation_error": "Failed to create project",
   "project_new_advanced": "Advanced Settings",
   "project_new_default_registers": "Default Registers",

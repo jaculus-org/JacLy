@@ -57,6 +57,7 @@
   "project_new_blocks_desc": "Navrhněte svůj projekt pomocí vizuálních bloků Jacly.",
   "project_new_code_title": "Jaculus kód projekt",
   "project_new_code_desc": "Programujte svůj projekt přímo v TypeScriptu.",
+  "project_new_name_required": "Název projektu je povinný.",
   "project_new_creation_error": "Nepodařilo se vytvořit projekt",
   "project_new_advanced": "Pokročilé nastavení",
   "project_new_default_registers": "Výchozí registry",
