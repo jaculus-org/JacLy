@@ -10,6 +10,9 @@ import {
 import { z } from 'zod';
 import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
 import { localizeJaclyConfig, registerTranslations } from './translations';
+import { buildCategoryHeader } from './category-header';
+
+export { registerDocsCallbacks } from './category-header';
 
 export function loadToolboxConfiguration(
   jaclyBlocksData: JaclyBlocksData
@@ -61,7 +64,12 @@ function loadToolboxLibrary(
   localizeJaclyConfig(jaclyConfig);
 
   if (jaclyConfig.contents) {
-    return parseToolboxContentsBlock(jaclyConfig);
+    const categoryHeader = buildCategoryHeader(jaclyConfig);
+    const toolboxItem = parseToolboxContentsBlock(jaclyConfig);
+    if (categoryHeader.length > 0 && toolboxItem.contents) {
+      toolboxItem.contents = [...categoryHeader, ...toolboxItem.contents];
+    }
+    return toolboxItem;
   } else if (jaclyConfig.custom) {
     return parseToolboxCustomBlock(jaclyConfig);
   } else {

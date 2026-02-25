@@ -20,6 +20,14 @@ import {
 } from './constructors';
 import { colourHexaToRgbString } from '@/editor/plugins/field-colour-hsv-sliders';
 
+type FieldDropdownWithMenuGenerator = Blockly.FieldDropdown & {
+  menuGenerator_?: Blockly.MenuGenerator & (() => Blockly.MenuGenerator);
+};
+
+interface BlockExtraState {
+  instanceName?: string;
+}
+
 /**
  * Registry mapping block types to their required library imports.
  * Key: block type (e.g., "i2c_setup", "vl53l0x_create")
@@ -164,8 +172,10 @@ export function registerBlocklyBlock(
 
             const field = this.getField(fieldName);
             if (field && field instanceof Blockly.FieldDropdown) {
-              // @ts-ignore
-              field.menuGenerator_ = getInstanceDropdownGenerator(systemId);
+              const dropdownField = field as FieldDropdownWithMenuGenerator;
+              dropdownField.menuGenerator_ = getInstanceDropdownGenerator(
+                systemId
+              ) as Blockly.MenuGenerator & (() => Blockly.MenuGenerator);
 
               // auto-select if exactly one instance exists
               const options = getInstanceDropdownGenerator(systemId).call(
@@ -177,7 +187,10 @@ export function registerBlocklyBlock(
             }
 
             const existingOnChange = this.onchange;
-            this.onchange = function (this: BlockExtended, e: any) {
+            this.onchange = function (
+              this: BlockExtended,
+              e: Blockly.Events.Abstract
+            ) {
               if (existingOnChange) existingOnChange.call(this, e);
               validateInstanceSelection.call(this, systemId, fieldName);
             };
@@ -186,8 +199,8 @@ export function registerBlocklyBlock(
               return { instanceName: this.getFieldValue(fieldName) };
             };
 
-            this.loadExtraState = function (state: any) {
-              this.savedInstanceName = state['instanceName'];
+            this.loadExtraState = function (state: BlockExtraState) {
+              this.savedInstanceName = state.instanceName;
             };
           }
         });
@@ -209,8 +222,9 @@ export function registerBlocklyBlock(
  */
 function registerCallbackVarGetters(
   parentBlock: JaclyBlockKindBlock,
-  _jaclyConfig: JaclyConfig
+  jaclyConfig: JaclyConfig
 ) {
+  void jaclyConfig;
   if (!parentBlock.callbackVars) return;
 
   for (const cbVar of parentBlock.callbackVars) {
@@ -291,6 +305,10 @@ function getPlaceholderValue(
     case 'input_statement':
       return generator.statementToCode(codeBlock, arg.name) || '';
 
+    case 'input_dummy':
+    case 'input_end_row':
+      return '';
+
     case 'field_colour_hsv_sliders':
       return colourHexaToRgbString(
         codeBlock.getFieldValue(arg.name) || '#ffffff'
@@ -298,9 +316,6 @@ function getPlaceholderValue(
 
     case 'color_field_select':
       return codeBlock.getFieldValue(arg.name) || '#ffffff';
-
-    default:
-      return '';
   }
 }
 

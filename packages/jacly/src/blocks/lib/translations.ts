@@ -23,7 +23,8 @@ function tRegex(key: string, prefix: string): string {
   const match = key.match(/^%(.*)%$/);
   if (match) {
     const innerKey = match[1];
-    return `%{BKY_${prefix.toUpperCase()}_${innerKey}}`;
+    const key = `%{BKY_${prefix.toUpperCase()}_${innerKey}}`;
+    return Blockly.utils.parsing.replaceMessageReferences(key);
   }
   return key;
 }
@@ -79,6 +80,11 @@ function localizeBlock(
       localizeArg(`${prefix}_args0`, arg);
     }
   }
+  if (block.callbackVars) {
+    for (const callbackVar of block.callbackVars) {
+      callbackVar.name = tRegex(callbackVar.name, `${prefix}_callback`);
+    }
+  }
 }
 
 function localizeArg(prefix: string, arg: JaclyBlocksArgs): void {
@@ -92,6 +98,15 @@ function localizeArg(prefix: string, arg: JaclyBlocksArgs): void {
       break;
     case 'field_input':
       if (arg.text) arg.text = t(`${prefix}_field_input`, arg.text);
+      break;
+    case 'field_number':
+    case 'input_value':
+    case 'input_statement':
+    case 'input_dummy':
+    case 'input_end_row':
+    case 'field_colour':
+    case 'field_colour_hsv_sliders':
+    case 'color_field_select':
       break;
   }
 }

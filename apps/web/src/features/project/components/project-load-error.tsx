@@ -25,10 +25,6 @@ export function ProjectLoadError({ error }: EditorLoadErrorProps) {
         return m.project_error_load_failed();
       case 'unknown-error':
         return m.project_error_unknown();
-      default: {
-        const _exhaustive: never = error.reason;
-        return _exhaustive;
-      }
     }
   }
 

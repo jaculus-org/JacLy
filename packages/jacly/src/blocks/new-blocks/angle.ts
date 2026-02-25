@@ -1,10 +1,6 @@
 import * as Blockly from 'blockly/core';
 import { BlockExtended } from '../types/custom-block';
-import {
-  JavascriptGenerator,
-  javascriptGenerator as jsg,
-  Order,
-} from 'blockly/javascript';
+import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
 
 import {
   FieldAngle,
@@ -36,10 +32,7 @@ Blockly.Blocks['jacly_field_angle'] = {
   },
 };
 
-jsg.forBlock['jacly_field_angle'] = function (
-  codeBlock: BlockExtended,
-  _generator: JavascriptGenerator
-) {
+jsg.forBlock['jacly_field_angle'] = function (codeBlock: BlockExtended) {
   const angle = codeBlock.getFieldValue('ANGLE');
   const code = angle.toString();
 

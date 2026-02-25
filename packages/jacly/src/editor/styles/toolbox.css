@@ -170,3 +170,36 @@
   background-color: oklch(var(--sidebar-border));
   border: none;
 }
+
+/* =============================================
+   FLYOUT - CATEGORY HEADER
+   ============================================= */
+
+/* Title label — large, bold, prominent */
+.jacly-flyout-title > .blocklyFlyoutLabelText {
+  font-size: 25px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Description subtitle — smaller, muted */
+.jacly-flyout-description > .blocklyFlyoutLabelText {
+  font-size: 17px !important;
+  font-style: italic !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Docs button — compact, blue pill */
+.jacly-flyout-docs-btn .blocklyFlyoutButtonBackground {
+  fill: #3b82f6;
+}
+
+.jacly-flyout-docs-btn:hover .blocklyFlyoutButtonBackground {
+  fill: #2563eb;
+}
+
+.jacly-flyout-docs-btn .blocklyText {
+  fill: #fff !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}

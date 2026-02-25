@@ -318,10 +318,6 @@ export function controlPanel(
         model.doAction(FlexLayout.Actions.selectTab(node.getId()));
       }
       break;
-    default: {
-      const _exhaustive: never = action;
-      console.warn(`controlPanel: Unsupported action '${_exhaustive}'`);
-    }
   }
 }
 
@@ -377,10 +373,6 @@ export function openPanel(
         config: errorProps satisfies NewPanelProps['error'],
       });
       break;
-    }
-    default: {
-      const _exhaustive: never = type;
-      console.warn(`openPanel: Unsupported panel type '${_exhaustive}'`);
     }
   }
 }

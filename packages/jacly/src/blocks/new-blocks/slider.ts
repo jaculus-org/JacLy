@@ -1,9 +1,5 @@
 import { BlockExtended } from '../types/custom-block';
-import {
-  JavascriptGenerator,
-  javascriptGenerator as jsg,
-  Order,
-} from 'blockly/javascript';
+import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
 
 import { FieldSlider } from '@blockly/field-slider';
 import { Blocks, FieldNumber } from 'blockly/core';
@@ -72,10 +68,7 @@ Blocks['jacly_field_slider'] = {
   },
 };
 
-jsg.forBlock['jacly_field_slider'] = function (
-  codeBlock: BlockExtended,
-  _generator: JavascriptGenerator
-) {
+jsg.forBlock['jacly_field_slider'] = function (codeBlock: BlockExtended) {
   const sliderValue = codeBlock.getFieldValue('VALUE');
   const code = sliderValue.toString();
 

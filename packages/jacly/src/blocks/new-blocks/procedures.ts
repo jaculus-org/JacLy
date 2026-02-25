@@ -84,6 +84,9 @@ function procedures_defreturn(
   // Add % so as not to collide with helper functions in definitions list.
   // TODO(#7600): find better approach than casting to any to override
   // CodeGenerator declaring .definitions protected.
-  (generator as any).definitions_['%' + funcName] = code;
+  const generatorWithDefinitions = generator as unknown as {
+    definitions_: Record<string, string>;
+  };
+  generatorWithDefinitions.definitions_['%' + funcName] = code;
   return null;
 }

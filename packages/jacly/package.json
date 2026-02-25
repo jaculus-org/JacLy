@@ -27,11 +27,12 @@
     }
   },
   "scripts": {
-    "build": "tsc && tsc-alias && cp -r src/editor/styles dist/editor/",
-    "build:watch": "tsc --watch & tsc-alias --watch",
+    "dev": "vite build --watch",
+    "build": "vite build && tsc --emitDeclarationOnly && tsc-alias",
+    "build:watch": "vite build --watch",
     "type-check": "tsc --noEmit",
-    "lint": "echo 'No linting configured for this package'",
-    "lint:fix": "echo 'No linting configured for this package'",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "schema:gen": "tsx src/config/generate-schema.ts",
@@ -62,6 +63,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.9.2",
@@ -69,6 +71,10 @@
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.0",
     "chai": "^6.2.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
     "react": "^19.2.0",
@@ -76,6 +82,8 @@
     "tsc-alias": "^1.8.10",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
-    "vite": "^7.1.12"
+    "typescript-eslint": "^8.47.0",
+    "vite": "^7.1.12",
+    "vite-plugin-lib-inject-css": "^2.2.2"
   }
 }

@@ -5,7 +5,10 @@ import { Theme } from '@/editor/types/theme';
 import { useState, useEffect, useRef } from 'react';
 import { getBlocklyTheme } from '@/editor/lib/theme';
 import { JaclyBlocksData } from '@jaculus/project';
-import { loadToolboxConfiguration } from '@/blocks/lib/toolbox-loader';
+import {
+  loadToolboxConfiguration,
+  registerDocsCallbacks,
+} from '@/blocks/lib/toolbox-loader';
 import { registerWorkspaceChangeListener } from '@/blocks/lib/rules';
 import { JaclyLoading } from './loading';
 
@@ -31,12 +34,11 @@ import '../../blocks/new-blocks/slider';
 import '../../blocks/new-blocks/procedures';
 
 registerJaclyCustomCategory();
-
 interface JaclyEditorProps {
   jaclyBlocksData: JaclyBlocksData;
   theme: Theme;
   locale: string;
-  initialJson: any;
+  initialJson: object;
   onJsonChange: (workspaceJson: object) => void;
   onGeneratedCode: (code: string) => void;
 }
@@ -92,10 +94,11 @@ export function JaclyEditor({
 
   const handleWorkspaceChange = (workspace: WorkspaceSvgExtended) => {
     if (!listenerRegistrationStatus.current) {
-      registerWorkspaceChangeListener(workspace as any);
+      registerWorkspaceChangeListener(workspace);
 
       registerCrossTabCopyPaste();
       registerFieldColour();
+      registerDocsCallbacks(workspace);
       workspace.addChangeListener(shadowBlockConversionChangeListener);
 
       listenerRegistrationStatus.current = true;

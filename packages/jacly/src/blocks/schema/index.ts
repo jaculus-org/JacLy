@@ -30,15 +30,17 @@ const ArgsCheck = z.union([z.string().optional(), z.array(z.string())]);
 
 const ArgOptions = z.array(z.tuple([z.string(), z.string()])).optional();
 
-// Forward declaration for recursive shadow/block definitions
-const InputShadowSchema: z.ZodType<{
+interface InputNode {
   type: string;
-  fields?: Record<string, any>;
-  inputs?: Record<string, { shadow?: any; block?: any }>;
-}> = z.lazy(() =>
+  fields?: Record<string, unknown>;
+  inputs?: Record<string, { shadow?: InputNode; block?: InputNode }>;
+}
+
+// Forward declaration for recursive shadow/block definitions
+const InputShadowSchema: z.ZodType<InputNode> = z.lazy(() =>
   z.object({
     type: Identifier.nonempty('type is required'),
-    fields: z.record(Variable, z.any()).optional(),
+    fields: z.record(Variable, z.unknown()).optional(),
     inputs: z
       .record(
         Variable,
@@ -51,14 +53,10 @@ const InputShadowSchema: z.ZodType<{
   })
 );
 
-const InputBlockSchema: z.ZodType<{
-  type: string;
-  fields?: Record<string, any>;
-  inputs?: Record<string, { shadow?: any; block?: any }>;
-}> = z.lazy(() =>
+const InputBlockSchema: z.ZodType<InputNode> = z.lazy(() =>
   z.object({
     type: Identifier.nonempty('type is required'),
-    fields: z.record(Variable, z.any()).optional(),
+    fields: z.record(Variable, z.unknown()).optional(),
     inputs: z
       .record(
         Variable,

@@ -14,7 +14,7 @@ interface PromiseAllBlock extends BlockExtended {
   ) => void;
 }
 
-interface PromiseAllContainerBlock extends Blockly.Block {}
+type PromiseAllContainerBlock = Blockly.Block;
 
 interface PromiseAllItemBlock extends Blockly.Block {
   statementConnection_?: Blockly.Connection | null;

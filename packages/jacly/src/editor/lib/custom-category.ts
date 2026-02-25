@@ -1,6 +1,12 @@
 import * as Blockly from 'blockly/core';
 import * as LucideIcons from 'lucide-static';
 
+type CategoryDefWithIcon = Blockly.utils.toolbox.CategoryInfo & {
+  icon?: string;
+};
+
+const lucideIconsMap = LucideIcons as Record<string, string>;
+
 export class JaclyCustomCategory extends Blockly.ToolboxCategory {
   protected iconDom_: HTMLElement | null = null;
 
@@ -35,11 +41,11 @@ export class JaclyCustomCategory extends Blockly.ToolboxCategory {
     iconContainer.classList.add('jaclyToolboxCategoryIcon');
 
     // get icon name from toolbox definition
-    const iconName = (this.toolboxItemDef_ as any).icon;
+    const iconName = (this.toolboxItemDef_ as CategoryDefWithIcon).icon;
 
-    if (iconName && iconName in LucideIcons) {
+    if (iconName && iconName in lucideIconsMap) {
       // get the SVG string from lucide-static
-      const iconSvg = (LucideIcons as any)[iconName];
+      const iconSvg = lucideIconsMap[iconName];
       iconContainer.innerHTML = iconSvg;
 
       // style the SVG - smaller size for inline display
