@@ -18,7 +18,6 @@ import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import { generateCodeFromWorkspace } from '../lib/code-generation';
 
 // Extensions
-import '@blockly/toolbox-search';
 import '@blockly/block-plus-minus';
 import '@blockly/field-colour-hsv-sliders';
 import { registerFieldColour } from '@blockly/field-colour';

@@ -53,7 +53,6 @@
     "@blockly/field-slider": "^8.0.8",
     "@blockly/plugin-cross-tab-copy-paste": "^8.0.6",
     "@blockly/shadow-block-converter": "^7.0.9",
-    "@blockly/toolbox-search": "^3.1.7",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",

@@ -7,7 +7,7 @@ export function ProjectEditorLayout() {
   const { state, actions, meta } = useProjectEditor();
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] w-full">
+    <div className="h-[calc(100vh-2.5rem)] w-full">
       <FlexLayout.Layout
         model={state.model}
         factory={factory}

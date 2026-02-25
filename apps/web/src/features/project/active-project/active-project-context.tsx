@@ -28,6 +28,7 @@ export interface ActiveProjectState {
 export interface ActiveProjectActions {
   setError: (error: ProjectError | null) => void;
   getFileName: (fileType: keyof typeof JaclyFiles) => string;
+  renameProject: (newName: string) => Promise<void>;
 }
 
 export interface ActiveProjectMeta {

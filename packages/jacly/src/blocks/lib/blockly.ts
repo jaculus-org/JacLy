@@ -16,6 +16,9 @@ import {
   getConstructorMixin,
   getInstanceDropdownGenerator,
   registerConstructorType,
+  registerVirtualInstances,
+  resolveVirtualInstanceConnection,
+  isVirtualInstance,
   validateInstanceSelection,
 } from './constructors';
 import { colourHexaToRgbString } from '@/editor/plugins/field-colour-hsv-sliders';
@@ -35,8 +38,72 @@ interface BlockExtraState {
  */
 const blockLibraryImports = new Map<string, string[]>();
 
+/**
+ * Registry of processed inputs (shadows/blocks) for each block type.
+ * Populated during registerBlocklyBlock, used by editInternalBlocks
+ * to inherit inputs for usage-only block references.
+ */
+const blockRegisteredInputs = new Map<string, JaclyBlockKindBlock['inputs']>();
+
+/**
+ * Guard sets to prevent double-registration when React strict mode
+ * causes loadToolboxConfiguration to be called multiple times.
+ */
+const registeredBlockTypes = new Set<string>();
+const editedInternalBlockTypes = new Set<string>();
+
 export function getLibraryImportsForBlock(blockType: string): string[] {
   return blockLibraryImports.get(blockType) || [];
+}
+
+/**
+ * Recursively enrich block/shadow references in inputs with their registered inputs.
+ * When a block reference like { "type": "ds3231_create_datetime" } appears inside inputs,
+ * it gets enriched with the registered inputs (shadows) of that block type.
+ */
+export function enrichBlockInputs(block: JaclyBlock) {
+  if (block.kind !== 'block' || !block.inputs) return;
+
+  for (const inputName of Object.keys(block.inputs)) {
+    const inputDef = block.inputs[inputName];
+
+    if (inputDef.block) {
+      enrichInputNode(inputDef.block);
+    }
+    if (inputDef.shadow) {
+      enrichInputNode(inputDef.shadow);
+    }
+  }
+}
+
+function enrichInputNode(node: {
+  type: string;
+  inputs?: Record<string, unknown>;
+}) {
+  const registered = blockRegisteredInputs.get(node.type);
+  if (!registered) return;
+
+  if (!node.inputs) {
+    // No local inputs — inherit all from registered
+    node.inputs = JSON.parse(JSON.stringify(registered));
+  } else {
+    // Merge: local overrides take precedence
+    const merged = JSON.parse(JSON.stringify(registered));
+    Object.assign(merged, node.inputs);
+    node.inputs = merged;
+  }
+
+  // Recurse into nested block/shadow references
+  if (node.inputs) {
+    for (const key of Object.keys(node.inputs)) {
+      const nested = node.inputs[key] as {
+        block?: { type: string; inputs?: Record<string, unknown> };
+        shadow?: { type: string; inputs?: Record<string, unknown> };
+      };
+      if (nested.block) enrichInputNode(nested.block);
+      if (nested.shadow) enrichInputNode(nested.shadow);
+    }
+  }
 }
 
 export function registerBlocklyBlock(
@@ -46,6 +113,12 @@ export function registerBlocklyBlock(
   if (block.kind != 'block') {
     return;
   }
+
+  // Skip if this block type has already been registered (React strict mode guard)
+  if (registeredBlockTypes.has(block.type)) {
+    return;
+  }
+  registeredBlockTypes.add(block.type);
 
   const inputs: JaclyBlockKindBlock['inputs'] = {};
 
@@ -133,6 +206,8 @@ export function registerBlocklyBlock(
   // attach inputs to the block definition
   if (Object.keys(inputs).length > 0) {
     block.inputs = inputs;
+    // Store for usage-only references to inherit
+    blockRegisteredInputs.set(block.type, { ...inputs });
   }
 
   // apply jaclyConfig properties to the block
@@ -147,6 +222,10 @@ export function registerBlocklyBlock(
     registerConstructorType(block.constructs, block.type);
   }
 
+  if (block.constructs && block.virtualInstances) {
+    registerVirtualInstances(block.type, block.virtualInstances);
+  }
+
   // define the block in Blockly
   Blocks[block.type] = {
     init(this: BlockExtended) {
@@ -157,6 +236,23 @@ export function registerBlocklyBlock(
       // additional custom properties can be initialized here
       if (block.constructs) {
         this.mixin(getConstructorMixin(block.constructs));
+      }
+
+      // Render virtual instances info on the block
+      if (block.virtualInstances && block.virtualInstances.length > 0) {
+        // Group by instanceof type for compact display
+        const grouped = new Map<string, string[]>();
+        for (const vi of block.virtualInstances) {
+          const existing = grouped.get(vi.instanceof) || [];
+          existing.push(vi.name);
+          grouped.set(vi.instanceof, existing);
+        }
+
+        this.appendDummyInput('VI_HEADER').appendField('▸ provides:');
+        for (const [type, names] of grouped) {
+          const label = `   ${type}: ${names.join(', ')}`;
+          this.appendDummyInput(`VI_${type}`).appendField(label);
+        }
       }
 
       if (block.args0) {
@@ -295,9 +391,21 @@ function getPlaceholderValue(
   switch (arg.type) {
     case 'field_input':
     case 'field_number':
-    case 'field_dropdown':
     case 'field_colour':
       return codeBlock.getFieldValue(arg.name) || '';
+
+    case 'field_dropdown': {
+      const rawValue = codeBlock.getFieldValue(arg.name) || '';
+      // If this is a virtual instance, resolve to its connection expression
+      if (isVirtualInstance(rawValue)) {
+        const resolved = resolveVirtualInstanceConnection(
+          rawValue,
+          codeBlock.workspace
+        );
+        if (resolved !== null) return resolved;
+      }
+      return rawValue;
+    }
 
     case 'input_value':
       return generator.valueToCode(codeBlock, arg.name, Order.NONE) || 'null';
@@ -457,6 +565,12 @@ export function editInternalBlocks(
     return;
   }
 
+  // Skip if this block type has already been edited (React strict mode guard)
+  if (editedInternalBlockTypes.has(block.type)) {
+    return;
+  }
+  editedInternalBlockTypes.add(block.type);
+
   const colour = block.colour ?? jaclyConfig.colour;
   const style = block.style ?? jaclyConfig.style;
 
@@ -465,6 +579,18 @@ export function editInternalBlocks(
   }
   if (style) {
     block.style = style;
+  }
+
+  // Inherit inputs (shadows/blocks) from original registration if not overridden
+  const registeredInputs = blockRegisteredInputs.get(block.type);
+  if (registeredInputs) {
+    if (!block.inputs) {
+      // No local inputs — inherit all from original
+      block.inputs = { ...registeredInputs };
+    } else {
+      // Merge: local overrides take precedence per input name
+      block.inputs = { ...registeredInputs, ...block.inputs };
+    }
   }
 
   if ((colour || style) && Blocks[block.type]) {

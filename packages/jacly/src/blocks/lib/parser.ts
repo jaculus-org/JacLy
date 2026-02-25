@@ -2,6 +2,7 @@ import { JaclyBlock, JaclyConfig } from '../schema';
 import { ToolboxItemInfoSort } from '../types/toolbox';
 import {
   editInternalBlocks,
+  enrichBlockInputs,
   registerBlocklyBlock,
   registerCodeGenerator,
   registryLibraryImport,
@@ -14,7 +15,6 @@ import {
 function expandLabel(
   item: Extract<JaclyBlock, { kind: 'label' }>
 ): Extract<JaclyBlock, { kind: 'label' }>[] {
-  console.log(`Expanding label "${item.text}"`); // Debug log to verify label expansion
   const lines = item.text.split('\n').filter(line => line.length > 0);
   if (lines.length <= 1) return [item];
   return lines.map(line => ({ ...item, text: line }));
@@ -57,6 +57,14 @@ export function parseToolboxContentsBlock(
       registerCodeGenerator(item, jaclyConfig);
     } else {
       editInternalBlocks(item, jaclyConfig);
+    }
+  }
+
+  // Post-processing: enrich nested block/shadow references with registered inputs.
+  // This must run after all blocks are registered so referenced block types are available.
+  for (const item of jaclyConfig.contents!) {
+    if (item.kind === 'block') {
+      enrichBlockInputs(item);
     }
   }
 

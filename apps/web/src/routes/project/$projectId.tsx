@@ -31,6 +31,7 @@ function ProjectEditorRoute() {
     <ActiveProject.Provider
       dbProject={project}
       projectFsService={projectFsService}
+      projectManService={projectManService}
     >
       <Stream.Provider
         channel={`project:${project.id}`}

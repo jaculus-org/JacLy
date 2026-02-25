@@ -245,6 +245,15 @@ const JaclyBlockKindBlock = z
     // JacLy extensions
     hideInToolbox: z.boolean().optional(),
     constructs: Identifier.optional(),
+    virtualInstances: z
+      .array(
+        z.object({
+          instanceof: Identifier.nonempty('instanceof type is required'),
+          name: z.string().nonempty('instance name is required'),
+          connection: z.string().nonempty('connection expression is required'),
+        })
+      )
+      .optional(),
     callbackVars: z.array(CallbackVarSchema).optional(),
   })
   .refine(

@@ -36,16 +36,9 @@ export function loadToolboxConfiguration(
     }
   }
 
-  const toolbox = buildCategoryHierarchy(toolboxContent);
-  const search: ToolboxItemInfoSort = {
-    kind: 'search',
-    name: 'Search',
-    contents: [],
-  };
-
   return {
     kind: 'categoryToolbox',
-    contents: [search, ...toolbox],
+    contents: buildCategoryHierarchy(toolboxContent),
   };
 }
 
