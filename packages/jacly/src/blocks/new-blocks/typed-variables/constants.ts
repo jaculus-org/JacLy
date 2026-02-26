@@ -163,6 +163,50 @@ Blockly.Blocks[BLOCK_SET] = {
 };
 
 // ============================================================================
+// Patch the JS generator so CONST variables are not emitted as `var` at top
+//
+// Blockly's JavascriptGenerator.init() unconditionally declares every variable
+// in the workspace as `var …` regardless of type.  That clashes with the
+// `const … = …` produced by the set-block generator below.  We wrap init()
+// to remove CONST-typed names from the top-level var declaration.
+// ============================================================================
+
+const _originalJsgInit = jsg.init.bind(jsg);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(jsg as any).init = function (workspace: Blockly.Workspace) {
+  _originalJsgInit(workspace);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const gen = jsg as any;
+  const varDecl: string | undefined = gen.definitions_?.['variables'];
+  if (!varDecl) return;
+
+  const constVars = workspace
+    .getVariableMap()
+    .getVariablesOfType(CONST_VAR_TYPE);
+  if (constVars.length === 0) return;
+
+  const constNames = new Set(
+    constVars.map(v =>
+      gen.nameDB_.getName(v.getId(), Blockly.Names.NameType.VARIABLE)
+    )
+  );
+
+  // varDecl looks like: "var foo, bar, baz;"
+  const remaining = varDecl
+    .replace(/^var\s+/, '')
+    .replace(/;$/, '')
+    .split(/,\s*/)
+    .filter((name: string) => !constNames.has(name));
+
+  if (remaining.length === 0) {
+    delete gen.definitions_['variables'];
+  } else {
+    gen.definitions_['variables'] = 'var ' + remaining.join(', ') + ';';
+  }
+};
+
+// ============================================================================
 // JavaScript code generators
 // ============================================================================
 
