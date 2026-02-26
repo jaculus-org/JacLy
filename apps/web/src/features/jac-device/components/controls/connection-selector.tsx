@@ -21,6 +21,11 @@ import { useActiveProject } from '@/features/project/active-project';
 import { testConnection, uploadCode } from '@/features/jac-device/lib/device';
 import { useProjectEditor } from '@/features/project/editor';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/features/shared/components/ui/tooltip';
 
 export function ConnectionSelector() {
   const availableConnections = getAvailableConnectionTypes();
@@ -114,44 +119,54 @@ export function ConnectionSelector() {
   }
 
   return (
-    <ButtonGroup>
-      <Select
-        value={selectedConnection}
-        onValueChange={value => setSelectedConnection(value as ConnectionType)}
-        disabled={
-          connectionStatus === 'connected' || connectionStatus === 'connecting'
-        }
-      >
-        <SelectTrigger className=" h-8">
-          <SelectValue placeholder={m.device_connection_placeholder()} />
-        </SelectTrigger>
-        <SelectContent>
-          {availableConnections.map(connection => {
-            const Icon = connection.icon;
-            return (
-              <SelectItem key={connection.type} value={connection.type}>
-                <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4" />
-                  {connectionStatus !== 'connected' && (
-                    <span>{connection.name}</span>
-                  )}
-                </div>
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <ButtonGroup>
+          <Select
+            value={selectedConnection}
+            onValueChange={value =>
+              setSelectedConnection(value as ConnectionType)
+            }
+            disabled={
+              connectionStatus === 'connected' ||
+              connectionStatus === 'connecting'
+            }
+          >
+            <SelectTrigger className=" h-8">
+              <SelectValue placeholder={m.device_connection_placeholder()} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableConnections.map(connection => {
+                const Icon = connection.icon;
+                return (
+                  <SelectItem key={connection.type} value={connection.type}>
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      {connectionStatus !== 'connected' && (
+                        <span>{connection.name}</span>
+                      )}
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
 
-      <ButtonLoading
-        onClick={async () => await handleConnection()}
-        size="sm"
-        className="gap-1 h-8"
-        loading={connectionStatus === 'connecting'}
-      >
-        {connectionStatus === 'connected'
-          ? m.device_btn_disconnect()
-          : m.device_btn_connect()}
-      </ButtonLoading>
-    </ButtonGroup>
+          <ButtonLoading
+            onClick={async () => await handleConnection()}
+            size="sm"
+            className="gap-1 h-8"
+            loading={connectionStatus === 'connecting'}
+          >
+            {connectionStatus === 'connected'
+              ? m.device_btn_disconnect()
+              : m.device_btn_connect()}
+          </ButtonLoading>
+        </ButtonGroup>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{m.device_connection_tooltip()}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }

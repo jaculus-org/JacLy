@@ -59,22 +59,37 @@ export function KeyValueDisplay() {
 
         <div className="ml-auto flex items-center gap-1.5 h-0">
           <ButtonGroup onClick={() => setIsCollapsed(false)}>
-            <Button
-              size="sm"
-              variant={sortBy === 'alpha' ? 'default' : 'outline'}
-              className="h-6 px-2 text-xs"
-              onClick={() => setSortBy('alpha')}
-            >
-              A–Z
-            </Button>
-            <Button
-              size="sm"
-              variant={sortBy === 'time' ? 'default' : 'outline'}
-              className="h-6 px-2 text-xs"
-              onClick={() => setSortBy('time')}
-            >
-              {m.keyvalue_sort_time()}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant={sortBy === 'alpha' ? 'default' : 'outline'}
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setSortBy('alpha')}
+                >
+                  A–Z
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{m.keyvalue_sort_alpha_tooltip()}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant={sortBy === 'time' ? 'default' : 'outline'}
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setSortBy('time')}
+                >
+                  {m.keyvalue_sort_time()}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{m.keyvalue_sort_time_tooltip()}</p>
+              </TooltipContent>
+            </Tooltip>
           </ButtonGroup>
 
           <Tooltip>

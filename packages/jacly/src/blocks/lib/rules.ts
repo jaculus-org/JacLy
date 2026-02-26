@@ -18,7 +18,7 @@ export function registerWorkspaceChangeListener(
   listenersFunctionsMap.forEach((eventTypes, listenerFunction) => {
     workspace.addChangeListener((event: Blockly.Events.Abstract) => {
       if (eventTypes === undefined || eventTypes.includes(event.type)) {
-        listenerFunction(workspace);
+        listenerFunction(workspace, event);
       }
     });
   });
@@ -26,9 +26,33 @@ export function registerWorkspaceChangeListener(
 
 // Map of listener functions to their associated event types (or undefined for all events)
 const listenersFunctionsMap: Map<
-  (workspace: WorkspaceSvgExtended) => void,
+  (workspace: WorkspaceSvgExtended, event?: Blockly.Events.Abstract) => void,
   string[] | undefined
-> = new Map([[processWorkspaceBlocks, codeChangeEvents]]);
+> = new Map([
+  [processWorkspaceBlocks, codeChangeEvents],
+  [autoCloseToolboxOnCreate, [Events.BLOCK_CREATE]],
+]);
+
+export function autoCloseToolboxOnCreate(
+  workspace: WorkspaceSvgExtended,
+  event?: Blockly.Events.Abstract
+) {
+  if (!event || event.type !== Events.BLOCK_CREATE) return;
+  const toolbox = workspace.getToolbox() as Blockly.Toolbox | null;
+  if (!toolbox) return;
+
+  for (const item of toolbox.getToolboxItems()) {
+    const collapsible = item as Blockly.CollapsibleToolboxCategory;
+    if (
+      typeof collapsible.isCollapsible === 'function' &&
+      collapsible.isCollapsible()
+    ) {
+      collapsible.setExpanded(false);
+    }
+  }
+
+  toolbox.clearSelection();
+}
 
 export function processWorkspaceBlocks(workspace: WorkspaceSvgExtended) {
   const blocks = workspace.getAllBlocks(false);

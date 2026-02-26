@@ -450,9 +450,6 @@ importers:
       '@blockly/shadow-block-converter':
         specifier: ^7.0.9
         version: 7.0.9(blockly@12.3.1)
-      '@blockly/toolbox-search':
-        specifier: ^3.1.7
-        version: 3.1.7(blockly@12.3.1)
       '@jaculus/device':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/device
@@ -860,11 +857,6 @@ packages:
   '@blockly/shadow-block-converter@7.0.9':
     resolution: {integrity: sha512-WLi/3w9XN14TaJk+Jsewjksr/mJ2WDv4/Fr7zfuSvqu98unDFA3MbbOlJIA+tAsuAUkhsDoF47G76/QR4AFzxQ==}
     engines: {node: '>=8.0.0'}
-    peerDependencies:
-      blockly: ^12.0.0
-
-  '@blockly/toolbox-search@3.1.7':
-    resolution: {integrity: sha512-0yUkfGWB97MWR8ltpIXIj6zeXlziYNz3tJytQioaepMAOWrflmiId0RMfvoPK2hHxPTp60B36h2mhzhtoBxqyw==}
     peerDependencies:
       blockly: ^12.0.0
 
@@ -6719,10 +6711,6 @@ snapshots:
       blockly: 12.3.1
 
   '@blockly/shadow-block-converter@7.0.9(blockly@12.3.1)':
-    dependencies:
-      blockly: 12.3.1
-
-  '@blockly/toolbox-search@3.1.7(blockly@12.3.1)':
     dependencies:
       blockly: 12.3.1
 

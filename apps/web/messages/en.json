@@ -127,7 +127,7 @@
   "project_error_invalid_package_json": "The 'package.json' file is invalid. If you click to auto-fix, the file will be overwritten with a default template. If you have important data in it, please back it up before proceeding.",
   "project_error_load_failed": "Failed to load the project. Please try reloading the page.",
   "project_error_unknown": "An unknown error occurred while loading the project. Please try reloading the page.",
-  "project_header_my": "My Projects",
+  "project_editor_home_tooltip": "Go back to project list",
   "jac_device_provider_save": "The project is automatically saved on every change. Ctrl/Cmd + S is not needed.",
   "jac_device_provider_restart": "The program on the device has been restarted",
   "jac_device_provider_upload_code": "Code successfully uploaded to device",
@@ -316,6 +316,10 @@
   "installer_dialog_confirm": "Confirm",
   "editor_jacly_loading_header": "Loading Jacly Editor",
   "keyvalue_component": "Key-Value",
+  "keyvalue_sort_alpha_tooltip": "Sort alphabetically",
   "keyvalue_sort_time": "Time",
-  "keyvalue_clear_tooltip": "Clear key-value store"
+  "keyvalue_sort_time_tooltip": "Sort by most recent",
+  "keyvalue_clear_tooltip": "Clear key-value store",
+  "locale_selector_label": "Select language",
+  "device_connection_tooltip": "Select connection type"
 }

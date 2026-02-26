@@ -125,7 +125,7 @@
   "project_error_invalid_package_json": "Soubor 'package.json' je neplatný. Pokud kliknete na automatickou opravu, soubor bude přepsán výchozí šablonou. Pokud v něm máte důležitá data, zálohujte je prosím před pokračováním.",
   "project_error_load_failed": "Nepodařilo se načíst projekt. Zkuste prosím znovu načíst stránku.",
   "project_error_unknown": "Při načítání projektu došlo k neznámé chybě. Zkuste prosím znovu načíst stránku.",
-  "project_header_my": "Moje projekty",
+  "project_editor_home_tooltip": "Zpět na seznam projektů",
   "jac_device_provider_ctrl_s": "Projekt se ukládá automaticky při každé změně. Ctrl/Cmd + S není potřeba.",
   "jac_device_provider_ctrl_r": "Program v zařízení byl restartován",
   "jac_device_provider_upload_code": "Kód byl úspěšně nahrán do zařízení",
@@ -315,6 +315,10 @@
   "installer_dialog_confirm": "Potvrdit",
   "editor_jacly_loading_header": "Načítání Jacly editoru",
   "keyvalue_component": "Klíč-Hodnota",
+  "keyvalue_sort_alpha_tooltip": "Seřadit abecedně",
   "keyvalue_sort_time": "Čas",
-  "keyvalue_clear_tooltip": "Vymazat úložiště klíč-hodnota"
+  "keyvalue_sort_time_tooltip": "Seřadit od nejnovějších",
+  "keyvalue_clear_tooltip": "Vymazat úložiště klíč-hodnota",
+  "locale_selector_label": "Vyberte jazyk",
+  "device_connection_tooltip": "Vyberte typ připojení"
 }
