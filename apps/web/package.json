@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm run paraglide:compile && tsc -b && vite build",
+    "build": "pnpm run paraglide:compile && pnpm run generate:schema && tsc -b && vite build",
     "paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "generate:schema": "tsx scripts/generate-schema.ts",
     "lint": "eslint .",

@@ -6,6 +6,8 @@ import type {
 } from '@jaculus/firmware/boards';
 import type { FlashProgress } from './libs/flasher';
 
+export type InstallerSourceTab = 'online' | 'url' | 'file';
+
 export interface InstallerState {
   baudrate: number;
   chipList: BoardsIndex[];
@@ -14,6 +16,9 @@ export interface InstallerState {
   versionList: BoardVersion[];
   selectedVersion: string | null;
   eraseFlash: boolean;
+  sourceTab: InstallerSourceTab;
+  firmwareUrl: string;
+  firmwareFile: File | null;
   autoLoading: boolean;
   installing: boolean;
   isConnected: boolean;
@@ -25,6 +30,9 @@ export interface InstallerState {
 export interface InstallerActions {
   setBaudrate: (value: number) => void;
   setEraseFlash: (value: boolean) => void;
+  setSourceTab: (tab: InstallerSourceTab) => void;
+  setFirmwareUrl: (value: string) => void;
+  setFirmwareFile: (file: File | null) => void;
   changeChip: (chipId: string) => void;
   changeVariant: (variantId: string) => Promise<void>;
   changeVersion: (version: string) => void;

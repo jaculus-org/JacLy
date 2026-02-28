@@ -4,6 +4,7 @@ export { InstallerLayout } from './components/installer-layout';
 export { InstallerProgress } from './components/installer-progress';
 export { InstallerProvider, baudrates } from './installer-provider';
 export { InstallerTerminal } from './components/installer-terminal';
+export { useInstaller } from './installer-context';
 
 import { InstallerControls } from './components/installer-controls';
 import { InstallerDialog } from './components/installer-dialog';

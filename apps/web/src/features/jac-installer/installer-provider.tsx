@@ -24,7 +24,11 @@ import {
   executeWithTimeout,
   TimeoutError,
 } from '@/features/shared/lib/timeout';
-import { type InstallerState, InstallerContext } from './installer-context';
+import {
+  InstallerContext,
+  type InstallerSourceTab,
+  type InstallerState,
+} from './installer-context';
 import { ESP32Flasher } from './libs/flasher';
 
 interface ChipWithPsram {
@@ -33,24 +37,49 @@ interface ChipWithPsram {
 
 export const baudrates = ['921600', '460800', '230400', '115200'];
 
-const initialState: InstallerState = {
-  baudrate: Number(baudrates[0]),
-  chipList: [],
-  selectedChip: null,
-  selectedVariant: null,
-  versionList: [],
-  selectedVersion: null,
-  eraseFlash: true,
-  autoLoading: false,
-  installing: false,
-  isConnected: false,
-  flashProgress: null,
-  terminalOutput: [],
-  showPopupText: null,
-};
+function createInitialState(initialUrl?: string): InstallerState {
+  return {
+    baudrate: Number(baudrates[0]),
+    chipList: [],
+    selectedChip: null,
+    selectedVariant: null,
+    versionList: [],
+    selectedVersion: null,
+    eraseFlash: true,
+    sourceTab: initialUrl ? 'url' : 'online',
+    firmwareUrl: initialUrl ?? '',
+    firmwareFile: null,
+    autoLoading: false,
+    installing: false,
+    isConnected: false,
+    flashProgress: null,
+    terminalOutput: [],
+    showPopupText: null,
+  };
+}
 
-export function InstallerProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<InstallerState>(initialState);
+function isFirmwarePackage(name: string) {
+  return /\.(tar\.gz|tgz)(\?|#|$)/i.test(name);
+}
+
+function getUrlParam(key: string) {
+  if (typeof window === 'undefined') return '';
+  return new URL(window.location.href).searchParams.get(key) ?? '';
+}
+
+export function InstallerProvider({
+  children,
+  initialUrl,
+  syncUrlParam = true,
+}: {
+  children: ReactNode;
+  initialUrl?: string;
+  syncUrlParam?: boolean;
+}) {
+  const [state, setState] = useState<InstallerState>(() =>
+    createInitialState(initialUrl)
+  );
+  const isConnectedRef = useRef(false);
   const transportRef = useRef<Transport | null>(null);
   const flasherRef = useRef<ESP32Flasher | null>(null);
   const terminal: IEspLoaderTerminal = useMemo(
@@ -131,6 +160,10 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    isConnectedRef.current = state.isConnected;
+  }, [state.isConnected]);
+
+  useEffect(() => {
     let isMounted = true;
 
     (async () => {
@@ -146,6 +179,39 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
       isMounted = false;
     };
   }, [changeChip]);
+
+  useEffect(() => {
+    if (!syncUrlParam) return;
+    const current = getUrlParam('url');
+    if (!current) return;
+    setState(prev => {
+      if (prev.firmwareUrl === current && prev.sourceTab === 'url') {
+        return prev;
+      }
+      return {
+        ...prev,
+        firmwareUrl: current,
+        sourceTab: 'url',
+      };
+    });
+  }, [syncUrlParam]);
+
+  useEffect(() => {
+    if (!syncUrlParam) return;
+    if (state.sourceTab !== 'url') return;
+    const current = getUrlParam('url');
+    if (state.firmwareUrl === current) return;
+    const timer = window.setTimeout(() => {
+      const nextUrl = new URL(window.location.href);
+      if (state.firmwareUrl) {
+        nextUrl.searchParams.set('url', state.firmwareUrl);
+      } else {
+        nextUrl.searchParams.delete('url');
+      }
+      window.history.replaceState(null, '', nextUrl.toString());
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [state.firmwareUrl, state.sourceTab, syncUrlParam]);
 
   const changeVersion = useCallback((version: string) => {
     setState(prev => ({ ...prev, selectedVersion: version }));
@@ -290,22 +356,71 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
     enqueueSnackbar(m.installer_msg_disconnected(), { variant: 'info' });
   }, [terminal]);
 
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !('serial' in navigator)) return;
+    const handler = () => {
+      if (!isConnectedRef.current) return;
+      void disconnect();
+    };
+    navigator.serial.addEventListener('disconnect', handler);
+    return () => {
+      navigator.serial.removeEventListener('disconnect', handler);
+    };
+  }, [disconnect]);
+
   const flash = useCallback(async () => {
     const flasher = flasherRef.current;
-    if (!flasher || !state.selectedVariant || !state.selectedVersion) return;
+    if (!flasher) return;
+
+    let firmwareUrl: string | null = null;
+    let revokeUrl: string | null = null;
+
+    if (state.sourceTab === 'online') {
+      if (!state.selectedVariant || !state.selectedVersion) {
+        enqueueSnackbar('Select a firmware variant and version first.', {
+          variant: 'error',
+        });
+        return;
+      }
+      firmwareUrl = getBoardVersionFirmwareTarUrl(
+        state.selectedVariant.id,
+        state.selectedVersion
+      );
+    } else if (state.sourceTab === 'url') {
+      if (!state.firmwareUrl) {
+        enqueueSnackbar('Enter a firmware URL.', { variant: 'error' });
+        return;
+      }
+      if (!isFirmwarePackage(state.firmwareUrl)) {
+        enqueueSnackbar('Firmware URL must end with .tar.gz or .tgz', {
+          variant: 'error',
+        });
+        return;
+      }
+      firmwareUrl = state.firmwareUrl;
+    } else {
+      if (!state.firmwareFile) {
+        enqueueSnackbar('Choose a firmware file.', { variant: 'error' });
+        return;
+      }
+      if (!isFirmwarePackage(state.firmwareFile.name)) {
+        enqueueSnackbar('Firmware file must be a .tar.gz or .tgz archive.', {
+          variant: 'error',
+        });
+        return;
+      }
+      firmwareUrl = URL.createObjectURL(state.firmwareFile);
+      revokeUrl = firmwareUrl;
+    }
 
     setState(prev => ({ ...prev, installing: true, flashProgress: null }));
 
     try {
-      const firmwareUrl = getBoardVersionFirmwareTarUrl(
-        state.selectedVariant.id,
-        state.selectedVersion
-      );
       terminal.writeLine(`\n${m.installer_msg_flash_starting()}`);
       terminal.writeLine(
         m.installer_msg_flash_firmware({
-          variant: state.selectedVariant.name,
-          version: state.selectedVersion,
+          variant: state.selectedVariant?.name ?? 'custom',
+          version: state.selectedVersion ?? 'custom',
         })
       );
 
@@ -330,6 +445,9 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
         variant: 'error',
       });
     } finally {
+      if (revokeUrl) {
+        URL.revokeObjectURL(revokeUrl);
+      }
       setState(prev => ({
         ...prev,
         installing: false,
@@ -339,8 +457,11 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
   }, [
     disconnect,
     state.eraseFlash,
+    state.firmwareFile,
+    state.firmwareUrl,
     state.selectedVariant,
     state.selectedVersion,
+    state.sourceTab,
     terminal,
   ]);
 
@@ -352,6 +473,12 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
           setState(prev => ({ ...prev, baudrate: value })),
         setEraseFlash: (value: boolean) =>
           setState(prev => ({ ...prev, eraseFlash: value })),
+        setSourceTab: (tab: InstallerSourceTab) =>
+          setState(prev => ({ ...prev, sourceTab: tab })),
+        setFirmwareUrl: (value: string) =>
+          setState(prev => ({ ...prev, firmwareUrl: value })),
+        setFirmwareFile: (file: File | null) =>
+          setState(prev => ({ ...prev, firmwareFile: file })),
         changeChip: (chipId: string) => changeChip(chipId),
         changeVariant: (variantId: string) => changeVariant(variantId),
         changeVersion,

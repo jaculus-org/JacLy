@@ -15,9 +15,16 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/features/shared/components/ui/field';
+import { Input } from '@/features/shared/components/ui/input';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/features/shared/components/ui/tabs';
 import { Button } from '@/features/shared/components/ui/button';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
-import { useInstaller } from '../installer-context';
+import { type InstallerSourceTab, useInstaller } from '../installer-context';
 
 export function InstallerControls() {
   const { state, actions, meta } = useInstaller();
@@ -77,96 +84,160 @@ export function InstallerControls() {
         <>
           <Separator />
 
+          <Tabs
+            value={state.sourceTab}
+            onValueChange={value =>
+              actions.setSourceTab(value as InstallerSourceTab)
+            }
+          >
+            <TabsList className="grid w-full grid-cols-3" variant="default">
+              <TabsTrigger value="online">Online</TabsTrigger>
+              <TabsTrigger value="url">URL</TabsTrigger>
+              <TabsTrigger value="file">File</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="online" className="mt-4">
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="chip-select">
+                    {m.installer_chip_label()}
+                  </FieldLabel>
+                  <Select
+                    onValueChange={actions.changeChip}
+                    value={state.selectedChip || undefined}
+                    disabled={state.autoLoading || state.isConnected}
+                  >
+                    <SelectTrigger className="w-full" id="chip-select">
+                      <SelectValue
+                        placeholder={m.installer_chip_select_placeholder()}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>{m.installer_chip_label()}</SelectLabel>
+                        {state.chipList.map(chip => (
+                          <SelectItem key={chip.chip} value={chip.chip}>
+                            {chip.chip}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="variant-select">
+                    {m.installer_variant_label()}
+                  </FieldLabel>
+                  <Select
+                    onValueChange={actions.changeVariant}
+                    value={state.selectedVariant?.id || undefined}
+                    disabled={
+                      !state.selectedChip ||
+                      state.autoLoading ||
+                      state.installing
+                    }
+                  >
+                    <SelectTrigger className="w-full" id="variant-select">
+                      <SelectValue
+                        placeholder={m.installer_variant_select_placeholder()}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>{m.installer_variant_label()}</SelectLabel>
+                        {state.chipList
+                          .find(chip => chip.chip === state.selectedChip)
+                          ?.variants.map(variant => (
+                            <SelectItem key={variant.id} value={variant.id}>
+                              {variant.name}
+                            </SelectItem>
+                          ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    {m.installer_variant_desc()}
+                  </FieldDescription>
+                </Field>
+
+                <Separator />
+
+                <Field>
+                  <FieldLabel htmlFor="version-select">
+                    {m.installer_version_label()}
+                  </FieldLabel>
+                  <Select
+                    onValueChange={actions.changeVersion}
+                    value={state.selectedVersion || undefined}
+                    disabled={!state.selectedVariant || state.installing}
+                  >
+                    <SelectTrigger className="w-full" id="version-select">
+                      <SelectValue
+                        placeholder={m.installer_version_select_placeholder()}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>{m.installer_version_label()}</SelectLabel>
+                        {state.versionList.map(version => (
+                          <SelectItem
+                            key={version.version}
+                            value={version.version}
+                          >
+                            {version.version}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    {m.installer_version_desc()}
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </TabsContent>
+
+            <TabsContent value="url" className="mt-4">
+              <Field>
+                <FieldLabel htmlFor="firmware-url">Firmware URL</FieldLabel>
+                <Input
+                  id="firmware-url"
+                  placeholder="https://example.com/firmware.tar.gz"
+                  value={state.firmwareUrl}
+                  onChange={event =>
+                    actions.setFirmwareUrl(event.currentTarget.value)
+                  }
+                  disabled={state.autoLoading || state.installing}
+                />
+                <FieldDescription>
+                  Must be a .tar.gz or .tgz firmware package.
+                </FieldDescription>
+              </Field>
+            </TabsContent>
+
+            <TabsContent value="file" className="mt-4">
+              <Field>
+                <FieldLabel htmlFor="firmware-file">Firmware File</FieldLabel>
+                <Input
+                  id="firmware-file"
+                  type="file"
+                  accept=".tar.gz,.tgz,application/gzip,application/x-gzip"
+                  onChange={event =>
+                    actions.setFirmwareFile(
+                      event.currentTarget.files?.[0] ?? null
+                    )
+                  }
+                  disabled={state.autoLoading || state.installing}
+                />
+                <FieldDescription>
+                  Upload a .tar.gz or .tgz firmware package.
+                </FieldDescription>
+              </Field>
+            </TabsContent>
+          </Tabs>
+
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="chip-select">
-                {m.installer_chip_label()}
-              </FieldLabel>
-              <Select
-                onValueChange={actions.changeChip}
-                value={state.selectedChip || undefined}
-                disabled={state.autoLoading || state.isConnected}
-              >
-                <SelectTrigger className="w-full" id="chip-select">
-                  <SelectValue
-                    placeholder={m.installer_chip_select_placeholder()}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{m.installer_chip_label()}</SelectLabel>
-                    {state.chipList.map(chip => (
-                      <SelectItem key={chip.chip} value={chip.chip}>
-                        {chip.chip}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="variant-select">
-                {m.installer_variant_label()}
-              </FieldLabel>
-              <Select
-                onValueChange={actions.changeVariant}
-                value={state.selectedVariant?.id || undefined}
-                disabled={
-                  !state.selectedChip || state.autoLoading || state.installing
-                }
-              >
-                <SelectTrigger className="w-full" id="variant-select">
-                  <SelectValue
-                    placeholder={m.installer_variant_select_placeholder()}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{m.installer_variant_label()}</SelectLabel>
-                    {state.chipList
-                      .find(chip => chip.chip === state.selectedChip)
-                      ?.variants.map(variant => (
-                        <SelectItem key={variant.id} value={variant.id}>
-                          {variant.name}
-                        </SelectItem>
-                      ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FieldDescription>{m.installer_variant_desc()}</FieldDescription>
-            </Field>
-
-            <Separator />
-
-            <Field>
-              <FieldLabel htmlFor="version-select">
-                {m.installer_version_label()}
-              </FieldLabel>
-              <Select
-                onValueChange={actions.changeVersion}
-                value={state.selectedVersion || undefined}
-                disabled={!state.selectedVariant || state.installing}
-              >
-                <SelectTrigger className="w-full" id="version-select">
-                  <SelectValue
-                    placeholder={m.installer_version_select_placeholder()}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{m.installer_version_label()}</SelectLabel>
-                    {state.versionList.map(version => (
-                      <SelectItem key={version.version} value={version.version}>
-                        {version.version}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FieldDescription>{m.installer_version_desc()}</FieldDescription>
-            </Field>
-
             <Field>
               <FieldLabel htmlFor="erase-select">
                 {m.installer_erase_label()}
@@ -216,10 +287,12 @@ export function InstallerControls() {
             onClick={actions.flash}
             loading={state.installing}
             disabled={
-              !state.selectedVersion ||
               state.autoLoading ||
-              !state.selectedVariant?.id ||
-              !state.isConnected
+              !state.isConnected ||
+              (state.sourceTab === 'online' &&
+                (!state.selectedVariant || !state.selectedVersion)) ||
+              (state.sourceTab === 'url' && !state.firmwareUrl) ||
+              (state.sourceTab === 'file' && !state.firmwareFile)
             }
             className="w-full"
           >
