@@ -4,7 +4,14 @@ export function InstallerPanel() {
   return (
     <div className="flex flex-col gap-2 min-h-screen from-slate-900 to-slate-800 p-3">
       <div className="flex justify-center">
-        <Installer />
+        <Installer.Provider>
+          <Installer.Layout>
+            <Installer.Controls />
+            <Installer.Progress />
+            <Installer.Terminal />
+            <Installer.Dialog />
+          </Installer.Layout>
+        </Installer.Provider>
       </div>
     </div>
   );

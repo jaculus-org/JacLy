@@ -14,7 +14,14 @@ function RouteComponent() {
         <p className="text-slate-300">{m.installer_subtitle()}</p>
       </div>
       <div className="flex justify-center">
-        <Installer />
+        <Installer.Provider>
+          <Installer.Layout>
+            <Installer.Controls />
+            <Installer.Progress />
+            <Installer.Terminal />
+            <Installer.Dialog />
+          </Installer.Layout>
+        </Installer.Provider>
       </div>
     </div>
   );
