@@ -1,17 +1,16 @@
 import { IIconBlock } from '@/blocks/types/custom-block';
 import { WorkspaceSvg } from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getLibraryImportsForBlock } from '@/blocks/lib/blockly';
+import { getImportsForBlock } from '@/blocks/lib/blockly';
 
 export function generateCodeFromWorkspace(workspace: WorkspaceSvg): string {
   const warnings = collectWorkspaceWarnings(workspace);
-  const libraryImports = collectLibraryImports(workspace);
-
   let code = javascriptGenerator.workspaceToCode(workspace);
 
-  // Prepend library imports to the generated code
-  if (libraryImports.length > 0) {
-    code = libraryImports.join('\n') + '\n\n' + code;
+  const allImports = collectImports(workspace);
+
+  if (allImports.length > 0) {
+    code = allImports.join('\n') + '\n\n' + code;
   }
 
   if (warnings.length > 0) {
@@ -32,16 +31,15 @@ export function generateCodeFromWorkspace(workspace: WorkspaceSvg): string {
 }
 
 /**
- * Collect all unique library imports required by blocks in the workspace.
+ * Collect all unique imports from config-level and block-level `import` arrays.
  */
-function collectLibraryImports(workspace: WorkspaceSvg): string[] {
+function collectImports(workspace: WorkspaceSvg): string[] {
   const blocks = workspace.getAllBlocks(false);
   const uniqueImports = new Set<string>();
 
   for (const block of blocks) {
-    const imports = getLibraryImportsForBlock(block.type);
-    for (const importStatement of imports) {
-      uniqueImports.add(importStatement);
+    for (const imp of getImportsForBlock(block.type)) {
+      uniqueImports.add(imp);
     }
   }
 

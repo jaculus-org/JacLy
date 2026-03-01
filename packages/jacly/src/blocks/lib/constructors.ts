@@ -26,6 +26,16 @@ const virtualInstancesMap = new Map<string, VirtualInstanceDef[]>();
  */
 const virtualInstancesByType = new Map<string, string[]>();
 
+/**
+ * Clear all constructor registries. Call before re-registering blocks
+ * to prevent stale data from removed/updated libraries.
+ */
+export function clearConstructorRegistries(): void {
+  constructorTypeMap.clear();
+  virtualInstancesMap.clear();
+  virtualInstancesByType.clear();
+}
+
 export function registerVirtualInstances(
   constructorBlockType: string,
   virtualInstances: VirtualInstanceDef[]

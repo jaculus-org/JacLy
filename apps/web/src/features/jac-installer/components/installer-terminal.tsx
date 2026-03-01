@@ -23,12 +23,14 @@ export function InstallerTerminal() {
         {m.installer_terminal_label()}
       </FieldLabel>
       <ScrollArea
-        className="h-46 w-full rounded-md border border-gray-700"
+        className="h-46 w-full rounded-md border border-border"
         id="terminal-output"
       >
-        <div className="bg-secondary text-green-400 font-mono text-sm p-4">
+        <div className="bg-muted text-emerald-500 dark:text-emerald-400 font-mono text-sm p-4">
           {state.terminalOutput.length === 0 ? (
-            <div className="text-gray-500">{m.installer_terminal_empty()}</div>
+            <div className="text-muted-foreground">
+              {m.installer_terminal_empty()}
+            </div>
           ) : (
             state.terminalOutput.map((line, index) => (
               <div key={index}>{line}</div>

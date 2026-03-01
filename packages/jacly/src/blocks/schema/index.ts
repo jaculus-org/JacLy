@@ -229,6 +229,7 @@ const JaclyBlockKindBlock = z
     args0: z.array(JaclyArgs).optional(),
     tooltip: z.string().optional(),
     isProgramStart: z.boolean().optional(),
+    import: z.array(z.string()).optional(),
     code: z.string().optional(),
     codeConditionals: CodeConditionalsSchema.optional(),
     output: z.union([z.string(), z.null()]).optional(),
@@ -318,7 +319,7 @@ export const JaclyConfigSchema = z.object({
   icon: z.string().optional(),
   custom: z.string().optional(),
   categorystyle: z.string().optional(),
-  libraries: z.array(z.string()).optional(),
+  import: z.array(z.string()).optional(),
   priority: z.number().optional(),
   priorityCategory: z.number().optional(),
 

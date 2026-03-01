@@ -11,6 +11,8 @@ import { z } from 'zod';
 import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
 import { localizeJaclyConfig, registerTranslations } from './translations';
 import { buildCategoryHeader } from './category-header';
+import { clearBlockRegistries } from './blockly';
+import { clearConstructorRegistries } from './constructors';
 
 export { registerDocsCallbacks } from './category-header';
 
@@ -21,6 +23,11 @@ export function loadToolboxConfiguration(
   if (jaclyBlocksData.translations) {
     registerTranslations(jaclyBlocksData.translations);
   }
+
+  // Clear all block and constructor registries before re-registering
+  // so fresh block objects get fully processed (message0, inputs, etc.)
+  clearBlockRegistries();
+  clearConstructorRegistries();
 
   const toolboxContent: ToolboxItemInfoSort[] = [];
 

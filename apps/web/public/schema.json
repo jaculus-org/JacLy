@@ -63,7 +63,7 @@
     "categorystyle": {
       "type": "string"
     },
-    "libraries": {
+    "import": {
       "type": "array",
       "items": {
         "type": "string"
@@ -130,7 +130,10 @@
                           "type": "boolean"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -171,7 +174,10 @@
                           "type": "number"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -218,7 +224,10 @@
                           "pattern": "^[a-zA-Z0-9-_]+$"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -248,7 +257,11 @@
                         },
                         "align": {
                           "type": "string",
-                          "enum": ["LEFT", "RIGHT", "CENTRE"]
+                          "enum": [
+                            "LEFT",
+                            "RIGHT",
+                            "CENTRE"
+                          ]
                         },
                         "check": {
                           "anyOf": [
@@ -264,7 +277,10 @@
                           ]
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -294,7 +310,11 @@
                         },
                         "align": {
                           "type": "string",
-                          "enum": ["LEFT", "RIGHT", "CENTRE"]
+                          "enum": [
+                            "LEFT",
+                            "RIGHT",
+                            "CENTRE"
+                          ]
                         },
                         "check": {
                           "anyOf": [
@@ -310,7 +330,10 @@
                           ]
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -340,10 +363,17 @@
                         },
                         "align": {
                           "type": "string",
-                          "enum": ["LEFT", "RIGHT", "CENTRE"]
+                          "enum": [
+                            "LEFT",
+                            "RIGHT",
+                            "CENTRE"
+                          ]
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -372,7 +402,10 @@
                           "const": "input_end_row"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -404,7 +437,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -436,7 +472,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     },
                     {
@@ -468,7 +507,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "additionalProperties": false
                     }
                   ]
@@ -479,6 +521,12 @@
               },
               "isProgramStart": {
                 "type": "boolean"
+              },
+              "import": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               "code": {
                 "type": "string"
@@ -505,7 +553,10 @@
                       "minLength": 1
                     }
                   },
-                  "required": ["condition", "code"],
+                  "required": [
+                    "condition",
+                    "code"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -613,7 +664,11 @@
                       "minLength": 1
                     }
                   },
-                  "required": ["instanceof", "name", "connection"],
+                  "required": [
+                    "instanceof",
+                    "name",
+                    "connection"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -634,12 +689,18 @@
                       "minLength": 1
                     }
                   },
-                  "required": ["name", "codeName"],
+                  "required": [
+                    "name",
+                    "codeName"
+                  ],
                   "additionalProperties": false
                 }
               }
             },
-            "required": ["kind", "type"],
+            "required": [
+              "kind",
+              "type"
+            ],
             "additionalProperties": false
           },
           {
@@ -672,7 +733,10 @@
                 "type": "string"
               }
             },
-            "required": ["kind", "name"],
+            "required": [
+              "kind",
+              "name"
+            ],
             "additionalProperties": false
           },
           {
@@ -686,7 +750,9 @@
                 "type": "number"
               }
             },
-            "required": ["kind"],
+            "required": [
+              "kind"
+            ],
             "additionalProperties": false
           },
           {
@@ -704,14 +770,23 @@
                 "type": "string"
               }
             },
-            "required": ["kind", "text"],
+            "required": [
+              "kind",
+              "text"
+            ],
             "additionalProperties": false
           }
         ]
       }
     }
   },
-  "required": ["version", "author", "license", "category", "name"],
+  "required": [
+    "version",
+    "author",
+    "license",
+    "category",
+    "name"
+  ],
   "additionalProperties": false,
   "$defs": {
     "__schema0": {
@@ -766,7 +841,9 @@
           }
         }
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "additionalProperties": false
     },
     "__schema1": {
@@ -821,7 +898,9 @@
           }
         }
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "additionalProperties": false
     }
   }

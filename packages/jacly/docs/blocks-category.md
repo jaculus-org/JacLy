@@ -20,7 +20,7 @@ The category definition files are located in the `blocks/` folder of each librar
   "colour": "#751F5C",
   "icon": "Key",
   "priority": 120,
-  "libraries": ["import * as keyvalue from \"keyvalue\";"],
+  "import": ["import * as keyvalue from \"keyvalue\";"],
   "contents": []
 }
 ```
@@ -86,7 +86,7 @@ Visual gap between blocks:
   "colour": "#9C27B0",
   "icon": "AudioWaveform",
   "priority": 105,
-  "libraries": ["import * as adc from \"adc\";"],
+  "import": ["import * as adc from \"adc\";"],
   "contents": [
     { "kind": "label", "text": "%SETUP%" },
     { "kind": "block", "type": "adc_configure", ... },
@@ -106,7 +106,7 @@ A category that defines its own constructor and exposes blocks from other catego
   "name": "%T%",
   "colour": "#b08DA5",
   "icon": "Bot",
-  "libraries": ["import { createRobutek } from \"robutek\";"],
+  "import": ["import { createRobutek } from \"robutek\";"],
   "contents": [
     {
       "kind": "block",

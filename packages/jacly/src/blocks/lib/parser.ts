@@ -5,7 +5,7 @@ import {
   enrichBlockInputs,
   registerBlocklyBlock,
   registerCodeGenerator,
-  registryLibraryImport,
+  registerBlockImports,
 } from './blockly';
 
 /**
@@ -50,11 +50,11 @@ export function parseToolboxContentsBlock(
       item.args0 !== undefined ||
       item.code !== undefined;
 
-    registryLibraryImport(item, jaclyConfig);
+    registerBlockImports(item, jaclyConfig);
 
     if (isCustomBlock) {
       registerBlocklyBlock(item, jaclyConfig);
-      registerCodeGenerator(item, jaclyConfig);
+      registerCodeGenerator(item);
     } else {
       editInternalBlocks(item, jaclyConfig);
     }

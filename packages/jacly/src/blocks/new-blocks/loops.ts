@@ -10,6 +10,7 @@
 
 // Former goog.module ID: Blockly.JavaScript.loops
 // Copied and modified from Blockly's built-in JavaScript generator for loops.
+// Extended to put a sleep(0) after each loop iteration to yield control back.
 
 import {
   JavascriptGenerator,
@@ -54,10 +55,10 @@ jsg.forBlock['controls_repeat_ext'] = function (
   let endVar = repeats;
   if (!repeats.match(/^\w+$/) && !isNumber(repeats)) {
     endVar = generator.nameDB_!.getDistinctName('repeat_end', 'VARIABLE');
-    code += 'var ' + endVar + ' = ' + repeats + ';\n';
+    code += 'let ' + endVar + ' = ' + repeats + ';\n';
   }
   code +=
-    'for (var ' +
+    'for (let ' +
     loopVar +
     ' = 0; ' +
     loopVar +

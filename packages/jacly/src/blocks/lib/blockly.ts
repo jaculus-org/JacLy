@@ -32,11 +32,11 @@ interface BlockExtraState {
 }
 
 /**
- * Registry mapping block types to their required library imports.
+ * Registry mapping block types to their required static imports.
  * Key: block type (e.g., "i2c_setup", "vl53l0x_create")
- * Value: array of import statements
+ * Value: Set of import statements (merged from config-level + block-level)
  */
-const blockLibraryImports = new Map<string, string[]>();
+const blockStaticImports = new Map<string, Set<string>>();
 
 /**
  * Registry of processed inputs (shadows/blocks) for each block type.
@@ -52,8 +52,21 @@ const blockRegisteredInputs = new Map<string, JaclyBlockKindBlock['inputs']>();
 const registeredBlockTypes = new Set<string>();
 const editedInternalBlockTypes = new Set<string>();
 
-export function getLibraryImportsForBlock(blockType: string): string[] {
-  return blockLibraryImports.get(blockType) || [];
+export function getImportsForBlock(blockType: string): string[] {
+  const imports = blockStaticImports.get(blockType);
+  return imports ? Array.from(imports) : [];
+}
+
+/**
+ * Clear all block registries. Call before re-registering blocks
+ * to prevent stale data from removed/updated libraries and allow
+ * fresh block objects to be fully processed on reload.
+ */
+export function clearBlockRegistries(): void {
+  blockStaticImports.clear();
+  blockRegisteredInputs.clear();
+  registeredBlockTypes.clear();
+  editedInternalBlockTypes.clear();
 }
 
 /**
@@ -505,16 +518,9 @@ function selectConditionalCode(
   return block.code || null;
 }
 
-export function registerCodeGenerator(
-  block: JaclyBlock,
-  jaclyConfig: JaclyConfig
-) {
+export function registerCodeGenerator(block: JaclyBlock) {
   if (block.kind != 'block' || (!block.code && !block.codeConditionals)) {
     return;
-  }
-
-  if (jaclyConfig.libraries && jaclyConfig.libraries.length > 0) {
-    blockLibraryImports.set(block.type, jaclyConfig.libraries);
   }
 
   jsg.forBlock[block.type] = function (
@@ -544,16 +550,34 @@ export function registerCodeGenerator(
   };
 }
 
-export function registryLibraryImport(
+/**
+ * Register static imports for a block from config-level and block-level `import` arrays.
+ * Uses a Set to deduplicate exact-match import statements.
+ */
+export function registerBlockImports(
   block: JaclyBlock,
   jaclyConfig: JaclyConfig
 ) {
-  if (
-    block.kind == 'block' &&
-    jaclyConfig.libraries &&
-    jaclyConfig.libraries.length > 0
-  ) {
-    blockLibraryImports.set(block.type, jaclyConfig.libraries);
+  if (block.kind !== 'block') return;
+
+  const imports = new Set<string>();
+
+  // Config-level imports (apply to all blocks in this config)
+  if (jaclyConfig.import) {
+    for (const imp of jaclyConfig.import) {
+      imports.add(imp);
+    }
+  }
+
+  // Block-level imports (specific to this block)
+  if (block.import) {
+    for (const imp of block.import) {
+      imports.add(imp);
+    }
+  }
+
+  if (imports.size > 0) {
+    blockStaticImports.set(block.type, imports);
   }
 }
 

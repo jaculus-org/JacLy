@@ -10,6 +10,7 @@
 
 // Former goog.module ID: Blockly.JavaScript.procedures
 // Copied and modified from Blockly's built-in JavaScript generator for procedures.
+// Extended to generate async functions
 
 import { BlockExtended } from '../types/custom-block';
 import {

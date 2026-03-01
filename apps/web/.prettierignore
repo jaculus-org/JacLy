@@ -12,3 +12,5 @@ routeTree.gen.ts
 
 # Auto-generated translation files
 src/paraglide/
+
+schema.json
