@@ -1,34 +1,13 @@
-/**
- * Shared utilities for typed-variable categories (Variables, Constants, …).
- *
- * Every typed-variable module in this folder should use these helpers so the
- * flyout layout and button-wiring stay consistent.
- */
-
 import * as Blockly from 'blockly/core';
 
 export interface TypedVarConfig {
-  /** Blockly variable type string, e.g. '' or 'CONST'. */
   varType: string;
-  /** Block type used to read the variable. */
   blockGet: string;
-  /** Block type used to write the variable. */
   blockSet: string;
-  /** Label on the "create new" button in the flyout. */
   createButtonLabel: string;
-  /** Callback key for the create-button (must be unique per workspace). */
   createCallbackKey: string;
 }
 
-/**
- * Build the flyout contents for a typed-variable category.
- *
- * Layout:
- *   1. "Create …" button
- *   2. ONE set block (pre-filled with the most recent variable; user can
- *      switch via the dropdown after dragging)
- *   3. One GET block per variable (newest first)
- */
 export function buildTypedVariableFlyout(
   workspace: Blockly.WorkspaceSvg,
   config: TypedVarConfig
@@ -45,7 +24,6 @@ export function buildTypedVariableFlyout(
     return [createButton];
   }
 
-  // Newest variable is at the end of the list — reverse so it appears first.
   const reversed = [...vars].reverse();
   const newest = reversed[0];
 
@@ -81,14 +59,6 @@ export function buildTypedVariableFlyout(
   return [createButton, setBlock, ...getBlocks];
 }
 
-/**
- * Register a toolbox-category callback and its "create variable" button
- * callback on the given workspace.
- *
- * @param workspace  - The workspace to register on.
- * @param config     - Typed-variable config (same object passed to buildTypedVariableFlyout).
- * @param categoryName - Key used in `registerToolboxCategoryCallback` (matches `"custom"` in the JSON).
- */
 export function registerTypedVariableCategory(
   workspace: Blockly.WorkspaceSvg,
   config: TypedVarConfig,

@@ -1,15 +1,8 @@
-/**
- * Shared helpers for attaching shadow blocks to value inputs.
- *
- * These are standalone functions (not block methods) so they can be used from
- * any block definition without coupling to a specific block interface.
- */
+// Helpers for adding shadow blocks to value inputs
 
 import * as Blockly from 'blockly/core';
 
-/**
- * Attach a shadow `math_number` block to an input if it's empty.
- */
+// Attach a default number shadow block if the input is empty
 export function addShadowNumber(
   block: Blockly.Block,
   inputName: string,
@@ -28,9 +21,7 @@ export function addShadowNumber(
   input.connection?.connect(shadowBlock.outputConnection!);
 }
 
-/**
- * Attach a shadow `text` block to an input if it's empty.
- */
+// Attach a default text shadow block if the input is empty
 export function addShadowText(
   block: Blockly.Block,
   inputName: string,

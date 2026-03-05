@@ -64,11 +64,12 @@ export function ActiveProjectProvider({
     mountFs();
 
     return () => {
+      projectManService.touchProject(project.id);
       mounted = false;
       projectFsService.unmount(project.id);
       setError(null);
     };
-  }, [project.id, projectFsService]);
+  }, [project.id, projectFsService, projectManService]);
 
   const getFileName = useCallback(
     (fileType: keyof typeof JaclyFiles) => {
@@ -100,8 +101,6 @@ export function ActiveProjectProvider({
       }
 
       await projectManService.renameProject(projectId, newName);
-
-      // Update local state so the UI reflects the new name without reload
       setCurrentProject(prev => ({ ...prev, name: newName }));
     },
     [project.id, projectFsService, projectManService]

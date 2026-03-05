@@ -1,40 +1,43 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
-import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
+import { useCallback, useMemo, useRef } from 'react';
+
+// Types
 import { Theme } from '@/editor/types/theme';
-import { useState, useEffect, useRef } from 'react';
-import { getBlocklyTheme } from '@/editor/lib/theme';
+import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import { JaclyBlocksData } from '@jaculus/project';
+
+// Lib
+import { getBlocklyTheme } from '@/editor/lib/theme';
+import { generateCodeFromWorkspace } from '../lib/code-generation';
+import { registerJaclyCustomCategory } from '../lib/custom-category';
+
+// Hooks
+import { useBlocklyMessages } from '../hooks/use-blockly-messages';
+
+// Blocks
 import {
   loadToolboxConfiguration,
   registerDocsCallbacks,
-} from '@/blocks/lib/toolbox-loader';
-import { registerWorkspaceChangeListener } from '@/blocks/lib/rules';
+} from '@/blocks/lib/toolbox';
+import { registerWorkspaceChangeListener } from '@/blocks/lib/workspace';
+import { registerVariableCategoryCallback } from '@/blocks/new-blocks';
+
+// Utils
+import { debounce } from '@/utils/debouncer';
+
+// Components
 import { JaclyLoading } from './loading';
 
+// Styles
 import '../styles/toolbox.css';
 
-import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
-import { generateCodeFromWorkspace } from '../lib/code-generation';
-
 // Extensions
-import '@blockly/block-plus-minus';
-import '@blockly/field-colour-hsv-sliders';
 import { registerFieldColour } from '@blockly/field-colour';
 import { registerCrossTabCopyPaste } from '../plugins/cross-tab-copy-paste';
-import { shadowBlockConversionChangeListener } from '@blockly/shadow-block-converter';
-import { registerJaclyCustomCategory } from '../lib/custom-category';
-
-import '../../blocks/new-blocks/color';
-import '../../blocks/new-blocks/promiseAll';
-import '../../blocks/new-blocks/loops';
-import '../../blocks/new-blocks/angle';
-import '../../blocks/new-blocks/slider';
-import '../../blocks/new-blocks/procedures';
-import { registerConstCategoryCallback } from '../../blocks/new-blocks/typed-variables/constants';
-import { registerVariableCategoryCallback } from '../../blocks/new-blocks/typed-variables/variables';
 
 registerJaclyCustomCategory();
+
 interface JaclyEditorProps {
   jaclyBlocksData: JaclyBlocksData;
   theme: Theme;
@@ -50,65 +53,51 @@ export function JaclyEditor({
   locale,
   initialJson,
   onJsonChange,
-  onGeneratedCode: onGeneratedCode,
+  onGeneratedCode,
 }: JaclyEditorProps) {
-  const [toolboxConfiguration, setToolboxConfiguration] =
-    useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
-  const [blocklyMessagesLoaded, setBlocklyMessagesLoaded] = useState(false);
-  const listenerRegistrationStatus = useRef(false);
+  const messagesLoaded = useBlocklyMessages(locale);
 
-  // load Blockly messages based on locale
-  useEffect(() => {
-    (async () => {
-      try {
-        let messages;
-        if (locale === 'cs') {
-          messages = await import('blockly/msg/cs');
-        } else {
-          // default to English
-          messages = await import('blockly/msg/en');
-        }
+  const listenerRegistered = useRef(false);
 
-        Object.assign(Blockly.Msg, messages.default || messages);
-        setBlocklyMessagesLoaded(true);
-      } catch (error) {
-        console.error('Failed to load Blockly messages:', error);
-        // fallback to English if loading fails
-        const enMessages = await import('blockly/msg/en');
-        Object.assign(Blockly.Msg, enMessages.default || enMessages);
-        setBlocklyMessagesLoaded(true);
+  const debouncedGenerate = useMemo(
+    () =>
+      debounce((workspace: WorkspaceSvgExtended) => {
+        onGeneratedCode(generateCodeFromWorkspace(workspace));
+      }, 300),
+    [onGeneratedCode]
+  );
+  const debouncedJsonChange = useMemo(
+    () =>
+      debounce((json: object) => {
+        onJsonChange(json);
+      }, 300),
+    [onJsonChange]
+  );
+
+  const toolboxConfiguration = useMemo(
+    () => (messagesLoaded ? loadToolboxConfiguration(jaclyBlocksData) : null),
+    [jaclyBlocksData, messagesLoaded]
+  );
+
+  const handleWorkspaceChange = useCallback(
+    (workspace: WorkspaceSvgExtended) => {
+      if (!listenerRegistered.current) {
+        registerWorkspaceChangeListener(workspace);
+        registerCrossTabCopyPaste();
+        registerFieldColour();
+        registerDocsCallbacks(workspace);
+        registerVariableCategoryCallback(workspace);
+        listenerRegistered.current = true;
       }
-      console.log('Messages loaded');
-    })();
-  }, [locale]);
 
-  useEffect(() => {
-    if (blocklyMessagesLoaded) {
-      setToolboxConfiguration(loadToolboxConfiguration(jaclyBlocksData));
-      console.log('Toolbox configuration loaded');
-    }
-  }, [jaclyBlocksData, blocklyMessagesLoaded]);
+      debouncedGenerate(workspace);
+    },
+    [debouncedGenerate]
+  );
 
-  if (!toolboxConfiguration || !blocklyMessagesLoaded) {
+  if (!messagesLoaded || !toolboxConfiguration) {
     return <JaclyLoading />;
   }
-
-  const handleWorkspaceChange = (workspace: WorkspaceSvgExtended) => {
-    if (!listenerRegistrationStatus.current) {
-      registerWorkspaceChangeListener(workspace);
-
-      registerCrossTabCopyPaste();
-      registerFieldColour();
-      registerDocsCallbacks(workspace);
-      registerVariableCategoryCallback(workspace);
-      registerConstCategoryCallback(workspace);
-      workspace.addChangeListener(shadowBlockConversionChangeListener);
-
-      listenerRegistrationStatus.current = true;
-    }
-
-    onGeneratedCode(generateCodeFromWorkspace(workspace));
-  };
 
   return (
     <BlocklyWorkspace
@@ -138,7 +127,7 @@ export function JaclyEditor({
       initialJson={initialJson}
       className="h-full w-full"
       onWorkspaceChange={handleWorkspaceChange}
-      onJsonChange={onJsonChange}
+      onJsonChange={debouncedJsonChange}
     />
   );
 }

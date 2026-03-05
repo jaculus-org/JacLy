@@ -9,10 +9,9 @@
  */
 
 // Former goog.module ID: Blockly.JavaScript.procedures
-// Copied and modified from Blockly's built-in JavaScript generator for procedures.
-// Extended to generate async functions
+// Adapted from Blockly's built-in procedure generator with async/await support
 
-import { BlockExtended } from '../types/custom-block';
+import { BlockExtended } from '@/blocks/types/custom-block';
 import {
   JavascriptGenerator,
   javascriptGenerator as jsg,

@@ -1,7 +1,7 @@
 import { IIconBlock } from '@/blocks/types/custom-block';
 import { WorkspaceSvg } from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { getImportsForBlock } from '@/blocks/lib/blockly';
+import { getImportsForBlock } from '@/blocks/lib/';
 
 export function generateCodeFromWorkspace(workspace: WorkspaceSvg): string {
   const warnings = collectWorkspaceWarnings(workspace);
@@ -30,9 +30,6 @@ export function generateCodeFromWorkspace(workspace: WorkspaceSvg): string {
   return code;
 }
 
-/**
- * Collect all unique imports from config-level and block-level `import` arrays.
- */
 function collectImports(workspace: WorkspaceSvg): string[] {
   const blocks = workspace.getAllBlocks(false);
   const uniqueImports = new Set<string>();

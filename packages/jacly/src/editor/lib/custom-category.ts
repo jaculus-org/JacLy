@@ -18,37 +18,25 @@ export class JaclyCustomCategory extends Blockly.ToolboxCategory {
     super(categoryDef, toolbox, opt_parent);
   }
 
-  /**
-   * Adds the colour to the toolbox.
-   * This is called on category creation and whenever the theme changes.
-   * @override
-   */
+  // Update category border color, also store it as CSS variable for styling
   protected addColourBorder_(colour: string): void {
     super.addColourBorder_(colour);
     if (this.rowDiv_) {
-      // Store the category color as a custom property for potential use
       this.rowDiv_.style.setProperty('--category-color', colour);
     }
   }
 
-  /**
-   * Creates the dom used for the icon.
-   * @returns {HTMLElement} The element for the icon.
-   * @override
-   */
+  // Build the icon DOM element - use lucide icons if specified, fallback to box
   protected createIconDom_(): HTMLElement {
     const iconContainer = document.createElement('div');
     iconContainer.classList.add('jaclyToolboxCategoryIcon');
 
-    // get icon name from toolbox definition
     const iconName = (this.toolboxItemDef_ as CategoryDefWithIcon).icon;
 
     if (iconName && iconName in lucideIconsMap) {
-      // get the SVG string from lucide-static
       const iconSvg = lucideIconsMap[iconName];
       iconContainer.innerHTML = iconSvg;
 
-      // style the SVG - smaller size for inline display
       const svgElement = iconContainer.querySelector('svg');
       if (svgElement) {
         svgElement.setAttribute('width', '16');
@@ -70,9 +58,7 @@ export class JaclyCustomCategory extends Blockly.ToolboxCategory {
   }
 }
 
-/**
- * Register the custom category with Blockly
- */
+// Register this as the default toolbox category in Blockly
 export function registerJaclyCustomCategory(): void {
   Blockly.registry.register(
     Blockly.registry.Type.TOOLBOX_ITEM,

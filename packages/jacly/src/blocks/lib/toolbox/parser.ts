@@ -1,17 +1,13 @@
-import { JaclyBlock, JaclyConfig } from '../schema';
-import { ToolboxItemInfoSort } from '../types/toolbox';
+import { JaclyBlock, JaclyConfig } from '../../schema';
+import { ToolboxItemInfoSort } from '../../types/toolbox';
 import {
   editInternalBlocks,
   enrichBlockInputs,
   registerBlocklyBlock,
-  registerCodeGenerator,
-  registerBlockImports,
-} from './blockly';
+} from '../registration';
+import { registerCodeGenerator, registerAllBlockImports } from '../codegen';
 
-/**
- * Expand a single label item into multiple label items if its text contains
- * newline characters. Each line becomes its own label with the same web-class.
- */
+// Split a label by newlines so each line is its own label item
 function expandLabel(
   item: Extract<JaclyBlock, { kind: 'label' }>
 ): Extract<JaclyBlock, { kind: 'label' }>[] {
@@ -20,9 +16,7 @@ function expandLabel(
   return lines.map(line => ({ ...item, text: line }));
 }
 
-/**
- * Expand all labels in a contents array that contain \n into multiple labels.
- */
+// Handle labels with newlines - split them into multiple label items
 function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
   const result: JaclyBlock[] = [];
   for (const item of contents) {
@@ -38,6 +32,8 @@ function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
 export function parseToolboxContentsBlock(
   jaclyConfig: JaclyConfig
 ): ToolboxItemInfoSort {
+  registerAllBlockImports(jaclyConfig.contents!, jaclyConfig);
+
   for (const item of jaclyConfig.contents!) {
     if (item.kind !== 'block') {
       continue;
@@ -49,8 +45,6 @@ export function parseToolboxContentsBlock(
       item.message0 !== undefined ||
       item.args0 !== undefined ||
       item.code !== undefined;
-
-    registerBlockImports(item, jaclyConfig);
 
     if (isCustomBlock) {
       registerBlocklyBlock(item, jaclyConfig);

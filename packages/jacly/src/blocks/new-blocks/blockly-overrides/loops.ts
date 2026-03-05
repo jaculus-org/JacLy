@@ -9,8 +9,7 @@
  */
 
 // Former goog.module ID: Blockly.JavaScript.loops
-// Copied and modified from Blockly's built-in JavaScript generator for loops.
-// Extended to put a sleep(0) after each loop iteration to yield control back.
+// Adapted from Blockly's built-in loop generator with async/await support
 
 import {
   JavascriptGenerator,
@@ -19,7 +18,6 @@ import {
 } from 'blockly/javascript';
 import type { Block } from 'blockly/core';
 
-/** Interface for blocks that have the controls_flow_in_loop_check mixin */
 interface ControlFlowInLoopBlock extends Block {
   getSurroundLoop(): Block | null;
 }
@@ -29,10 +27,7 @@ function isNumber(str: string): boolean {
   return /^-?\d+(\.\d+)?$/.test(str);
 }
 
-/** The sleep(0) call to yield control back to the event loop
- * this command is called after each loop iteration
- * to keep the rest of the application responsive
- */
+// Yield control back to the event loop after each iteration
 const YIELD_STATEMENT = '  await sleep(0);\n';
 
 jsg.forBlock['controls_repeat_ext'] = function (

@@ -157,6 +157,7 @@
   "device_btn_disconnect": "Odpojit",
   "device_btn_console": "Konzole",
   "device_connection_placeholder": "Vyberte připojení",
+  "device_no_connection_options": "Žádný typ připojení není podporován!",
   "device_build_success": "Sestavení úspěšné",
   "device_build_compile_failed": "Kompilace selhala",
   "device_build_flash_failed": "Sestavení a nahrání selhalo",

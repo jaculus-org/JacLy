@@ -24,6 +24,11 @@
       "types": "./dist/blocks/index.d.ts",
       "import": "./dist/blocks/index.js",
       "default": "./dist/blocks/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "default": "./dist/utils/index.js"
     }
   },
   "scripts": {
@@ -46,13 +51,10 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@blockly/block-plus-minus": "^9.0.7",
     "@blockly/field-angle": "^6.0.7",
     "@blockly/field-colour": "^6.0.10",
-    "@blockly/field-colour-hsv-sliders": "^6.0.10",
     "@blockly/field-slider": "^8.0.8",
     "@blockly/plugin-cross-tab-copy-paste": "^8.0.6",
-    "@blockly/shadow-block-converter": "^7.0.9",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",

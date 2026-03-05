@@ -1,10 +1,7 @@
 import * as Blockly from 'blockly/core';
-import { JaclyBlock, JaclyBlocksArgs, JaclyConfig } from '../schema';
+import { JaclyBlock, JaclyBlocksArgs, JaclyConfig } from '../../schema';
 
-/**
- * Registers translations to Blockly.Msg for use with %{BKY_...} message references.
- * This should be called before loading the toolbox so that localizeJaclyConfig works correctly.
- */
+// Store translations so Blockly message references work
 export function registerTranslations(
   translations: Record<string, string>
 ): void {
@@ -29,10 +26,7 @@ function tRegex(key: string, prefix: string): string {
   return key;
 }
 
-/**
- * Localizes a JaclyConfig by replacing all Blockly message references (%{BKY_...})
- * with their translated values.
- */
+// Replace all Blockly message references with their translations
 export function localizeJaclyConfig(config: JaclyConfig): void {
   config.name = t(`${config.category}_name`, config.name);
   if (config.colour)
@@ -105,7 +99,6 @@ function localizeArg(prefix: string, arg: JaclyBlocksArgs): void {
     case 'input_dummy':
     case 'input_end_row':
     case 'field_colour':
-    case 'field_colour_hsv_sliders':
     case 'color_field_select':
       break;
   }

@@ -44,6 +44,12 @@ export const Route = createFileRoute('/project/')({
 function EditorList() {
   const { projectManService: runtimeService, projectFsService } =
     Route.useRouteContext();
+  const navigate = useNavigate();
+  const projects = useLiveQuery(
+    () => runtimeService.listProjects(),
+    [runtimeService]
+  );
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -53,12 +59,6 @@ function EditorList() {
   } | null>(null);
   const [renameValue, setRenameValue] = useState('');
   const [renameError, setRenameError] = useState<string | null>(null);
-
-  const projects = useLiveQuery(
-    () => runtimeService.listProjects(),
-    [runtimeService]
-  );
-  const navigate = useNavigate();
 
   async function confirmDelete() {
     if (projectToDelete) {

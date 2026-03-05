@@ -46,6 +46,10 @@ export class ProjectManagementService {
     return (await this.repo.get(id)) !== undefined;
   }
 
+  async touchProject(id: string): Promise<void> {
+    await this.repo.touch(id);
+  }
+
   async updateProjectKey(
     id: string,
     key: keyof IDbProject,

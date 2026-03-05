@@ -51,9 +51,6 @@
         }
       ]
     },
-    "style": {
-      "type": "string"
-    },
     "icon": {
       "type": "string"
     },
@@ -466,41 +463,6 @@
                         },
                         "type": {
                           "type": "string",
-                          "const": "field_colour_hsv_sliders"
-                        },
-                        "colour": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "name",
-                        "type"
-                      ],
-                      "additionalProperties": false
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "format": "uppercase",
-                          "allOf": [
-                            {
-                              "pattern": "^[a-zA-Z0-9-_]+$"
-                            },
-                            {
-                              "pattern": "^[^a-z]*$"
-                            }
-                          ]
-                        },
-                        "block": {
-                          "$ref": "#/$defs/__schema0"
-                        },
-                        "shadow": {
-                          "$ref": "#/$defs/__schema1"
-                        },
-                        "type": {
-                          "type": "string",
                           "const": "color_field_select"
                         },
                         "colour": {
@@ -634,9 +596,6 @@
                     "pattern": "^(?:[0-9]|[1-9]\\d|[12]\\d{2}|3[0-5]\\d|360)$"
                   }
                 ]
-              },
-              "style": {
-                "type": "string"
               },
               "hideInToolbox": {
                 "type": "boolean"

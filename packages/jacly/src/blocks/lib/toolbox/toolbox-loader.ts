@@ -1,18 +1,20 @@
 import { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
-import { ToolboxItemInfoSort } from '../types/toolbox';
-import { JaclyConfigSchema } from '../schema';
+import { ToolboxItemInfoSort } from '../../types/toolbox';
+import { JaclyConfigSchema } from '../../schema';
 import {
   JaclyBlockLoadError,
   JaclyBlockParseError,
   JaclyInvalidConfigError,
-} from '../types/errors';
+} from '../../types/errors';
 import { z } from 'zod';
 import { parseToolboxContentsBlock, parseToolboxCustomBlock } from './parser';
 import { localizeJaclyConfig, registerTranslations } from './translations';
 import { buildCategoryHeader } from './category-header';
-import { clearBlockRegistries } from './blockly';
-import { clearConstructorRegistries } from './constructors';
+import {
+  clearBlockRegistries,
+  clearConstructorRegistries,
+} from '../registration';
 
 export { registerDocsCallbacks } from './category-header';
 
@@ -79,10 +81,7 @@ function loadToolboxLibrary(
   }
 }
 
-/**
- * Build a hierarchical category structure from flat toolbox items.
- * Top-level categories are sorted by priority, subcategories alphabetically by name.
- */
+// Organize flat categories into a hierarchy sorted by priority
 function buildCategoryHierarchy(
   items: ToolboxItemInfoSort[]
 ): ToolboxItemInfoSort[] {

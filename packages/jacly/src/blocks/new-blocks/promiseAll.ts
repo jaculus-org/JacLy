@@ -31,9 +31,7 @@ interface PromiseAllExtraState {
 const PROMISE_ALL_MUTATOR_MIXIN = {
   itemCount_: 2,
 
-  /**
-   * Returns the state of this block as a JSON serializable object.
-   */
+  // Returns the state of this block as a JSON serializable object
   saveExtraState: function (
     this: PromiseAllBlock
   ): PromiseAllExtraState | null {
@@ -45,9 +43,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
     };
   },
 
-  /**
-   * Applies the given state to this block.
-   */
+  // Applies the given state to this block
   loadExtraState: function (
     this: PromiseAllBlock,
     state: PromiseAllExtraState
@@ -56,9 +52,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
     this.updateShape_();
   },
 
-  /**
-   * Populate the mutator's dialog with this block's components.
-   */
+  // Populate the mutator's dialog with this block's components
   decompose: function (
     this: PromiseAllBlock,
     workspace: Blockly.Workspace
@@ -81,9 +75,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
     return containerBlock;
   },
 
-  /**
-   * Reconfigure this block based on the mutator dialog's components.
-   */
+  // Reconfigure this block based on the mutator dialog's components
   compose: function (
     this: PromiseAllBlock,
     containerBlock: PromiseAllContainerBlock
@@ -121,9 +113,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
     this.reconnectChildBlocks_(connections);
   },
 
-  /**
-   * Store pointers to any connected child blocks.
-   */
+  // Store pointers to any connected child blocks
   saveConnections: function (
     this: PromiseAllBlock,
     containerBlock: PromiseAllContainerBlock
@@ -146,9 +136,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
     }
   },
 
-  /**
-   * Modify this block to have the correct number of inputs.
-   */
+  // Modify this block to have the correct number of inputs
   updateShape_: function (this: PromiseAllBlock) {
     // Remove all existing TASK inputs
     for (let i = 0; this.getInput('TASK' + i); i++) {
@@ -161,9 +149,7 @@ const PROMISE_ALL_MUTATOR_MIXIN = {
     }
   },
 
-  /**
-   * Reconnect any child blocks.
-   */
+  // Reconnect any child blocks
   reconnectChildBlocks_: function (
     this: PromiseAllBlock,
     connections: Array<Blockly.Connection | null>

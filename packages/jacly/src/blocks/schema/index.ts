@@ -30,7 +30,7 @@ const ArgsCheck = z.union([z.string().optional(), z.array(z.string())]);
 
 const ArgOptions = z.array(z.tuple([z.string(), z.string()])).optional();
 
-interface InputNode {
+export interface InputNode {
   type: string;
   fields?: Record<string, unknown>;
   inputs?: Record<string, { shadow?: InputNode; block?: InputNode }>;
@@ -153,11 +153,6 @@ const JaclyArgsInputEndRow = JaclyArgsBase.extend({
   type: z.literal('input_end_row'),
 });
 
-const ColourHsvSlider = JaclyArgsBase.extend({
-  type: z.literal('field_colour_hsv_sliders'),
-  colour: z.string().optional(),
-});
-
 const ColourField = JaclyArgsBase.extend({
   type: z.literal('field_colour'),
   colour: z.string().optional(),
@@ -193,7 +188,6 @@ const JaclyArgs = z.discriminatedUnion('type', [
   JaclyArgsInputEndRow,
 
   ColourField,
-  ColourHsvSlider,
   ColourFieldSelect,
 ]);
 
@@ -241,7 +235,6 @@ const JaclyBlockKindBlock = z
 
     // auto configured from root config
     colour: BlocklyColour.optional(),
-    style: z.string().optional(),
 
     // JacLy extensions
     hideInToolbox: z.boolean().optional(),
@@ -315,7 +308,6 @@ export const JaclyConfigSchema = z.object({
   description: z.string().optional(),
   docs: z.string().optional(),
   colour: BlocklyColour.optional(),
-  style: z.string().optional(),
   icon: z.string().optional(),
   custom: z.string().optional(),
   categorystyle: z.string().optional(),

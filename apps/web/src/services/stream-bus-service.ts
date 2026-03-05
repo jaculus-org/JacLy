@@ -38,6 +38,14 @@ export class StreamBusService {
     this.emit(channel, []);
   }
 
+  removeLastEntry(channel: string): void {
+    const current = this.channels.get(channel) ?? [];
+    if (current.length === 0) return;
+    const next = current.slice(0, -1);
+    this.channels.set(channel, next);
+    this.emit(channel, next);
+  }
+
   subscribe(channel: string, listener: StreamListener): () => void {
     const listeners = this.listeners.get(channel) ?? new Set<StreamListener>();
     listeners.add(listener);

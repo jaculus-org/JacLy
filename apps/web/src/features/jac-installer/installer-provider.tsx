@@ -171,14 +171,44 @@ export function InstallerProvider({
       if (!isMounted) return;
       setState(prev => ({ ...prev, chipList: boards }));
       if (boards.length === 1) {
-        changeChip(boards[0].chip, boards);
+        // Auto-select the only available chip
+        const chipId = boards[0].chip;
+        const variants = boards[0].variants || [];
+        setState(prev => ({
+          ...prev,
+          selectedChip: chipId,
+          selectedVariant: null,
+          versionList: [],
+          selectedVersion: null,
+        }));
+        // If there's only one variant, select it and fetch versions
+        if (variants.length === 1) {
+          const variantId = variants[0].id;
+          (async () => {
+            const versions = await getBoardVersions(variantId);
+            if (!isMounted) return;
+            versions.sort((a, b) => {
+              const aIsNode = a.version.toLowerCase().includes('node');
+              const bIsNode = b.version.toLowerCase().includes('node');
+              if (aIsNode && !bIsNode) return -1;
+              if (!aIsNode && bIsNode) return 1;
+              return 0;
+            });
+            setState(prev => ({
+              ...prev,
+              selectedVariant: variants[0],
+              versionList: versions,
+              selectedVersion: versions[0]?.version ?? null,
+            }));
+          })();
+        }
       }
     })();
 
     return () => {
       isMounted = false;
     };
-  }, [changeChip]);
+  }, []);
 
   useEffect(() => {
     if (!syncUrlParam) return;
@@ -258,11 +288,15 @@ export function InstallerProvider({
       }
 
       terminal.writeLine(m.installer_msg_connected_terminal({ chipName }));
-      terminal.writeLine(
-        m.installer_msg_flash_size({
-          size: (await newEsploader.getFlashSize()).toString(),
-        })
-      );
+
+      const flashSize = await newEsploader.getFlashSize();
+      if (flashSize) {
+        terminal.writeLine(
+          m.installer_msg_flash_size({
+            size: flashSize.toString(),
+          })
+        );
+      }
 
       const newFlasher = new ESP32Flasher(terminal, progress => {
         setState(prev => ({ ...prev, flashProgress: progress }));

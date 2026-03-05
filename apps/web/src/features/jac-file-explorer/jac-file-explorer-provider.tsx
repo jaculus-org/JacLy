@@ -11,7 +11,7 @@ import {
 import { enqueueSnackbar } from 'notistack';
 import { useActiveProject } from '@/features/project/active-project';
 import { useProjectEditor } from '@/features/project/editor';
-import { debounce } from '@/lib/utils/debouncer';
+import { debounce } from '@jaculus/jacly/utils';
 import { JacFileExplorerContext } from './jac-file-explorer-context';
 import type { FileSystemItem } from './file-explorer-types';
 import { buildFileTree, loadDirectoryChildren } from './file-explorer-helpers';

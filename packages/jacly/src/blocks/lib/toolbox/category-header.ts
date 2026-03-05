@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { JaclyConfig } from '../schema';
+import { JaclyConfig } from '../../schema';
 
 // Blockly supports 'web-class' on labels/buttons but its type defs don't include it
 type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
@@ -8,16 +8,10 @@ type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
   gap?: string;
 };
 
-/**
- * Registry of docs callback keys → URLs.
- * Populated during toolbox loading, consumed when registering on a workspace.
- */
+// Keep track of docs links to open on button click
 const docsCallbackRegistry = new Map<string, string>();
 
-/**
- * Build header items (description label, docs button) to inject at the top
- * of a category's flyout contents.
- */
+// Create header items for a category flyout (title, description, docs button)
 export function buildCategoryHeader(config: JaclyConfig): FlyoutItem[] {
   const header: FlyoutItem[] = [];
 
@@ -59,10 +53,7 @@ export function buildCategoryHeader(config: JaclyConfig): FlyoutItem[] {
   return header;
 }
 
-/**
- * Register all collected docs-button callbacks on the given workspace.
- * Call this once after the workspace has been created.
- */
+// Register callback handlers for all docs buttons
 export function registerDocsCallbacks(workspace: Blockly.WorkspaceSvg): void {
   for (const [callbackKey, docsUrl] of docsCallbackRegistry) {
     workspace.registerButtonCallback(callbackKey, () => {

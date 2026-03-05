@@ -1,4 +1,4 @@
-import { BlockExtended, FieldDropdownExtended } from '../types/custom-block';
+import { BlockExtended, FieldDropdownExtended } from '../../types/custom-block';
 import * as Blockly from 'blockly/core';
 
 const constructorTypeMap = new Map<string, string>();
@@ -7,29 +7,15 @@ export function registerConstructorType(systemId: string, blockType: string) {
   constructorTypeMap.set(systemId, blockType);
 }
 
-// --- Virtual Instances ---
-
 export interface VirtualInstanceDef {
   instanceof: string;
   name: string;
   connection: string;
 }
 
-/**
- * Map from constructor block type -> array of virtual instance definitions.
- * e.g. "robutek2_constructor" -> [{instanceof:"differential_drive", name:"r_differential", connection:"$[CONSTRUCTED_VAR_NAME]."}, ...]
- */
 const virtualInstancesMap = new Map<string, VirtualInstanceDef[]>();
-
-/**
- * Reverse lookup: instanceof type -> list of constructor block types that provide virtual instances of that type.
- */
 const virtualInstancesByType = new Map<string, string[]>();
 
-/**
- * Clear all constructor registries. Call before re-registering blocks
- * to prevent stale data from removed/updated libraries.
- */
 export function clearConstructorRegistries(): void {
   constructorTypeMap.clear();
   virtualInstancesMap.clear();
@@ -50,12 +36,9 @@ export function registerVirtualInstances(
   }
 }
 
-/**
- * Returns the Mixin object for the Constructor Block (e.g. nvs_open).
- * Handles the "nvs_?" -> "nvs_0" auto-naming logic.
- */
+// Get the mixin for constructor blocks (auto-naming with incrementing numbers)
 export function getConstructorMixin(systemId: string) {
-  const prefix = systemId + '_'; // e.g. "NVS" -> "nvs_"
+  const prefix = systemId + '_';
 
   return {
     onchange(this: BlockExtended, e: Blockly.Events.BlockChange) {
@@ -66,7 +49,7 @@ export function getConstructorMixin(systemId: string) {
       const fieldName = 'CONSTRUCTED_VAR_NAME';
       const currentName = this.getFieldValue(fieldName);
 
-      // If the user changed the CONSTRUCTED_VAR_NAME field, prevent duplicates by reverting
+      // prevent duplicates by reverting
       if (
         e &&
         e.type === Blockly.Events.BLOCK_CHANGE &&
@@ -88,7 +71,7 @@ export function getConstructorMixin(systemId: string) {
         }
       }
 
-      // If the name is still the default placeholder, auto-assign a unique name
+      // auto-assign a unique name
       if (currentName === `${prefix}?`) {
         const constructorBlockType = this.type;
         const blocks = this.workspace.getBlocksByType(constructorBlockType);
@@ -99,7 +82,6 @@ export function getConstructorMixin(systemId: string) {
           const name = block.getFieldValue(fieldName);
           if (name && name.startsWith(prefix)) {
             const parts = name.split('_');
-            // rudimentary check for prefix_number
             if (parts.length === 2) {
               const index = parseInt(parts[1]);
               if (!isNaN(index) && index > maxIndex) maxIndex = index;
@@ -137,7 +119,7 @@ export function getInstanceDropdownGenerator(
       });
     }
 
-    // Also include virtual instances from other constructors
+    // include virtual instances from other constructors
     if (workspace) {
       const providerBlockTypes = virtualInstancesByType.get(systemId) || [];
       for (const providerType of providerBlockTypes) {
@@ -155,7 +137,7 @@ export function getInstanceDropdownGenerator(
           for (const vi of viDefs) {
             if (vi.instanceof === systemId) {
               const label = `${constructorVarName}.${vi.name}`;
-              // Encode block ID (stable) instead of var name (mutable)
+              // encode virtual instance info in the value for later resolution
               const value = `__vi__${providerType}__${block.id}__${vi.name}`;
               options.push([label, value]);
             }
@@ -187,19 +169,13 @@ export function getInstanceDropdownGenerator(
     );
 
     if (options.length === 0) {
-      return [['<No Init Block>', 'INVALID']];
+      return [['<Requires init block>', 'INVALID']];
     }
 
     return options;
   };
 }
 
-/**
- * Resolve a virtual instance value (from dropdown) to its connection expression.
- * Virtual instance values are encoded as "__vi__<constructorBlockType>__<constructorBlockId>__<viName>".
- * The constructor block is looked up by ID to get its current CONSTRUCTED_VAR_NAME.
- * Returns the resolved connection string, or null if the value is not a virtual instance.
- */
 export function resolveVirtualInstanceConnection(
   selectedValue: string,
   workspace: Blockly.Workspace | null
@@ -214,7 +190,7 @@ export function resolveVirtualInstanceConnection(
   const vi = viDefs.find(v => v.name === viName);
   if (!vi) return null;
 
-  // Look up the constructor block by ID to get its current variable name
+  // look up the constructor block by ID to get its current variable name
   if (!workspace) return null;
   const constructorBlock = workspace.getBlockById(constructorBlockId);
   if (!constructorBlock) return null;
@@ -227,9 +203,6 @@ export function resolveVirtualInstanceConnection(
   return vi.connection.replace('$[CONSTRUCTED_VAR_NAME]', constructorVarName);
 }
 
-/**
- * Check if a selected dropdown value is a virtual instance.
- */
 export function isVirtualInstance(selectedValue: string): boolean {
   return selectedValue.startsWith('__vi__');
 }
@@ -244,7 +217,7 @@ export function validateInstanceSelection(
   const selectedName = this.getFieldValue(fieldName);
   if (!selectedName) return;
 
-  // Check if it's a virtual instance — validate the constructor block still exists
+  // check if it's a virtual instance — validate the constructor block still exists
   if (isVirtualInstance(selectedName)) {
     const resolved = resolveVirtualInstanceConnection(
       selectedName,

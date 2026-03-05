@@ -1,33 +1,14 @@
-/**
- * Custom Variables category for JacLy.
- *
- * The built-in Blockly `variables_get` / `variables_set` blocks do not
- * restrict their `FieldVariable` to a specific type, so they show ALL
- * variables — including constants.  This module overrides those blocks so
- * their dropdowns only show untyped ('') variables, and registers a custom
- * VARIABLE flyout that also omits typed variables.
- *
- * Usage:
- *   Import this module for its side-effects:
- *     import '…/typed-variables/variables';
- *   Then, once the workspace has been injected, call:
- *     registerVariableCategoryCallback(workspace);
- */
-
 import * as Blockly from 'blockly/core';
 import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
 import { TypedVarConfig, registerTypedVariableCategory } from './utils';
-import { addShadowNumber } from '../../lib/shadow-blocks';
+import { addShadowNumber } from '../../lib/workspace/shadow-blocks';
 
-// ── Variable type for regular (untyped) variables ────────────────────────────
-export const VAR_VAR_TYPE = 'VARIABLE'; // Typed variable, same pattern as CONST
-export const VAR_CATEGORY_NAME = 'VARIABLE'; // matches `"custom": "VARIABLE"` in JSON
+export const VAR_VAR_TYPE = 'VARIABLE';
+export const VAR_CATEGORY_NAME = 'VARIABLE';
 
-// ── block type IDs (the standard Blockly names) ──────────────────────────────
 const BLOCK_GET = 'variables_get';
 const BLOCK_SET = 'variables_set';
 
-// ── Shared config object ─────────────────────────────────────────────────────
 export const VAR_CONFIG: TypedVarConfig = {
   varType: VAR_VAR_TYPE,
   blockGet: BLOCK_GET,
@@ -35,15 +16,6 @@ export const VAR_CONFIG: TypedVarConfig = {
   createButtonLabel: '%{BKY_NEW_VARIABLE}',
   createCallbackKey: 'CREATE_VARIABLE',
 };
-
-// ============================================================================
-// Override built-in block definitions
-//
-// We use jsonInit so the message0/args0 pattern is identical to the built-in
-// blocks, preserving compatibility with Blockly's serialization.
-// The only change is adding `variableTypes` and `defaultType` to the
-// field_variable, which restricts dropdowns to type '' (untyped) only.
-// ============================================================================
 
 Blockly.Blocks[BLOCK_GET] = {
   init(this: Blockly.Block) {
@@ -66,7 +38,7 @@ Blockly.Blocks[BLOCK_GET] = {
     });
   },
 
-  // Context-menu: offer to create a matching setter
+  // reate a matching setter
   customContextMenu(
     this: Blockly.Block,
     options: Array<
@@ -118,7 +90,7 @@ Blockly.Blocks[BLOCK_SET] = {
     addShadowNumber(this, 'VALUE', 0);
   },
 
-  // Context-menu: offer to create a matching getter
+  // create a matching getter
   customContextMenu(
     this: Blockly.Block,
     options: Array<
@@ -142,9 +114,41 @@ Blockly.Blocks[BLOCK_SET] = {
   },
 };
 
-// ============================================================================
-// JavaScript code generators (identical to the built-in ones)
-// ============================================================================
+const _originalJsgInit = jsg.init.bind(jsg);
+jsg.init = function (workspace: Blockly.Workspace) {
+  _originalJsgInit(workspace);
+  // nameDB_ is initialized in the original init
+
+  // base on blockly core's variable declaration generator
+  const defvars = [];
+  // Add developer variables (not created or named by the user).
+  const devVarList = Blockly.Variables.allDeveloperVariables(workspace);
+  for (let i = 0; i < devVarList.length; i++) {
+    defvars.push(
+      this.nameDB_!.getName(
+        devVarList[i],
+        Blockly.Names.NameType.DEVELOPER_VARIABLE
+      )
+    );
+  }
+
+  // Add user variables, but only ones that are being used.
+  const variables = Blockly.Variables.allUsedVarModels(workspace);
+  for (let i = 0; i < variables.length; i++) {
+    defvars.push(
+      this.nameDB_!.getName(
+        variables[i].getId(),
+        Blockly.Names.NameType.VARIABLE
+      )
+    );
+  }
+
+  // Declare all of the variables.
+  if (defvars.length) {
+    this.definitions_['variables'] = 'let ' + defvars.join(', ') + ';';
+  }
+  this.isInitialized = true;
+};
 
 jsg.forBlock[BLOCK_GET] = function (block: Blockly.Block) {
   const code = jsg.getVariableName(block.getFieldValue('VAR'));
@@ -157,14 +161,6 @@ jsg.forBlock[BLOCK_SET] = function (block: Blockly.Block) {
   return `${varName} = ${argument0};\n`;
 };
 
-// ============================================================================
-// Registration helper
-// ============================================================================
-
-/**
- * Register the custom VARIABLE flyout-category callback on the given workspace.
- * Must be called once after the workspace has been injected.
- */
 export function registerVariableCategoryCallback(
   workspace: Blockly.WorkspaceSvg
 ): void {

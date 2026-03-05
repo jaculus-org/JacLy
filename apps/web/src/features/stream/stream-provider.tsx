@@ -41,11 +41,28 @@ export function StreamProvider({
     });
   }, [channel, streamBusService, telemetryService]);
 
+  const charMapCallback = useMemo<Record<string, () => void>>(
+    () => ({
+      '\r': () => streamBusService.removeLastEntry(channel),
+      '\\r': () => streamBusService.removeLastEntry(channel),
+      '\x1b[2J': () => streamBusService.clear(channel),
+      '\\x1b[2J': () => streamBusService.clear(channel),
+      '\f': () => streamBusService.clear(channel),
+      '\\f': () => streamBusService.clear(channel),
+    }),
+    [channel, streamBusService]
+  );
+
   const addEntry = useCallback<AddToStream>(
     (type, content) => {
+      const charMapEntry = charMapCallback[content.trim()];
+      if (charMapEntry) {
+        charMapEntry();
+        return;
+      }
       streamBusService.append(channel, type, content);
     },
-    [channel, streamBusService]
+    [charMapCallback, streamBusService, channel]
   );
 
   const clear = useCallback(() => {

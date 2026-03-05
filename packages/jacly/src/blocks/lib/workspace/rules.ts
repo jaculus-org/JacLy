@@ -1,6 +1,9 @@
 import * as Blockly from 'blockly/core';
 import { Events } from 'blockly/core';
-import { BlockSvgExtended, WorkspaceSvgExtended } from '../types/custom-block';
+import {
+  BlockSvgExtended,
+  WorkspaceSvgExtended,
+} from '../../types/custom-block';
 
 const OUTSIDE_ENTRY_DISABLED_REASON = 'outside_entry_block';
 
@@ -14,7 +17,6 @@ const codeChangeEvents = [
 export function registerWorkspaceChangeListener(
   workspace: WorkspaceSvgExtended
 ) {
-  // Register all listeners
   listenersFunctionsMap.forEach((eventTypes, listenerFunction) => {
     workspace.addChangeListener((event: Blockly.Events.Abstract) => {
       if (eventTypes === undefined || eventTypes.includes(event.type)) {
@@ -24,7 +26,7 @@ export function registerWorkspaceChangeListener(
   });
 }
 
-// Map of listener functions to their associated event types (or undefined for all events)
+// map of listener functions to their associated event types (or undefined for all events)
 const listenersFunctionsMap: Map<
   (workspace: WorkspaceSvgExtended, event?: Blockly.Events.Abstract) => void,
   string[] | undefined
@@ -47,7 +49,12 @@ export function autoCloseToolboxOnCreate(
       typeof collapsible.isCollapsible === 'function' &&
       collapsible.isCollapsible()
     ) {
-      collapsible.setExpanded(false);
+      // close only categories with own blocks (4 blocks are default header)
+      const contents = collapsible.getContents();
+      const hasOwnBlocks = Array.isArray(contents) && contents.length > 4;
+      if (hasOwnBlocks) {
+        collapsible.setExpanded(false);
+      }
     }
   }
 

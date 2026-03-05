@@ -159,6 +159,7 @@
   "device_btn_disconnect": "Disconnect",
   "device_btn_console": "Console",
   "device_connection_placeholder": "Select connection",
+  "device_no_connection_options": "No connection types supported!",
   "device_build_success": "Build succeeded",
   "device_build_compile_failed": "Compilation failed",
   "device_build_flash_failed": "Build & Flash failed",

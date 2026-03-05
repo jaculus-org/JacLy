@@ -5,7 +5,7 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { inferLanguageFromPath } from '../lib/language';
 import { editorSyncService } from '../lib/editor-sync-service';
-// import { debounce } from '@/lib/utils/debouncer';
+// import { debounce } from '@jaculus/jacly/utils';
 
 interface CodeEditorBasicProps {
   readonly filePath: string;

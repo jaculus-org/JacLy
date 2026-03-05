@@ -13,9 +13,10 @@ export class ProjectRepository {
   }
 
   async list(): Promise<IDbProject[]> {
-    return this.db.projects
+    const projects = await this.db.projects
       .filter(project => project.deletedAt === null)
       .sortBy('modifiedAt');
+    return projects.reverse();
   }
 
   async create(

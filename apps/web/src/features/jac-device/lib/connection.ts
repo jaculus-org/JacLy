@@ -9,12 +9,12 @@ import { JacStreamWokwi } from './jac-stream-wokwi';
 import { JacStreamBle } from './jac-stream-ble';
 import { getDefaultDiagram } from '@/features/wokwi-simulator/lib/wowki';
 
-export function getAvailableConnectionTypes(): ConnectionInfo[] {
+export async function getAvailableConnectionTypes(): Promise<ConnectionInfo[]> {
   const types: ConnectionInfo[] = [];
   if (isWebSerialAvailable()) {
     types.push({ type: 'serial', name: 'Web Serial', icon: UsbIcon });
   }
-  if (isWebBLEAvailable()) {
+  if (await isWebBLEAvailable()) {
     types.push({ type: 'ble', name: 'Web Bluetooth', icon: BluetoothIcon });
   }
   if (isWokwiAvailable()) {
@@ -111,8 +111,10 @@ export async function connectDeviceWebSerial(
 
 // WEB BLE
 
-export function isWebBLEAvailable(): boolean {
-  return 'bluetooth' in navigator;
+export async function isWebBLEAvailable(): Promise<boolean> {
+  return (
+    'bluetooth' in navigator && (await navigator.bluetooth.getAvailability())
+  );
 }
 
 export async function connectDeviceWebBLE(

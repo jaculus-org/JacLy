@@ -7,8 +7,8 @@ import {
   javascriptGenerator as jsg,
   Order,
 } from 'blockly/javascript';
-import { t } from '../lib/translations';
-import { addShadowNumber, addShadowText } from '../lib/shadow-blocks';
+import { t } from '../lib/toolbox/translations';
+import { addShadowNumber, addShadowText } from '../lib/workspace/shadow-blocks';
 
 const DYNAMIC_TYPES = ['NAMES', 'RGB', 'HSL', 'HEX', 'PALETTE'] as const;
 const COLOR_NAMES: string[] = [
@@ -52,9 +52,6 @@ Blocks['dynamic_color_rgb'] = {
     this.setInputsInline(true);
   },
 
-  /**
-   * Updates the block inputs based on the selected mode.
-   */
   updateShape: function (
     this: DynamicColorBlock,
     mode: string | null
