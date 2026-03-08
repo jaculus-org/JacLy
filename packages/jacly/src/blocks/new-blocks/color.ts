@@ -61,15 +61,19 @@ Blocks['dynamic_color_rgb'] = {
 
     if (this.mode_ === newMode) return undefined;
 
-    if (this.getInput('NAMES_INPUT')) this.removeInput('NAMES_INPUT');
-    if (this.getInput('PALETTE_INPUT')) this.removeInput('PALETTE_INPUT');
-    if (this.getInput('R_INPUT')) this.removeInput('R_INPUT');
-    if (this.getInput('G_INPUT')) this.removeInput('G_INPUT');
-    if (this.getInput('B_INPUT')) this.removeInput('B_INPUT');
-    if (this.getInput('H_INPUT')) this.removeInput('H_INPUT');
-    if (this.getInput('S_INPUT')) this.removeInput('S_INPUT');
-    if (this.getInput('L_INPUT')) this.removeInput('L_INPUT');
-    if (this.getInput('HEX_INPUT')) this.removeInput('HEX_INPUT');
+    for (const name of [
+      'NAMES_INPUT',
+      'PALETTE_INPUT',
+      'R_INPUT',
+      'G_INPUT',
+      'B_INPUT',
+      'H_INPUT',
+      'S_INPUT',
+      'L_INPUT',
+      'HEX_INPUT',
+    ]) {
+      if (this.getInput(name)) this.removeInput(name);
+    }
 
     this.mode_ = newMode;
 

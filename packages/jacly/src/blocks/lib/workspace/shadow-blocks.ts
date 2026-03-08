@@ -2,38 +2,39 @@
 
 import * as Blockly from 'blockly/core';
 
-// Attach a default number shadow block if the input is empty
+function createShadow(
+  blockType: string,
+  fields: Record<string, string>
+): Element {
+  const shadow = Blockly.utils.xml.createElement('shadow');
+  shadow.setAttribute('type', blockType);
+  for (const [name, value] of Object.entries(fields)) {
+    const field = Blockly.utils.xml.createElement('field');
+    field.setAttribute('name', name);
+    field.textContent = value;
+    shadow.appendChild(field);
+  }
+  return shadow;
+}
+
 export function addShadowNumber(
   block: Blockly.Block,
   inputName: string,
   defaultValue: number
 ): void {
-  const input = block.getInput(inputName);
-  if (!input || input.connection?.targetBlock()) return;
-
-  const shadowBlock = block.workspace.newBlock(
-    'math_number'
-  ) as Blockly.BlockSvg;
-  shadowBlock.setShadow(true);
-  shadowBlock.setFieldValue(String(defaultValue), 'NUM');
-  shadowBlock.initSvg();
-  shadowBlock.render();
-  input.connection?.connect(shadowBlock.outputConnection!);
+  const connection = block.getInput(inputName)?.connection;
+  if (!connection) return;
+  connection.setShadowDom(
+    createShadow('math_number', { NUM: String(defaultValue) })
+  );
 }
 
-// Attach a default text shadow block if the input is empty
 export function addShadowText(
   block: Blockly.Block,
   inputName: string,
   defaultValue: string
 ): void {
-  const input = block.getInput(inputName);
-  if (!input || input.connection?.targetBlock()) return;
-
-  const shadowBlock = block.workspace.newBlock('text') as Blockly.BlockSvg;
-  shadowBlock.setShadow(true);
-  shadowBlock.setFieldValue(defaultValue, 'TEXT');
-  shadowBlock.initSvg();
-  shadowBlock.render();
-  input.connection?.connect(shadowBlock.outputConnection!);
+  const connection = block.getInput(inputName)?.connection;
+  if (!connection) return;
+  connection.setShadowDom(createShadow('text', { TEXT: defaultValue }));
 }

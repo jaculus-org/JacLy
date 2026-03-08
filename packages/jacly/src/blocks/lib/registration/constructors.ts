@@ -1,10 +1,15 @@
 import { BlockExtended, FieldDropdownExtended } from '../../types/custom-block';
 import * as Blockly from 'blockly/core';
 
-const constructorTypeMap = new Map<string, string>();
+const constructorTypeMap = new Map<string, Set<string>>();
 
 export function registerConstructorType(systemId: string, blockType: string) {
-  constructorTypeMap.set(systemId, blockType);
+  const existing = constructorTypeMap.get(systemId);
+  if (existing) {
+    existing.add(blockType);
+  } else {
+    constructorTypeMap.set(systemId, new Set([blockType]));
+  }
 }
 
 export interface VirtualInstanceDef {
@@ -81,11 +86,9 @@ export function getConstructorMixin(systemId: string) {
         blocks.forEach(block => {
           const name = block.getFieldValue(fieldName);
           if (name && name.startsWith(prefix)) {
-            const parts = name.split('_');
-            if (parts.length === 2) {
-              const index = parseInt(parts[1]);
-              if (!isNaN(index) && index > maxIndex) maxIndex = index;
-            }
+            const suffix = name.slice(prefix.length);
+            const index = parseInt(suffix);
+            if (!isNaN(index) && index > maxIndex) maxIndex = index;
           }
         });
 
@@ -101,22 +104,24 @@ export function getInstanceDropdownGenerator(
   return function (this: FieldDropdownExtended) {
     const options: [string, string][] = [];
 
-    const constructorBlockType = constructorTypeMap.get(systemId);
+    const constructorBlockTypes = constructorTypeMap.get(systemId);
 
     const sourceBlock = this.getSourceBlock();
     const workspace = sourceBlock
       ? sourceBlock.workspace
       : Blockly.getMainWorkspace();
 
-    if (workspace && constructorBlockType) {
-      const blocks = workspace.getBlocksByType(constructorBlockType);
+    if (workspace && constructorBlockTypes) {
+      for (const constructorBlockType of constructorBlockTypes) {
+        const blocks = workspace.getBlocksByType(constructorBlockType);
 
-      blocks.forEach(block => {
-        const instanceName = block.getFieldValue('CONSTRUCTED_VAR_NAME');
-        if (instanceName && instanceName !== `${systemId.toLowerCase()}_?`) {
-          options.push([instanceName, instanceName]);
-        }
-      });
+        blocks.forEach(block => {
+          const instanceName = block.getFieldValue('CONSTRUCTED_VAR_NAME');
+          if (instanceName && instanceName !== `${systemId}_?`) {
+            options.push([instanceName, instanceName]);
+          }
+        });
+      }
     }
 
     // include virtual instances from other constructors
@@ -234,10 +239,12 @@ export function validateInstanceSelection(
     }
   }
 
-  const targetBlockType = constructorTypeMap.get(systemId);
-  if (!targetBlockType) return;
+  const targetBlockTypes = constructorTypeMap.get(systemId);
+  if (!targetBlockTypes) return;
 
-  const blocks = this.workspace.getBlocksByType(targetBlockType);
+  const blocks = [...targetBlockTypes].flatMap(t =>
+    this.workspace.getBlocksByType(t)
+  );
   const exists = blocks.some(
     block => block.getFieldValue('CONSTRUCTED_VAR_NAME') === selectedName
   );

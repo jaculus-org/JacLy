@@ -21,7 +21,7 @@ import {
   registerDocsCallbacks,
 } from '@/blocks/lib/toolbox';
 import { registerWorkspaceChangeListener } from '@/blocks/lib/workspace';
-import { registerVariableCategoryCallback } from '@/blocks/new-blocks';
+import '@/blocks/new-blocks';
 
 // Utils
 import { debounce } from '@/utils/debouncer';
@@ -86,7 +86,7 @@ export function JaclyEditor({
         registerCrossTabCopyPaste();
         registerFieldColour();
         registerDocsCallbacks(workspace);
-        registerVariableCategoryCallback(workspace);
+        // registerVariableCategoryCallback(workspace);
         listenerRegistered.current = true;
       }
 

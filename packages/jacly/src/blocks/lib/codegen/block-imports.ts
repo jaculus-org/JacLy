@@ -17,6 +17,12 @@ export function registerAllBlockImports(
   for (const block of blocks) {
     if (block.kind !== 'block') continue;
 
+    const isCustomBlock =
+      block.message0 !== undefined ||
+      block.args0 !== undefined ||
+      block.code !== undefined;
+    if (!isCustomBlock) continue;
+
     const hasBlockImports = block.import && block.import.length > 0;
     if (configImports.length === 0 && !hasBlockImports) continue;
 
