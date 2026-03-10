@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react';
 import { useStream } from '../stream-context';
 import { getStreamEntryColor, getStreamScope } from '../stream-utils';
 import { type StreamLogKey } from '../types';
-import { TooltipProvider } from '@/features/shared/components/ui/tooltip';
 import { StreamLogsToolbar } from './stream-logs-toolbar';
 import { StreamOutput } from './stream-output';
 
@@ -44,30 +43,28 @@ export function StreamLogs() {
   };
 
   return (
-    <TooltipProvider>
-      <div className="flex h-full flex-col gap-1.5 p-1.5">
-        <StreamLogsToolbar
-          logEntries={state.logEntries}
-          selectedLogType={selectedLogType}
-          showTimestamp={showTimestamp}
-          autoScroll={autoScroll}
-          copied={copied}
-          logKeys={meta.logKeys}
-          onSelectType={setSelectedLogType}
-          onToggleTimestamp={() => setShowTimestamp(v => !v)}
-          onToggleAutoscroll={() => setAutoScroll(v => !v)}
-          onCopy={handleCopyToClipboard}
-          onClear={actions.clear}
-        />
+    <div className="flex h-full flex-col gap-1.5 p-1.5">
+      <StreamLogsToolbar
+        logEntries={state.logEntries}
+        selectedLogType={selectedLogType}
+        showTimestamp={showTimestamp}
+        autoScroll={autoScroll}
+        copied={copied}
+        logKeys={meta.logKeys}
+        onSelectType={setSelectedLogType}
+        onToggleTimestamp={() => setShowTimestamp(v => !v)}
+        onToggleAutoscroll={() => setAutoScroll(v => !v)}
+        onCopy={handleCopyToClipboard}
+        onClear={actions.clear}
+      />
 
-        <StreamOutput
-          entries={filteredEntries}
-          emptyMessage={m.terminal_logs_empty()}
-          showTimestamp={showTimestamp}
-          autoScroll={autoScroll}
-          getEntryColor={getStreamEntryColor}
-        />
-      </div>
-    </TooltipProvider>
+      <StreamOutput
+        entries={filteredEntries}
+        emptyMessage={m.terminal_logs_empty()}
+        showTimestamp={showTimestamp}
+        autoScroll={autoScroll}
+        getEntryColor={getStreamEntryColor}
+      />
+    </div>
   );
 }

@@ -67,7 +67,7 @@ export interface FileRoutesByFullPath {
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
-  '/project': typeof ProjectIndexRoute
+  '/project/': typeof ProjectIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,7 +100,7 @@ export interface FileRouteTypes {
     | '/project/$projectId'
     | '/project/import'
     | '/project/new'
-    | '/project'
+    | '/project/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -167,7 +167,7 @@ declare module '@tanstack/react-router' {
     '/project/': {
       id: '/project/'
       path: '/project'
-      fullPath: '/project'
+      fullPath: '/project/'
       preLoaderRoute: typeof ProjectIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

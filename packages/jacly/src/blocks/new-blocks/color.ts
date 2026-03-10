@@ -155,7 +155,7 @@ jsg.forBlock['dynamic_color_rgb'] = function (
   generator: JavascriptGenerator
 ) {
   const mode = codeBlock.getFieldValue('MODE');
-  let code = '';
+  let code: string;
 
   switch (mode) {
     case 'NAMES': {

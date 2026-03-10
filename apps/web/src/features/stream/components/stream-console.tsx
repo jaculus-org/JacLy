@@ -5,7 +5,6 @@ import { useStream } from '../stream-context';
 import { sendToDeviceStr } from '@/features/jac-device/lib/connection';
 import { useJacDevice } from '@/features/jac-device';
 import { Card } from '@/features/shared/components/ui/card';
-import { TooltipProvider } from '@/features/shared/components/ui/tooltip';
 import { KeyValueDisplay } from '@/features/keyValue';
 import { getStreamEntryColor } from '../stream-utils';
 import { StreamConsoleInput } from './stream-console-input';
@@ -70,48 +69,46 @@ export function StreamConsole({
   };
 
   return (
-    <TooltipProvider>
-      <div className="flex h-full flex-col gap-1.5 p-1.5">
-        <Card className="p-1.5">
-          {isToolbarCollapsed ? (
-            <StreamConsoleInput
-              input={input}
-              disabled={!device}
-              onChange={setInput}
-              onSubmit={handleSubmit}
-              onExpand={() => setIsToolbarCollapsed(false)}
-              onKeyDown={handleKeyDown}
-            />
-          ) : (
-            <StreamConsoleToolbar
-              input={input}
-              disabled={!device}
-              entryCount={state.consoleEntries.length}
-              showTimestamp={showTimestamp}
-              autoScroll={autoScroll}
-              copied={copied}
-              onChangeInput={setInput}
-              onSubmit={handleSubmit}
-              onKeyDown={handleKeyDown}
-              onCollapse={() => setIsToolbarCollapsed(true)}
-              onToggleTimestamp={() => setShowTimestamp(v => !v)}
-              onToggleAutoscroll={() => setAutoScroll(v => !v)}
-              onCopy={handleCopyToClipboard}
-              onClear={actions.clear}
-            />
-          )}
-        </Card>
+    <div className="flex h-full flex-col gap-1.5 p-1.5">
+      <Card className="p-1.5">
+        {isToolbarCollapsed ? (
+          <StreamConsoleInput
+            input={input}
+            disabled={!device}
+            onChange={setInput}
+            onSubmit={handleSubmit}
+            onExpand={() => setIsToolbarCollapsed(false)}
+            onKeyDown={handleKeyDown}
+          />
+        ) : (
+          <StreamConsoleToolbar
+            input={input}
+            disabled={!device}
+            entryCount={state.consoleEntries.length}
+            showTimestamp={showTimestamp}
+            autoScroll={autoScroll}
+            copied={copied}
+            onChangeInput={setInput}
+            onSubmit={handleSubmit}
+            onKeyDown={handleKeyDown}
+            onCollapse={() => setIsToolbarCollapsed(true)}
+            onToggleTimestamp={() => setShowTimestamp(v => !v)}
+            onToggleAutoscroll={() => setAutoScroll(v => !v)}
+            onCopy={handleCopyToClipboard}
+            onClear={actions.clear}
+          />
+        )}
+      </Card>
 
-        {displayKeyValue && <KeyValueDisplay />}
+      {displayKeyValue && <KeyValueDisplay />}
 
-        <StreamOutput
-          entries={state.consoleEntries}
-          emptyMessage={m.terminal_console_empty()}
-          showTimestamp={showTimestamp}
-          autoScroll={autoScroll}
-          getEntryColor={getStreamEntryColor}
-        />
-      </div>
-    </TooltipProvider>
+      <StreamOutput
+        entries={state.consoleEntries}
+        emptyMessage={m.terminal_console_empty()}
+        showTimestamp={showTimestamp}
+        autoScroll={autoScroll}
+        getEntryColor={getStreamEntryColor}
+      />
+    </div>
   );
 }

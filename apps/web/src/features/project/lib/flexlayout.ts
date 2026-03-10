@@ -174,8 +174,6 @@ export function getUpdatedLayoutModel(
       if (!updatedModel.layout) {
         updatedModel.layout = structuredClone(flexLayoutDefaultJson.layout);
       } else {
-        let targetTabset: FlexLayout.IJsonTabSetNode | null = null;
-
         function findTabset(
           node: JsonLayoutNode | undefined
         ): FlexLayout.IJsonTabSetNode | null {
@@ -192,7 +190,7 @@ export function getUpdatedLayoutModel(
           return null;
         }
 
-        targetTabset = findTabset(updatedModel.layout);
+        const targetTabset = findTabset(updatedModel.layout);
 
         if (targetTabset) {
           if (!targetTabset.children) {

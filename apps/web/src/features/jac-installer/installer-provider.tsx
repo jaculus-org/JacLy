@@ -407,7 +407,7 @@ export function InstallerProvider({
     const flasher = flasherRef.current;
     if (!flasher) return;
 
-    let firmwareUrl: string | null = null;
+    let firmwareUrl: string | null;
     let revokeUrl: string | null = null;
 
     if (state.sourceTab === 'online') {

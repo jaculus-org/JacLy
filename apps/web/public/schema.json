@@ -75,7 +75,7 @@
     "contents": {
       "type": "array",
       "items": {
-        "anyOf": [
+        "oneOf": [
           {
             "type": "object",
             "properties": {
@@ -94,7 +94,7 @@
               "args0": {
                 "type": "array",
                 "items": {
-                  "anyOf": [
+                  "oneOf": [
                     {
                       "type": "object",
                       "properties": {

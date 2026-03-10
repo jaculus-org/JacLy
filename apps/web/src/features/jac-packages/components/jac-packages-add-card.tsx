@@ -51,7 +51,7 @@ export function JacPackagesAddCard() {
             onValueChange={value =>
               selectLib((value as RegistryListProject | null)?.id ?? null)
             }
-            itemToStringValue={(item: RegistryListProject) => item.id}
+            itemToStringLabel={(item: RegistryListProject) => item.id}
             disabled={isInstalling}
             autoHighlight
           >
