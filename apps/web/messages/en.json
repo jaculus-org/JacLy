@@ -131,6 +131,7 @@
   "jac_device_provider_save": "The project is automatically saved on every change. Ctrl/Cmd + S is not needed.",
   "jac_device_provider_restart": "The program on the device has been restarted",
   "jac_device_provider_upload_code": "Code successfully uploaded to device",
+  "jac_device_provider_outdated_package_json": "The project was created with an older version of JacLy",
   "terminal_placeholder": "Type a command...",
   "terminal_send": "Send command",
   "terminal_timestamp_show": "Show timestamps",

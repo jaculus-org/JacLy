@@ -69,6 +69,7 @@
     "test-local": "vscode-test"
   },
   "dependencies": {
+    "@jaculus/common": "workspace:*",
     "@jaculus/jacly": "workspace:*",
     "@jaculus/project": "workspace:*",
     "react": "^18.2.0",

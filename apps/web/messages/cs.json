@@ -129,6 +129,7 @@
   "jac_device_provider_ctrl_s": "Projekt se ukládá automaticky při každé změně. Ctrl/Cmd + S není potřeba.",
   "jac_device_provider_ctrl_r": "Program v zařízení byl restartován",
   "jac_device_provider_upload_code": "Kód byl úspěšně nahrán do zařízení",
+  "jac_device_provider_outdated_package_json": "Projekt byl vytvořen starší verzí JacLy",
   "terminal_placeholder": "Zadejte příkaz...",
   "terminal_send": "Odeslat příkaz",
   "terminal_timestamp_show": "Zobrazit časová razítka",

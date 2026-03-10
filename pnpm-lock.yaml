@@ -377,6 +377,9 @@ importers:
 
   extensions/vscode:
     dependencies:
+      '@jaculus/common':
+        specifier: workspace:*
+        version: link:../../../Jaculus-tools/packages/common
       '@jaculus/jacly':
         specifier: workspace:*
         version: link:../../packages/jacly

@@ -18,6 +18,7 @@ import { restart, uploadCode } from '../lib/device';
 import {
   InvalidPackageJsonFormatError,
   loadPackageJson,
+  savePackageJson,
   type PackageJson,
 } from '@jaculus/project/package';
 import { Project } from '@jaculus/project';
@@ -30,6 +31,7 @@ import {
   type JacDeviceState,
 } from './jac-device-context';
 import logger from '../lib/logger';
+import { useBuildInfo } from '@/hooks/use-build-info';
 
 interface JacDeviceProviderProps {
   children: ReactNode;
@@ -37,6 +39,7 @@ interface JacDeviceProviderProps {
 
 export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const { streamBusService } = Route.useRouteContext();
+  const buildInfo = useBuildInfo();
   const { state: projectState, actions: projectActions } = useActiveProject();
   const { fs, projectPath } = projectState;
   const { setError } = projectActions;
@@ -99,6 +102,41 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     [fs, setError]
   );
 
+  const initPackageJson = useCallback(
+    async (pkg: PackageJson) => {
+      let changed = false;
+      if (!pkg.jaculus?.jaclyVersion) {
+        pkg.jaculus = {
+          jaclyVersion: buildInfo.version,
+        };
+        changed = true;
+      } else if (pkg.jaculus.jaclyVersion !== buildInfo.version) {
+        enqueueSnackbar(m.jac_device_provider_outdated_package_json(), {
+          variant: 'warning',
+        });
+      }
+
+      if (!pkg.jaculus?.jaclyGitHash) {
+        pkg.jaculus.jaclyGitHash = buildInfo.commitHash;
+        changed = true;
+      }
+
+      if (changed) {
+        try {
+          await savePackageJson(
+            fs,
+            path.join(projectPath, 'package.json'),
+            pkg
+          );
+        } catch (error) {
+          console.error('Failed to update package.json:', error);
+          enqueueSnackbar(m.project_error_unknown(), { variant: 'error' });
+        }
+      }
+    },
+    [fs, projectPath, buildInfo]
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -118,6 +156,9 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
           return;
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
+
+        await initPackageJson(pkgJson);
+
         setJacRegistry(new Registry(pkgJson.registry, getRequest, logger));
 
         if (!cancelled) {
@@ -166,6 +207,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     channel,
     fixMissingPackageJson,
     setError,
+    initPackageJson,
   ]);
 
   useEffect(() => {

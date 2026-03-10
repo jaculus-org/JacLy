@@ -5,6 +5,7 @@ import { Writable } from 'stream';
 import { Project } from '@jaculus/project';
 import { Registry } from '@jaculus/project/registry';
 import type { JaclyBlocksData } from '@jaculus/project';
+import logger from './utils';
 
 class JaclyDocument implements vscode.CustomDocument {
   constructor(
@@ -208,11 +209,6 @@ class JaclyEditorProvider
       return { blockFiles: {}, translations: {} };
     }
 
-    const out = new Writable({
-      write(_chunk, _enc, cb) {
-        cb();
-      },
-    });
     const err = new Writable({
       write(chunk, _enc, cb) {
         console.error(String(chunk));
@@ -220,11 +216,7 @@ class JaclyEditorProvider
       },
     });
 
-    const registry = Registry.createWithoutValidation(undefined, async () => {
-      throw new Error('not implemented');
-    });
-
-    const project = new Project(fs, projectPath, out, err, registry);
+    const project = new Project(fs, projectPath, err, logger);
     return project.getJaclyData('en');
   }
 
