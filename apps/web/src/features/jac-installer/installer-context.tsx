@@ -23,7 +23,6 @@ export interface InstallerState {
   installing: boolean;
   isConnected: boolean;
   flashProgress: FlashProgress | null;
-  terminalOutput: string[];
   showPopupText: string | null;
 }
 

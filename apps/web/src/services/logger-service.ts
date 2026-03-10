@@ -1,5 +1,6 @@
 import type { Logger } from '@jaculus/common';
 import type { LogLevel, LoggerEntry } from '@/features/logger/types';
+import { Writable } from 'node:stream';
 
 type LoggerListener = (entries: LoggerEntry[]) => void;
 
@@ -36,8 +37,17 @@ export class LoggerBusService implements Logger {
     this.append('silly', message ?? '');
   }
 
+  installer(message?: string): void {
+    this.append('installer', message ?? '');
+  }
+
   clear(): void {
     this.entries = [];
+    this.emit();
+  }
+
+  clearLevel(level: LogLevel): void {
+    this.entries = this.entries.filter(entry => entry.level !== level);
     this.emit();
   }
 
@@ -63,6 +73,15 @@ export class LoggerBusService implements Logger {
       this.entries = this.entries.slice(this.entries.length - this.maxEntries);
     }
     this.emit();
+  }
+
+  createWritable(level: LogLevel): Writable {
+    return new Writable({
+      write: (chunk, _encoding, callback) => {
+        this.append(level, chunk.toString());
+        callback();
+      },
+    });
   }
 
   private emit(): void {

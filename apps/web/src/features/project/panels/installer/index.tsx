@@ -1,4 +1,5 @@
 import { Installer } from '@/features/jac-installer';
+import { Logger } from '@/features/logger';
 
 export function InstallerPanel() {
   return (
@@ -8,7 +9,7 @@ export function InstallerPanel() {
           <Installer.Layout>
             <Installer.Controls />
             <Installer.Progress />
-            <Installer.Terminal />
+            <Logger.Logs defaultLevel="installer" logLevelSelector={false} />
             <Installer.Dialog />
           </Installer.Layout>
         </Installer.Provider>

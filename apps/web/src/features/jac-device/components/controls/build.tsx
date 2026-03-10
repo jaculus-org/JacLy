@@ -6,13 +6,10 @@ import { enqueueSnackbar } from 'notistack';
 import { compileProject } from '@/features/jac-device/lib/compilation';
 import { useActiveProject } from '@/features/project/active-project';
 import { useJacDevice } from '@/features/jac-device';
-// import { useStream } from '@/features/stream';
 import { useState } from 'react';
 import { useProjectEditor } from '@/features/project/editor';
-// import { Route } from '@/routes/__root';
 
 export function Build() {
-  // const { streamBusService } = Route.useRouteContext();
   const {
     state: { projectPath, fs },
   } = useActiveProject();
@@ -20,9 +17,6 @@ export function Build() {
   const { controlPanel } = actions;
   const { state: jacState } = useJacDevice();
   const { jacProject, pkg, connectionStatus } = jacState;
-  // const {
-  //   meta: { channel },
-  // } = useStream();
   const [isBuilding, setIsBuilding] = useState(false);
 
   if (jacProject == null || pkg?.jaculus?.projectType != 'code') {
@@ -37,10 +31,6 @@ export function Build() {
       for (const [filePath, content] of Object.entries(files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
-      // const compilerStreams = streamBusService.createWritablePair(
-      //   channel,
-      //   'compiler'
-      // );
       if (!(await compileProject(projectPath, fs))) {
         enqueueSnackbar(m.device_build_compile_failed(), { variant: 'error' });
         return;

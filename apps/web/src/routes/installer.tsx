@@ -1,4 +1,5 @@
 import { Installer } from '@/features/jac-installer';
+import { Logger } from '@/features/logger';
 import { m } from '@/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -20,7 +21,7 @@ function RouteComponent() {
           <Installer.Layout>
             <Installer.Controls />
             <Installer.Progress />
-            <Installer.Terminal />
+            <Logger.Logs defaultLevel="installer" logLevelSelector={false} />
             <Installer.Dialog />
           </Installer.Layout>
         </Installer.Provider>

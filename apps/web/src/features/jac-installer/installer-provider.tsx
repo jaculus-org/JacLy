@@ -55,7 +55,6 @@ function createInitialState(initialUrl?: string): InstallerState {
     installing: false,
     isConnected: false,
     flashProgress: null,
-    terminalOutput: [],
     showPopupText: null,
   };
 }
@@ -87,24 +86,13 @@ export function InstallerProvider({
   const terminal: IEspLoaderTerminal = useMemo(
     () => ({
       clean() {
-        setState(prev => ({ ...prev, terminalOutput: [] }));
+        logger.clearLevel('installer');
       },
       writeLine(data: string) {
-        setState(prev => ({
-          ...prev,
-          terminalOutput: [...prev.terminalOutput, data],
-        }));
+        logger.installer(data);
       },
       write(data: string) {
-        setState(prev => {
-          const terminalOutput = [...prev.terminalOutput];
-          if (terminalOutput.length === 0) {
-            terminalOutput.push(data);
-          } else {
-            terminalOutput[terminalOutput.length - 1] += data;
-          }
-          return { ...prev, terminalOutput };
-        });
+        logger.installer(data);
       },
     }),
     []
@@ -254,7 +242,8 @@ export function InstallerProvider({
   }, []);
 
   const connect = useCallback(async () => {
-    setState(prev => ({ ...prev, autoLoading: true, terminalOutput: [] }));
+    logger.clearLevel('installer');
+    setState(prev => ({ ...prev, autoLoading: true }));
 
     let newTransport: Transport | null = null;
 

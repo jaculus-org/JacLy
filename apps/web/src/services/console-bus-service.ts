@@ -1,5 +1,4 @@
 import type { ConsoleEntry, ConsoleType } from '@/features/console/types';
-// import { Writable } from 'node:stream';
 
 type ConsoleListener = (entries: ConsoleEntry[]) => void;
 
@@ -57,15 +56,6 @@ export class ConsoleBusService {
       }
     };
   }
-
-  // createWritable(channel: string, type: ConsoleType): Writable {
-  //   return new Writable({
-  //     write: (chunk, _encoding, callback) => {
-  //       this.append(channel, type, chunk.toString());
-  //       callback();
-  //     },
-  //   });
-  // }
 
   private emit(channel: string, entries: ConsoleEntry[]): void {
     const listeners = this.listeners.get(channel);

@@ -4,7 +4,8 @@ export type LogLevel =
   | 'info'
   | 'verbose'
   | 'debug'
-  | 'silly';
+  | 'silly'
+  | 'installer';
 
 export const LOG_LEVELS = [
   'error',
@@ -22,6 +23,7 @@ export const LOG_LEVEL_ORDER: Record<LogLevel, number> = {
   verbose: 3,
   debug: 4,
   silly: 5,
+  installer: 6,
 };
 
 export interface LoggerEntry {
@@ -44,5 +46,7 @@ export function getLogLevelColor(level: LogLevel): string {
       return 'text-cyan-400';
     case 'silly':
       return 'text-muted-foreground';
+    case 'installer':
+      return 'text-purple-400';
   }
 }

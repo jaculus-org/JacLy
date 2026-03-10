@@ -1,4 +1,3 @@
-import { Writable } from 'node:stream';
 import {
   useCallback,
   useEffect,
@@ -153,20 +152,12 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
           return;
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
-
         await initPackageJson(pkgJson);
-
         setJacRegistry(new Registry(pkgJson.registry, getRequest, logger));
 
-        const runtimeStream = new Writable({
-          write: (chunk, _encoding, callback) => {
-            console.log(`[Project] ${chunk.toString()}`);
-            callback();
-          },
-        });
-
         if (!cancelled) {
-          setJacProject(new Project(fs, projectPath, runtimeStream, logger));
+          const out = logger.createWritable('verbose');
+          setJacProject(new Project(fs, projectPath, out, logger));
           setPkg(pkgJson);
         }
       } catch (error) {
