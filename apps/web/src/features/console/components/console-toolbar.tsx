@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
 
-interface StreamConsoleToolbarProps {
+interface ConsoleToolbarProps {
   input: string;
   disabled: boolean;
   entryCount: number;
@@ -37,7 +37,7 @@ interface StreamConsoleToolbarProps {
   onClear: () => void;
 }
 
-export function StreamConsoleToolbar({
+export function ConsoleToolbar({
   input,
   disabled,
   entryCount,
@@ -52,7 +52,7 @@ export function StreamConsoleToolbar({
   onToggleAutoscroll,
   onCopy,
   onClear,
-}: StreamConsoleToolbarProps) {
+}: ConsoleToolbarProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-start gap-1.5">

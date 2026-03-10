@@ -1,8 +1,14 @@
 import { m } from '@/paraglide/messages';
 import { Badge } from '@/features/shared/components/ui/badge';
 import { Button } from '@/features/shared/components/ui/button';
-import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { Card } from '@/features/shared/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/features/shared/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
@@ -17,51 +23,43 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { getStreamScope } from '../stream-utils';
-import type { StreamEntry, StreamLogKey } from '../types';
+import {
+  LOG_LEVELS,
+  LOG_LEVEL_ORDER,
+  type LogLevel,
+  type LoggerEntry,
+} from '../types';
 
-interface StreamLogsToolbarProps {
-  logEntries: StreamEntry[];
-  logKeys: ReadonlyArray<StreamLogKey>;
-  selectedLogType: StreamLogKey;
+interface LoggerToolbarProps {
+  entries: LoggerEntry[];
+  selectedLevel: LogLevel;
   showTimestamp: boolean;
   autoScroll: boolean;
   copied: boolean;
-  onSelectType: (type: StreamLogKey) => void;
+  logLevelSelector?: boolean;
+  onSelectLevel: (level: LogLevel) => void;
   onToggleTimestamp: () => void;
   onToggleAutoscroll: () => void;
   onCopy: () => void;
   onClear: () => void;
 }
 
-export function StreamLogsToolbar({
-  logEntries,
-  logKeys,
-  selectedLogType,
+export function LoggerToolbar({
+  entries,
+  selectedLevel,
   showTimestamp,
   autoScroll,
   copied,
-  onSelectType,
+  logLevelSelector = true,
+  onSelectLevel,
   onToggleTimestamp,
   onToggleAutoscroll,
   onCopy,
   onClear,
-}: StreamLogsToolbarProps) {
-  const streamLabelByKey: Record<StreamLogKey, string> = {
-    compiler: m.stream_scope_compiler(),
-    runtime: m.stream_scope_runtime(),
-    debug: m.stream_scope_debug(),
-  };
-
-  const entryCountByKey = logKeys.reduce<Record<StreamLogKey, number>>(
-    (acc, key) => {
-      acc[key] = logEntries.filter(
-        entry => getStreamScope(entry.type) === key
-      ).length;
-      return acc;
-    },
-    {} as Record<StreamLogKey, number>
-  );
+}: LoggerToolbarProps) {
+  const visibleCount = entries.filter(
+    entry => LOG_LEVEL_ORDER[entry.level] <= LOG_LEVEL_ORDER[selectedLevel]
+  ).length;
 
   return (
     <Card className="p-1.5">
@@ -109,7 +107,7 @@ export function StreamLogsToolbar({
                 <Button
                   variant={copied ? 'default' : 'outline'}
                   onClick={onCopy}
-                  disabled={logEntries.length === 0}
+                  disabled={entries.length === 0}
                 >
                   {copied ? <Check /> : <Copy />}
                 </Button>
@@ -131,35 +129,28 @@ export function StreamLogsToolbar({
             </Tooltip>
           </div>
 
-          <ButtonGroup className="ml-auto w-full sm:w-auto flex-wrap justify-end">
-            {logKeys.map(key => (
-              <Tooltip key={key}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={selectedLogType === key ? 'default' : 'outline'}
-                    onClick={() => onSelectType(key)}
-                    size="sm"
-                    className="h-7 px-2 text-xs"
-                  >
-                    <span className="uppercase">
-                      {streamLabelByKey[key].slice(0, 3)}
-                    </span>
-                    {entryCountByKey[key] > 0 && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-1 text-[10px] px-1.5"
-                      >
-                        {entryCountByKey[key]}
-                      </Badge>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{streamLabelByKey[key]}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </ButtonGroup>
+          <div className="ml-auto flex items-center gap-1.5">
+            <Badge variant="outline" className="text-xs">
+              {visibleCount}
+            </Badge>
+            {logLevelSelector && (
+              <Select
+                value={selectedLevel}
+                onValueChange={v => onSelectLevel(v as LogLevel)}
+              >
+                <SelectTrigger className="h-7 w-28 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LOG_LEVELS.map(level => (
+                    <SelectItem key={level} value={level} className="text-xs">
+                      <span className="uppercase">{level}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
       </div>
     </Card>

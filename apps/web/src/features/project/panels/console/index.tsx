@@ -1,5 +1,5 @@
-import { Stream } from '@/features/stream';
+import { Console } from '@/features/console';
 
 export function ConsolePanel() {
-  return <Stream.Console />;
+  return <Console.Console />;
 }

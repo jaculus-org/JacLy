@@ -16,9 +16,9 @@ import { enqueueSnackbar } from 'notistack';
 import type { JaculusProjectType } from '@jaculus/project/package';
 import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
 import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
-import { Stream } from '@/features/stream';
 import { createFromPackage } from '@jaculus/project/creation';
-import logger from '@/features/jac-device/lib/logger';
+import { Logger } from '@/features/logger';
+import { logger } from '@/services/logger-service';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -53,11 +53,8 @@ const defaultRegisters = [
 
 function NewProject() {
   const navigate = useNavigate();
-  const {
-    projectManService: runtimeService,
-    projectFsService,
-    streamBusService,
-  } = Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } =
+    Route.useRouteContext();
   const [projectName, setProjectName] = useState('');
   const [projectOption, setProjectOption] = useState<JaculusProjectOptions>(
     projectOptions[0]
@@ -104,8 +101,6 @@ function NewProject() {
     }
 
     setIsCreating(true);
-    streamBusService.clear('global:new-project');
-
     try {
       const registry = new Registry(registers, getRequest, logger);
       const versions = await registry.listVersions(selectedTemplate.id);
@@ -129,20 +124,8 @@ function NewProject() {
       );
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
-      const creationStreams = streamBusService.createWritablePair(
-        'global:new-project',
-        'compiler'
-      );
 
-      await createFromPackage(
-        fs,
-        projectPath,
-        pkg,
-        creationStreams.out,
-        logger,
-        false,
-        false
-      );
+      await createFromPackage(fs, projectPath, pkg, logger, false, false);
 
       navigate({
         to: '/project/$projectId',
@@ -265,7 +248,7 @@ function NewProject() {
             : m.project_new_btn_create()}
         </Button>
 
-        <Stream.CreateNewLogs streamBusService={streamBusService} />
+        <Logger.Logs defaultLevel="silly" logLevelSelector={false} />
       </div>
     </div>
   );

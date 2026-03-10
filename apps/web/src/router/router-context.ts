@@ -4,7 +4,8 @@ import { ProjectRepository } from '@/lib/db/project-repository';
 import { ProjectFsService } from '@/services/project-fs-service';
 import { ProjectManagementService } from '@/services/project-runtime-service';
 import { SettingsService } from '@/services/settings-service';
-import { StreamBusService } from '@/services/stream-bus-service';
+import { logger } from '@/services/logger-service';
+import { ConsoleBusService } from '@/services/console-bus-service';
 
 export type RouterContext = ReturnType<typeof makeRouterContext>;
 
@@ -15,7 +16,7 @@ export function makeRouterContext() {
   const projectManService = new ProjectManagementService(projectRepo);
   const settingsService = new SettingsService(settingsRepo);
   const projectFsService = new ProjectFsService();
-  const streamBusService = new StreamBusService();
+  const streamBusService = new ConsoleBusService();
 
   return {
     db,
@@ -23,5 +24,6 @@ export function makeRouterContext() {
     settingsService,
     projectFsService,
     streamBusService,
+    loggerBus: logger,
   };
 }

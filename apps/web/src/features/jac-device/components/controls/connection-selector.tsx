@@ -19,7 +19,7 @@ import type {
 import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { useJacDevice } from '@/features/jac-device';
-import { useStream } from '@/features/stream';
+import { useConsole } from '@/features/console';
 import { useActiveProject } from '@/features/project/active-project';
 import { testConnection, uploadCode } from '@/features/jac-device/lib/device';
 import { useProjectEditor } from '@/features/project/editor';
@@ -36,7 +36,7 @@ export function ConnectionSelector() {
   >([]);
   const {
     actions: { addEntry },
-  } = useStream();
+  } = useConsole();
   const { state: jacState, actions: jacActions } = useJacDevice();
   const { connectionStatus, jacProject } = jacState;
   const { setDevice, setConnectionStatus } = jacActions;

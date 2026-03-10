@@ -1,5 +1,5 @@
 import type { JacDevice } from '@jaculus/device';
-import logger from './logger';
+import { logger } from '@/services/logger-service';
 import { enqueueSnackbar } from 'notistack';
 import { dirname } from 'path';
 import { m } from '@/paraglide/messages';

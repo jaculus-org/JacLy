@@ -5,7 +5,7 @@ import { Card } from '@/features/shared/components/ui/card';
 import { Separator } from '@/features/shared/components/ui/separator';
 import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { ChevronDown, ChevronUp, Trash2Icon } from 'lucide-react';
-import { useStream } from '@/features/stream';
+import { useConsole } from '@/features/console';
 import {
   Tooltip,
   TooltipContent,
@@ -16,7 +16,7 @@ import { m } from '@/paraglide/messages';
 type SortMode = 'alpha' | 'time';
 
 export function KeyValueDisplay() {
-  const { state, actions } = useStream();
+  const { state, actions } = useConsole();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sortBy, setSortBy] = useState<SortMode>('time');
 

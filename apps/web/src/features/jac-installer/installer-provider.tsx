@@ -31,7 +31,7 @@ import {
 } from './installer-context';
 import { ESP32Flasher } from './libs/flasher';
 import { getRequest } from '@jaculus/jacly/project';
-import { logger } from '../jac-device/lib/logger';
+import { logger } from '@/services/logger-service';
 
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;

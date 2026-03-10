@@ -9,7 +9,7 @@ import {
 import { ChevronDown, Send } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
 
-interface StreamConsoleInputProps {
+interface ConsoleInputProps {
   input: string;
   disabled: boolean;
   onChange: (value: string) => void;
@@ -18,14 +18,14 @@ interface StreamConsoleInputProps {
   onKeyDown: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
-export function StreamConsoleInput({
+export function ConsoleInput({
   input,
   disabled,
   onChange,
   onSubmit,
   onExpand,
   onKeyDown,
-}: StreamConsoleInputProps) {
+}: ConsoleInputProps) {
   return (
     <div className="flex items-center gap-1.5">
       <Textarea

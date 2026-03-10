@@ -4,7 +4,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/features/shared/components/ui/resizable';
-import { Stream } from '@/features/stream';
+import { Console } from '@/features/console';
 
 export function WokwiPanel() {
   return (
@@ -14,7 +14,7 @@ export function WokwiPanel() {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize="25%">
-        <Stream.Console tooltipCollapsed={true} displayKeyValue={false} />
+        <Console.Console tooltipCollapsed={true} displayKeyValue={false} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

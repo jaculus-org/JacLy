@@ -1,26 +1,31 @@
 import { m } from '@/paraglide/messages';
 import { useMemo, useState } from 'react';
-import { useStream } from '../stream-context';
-import { getStreamEntryColor, getStreamScope } from '../stream-utils';
-import { type StreamLogKey } from '../types';
-import { StreamLogsToolbar } from './stream-logs-toolbar';
-import { StreamOutput } from './stream-output';
+import { useLogger } from '../logger-context';
+import { LOG_LEVEL_ORDER, type LogLevel } from '../types';
+import { LoggerToolbar } from './logger-toolbar';
+import { LoggerOutput } from './logger-output';
 
-export function StreamLogs() {
-  const { state, actions, meta } = useStream();
+interface LoggerLogsProps {
+  defaultLevel?: LogLevel;
+  logLevelSelector?: boolean;
+}
+
+export function LoggerLogs({
+  defaultLevel = 'info',
+  logLevelSelector = true,
+}: LoggerLogsProps) {
+  const { state, actions } = useLogger();
   const [showTimestamp, setShowTimestamp] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [selectedLogType, setSelectedLogType] = useState<StreamLogKey>(
-    meta.logKeys[0]
-  );
+  const [selectedLevel, setSelectedLevel] = useState<LogLevel>(defaultLevel);
 
   const filteredEntries = useMemo(
     () =>
-      state.logEntries.filter(
-        entry => getStreamScope(entry.type) === selectedLogType
+      state.entries.filter(
+        entry => LOG_LEVEL_ORDER[entry.level] <= LOG_LEVEL_ORDER[selectedLevel]
       ),
-    [state.logEntries, selectedLogType]
+    [state.entries, selectedLevel]
   );
 
   const handleCopyToClipboard = async () => {
@@ -29,9 +34,9 @@ export function StreamLogs() {
         const timestamp = showTimestamp
           ? `[${entry.timestamp.toLocaleTimeString()}] `
           : '';
-        return `${timestamp}${entry.content}`;
+        return `${timestamp}[${entry.level.toUpperCase()}] ${entry.content}`;
       })
-      .join('');
+      .join('\n');
 
     try {
       await navigator.clipboard.writeText(content);
@@ -44,26 +49,25 @@ export function StreamLogs() {
 
   return (
     <div className="flex h-full flex-col gap-1.5 p-1.5">
-      <StreamLogsToolbar
-        logEntries={state.logEntries}
-        selectedLogType={selectedLogType}
+      <LoggerToolbar
+        entries={state.entries}
+        selectedLevel={selectedLevel}
         showTimestamp={showTimestamp}
         autoScroll={autoScroll}
         copied={copied}
-        logKeys={meta.logKeys}
-        onSelectType={setSelectedLogType}
+        logLevelSelector={logLevelSelector}
+        onSelectLevel={setSelectedLevel}
         onToggleTimestamp={() => setShowTimestamp(v => !v)}
         onToggleAutoscroll={() => setAutoScroll(v => !v)}
         onCopy={handleCopyToClipboard}
         onClear={actions.clear}
       />
 
-      <StreamOutput
+      <LoggerOutput
         entries={filteredEntries}
         emptyMessage={m.terminal_logs_empty()}
         showTimestamp={showTimestamp}
         autoScroll={autoScroll}
-        getEntryColor={getStreamEntryColor}
       />
     </div>
   );

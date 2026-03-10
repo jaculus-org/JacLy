@@ -1,23 +1,23 @@
-import type { StreamEntry, StreamType } from '../types';
 import { Card } from '@/features/shared/components/ui/card';
 import { cn } from '@/lib/utils/cn';
 import { useEffect, useRef } from 'react';
+import type { ConsoleEntry, ConsoleType } from '../types';
 
-interface StreamOutputProps {
-  entries: StreamEntry[];
+interface ConsoleOutputProps {
+  entries: ConsoleEntry[];
   emptyMessage: string;
   showTimestamp: boolean;
   autoScroll: boolean;
-  getEntryColor: (type: StreamType) => string;
+  getEntryColor: (type: ConsoleType) => string;
 }
 
-export function StreamOutput({
+export function ConsoleOutput({
   entries,
   emptyMessage,
   showTimestamp,
   autoScroll,
   getEntryColor,
-}: StreamOutputProps) {
+}: ConsoleOutputProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 

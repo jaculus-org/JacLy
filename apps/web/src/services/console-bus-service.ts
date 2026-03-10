@@ -1,24 +1,19 @@
-import { Writable } from 'node:stream';
-import {
-  type StreamEntry,
-  type StreamOutputScope,
-  type StreamType,
-} from '@/features/stream/types';
-import { getStreamPair, getStreamType } from '@/features/stream';
+import type { ConsoleEntry, ConsoleType } from '@/features/console/types';
+// import { Writable } from 'node:stream';
 
-type StreamListener = (entries: StreamEntry[]) => void;
+type ConsoleListener = (entries: ConsoleEntry[]) => void;
 
-export class StreamBusService {
-  private channels = new Map<string, StreamEntry[]>();
-  private listeners = new Map<string, Set<StreamListener>>();
+export class ConsoleBusService {
+  private channels = new Map<string, ConsoleEntry[]>();
+  private listeners = new Map<string, Set<ConsoleListener>>();
   private readonly maxEntriesPerChannel: number;
 
   constructor(maxEntriesPerChannel = 5000) {
     this.maxEntriesPerChannel = maxEntriesPerChannel;
   }
 
-  append(channel: string, type: StreamType, content: string): void {
-    const nextEntry: StreamEntry = {
+  append(channel: string, type: ConsoleType, content: string): void {
+    const nextEntry: ConsoleEntry = {
       timestamp: new Date(),
       type,
       content,
@@ -46,8 +41,8 @@ export class StreamBusService {
     this.emit(channel, next);
   }
 
-  subscribe(channel: string, listener: StreamListener): () => void {
-    const listeners = this.listeners.get(channel) ?? new Set<StreamListener>();
+  subscribe(channel: string, listener: ConsoleListener): () => void {
+    const listeners = this.listeners.get(channel) ?? new Set<ConsoleListener>();
     listeners.add(listener);
     this.listeners.set(channel, listeners);
 
@@ -63,30 +58,16 @@ export class StreamBusService {
     };
   }
 
-  createWritable(channel: string, type: StreamType): Writable {
-    return new Writable({
-      write: (chunk, _encoding, callback) => {
-        this.append(channel, type, chunk.toString());
-        callback();
-      },
-    });
-  }
+  // createWritable(channel: string, type: ConsoleType): Writable {
+  //   return new Writable({
+  //     write: (chunk, _encoding, callback) => {
+  //       this.append(channel, type, chunk.toString());
+  //       callback();
+  //     },
+  //   });
+  // }
 
-  createErrWritable(channel: string, scope: StreamOutputScope): Writable {
-    return this.createWritable(channel, getStreamType(scope, 'err'));
-  }
-
-  createWritablePair(
-    channel: string,
-    scope: StreamOutputScope
-  ): { out: Writable } {
-    const pair = getStreamPair(scope);
-    return {
-      out: this.createWritable(channel, pair.out),
-    };
-  }
-
-  private emit(channel: string, entries: StreamEntry[]): void {
+  private emit(channel: string, entries: ConsoleEntry[]): void {
     const listeners = this.listeners.get(channel);
     if (!listeners) return;
     for (const listener of listeners) {

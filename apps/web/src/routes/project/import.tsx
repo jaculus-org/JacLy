@@ -23,6 +23,7 @@ import {
   loadPackageFromUri,
 } from '@/features/project/lib/loadPackage';
 import { createFromPackage } from '@jaculus/project/creation';
+import { logger } from '@/services/logger-service';
 
 interface ImportSearchParams {
   url?: string;
@@ -41,11 +42,8 @@ function ImportProject() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const initialUrl = search.url ?? '';
-  const {
-    projectManService: runtimeService,
-    projectFsService,
-    streamBusService,
-  } = Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } =
+    Route.useRouteContext();
 
   const [projectName, setProjectName] = useState('imported-project');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -111,16 +109,12 @@ function ImportProject() {
       );
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
-      const importStreams = streamBusService.createWritablePair(
-        'global:import',
-        'compiler'
-      );
 
       await createFromPackage(
         fs,
         projectPath,
         importResult.package,
-        importStreams.out,
+        logger,
         false,
         false
       );

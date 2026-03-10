@@ -1,7 +1,7 @@
-import { Stream } from '@/features/stream';
+import { Logger } from '@/features/logger';
 
 export function LogsPanel() {
 	return (
-		<Stream.Logs />
+		<Logger.Logs />
 	)
 }

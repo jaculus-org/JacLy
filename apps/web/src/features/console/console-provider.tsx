@@ -1,5 +1,4 @@
-import type { StreamBusService } from '@/services/stream-bus-service';
-import { StreamTelemetryService } from '@/features/stream/services/stream-telemetry-service';
+import type { ConsoleBusService } from '@/services/console-bus-service';
 import type { KeyValueMap } from '@/features/keyValue';
 import {
   useCallback,
@@ -8,30 +7,30 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { type AddToStream, type StreamEntry, type StreamType } from './types';
-import { isConsoleStream, isLogStream } from './stream-utils';
 import {
-  streamLogKeys,
-  StreamContext,
-  type StreamContextValue,
-} from './stream-context';
+  type AddToConsole,
+  type ConsoleEntry,
+  type ConsoleType,
+} from './types';
+import { ConsoleContext, type ConsoleContextValue } from './console-context';
+import { ConsoleTelemetryService } from './services/console-telemetry-service';
 
-const defaultTelemetryService = new StreamTelemetryService();
+const defaultTelemetryService = new ConsoleTelemetryService();
 
-export interface StreamProviderProps {
+export interface ConsoleProviderProps {
   channel: string;
-  streamBusService: StreamBusService;
-  telemetryService?: StreamTelemetryService;
+  streamBusService: ConsoleBusService;
+  telemetryService?: ConsoleTelemetryService;
   children: ReactNode;
 }
 
-export function StreamProvider({
+export function ConsoleProvider({
   channel,
   streamBusService,
   telemetryService = defaultTelemetryService,
   children,
-}: StreamProviderProps) {
-  const [entries, setEntries] = useState<StreamEntry[]>([]);
+}: ConsoleProviderProps) {
+  const [entries, setEntries] = useState<ConsoleEntry[]>([]);
   const [keyValueEntries, setKeyValueEntries] = useState<KeyValueMap>({});
 
   useEffect(() => {
@@ -53,7 +52,7 @@ export function StreamProvider({
     [channel, streamBusService]
   );
 
-  const addEntry = useCallback<AddToStream>(
+  const addEntry = useCallback<AddToConsole>(
     (type, content) => {
       const charMapEntry = charMapCallback[content.trim()];
       if (charMapEntry) {
@@ -70,7 +69,7 @@ export function StreamProvider({
   }, [channel, streamBusService]);
 
   const clearType = useCallback(
-    (type: StreamType) => {
+    (type: ConsoleType) => {
       const filtered = entries.filter(entry => entry.type !== type);
       streamBusService.clear(channel);
       for (const entry of filtered) {
@@ -80,22 +79,11 @@ export function StreamProvider({
     [entries, channel, streamBusService]
   );
 
-  const consoleEntries = useMemo(
-    () => entries.filter(entry => isConsoleStream(entry.type)),
-    [entries]
-  );
-
-  const logEntries = useMemo(
-    () => entries.filter(entry => isLogStream(entry.type)),
-    [entries]
-  );
-
   // TODO: do I need to memoize this? Is React compiler smart enough to not re-render it incorrectly?
-  const value = useMemo<StreamContextValue>(
+  const value = useMemo<ConsoleContextValue>(
     () => ({
       state: {
-        consoleEntries,
-        logEntries,
+        entries,
         keyValueEntries,
       },
       actions: {
@@ -105,21 +93,12 @@ export function StreamProvider({
       },
       meta: {
         channel,
-        logKeys: streamLogKeys,
       },
     }),
-    [
-      consoleEntries,
-      logEntries,
-      keyValueEntries,
-      addEntry,
-      clear,
-      clearType,
-      channel,
-    ]
+    [entries, keyValueEntries, addEntry, clear, clearType, channel]
   );
 
   return (
-    <StreamContext.Provider value={value}>{children}</StreamContext.Provider>
+    <ConsoleContext.Provider value={value}>{children}</ConsoleContext.Provider>
   );
 }

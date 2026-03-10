@@ -1,34 +1,46 @@
 import { m } from '@/paraglide/messages';
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import { useStream } from '../stream-context';
+import { useConsole } from '../console-context';
 import { sendToDeviceStr } from '@/features/jac-device/lib/connection';
 import { useJacDevice } from '@/features/jac-device';
 import { Card } from '@/features/shared/components/ui/card';
 import { KeyValueDisplay } from '@/features/keyValue';
-import { getStreamEntryColor } from '../stream-utils';
-import { StreamConsoleInput } from './stream-console-input';
-import { StreamConsoleToolbar } from './stream-console-toolbar';
-import { StreamOutput } from './stream-output';
+import { ConsoleInput } from './console-input';
+import { ConsoleToolbar } from './console-toolbar';
+import { ConsoleOutput } from './console-output';
+import type { ConsoleType } from '../types';
 
-interface StreamConsoleProps {
+interface ConsoleProps {
   displayKeyValue?: boolean;
   tooltipCollapsed?: boolean;
 }
 
-export function StreamConsole({
+export function Console({
   displayKeyValue = true,
   tooltipCollapsed = false,
-}: StreamConsoleProps) {
-  const { state, actions } = useStream();
-  const { state: jacState } = useJacDevice();
-  const { device } = jacState;
+}: ConsoleProps) {
+  const { state, actions } = useConsole();
+  const {
+    state: { device },
+  } = useJacDevice();
   const [input, setInput] = useState('');
   const [showTimestamp, setShowTimestamp] = useState(true);
   const [autoScroll, setAutoScroll] = useState(true);
   const [copied, setCopied] = useState(false);
   const [isToolbarCollapsed, setIsToolbarCollapsed] =
     useState(tooltipCollapsed);
+
+  function getStreamEntryColor(type: ConsoleType): string {
+    switch (type) {
+      case 'in':
+        return 'text-foreground';
+      case 'out':
+        return 'text-foreground';
+      case 'err':
+        return 'text-red-400';
+    }
+  }
 
   async function handleMessage(message: string) {
     if (!device) return;
@@ -50,7 +62,7 @@ export function StreamConsole({
   };
 
   const handleCopyToClipboard = async () => {
-    const content = state.consoleEntries
+    const content = state.entries
       .map(entry => {
         const timestamp = showTimestamp
           ? `[${entry.timestamp.toLocaleTimeString()}] `
@@ -72,7 +84,7 @@ export function StreamConsole({
     <div className="flex h-full flex-col gap-1.5 p-1.5">
       <Card className="p-1.5">
         {isToolbarCollapsed ? (
-          <StreamConsoleInput
+          <ConsoleInput
             input={input}
             disabled={!device}
             onChange={setInput}
@@ -81,10 +93,10 @@ export function StreamConsole({
             onKeyDown={handleKeyDown}
           />
         ) : (
-          <StreamConsoleToolbar
+          <ConsoleToolbar
             input={input}
             disabled={!device}
-            entryCount={state.consoleEntries.length}
+            entryCount={state.entries.length}
             showTimestamp={showTimestamp}
             autoScroll={autoScroll}
             copied={copied}
@@ -102,8 +114,8 @@ export function StreamConsole({
 
       {displayKeyValue && <KeyValueDisplay />}
 
-      <StreamOutput
-        entries={state.consoleEntries}
+      <ConsoleOutput
+        entries={state.entries}
         emptyMessage={m.terminal_console_empty()}
         showTimestamp={showTimestamp}
         autoScroll={autoScroll}

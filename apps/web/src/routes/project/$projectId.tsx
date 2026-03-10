@@ -1,7 +1,7 @@
 import { m } from '@/paraglide/messages';
 import { JacDevice } from '@/features/jac-device';
 import { ActiveProject } from '@/features/project/active-project';
-import { Stream } from '@/features/stream';
+import { Console } from '@/features/console';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 import { ProjectEditor } from '@/features/project/editor';
@@ -33,7 +33,7 @@ function ProjectEditorRoute() {
       projectFsService={projectFsService}
       projectManService={projectManService}
     >
-      <Stream.Provider
+      <Console.Provider
         channel={`project:${project.id}`}
         streamBusService={streamBusService}
       >
@@ -43,7 +43,7 @@ function ProjectEditorRoute() {
             <ProjectEditor.Layout />
           </ProjectEditor.Provider>
         </JacDevice.Provider>
-      </Stream.Provider>
+      </Console.Provider>
     </ActiveProject.Provider>
   );
 }

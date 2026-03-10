@@ -1,3 +1,4 @@
+import { Writable } from 'node:stream';
 import {
   useCallback,
   useEffect,
@@ -9,7 +10,6 @@ import { JacDevice } from '@jaculus/device';
 import { getRequest } from '@jaculus/jacly/project';
 import path from 'path';
 import { useActiveProject } from '@/features/project/active-project';
-import { useStream } from '@/features/stream';
 import { enqueueSnackbar } from 'notistack';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
@@ -30,8 +30,8 @@ import {
   type JacDeviceContextValue,
   type JacDeviceState,
 } from './jac-device-context';
-import logger from '../lib/logger';
 import { useBuildInfo } from '@/hooks/use-build-info';
+import { logger } from '@/services/logger-service';
 
 interface JacDeviceProviderProps {
   children: ReactNode;
@@ -43,9 +43,6 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const { state: projectState, actions: projectActions } = useActiveProject();
   const { fs, projectPath } = projectState;
   const { setError } = projectActions;
-  const {
-    meta: { channel },
-  } = useStream();
   const [device, setDevice] = useState<JacDevice | null>(null);
   const [connectionType, setConnectionType] = useState<ConnectionType | null>(
     null
@@ -161,14 +158,15 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
 
         setJacRegistry(new Registry(pkgJson.registry, getRequest, logger));
 
+        const runtimeStream = new Writable({
+          write: (chunk, _encoding, callback) => {
+            console.log(`[Project] ${chunk.toString()}`);
+            callback();
+          },
+        });
+
         if (!cancelled) {
-          const runtimeStreams = streamBusService.createWritablePair(
-            channel,
-            'runtime'
-          );
-          setJacProject(
-            new Project(fs, projectPath, runtimeStreams.out, logger)
-          );
+          setJacProject(new Project(fs, projectPath, runtimeStream, logger));
           setPkg(pkgJson);
         }
       } catch (error) {
@@ -204,7 +202,6 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     fs,
     projectPath,
     streamBusService,
-    channel,
     fixMissingPackageJson,
     setError,
     initPackageJson,
