@@ -20,6 +20,7 @@ import {
 } from '@/features/shared/components/ui/select';
 import { Plus } from 'lucide-react';
 import { useJacPackages } from '../jac-packages-context';
+import type { RegistryListProject } from '@jaculus/project/registry';
 
 export function JacPackagesAddCard() {
   const {
@@ -47,8 +48,10 @@ export function JacPackagesAddCard() {
           </label>
           <Combobox
             items={availableLibChoices}
-            value={selectedLib ?? ''}
-            onValueChange={value => selectLib(value || null)}
+            onValueChange={value =>
+              selectLib((value as RegistryListProject | null)?.id ?? null)
+            }
+            itemToStringValue={(item: RegistryListProject) => item.id}
             disabled={isInstalling}
             autoHighlight
           >
@@ -60,9 +63,16 @@ export function JacPackagesAddCard() {
             <ComboboxContent>
               <ComboboxEmpty>{m.project_panel_pkg_not_found()}</ComboboxEmpty>
               <ComboboxList>
-                {item => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
+                {(item: RegistryListProject) => (
+                  <ComboboxItem key={item.id} value={item}>
+                    <div className="flex flex-col">
+                      <span className="text-sm">{item.id}</span>
+                      {item.description && (
+                        <span className="text-xs text-muted-foreground">
+                          {item.description}
+                        </span>
+                      )}
+                    </div>
                   </ComboboxItem>
                 )}
               </ComboboxList>

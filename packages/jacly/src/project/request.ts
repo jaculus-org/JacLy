@@ -1,4 +1,4 @@
-import { JaculusRequestError, RequestFunction } from '@jaculus/project/fs';
+import { JaculusRequestError, RequestFunction } from '@jaculus/common';
 
 export const getRequest: RequestFunction = async (
   baseUri: string,

@@ -75,6 +75,9 @@ importers:
       '@cubicap/esptool-js':
         specifier: ^0.3.2
         version: 0.3.2
+      '@jaculus/common':
+        specifier: workspace:*
+        version: link:../common
       '@obsidize/tar-browserify':
         specifier: ^6.3.2
         version: 6.3.2
@@ -441,6 +444,9 @@ importers:
       '@blockly/plugin-cross-tab-copy-paste':
         specifier: ^8.0.6
         version: 8.0.6(blockly@12.3.1)
+      '@jaculus/common':
+        specifier: workspace:*
+        version: link:../../../Jaculus-tools/packages/common
       '@jaculus/device':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/device

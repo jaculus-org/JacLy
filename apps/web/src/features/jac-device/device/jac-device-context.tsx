@@ -4,9 +4,11 @@ import type { JacDevice } from '@jaculus/device';
 import type { Project } from '@jaculus/project';
 import type { PackageJson } from '@jaculus/project/package';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
+import type { Registry } from '@jaculus/project/registry';
 
 export interface JacDeviceState {
   jacProject: Project | null;
+  jacRegistry: Registry | null;
   device: JacDevice | null;
   connectionType: ConnectionType | null;
   outStream?: Writable;

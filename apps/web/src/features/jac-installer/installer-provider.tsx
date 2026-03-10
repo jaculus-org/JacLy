@@ -30,6 +30,7 @@ import {
   type InstallerState,
 } from './installer-context';
 import { ESP32Flasher } from './libs/flasher';
+import { getRequest } from '@jaculus/jacly/project';
 
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;
@@ -119,7 +120,7 @@ export function InstallerProvider({
       setState(prev => ({ ...prev, selectedVariant: variant }));
 
       if (variant) {
-        const versions = await getBoardVersions(variant.id);
+        const versions = await getBoardVersions(getRequest, variant.id);
         versions.sort((a, b) => {
           const aIsNode = a.version.toLowerCase().includes('node');
           const bIsNode = b.version.toLowerCase().includes('node');
@@ -167,7 +168,7 @@ export function InstallerProvider({
     let isMounted = true;
 
     (async () => {
-      const boards = await getBoardsIndex();
+      const boards = await getBoardsIndex(getRequest);
       if (!isMounted) return;
       setState(prev => ({ ...prev, chipList: boards }));
       if (boards.length === 1) {
@@ -185,7 +186,7 @@ export function InstallerProvider({
         if (variants.length === 1) {
           const variantId = variants[0].id;
           (async () => {
-            const versions = await getBoardVersions(variantId);
+            const versions = await getBoardVersions(getRequest, variantId);
             if (!isMounted) return;
             versions.sort((a, b) => {
               const aIsNode = a.version.toLowerCase().includes('node');

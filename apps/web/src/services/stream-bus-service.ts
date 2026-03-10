@@ -72,10 +72,6 @@ export class StreamBusService {
     });
   }
 
-  createOutWritable(channel: string, scope: StreamOutputScope): Writable {
-    return this.createWritable(channel, getStreamType(scope, 'out'));
-  }
-
   createErrWritable(channel: string, scope: StreamOutputScope): Writable {
     return this.createWritable(channel, getStreamType(scope, 'err'));
   }
@@ -83,11 +79,10 @@ export class StreamBusService {
   createWritablePair(
     channel: string,
     scope: StreamOutputScope
-  ): { out: Writable; err: Writable } {
+  ): { out: Writable } {
     const pair = getStreamPair(scope);
     return {
       out: this.createWritable(channel, pair.out),
-      err: this.createWritable(channel, pair.err),
     };
   }
 

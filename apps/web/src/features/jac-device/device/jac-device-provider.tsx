@@ -29,6 +29,7 @@ import {
   type JacDeviceContextValue,
   type JacDeviceState,
 } from './jac-device-context';
+import logger from '../lib/logger';
 
 interface JacDeviceProviderProps {
   children: ReactNode;
@@ -48,6 +49,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   );
 
   const [jacProject, setJacProject] = useState<Project | null>(null);
+  const [jacRegistry, setJacRegistry] = useState<Registry | null>(null);
   const [pkg, setPkg] = useState<PackageJson | null>(null);
 
   const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
@@ -116,10 +118,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
           return;
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
-        const registry = Registry.createWithoutValidation(
-          pkgJson.registry,
-          getRequest
-        );
+        setJacRegistry(new Registry(pkgJson.registry, getRequest, logger));
 
         if (!cancelled) {
           const runtimeStreams = streamBusService.createWritablePair(
@@ -127,13 +126,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
             'runtime'
           );
           setJacProject(
-            new Project(
-              fs,
-              projectPath,
-              runtimeStreams.out,
-              runtimeStreams.err,
-              registry
-            )
+            new Project(fs, projectPath, runtimeStreams.out, logger)
           );
           setPkg(pkgJson);
         }
@@ -153,6 +146,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
           );
           if (!cancelled) {
             setJacProject(null);
+            setJacRegistry(null);
             setPkg(null);
             setError({ reason: 'load-failed', seriousness: 'recoverable' });
           }
@@ -211,6 +205,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const state = useMemo<JacDeviceState>(
     () => ({
       jacProject,
+      jacRegistry,
       device,
       connectionType,
       pkg,
@@ -221,6 +216,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     }),
     [
       jacProject,
+      jacRegistry,
       device,
       connectionType,
       pkg,

@@ -1,11 +1,9 @@
-import { Writable } from 'node:stream';
-import { compileProject as compile } from '@jaculus/project/compiler';
+import { compileProjectPath } from '@jaculus/project/compiler';
+import logger from './logger';
 
 export async function compileProject(
   projectPath: string,
-  fs: typeof import('fs'),
-  outStream: Writable,
-  errStream: Writable
+  fs: typeof import('fs')
 ): Promise<boolean> {
-  return compile(fs, projectPath, outStream, errStream, '/tsLibs');
+  return compileProjectPath(fs, projectPath, logger, false, '/tsLibs');
 }

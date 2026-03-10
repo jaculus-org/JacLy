@@ -55,6 +55,7 @@
     "@blockly/field-colour": "^6.0.10",
     "@blockly/field-slider": "^8.0.8",
     "@blockly/plugin-cross-tab-copy-paste": "^8.0.6",
+    "@jaculus/common": "workspace:*",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
     "@kuband/react-blockly": "^10.0.1",

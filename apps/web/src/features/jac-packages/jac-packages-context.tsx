@@ -2,10 +2,11 @@
 
 import { createContext, useContext } from 'react';
 import type { Dependencies } from '@jaculus/project/package';
+import type { RegistryListProject } from '@jaculus/project/registry';
 
 export interface JacPackagesState {
   installedLibs: Dependencies;
-  availableLibChoices: string[];
+  availableLibChoices: RegistryListProject[];
   availableLibVersions: string[];
   selectedLib: string | null;
   selectedLibVersion: string | null;

@@ -10,15 +10,15 @@ import { Button } from '@/features/shared/components/ui/button';
 import { Input } from '@/features/shared/components/ui/input';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
-import type { FSInterface } from '@jaculus/project/fs';
 import { useEffect, useState } from 'react';
 import { getRequest } from '@jaculus/jacly/project';
 import { enqueueSnackbar } from 'notistack';
 import type { JaculusProjectType } from '@jaculus/project/package';
-import { Registry } from '@jaculus/project/registry';
-import { Project } from '@jaculus/project';
+import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
 import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
 import { Stream } from '@/features/stream';
+import { createFromPackage } from '@jaculus/project/creation';
+import logger from '@/features/jac-device/lib/logger';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -63,8 +63,9 @@ function NewProject() {
     projectOptions[0]
   );
 
-  const [templates, setTemplates] = useState<string[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<RegistryListTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<RegistryListTemplate | null>(null);
   const [registers, setRegisters] = useState<string[]>(defaultRegisters);
 
   const [isCreating, setIsCreating] = useState(false);
@@ -72,7 +73,7 @@ function NewProject() {
   useEffect(() => {
     (async () => {
       try {
-        const registry = await Registry.create(registers, getRequest);
+        const registry = new Registry(registers, getRequest, logger);
         const loadedTemplates = await registry.listTemplates(
           projectOption.type
         );
@@ -106,9 +107,12 @@ function NewProject() {
     streamBusService.clear('global:new-project');
 
     try {
-      const registry = await Registry.create(registers, getRequest);
-      const versions = await registry.listVersions(selectedTemplate);
-      const tgz = await registry.getPackageTgz(selectedTemplate, versions[0]);
+      const registry = new Registry(registers, getRequest, logger);
+      const versions = await registry.listVersions(selectedTemplate.id);
+      const tgz = await registry.getPackageTgz(
+        selectedTemplate.id,
+        versions[0]
+      );
 
       // Load package using unified utility - convert Uint8Array to File
       const file = new File([new Uint8Array(tgz)], 'package.tar.gz', {
@@ -130,13 +134,15 @@ function NewProject() {
         'compiler'
       );
 
-      const project = new Project(
-        fs as unknown as FSInterface,
+      await createFromPackage(
+        fs,
         projectPath,
+        pkg,
         creationStreams.out,
-        creationStreams.err
+        logger,
+        false,
+        false
       );
-      await project.createFromPackage(pkg, false, false);
 
       navigate({
         to: '/project/$projectId',
@@ -166,6 +172,7 @@ function NewProject() {
             value={projectName}
             onChange={e => setProjectName(e.target.value)}
             placeholder={m.project_new_name_placeholder()}
+            autoFocus
           />
         </div>
 
@@ -199,7 +206,7 @@ function NewProject() {
             ) : (
               templates.map(template => (
                 <div
-                  key={template}
+                  key={template.id}
                   onClick={() => setSelectedTemplate(template)}
                   className={`p-3 rounded-md cursor-pointer border transition-colors ${
                     selectedTemplate === template
@@ -207,7 +214,10 @@ function NewProject() {
                       : 'border-transparent hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <span className="font-medium">{template}</span>
+                  <span className="font-medium">{template.id}</span>
+                  <p className="text-sm text-gray-500">
+                    {template.description}
+                  </p>
                 </div>
               ))
             )}

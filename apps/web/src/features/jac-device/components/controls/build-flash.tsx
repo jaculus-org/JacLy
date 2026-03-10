@@ -7,22 +7,22 @@ import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { compileProject } from '@/features/jac-device/lib/compilation';
 import { useJacDevice } from '@/features/jac-device';
-import { useStream } from '@/features/stream';
+// import { useStream } from '@/features/stream';
 import { uploadCode } from '@/features/jac-device/lib/device';
 import { useProjectEditor } from '@/features/project/editor';
-import { Route } from '@/routes/__root';
+// import { Route } from '@/routes/__root';
 
 export function BuildFlash() {
-  const { streamBusService } = Route.useRouteContext();
+  // const { streamBusService } = Route.useRouteContext();
   const {
     state: { projectPath, fs },
   } = useActiveProject();
   const {
     actions: { controlPanel },
   } = useProjectEditor();
-  const {
-    meta: { channel },
-  } = useStream();
+  // const {
+  //   meta: { channel },
+  // } = useStream();
   const { state: jacState } = useJacDevice();
   const { device, jacProject, pkg, connectionStatus } = jacState;
   const [isProcessing, setIsProcessing] = useState(false);
@@ -36,18 +36,11 @@ export function BuildFlash() {
 
     try {
       if (pkg?.jaculus?.projectType == 'code') {
-        const compilerStreams = streamBusService.createWritablePair(
-          channel,
-          'compiler'
-        );
-        if (
-          !(await compileProject(
-            projectPath,
-            fs,
-            compilerStreams.out,
-            compilerStreams.err
-          ))
-        ) {
+        // const compilerStreams = streamBusService.createWritablePair(
+        //   channel,
+        //   'compiler'
+        // );
+        if (!(await compileProject(projectPath, fs))) {
           enqueueSnackbar(m.device_build_compile_failed(), {
             variant: 'error',
           });
@@ -75,8 +68,8 @@ export function BuildFlash() {
     pkg,
     projectPath,
     fs,
-    streamBusService,
-    channel,
+    // streamBusService,
+    // channel,
     jacProject,
     controlPanel,
   ]);

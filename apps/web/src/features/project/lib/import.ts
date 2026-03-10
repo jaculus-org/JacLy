@@ -1,7 +1,4 @@
-import type { FSInterface } from '@jaculus/project/fs';
-import { Writable } from 'node:stream';
 import { unzipSync } from 'fflate';
-import { Project } from '@jaculus/project';
 import {
   detectProjectType,
   detectRootPrefix,
@@ -48,18 +45,4 @@ export function parseZipFile(zipData: Uint8Array): ImportResult {
     package: pkg,
     fileCount: Object.keys(pkg.files).length,
   };
-}
-
-/**
- * Create a project from an import package
- */
-export async function createProjectFromPackage(
-  fs: FSInterface,
-  projectPath: string,
-  pkg: ImportPackage,
-  outStream: Writable,
-  errStream: Writable
-): Promise<void> {
-  const project = new Project(fs, projectPath, outStream, errStream);
-  await project.createFromPackage(pkg, false, false);
 }

@@ -16,14 +16,13 @@ import {
 } from '@/features/shared/components/ui/tabs';
 import { createFileRoute } from '@tanstack/react-router';
 import { UploadIcon, LinkIcon } from 'lucide-react';
-import type { FSInterface } from '@jaculus/project/fs';
 import { useEffect, useRef, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
-import { createProjectFromPackage } from '@/features/project/lib/import';
 import {
   loadPackageFromFile,
   loadPackageFromUri,
 } from '@/features/project/lib/loadPackage';
+import { createFromPackage } from '@jaculus/project/creation';
 
 interface ImportSearchParams {
   url?: string;
@@ -117,12 +116,13 @@ function ImportProject() {
         'compiler'
       );
 
-      await createProjectFromPackage(
-        fs as unknown as FSInterface,
+      await createFromPackage(
+        fs,
         projectPath,
         importResult.package,
         importStreams.out,
-        importStreams.err
+        false,
+        false
       );
 
       enqueueSnackbar(
@@ -158,6 +158,7 @@ function ImportProject() {
             value={projectName}
             onChange={e => setProjectName(e.target.value)}
             placeholder={m.project_new_name_placeholder()}
+            autoFocus
           />
         </div>
 

@@ -17,7 +17,10 @@ import path from 'path';
 import type { Dependencies } from '@jaculus/project/package';
 import { InvalidPackageJsonFormatError } from '@jaculus/project/package';
 import { ProjectDependencyError } from '@jaculus/project';
-import { RegistryFetchError } from '@jaculus/project/registry';
+import {
+  RegistryFetchError,
+  type RegistryListProject,
+} from '@jaculus/project/registry';
 import { JacPackagesContext } from './jac-packages-context';
 
 export function JacPackagesProvider({ children }: { children: ReactNode }) {
@@ -25,7 +28,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   const {
     actions: { controlPanel },
   } = useProjectEditor();
-  const { jacProject } = jacState;
+  const { jacProject, jacRegistry } = jacState;
   const { reloadNodeModules } = jacActions;
   const {
     state: { projectPath, fs },
@@ -53,7 +56,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   }
 
   const [installedLibs, setInstalledLibs] = useState<Dependencies>({});
-  const [availableLibs, setAvailableLibs] = useState<string[]>([]);
+  const [availableLibs, setAvailableLibs] = useState<RegistryListProject[]>([]);
   const [availableLibVersions, setAvailableLibVersions] = useState<string[]>(
     []
   );
@@ -75,7 +78,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   );
 
   const availableLibChoices = useMemo(
-    () => availableLibs.filter(lib => !(lib in installedLibs)),
+    () => availableLibs.filter(lib => !(lib.id in installedLibs)),
     [availableLibs, installedLibs]
   );
 
@@ -88,11 +91,11 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const installAll = useCallback(async () => {
-    if (!jacProject) return;
+    if (!jacProject || !jacRegistry) return;
     try {
       setIsInstalling(true);
       setError(null);
-      setInstalledLibs(await jacProject.install());
+      setInstalledLibs(await jacProject.install(jacRegistry));
       reloadNodeModules();
     } catch (err) {
       setErrorAndLogPanel(
@@ -102,10 +105,10 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsInstalling(false);
     }
-  }, [jacProject, reloadNodeModules, setErrorAndLogPanel]);
+  }, [jacProject, jacRegistry, reloadNodeModules, setErrorAndLogPanel]);
 
   const addLibrary = useCallback(async () => {
-    if (!jacProject) return;
+    if (!jacProject || !jacRegistry) return;
     try {
       setIsInstalling(true);
       setError(null);
@@ -115,7 +118,11 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
       }
       const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
       setInstalledLibs(
-        await jacProject.addLibraryVersion(selectedLib, versionToInstall)
+        await jacProject.addLibraryVersion(
+          jacRegistry,
+          selectedLib,
+          versionToInstall
+        )
       );
       reloadNodeModules();
       enqueueSnackbar(
@@ -135,6 +142,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     }
   }, [
     jacProject,
+    jacRegistry,
     selectedLib,
     selectedLibVersion,
     availableLibVersions,
@@ -144,11 +152,11 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
 
   const removeLibrary = useCallback(
     async (library: string) => {
-      if (!jacProject) return;
+      if (!jacProject || !jacRegistry) return;
       try {
         setIsInstalling(true);
         setError(null);
-        setInstalledLibs(await jacProject.removeLibrary(library));
+        setInstalledLibs(await jacProject.removeLibrary(jacRegistry, library));
         reloadNodeModules();
         enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
           variant: 'success',
@@ -162,15 +170,15 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         setIsInstalling(false);
       }
     },
-    [jacProject, reloadNodeModules, setErrorAndLogPanel]
+    [jacProject, jacRegistry, reloadNodeModules, setErrorAndLogPanel]
   );
 
   useEffect(() => {
     (async () => {
       try {
         setError(null);
-        if (jacProject == null || jacProject.registry == null) return;
-        setAvailableLibs(await jacProject.registry.listPackages());
+        if (jacProject == null || jacRegistry == null) return;
+        setAvailableLibs(await jacRegistry.listPackages());
         setInstalledLibs(await jacProject.installedLibraries());
       } catch (err) {
         setErrorAndLogPanel(
@@ -179,16 +187,16 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         logger.error('Error loading libraries:' + err);
       }
     })();
-  }, [jacProject, setErrorAndLogPanel]);
+  }, [jacProject, jacRegistry, setErrorAndLogPanel]);
 
   useEffect(() => {
     (async () => {
-      if (jacProject == null || jacProject.registry == null) return;
+      if (jacProject == null || jacRegistry == null) return;
       if (!fs.existsSync(path.join(projectPath, 'node_modules'))) {
         try {
           setIsInstalling(true);
           setError(null);
-          setInstalledLibs(await jacProject.install());
+          setInstalledLibs(await jacProject.install(jacRegistry));
           reloadNodeModules();
         } catch (err) {
           setErrorAndLogPanel(
@@ -200,21 +208,24 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         }
       }
     })();
-  }, [fs, jacProject, projectPath, reloadNodeModules, setErrorAndLogPanel]);
+  }, [
+    fs,
+    jacProject,
+    jacRegistry,
+    projectPath,
+    reloadNodeModules,
+    setErrorAndLogPanel,
+  ]);
 
   useEffect(() => {
     (async () => {
       try {
-        if (
-          jacProject == null ||
-          selectedLib == null ||
-          jacProject.registry == null
-        ) {
+        if (jacProject == null || selectedLib == null || jacRegistry == null) {
           setAvailableLibVersions([]);
           return;
         }
         setError(null);
-        const versions = await jacProject.registry.listVersions(selectedLib);
+        const versions = await jacRegistry.listVersions(selectedLib);
         setAvailableLibVersions(versions);
 
         if (versions.length == 1) {
@@ -229,7 +240,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         logger.error('Error loading library versions:' + err);
       }
     })();
-  }, [selectedLib, jacProject, setErrorAndLogPanel]);
+  }, [selectedLib, jacProject, jacRegistry, setErrorAndLogPanel]);
 
   const hasProject = jacProject != null;
 
