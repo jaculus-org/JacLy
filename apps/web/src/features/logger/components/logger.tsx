@@ -1,16 +1,18 @@
 import { m } from '@/paraglide/messages';
 import { useMemo, useState } from 'react';
 import { useLogger } from '../logger-context';
-import { LOG_LEVEL_ORDER, type LogLevel } from '../types';
+import { LOG_LEVEL_ORDER, type LogLevel, type LogOrderType } from '../types';
 import { LoggerToolbar } from './logger-toolbar';
 import { LoggerOutput } from './logger-output';
 
 interface LoggerLogsProps {
+  logOrderType?: LogOrderType;
   defaultLevel?: LogLevel;
   logLevelSelector?: boolean;
 }
 
 export function LoggerLogs({
+  logOrderType = 'upTo',
   defaultLevel = 'info',
   logLevelSelector = true,
 }: LoggerLogsProps) {
@@ -22,10 +24,17 @@ export function LoggerLogs({
 
   const filteredEntries = useMemo(
     () =>
-      state.entries.filter(
-        entry => LOG_LEVEL_ORDER[entry.level] <= LOG_LEVEL_ORDER[selectedLevel]
-      ),
-    [state.entries, selectedLevel]
+      state.entries.filter(entry => {
+        const entryLevelOrder = LOG_LEVEL_ORDER[entry.level];
+        const selectedLevelOrder = LOG_LEVEL_ORDER[selectedLevel];
+
+        if (logOrderType === 'exact') {
+          return entryLevelOrder === selectedLevelOrder;
+        }
+
+        return entryLevelOrder <= selectedLevelOrder;
+      }),
+    [state.entries, selectedLevel, logOrderType]
   );
 
   const handleCopyToClipboard = async () => {

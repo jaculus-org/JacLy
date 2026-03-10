@@ -16,6 +16,8 @@ export const LOG_LEVELS = [
   'silly',
 ] as const;
 
+export type LogOrderType = 'exact' | 'upTo';
+
 export const LOG_LEVEL_ORDER: Record<LogLevel, number> = {
   error: 0,
   warn: 1,

@@ -9,7 +9,11 @@ export function InstallerPanel() {
           <Installer.Layout>
             <Installer.Controls />
             <Installer.Progress />
-            <Logger.Logs defaultLevel="installer" logLevelSelector={false} />
+            <Logger.Logs
+              logOrderType="exact"
+              defaultLevel="installer"
+              logLevelSelector={false}
+            />
             <Installer.Dialog />
           </Installer.Layout>
         </Installer.Provider>
