@@ -1,11 +1,6 @@
-export type LogLevel =
-  | 'error'
-  | 'warn'
-  | 'info'
-  | 'verbose'
-  | 'debug'
-  | 'silly'
-  | 'installer';
+import type { Logger } from '@jaculus/common';
+
+export type LogLevel = keyof Logger | 'installer';
 
 export const LOG_LEVELS = [
   'error',

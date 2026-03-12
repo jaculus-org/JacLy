@@ -46,10 +46,11 @@ const projectOptions: JaculusProjectOptions[] = [
   },
 ];
 
-const defaultRegisters = [
-  'http://127.0.0.1:3737/',
-  'https://registry.jaculus.org/',
-];
+const productionRegisters = ['https://registry.jaculus.org/'];
+
+const defaultRegisters = import.meta.env.DEV
+  ? ['http://127.0.0.1:3737/', ...productionRegisters]
+  : productionRegisters;
 
 function NewProject() {
   const navigate = useNavigate();
@@ -66,6 +67,10 @@ function NewProject() {
   const [registers, setRegisters] = useState<string[]>(defaultRegisters);
 
   const [isCreating, setIsCreating] = useState(false);
+
+  useEffect(() => {
+    logger.clear();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -248,7 +253,11 @@ function NewProject() {
             : m.project_new_btn_create()}
         </Button>
 
-        <Logger.Logs defaultLevel="silly" logLevelSelector={false} />
+        <Logger.Logs
+          defaultLevel="silly"
+          logLevelSelector={false}
+          hideIfEmpty
+        />
       </div>
     </div>
   );

@@ -23,15 +23,10 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import {
-  LOG_LEVELS,
-  LOG_LEVEL_ORDER,
-  type LogLevel,
-  type LoggerEntry,
-} from '../types';
+import { LOG_LEVELS, type LogLevel, type LoggerEntry } from '../types';
 
 interface LoggerToolbarProps {
-  entries: LoggerEntry[];
+  filteredEntries: LoggerEntry[];
   selectedLevel: LogLevel;
   showTimestamp: boolean;
   autoScroll: boolean;
@@ -45,7 +40,7 @@ interface LoggerToolbarProps {
 }
 
 export function LoggerToolbar({
-  entries,
+  filteredEntries,
   selectedLevel,
   showTimestamp,
   autoScroll,
@@ -57,10 +52,6 @@ export function LoggerToolbar({
   onCopy,
   onClear,
 }: LoggerToolbarProps) {
-  const visibleCount = entries.filter(
-    entry => LOG_LEVEL_ORDER[entry.level] <= LOG_LEVEL_ORDER[selectedLevel]
-  ).length;
-
   return (
     <Card className="p-1.5">
       <div className="flex flex-col gap-1.5">
@@ -107,7 +98,7 @@ export function LoggerToolbar({
                 <Button
                   variant={copied ? 'default' : 'outline'}
                   onClick={onCopy}
-                  disabled={entries.length === 0}
+                  disabled={filteredEntries.length === 0}
                 >
                   {copied ? <Check /> : <Copy />}
                 </Button>
@@ -131,7 +122,7 @@ export function LoggerToolbar({
 
           <div className="ml-auto flex items-center gap-1.5">
             <Badge variant="outline" className="text-xs">
-              {visibleCount}
+              {filteredEntries.length}
             </Badge>
             {logLevelSelector && (
               <Select

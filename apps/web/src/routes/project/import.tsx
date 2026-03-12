@@ -21,12 +21,16 @@ import { enqueueSnackbar } from 'notistack';
 import {
   loadPackageFromFile,
   loadPackageFromUri,
+  type PackageLoadResult,
 } from '@/features/project/lib/loadPackage';
 import { createFromPackage } from '@jaculus/project/creation';
 import { logger } from '@/services/logger-service';
+import { generateNanoId } from '@/lib/utils/nanoid';
+import { Logger } from '@/features/logger';
 
 interface ImportSearchParams {
   url?: string;
+  auto?: true;
 }
 
 export const Route = createFileRoute('/project/import')({
@@ -34,6 +38,10 @@ export const Route = createFileRoute('/project/import')({
   validateSearch: (search: Record<string, unknown>): ImportSearchParams => {
     return {
       url: typeof search.url === 'string' ? search.url : undefined,
+      auto:
+        search.auto === 'true' || search.auto === '1' || search.auto === true
+          ? true
+          : undefined,
     };
   },
 });
@@ -42,10 +50,13 @@ function ImportProject() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const initialUrl = search.url ?? '';
+  const auto = search.auto ?? false;
   const { projectManService: runtimeService, projectFsService } =
     Route.useRouteContext();
 
-  const [projectName, setProjectName] = useState('imported-project');
+  const [projectName, setProjectName] = useState(
+    `imported-project-${generateNanoId(5)}`
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [packageUrl, setPackageUrl] = useState(initialUrl);
   const [activeTab, setActiveTab] = useState<'file' | 'url'>(
@@ -53,9 +64,13 @@ function ImportProject() {
   );
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const autoImportTriggered = useRef(false);
 
   useEffect(() => {
-    if (activeTab !== 'url') return;
+    logger.clear();
+  }, []);
+
+  useEffect(() => {
     const current = search.url ?? '';
     if (packageUrl === current) return;
     const timer = setTimeout(() => {
@@ -83,7 +98,7 @@ function ImportProject() {
     setIsImporting(true);
 
     try {
-      let importResult;
+      let importResult: PackageLoadResult;
 
       if (activeTab === 'file') {
         if (!selectedFile) {
@@ -124,7 +139,7 @@ function ImportProject() {
         { variant: 'success' }
       );
 
-      navigate({
+      await navigate({
         to: '/project/$projectId',
         params: { projectId: newProject.id },
       });
@@ -134,6 +149,15 @@ function ImportProject() {
       setIsImporting(false);
     }
   }
+
+  // Auto-import when `auto=true` is present in the URL alongside a `url` param
+  useEffect(() => {
+    if (auto && packageUrl && !autoImportTriggered.current) {
+      autoImportTriggered.current = true;
+      void handleImport();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
@@ -247,6 +271,12 @@ function ImportProject() {
             ? m.project_import_btn_importing()
             : m.project_import_btn_import()}
         </Button>
+
+        <Logger.Logs
+          defaultLevel="silly"
+          logLevelSelector={false}
+          hideIfEmpty
+        />
       </div>
     </div>
   );

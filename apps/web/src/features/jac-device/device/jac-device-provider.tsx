@@ -156,8 +156,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         setJacRegistry(new Registry(pkgJson.registry, getRequest, logger));
 
         if (!cancelled) {
-          const out = logger.createWritable('verbose');
-          setJacProject(new Project(fs, projectPath, out, logger));
+          setJacProject(new Project(fs, projectPath, logger));
           setPkg(pkgJson);
         }
       } catch (error) {

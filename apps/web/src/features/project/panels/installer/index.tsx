@@ -13,6 +13,7 @@ export function InstallerPanel() {
               logOrderType="exact"
               defaultLevel="installer"
               logLevelSelector={false}
+              hideIfEmpty
             />
             <Installer.Dialog />
           </Installer.Layout>

@@ -25,7 +25,7 @@ export function Console({
     state: { device },
   } = useJacDevice();
   const [input, setInput] = useState('');
-  const [showTimestamp, setShowTimestamp] = useState(true);
+  const [showTimestamp, setShowTimestamp] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
   const [copied, setCopied] = useState(false);
   const [isToolbarCollapsed, setIsToolbarCollapsed] =

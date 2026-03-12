@@ -209,14 +209,7 @@ class JaclyEditorProvider
       return { blockFiles: {}, translations: {} };
     }
 
-    const err = new Writable({
-      write(chunk, _enc, cb) {
-        console.error(String(chunk));
-        cb();
-      },
-    });
-
-    const project = new Project(fs, projectPath, err, logger);
+    const project = new Project(fs, projectPath, logger);
     return project.getJaclyData('en');
   }
 

@@ -25,6 +25,7 @@ function RouteComponent() {
               logOrderType="exact"
               defaultLevel="installer"
               logLevelSelector={false}
+              hideIfEmpty
             />
             <Installer.Dialog />
           </Installer.Layout>

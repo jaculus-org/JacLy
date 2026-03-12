@@ -9,15 +9,17 @@ interface LoggerLogsProps {
   logOrderType?: LogOrderType;
   defaultLevel?: LogLevel;
   logLevelSelector?: boolean;
+  hideIfEmpty?: boolean;
 }
 
 export function LoggerLogs({
   logOrderType = 'upTo',
   defaultLevel = 'info',
   logLevelSelector = true,
+  hideIfEmpty = false,
 }: LoggerLogsProps) {
   const { state, actions } = useLogger();
-  const [showTimestamp, setShowTimestamp] = useState(true);
+  const [showTimestamp, setShowTimestamp] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
   const [copied, setCopied] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<LogLevel>(defaultLevel);
@@ -56,10 +58,14 @@ export function LoggerLogs({
     }
   };
 
+  if (hideIfEmpty && filteredEntries.length === 0) {
+    return null;
+  }
+
   return (
     <div className="flex h-full flex-col gap-1.5 p-1.5">
       <LoggerToolbar
-        entries={state.entries}
+        filteredEntries={filteredEntries}
         selectedLevel={selectedLevel}
         showTimestamp={showTimestamp}
         autoScroll={autoScroll}
