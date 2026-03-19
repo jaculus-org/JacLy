@@ -19,17 +19,21 @@ import { UploadIcon, LinkIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import {
-  loadPackageFromFile,
+  loadPackageFromBytes,
   loadPackageFromUri,
   type PackageLoadResult,
-} from '@/features/project/lib/loadPackage';
+} from '@jaculus/project/import';
+import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
+import { decodeBase64Url } from '@jaculus/project/import';
 import { createFromPackage } from '@jaculus/project/creation';
 import { logger } from '@/services/logger-service';
 import { generateNanoId } from '@/lib/utils/nanoid';
 import { Logger } from '@/features/logger';
+import { getRequest } from '@jaculus/jacly/project';
 
 interface ImportSearchParams {
   url?: string;
+  data?: string;
   auto?: true;
 }
 
@@ -38,6 +42,7 @@ export const Route = createFileRoute('/project/import')({
   validateSearch: (search: Record<string, unknown>): ImportSearchParams => {
     return {
       url: typeof search.url === 'string' ? search.url : undefined,
+      data: typeof search.data === 'string' ? search.data : undefined,
       auto:
         search.auto === 'true' || search.auto === '1' || search.auto === true
           ? true
@@ -50,6 +55,7 @@ function ImportProject() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const initialUrl = search.url ?? '';
+  const inlineData = search.data;
   const auto = search.auto ?? false;
   const { projectManService: runtimeService, projectFsService } =
     Route.useRouteContext();
@@ -100,7 +106,11 @@ function ImportProject() {
     try {
       let importResult: PackageLoadResult;
 
-      if (activeTab === 'file') {
+      if (inlineData) {
+        // Inline base64url-encoded archive from the `data` search param
+        const bytes = decodeBase64Url(inlineData);
+        importResult = await loadPackageFromBytes(bytes);
+      } else if (activeTab === 'file') {
         if (!selectedFile) {
           enqueueSnackbar(m.project_import_invalid_file(), {
             variant: 'error',
@@ -115,7 +125,7 @@ function ImportProject() {
           setIsImporting(false);
           return;
         }
-        importResult = await loadPackageFromUri(packageUrl);
+        importResult = await loadPackageFromUri(getRequest, packageUrl);
       }
 
       const newProject = await runtimeService.createProject(
@@ -152,7 +162,7 @@ function ImportProject() {
 
   // Auto-import when `auto=true` is present in the URL alongside a `url` param
   useEffect(() => {
-    if (auto && packageUrl && !autoImportTriggered.current) {
+    if (auto && (packageUrl || inlineData) && !autoImportTriggered.current) {
       autoImportTriggered.current = true;
       void handleImport();
     }

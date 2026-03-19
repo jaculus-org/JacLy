@@ -110,14 +110,6 @@ export function InstallerProvider({
 
       if (variant) {
         const versions = await getBoardVersions(getRequest, variant.id, logger);
-        versions.sort((a, b) => {
-          const aIsNode = a.version.toLowerCase().includes('node');
-          const bIsNode = b.version.toLowerCase().includes('node');
-          if (aIsNode && !bIsNode) return -1;
-          if (!aIsNode && bIsNode) return 1;
-          return 0;
-        });
-
         setState(prev => ({
           ...prev,
           versionList: versions,
@@ -181,13 +173,6 @@ export function InstallerProvider({
               logger
             );
             if (!isMounted) return;
-            versions.sort((a, b) => {
-              const aIsNode = a.version.toLowerCase().includes('node');
-              const bIsNode = b.version.toLowerCase().includes('node');
-              if (aIsNode && !bIsNode) return -1;
-              if (!aIsNode && bIsNode) return 1;
-              return 0;
-            });
             setState(prev => ({
               ...prev,
               selectedVariant: variants[0],

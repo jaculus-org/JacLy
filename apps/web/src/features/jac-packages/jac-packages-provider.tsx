@@ -179,7 +179,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         setError(null);
         if (jacProject == null || jacRegistry == null) return;
         setAvailableLibs(await jacRegistry.listPackages());
-        setInstalledLibs(await jacProject.installedLibraries());
+        setInstalledLibs(await jacProject.listDependencies());
       } catch (err) {
         setErrorAndLogPanel(
           classifyError(err, m.project_panel_pkg_load_error())

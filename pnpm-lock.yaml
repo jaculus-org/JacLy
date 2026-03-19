@@ -134,6 +134,9 @@ importers:
       '@jaculus/common':
         specifier: workspace:*
         version: link:../common
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       pako:
         specifier: ^2.1.0
         version: 2.1.0
@@ -183,6 +186,9 @@ importers:
       chalk:
         specifier: ^5.4.1
         version: 5.5.0
+      cli-progress:
+        specifier: ^3.12.0
+        version: 3.12.0
       get-uri:
         specifier: ^6.0.4
         version: 6.0.5
@@ -196,6 +202,9 @@ importers:
         specifier: ^3.17.0
         version: 3.17.0
     devDependencies:
+      '@types/cli-progress':
+        specifier: ^3.11.6
+        version: 3.11.6
       '@types/node':
         specifier: ^24.0.7
         version: 24.3.1

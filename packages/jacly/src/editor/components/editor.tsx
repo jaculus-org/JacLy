@@ -78,6 +78,10 @@ export function JaclyEditor({
     () => (messagesLoaded ? loadToolboxConfiguration(jaclyBlocksData) : null),
     [jaclyBlocksData, messagesLoaded]
   );
+  const blocksKey = useMemo(
+    () => JSON.stringify(jaclyBlocksData),
+    [jaclyBlocksData]
+  );
 
   const handleWorkspaceChange = useCallback(
     (workspace: WorkspaceSvgExtended) => {
@@ -101,7 +105,7 @@ export function JaclyEditor({
 
   return (
     <BlocklyWorkspace
-      key={theme}
+      key={`${theme}-${blocksKey}`}
       toolboxConfiguration={toolboxConfiguration}
       workspaceConfiguration={{
         theme: getBlocklyTheme(theme),

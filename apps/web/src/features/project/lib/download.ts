@@ -1,61 +1,34 @@
-import { m } from '@/paraglide/messages';
+// Browser-only download wrappers — trigger file download via DOM.
+// Archive packing logic is in @jaculus/project/export.
+
 import type { FSInterface } from '@jaculus/project/fs';
-import { zipSync } from 'fflate';
-import { enqueueSnackbar } from 'notistack';
+import { encodeBase64Url } from '@jaculus/project/export';
 
-/**
- * Recursively collect all files from a directory
- */
-async function collectFiles(
-  fs: FSInterface,
-  dirPath: string,
-  basePath: string = ''
-): Promise<Record<string, Uint8Array>> {
-  const files: Record<string, Uint8Array> = {};
-  const items = await fs.promises.readdir(dirPath, { withFileTypes: true });
+export {
+  packProjectAsTarGz,
+  packProjectAsZip,
+  collectFiles,
+} from '@jaculus/project/export';
+import { packProjectAsTarGz, packProjectAsZip } from '@jaculus/project/export';
 
-  for (const item of items) {
-    const fullPath = `${dirPath}/${item.name}`;
-    const relativePath = basePath ? `${basePath}/${item.name}` : item.name;
-
-    if (item.isDirectory()) {
-      // Recursively collect files from subdirectory
-      const subFiles = await collectFiles(fs, fullPath, relativePath);
-      Object.assign(files, subFiles);
-    } else if (item.isFile()) {
-      // Read file content
-      const content = await fs.promises.readFile(fullPath);
-      files[relativePath] =
-        content instanceof Uint8Array ? content : new Uint8Array(content);
-    }
-  }
-
-  return files;
+// Build a shareable JacLy import URL with the archive data embedded inline.
+export function buildPackageImportUrl(
+  archiveBytes: Uint8Array,
+  baseUrl: string = window.location.origin
+): string {
+  const encoded = encodeBase64Url(archiveBytes);
+  return `${baseUrl}/project/import?data=${encoded}&auto=true`;
 }
 
-/**
- * Download a project as a ZIP file
- */
+// Download a project as a ZIP file (browser-only).
 export async function downloadProjectAsZip(
   fs: FSInterface,
   projectPath: string,
   projectName: string
 ): Promise<void> {
   try {
-    // Collect all files from the project directory
-    const files = await collectFiles(fs, projectPath);
+    const zipData = await packProjectAsZip(fs, projectPath);
 
-    if (Object.keys(files).length === 0) {
-      console.warn('No files found in project');
-      enqueueSnackbar(m.project_download_no_files(), {
-        variant: 'warning',
-      });
-    }
-
-    // Create ZIP using fflate
-    const zipData = zipSync(files, { level: 6 });
-
-    // Trigger download
     const blob = new Blob([new Uint8Array(zipData)], {
       type: 'application/zip',
     });
@@ -68,11 +41,37 @@ export async function downloadProjectAsZip(
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    console.log(
-      `Downloaded ${Object.keys(files).length} files as ${projectName}.zip`
-    );
+    console.log(`Downloaded project as ${projectName}.zip`);
   } catch (error) {
     console.error('Failed to download project as ZIP:', error);
+    throw error;
+  }
+}
+
+// Download a project as a .tar.gz file (browser-only).
+export async function downloadProjectAsTarGz(
+  fs: FSInterface,
+  projectPath: string,
+  projectName: string
+): Promise<void> {
+  try {
+    const gzData = await packProjectAsTarGz(fs, projectPath);
+
+    const blob = new Blob([new Uint8Array(gzData)], {
+      type: 'application/gzip',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${projectName}.tar.gz`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log(`Downloaded project as ${projectName}.tar.gz`);
+  } catch (error) {
+    console.error('Failed to download project as TAR.GZ:', error);
     throw error;
   }
 }

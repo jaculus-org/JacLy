@@ -1,5 +1,11 @@
 import { m } from '@/paraglide/messages';
-import { downloadProjectAsZip } from '@/features/project/lib/download';
+import {
+  downloadProjectAsZip,
+  downloadProjectAsTarGz,
+  buildPackageImportUrl,
+} from '@/features/project/lib/download';
+import { packProjectAsTarGz } from '@jaculus/project/export';
+import { enqueueSnackbar } from 'notistack';
 import { Button } from '@/features/shared/components/ui/button';
 import {
   Card,
@@ -19,6 +25,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/features/shared/components/ui/dropdown-menu';
 import { Input } from '@/features/shared/components/ui/input';
@@ -27,11 +36,14 @@ import path from 'path';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
+  Archive,
   Blocks,
   Code,
   Download,
+  Link2,
   MoreVertical,
   Pencil,
+  Share2,
   Trash,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -205,24 +217,92 @@ function EditorList() {
                               <Pencil className="w-4 h-4 mr-2" />
                               {m.project_rename()}
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={async e => {
-                                e.stopPropagation();
-                                await projectFsService.withMount(
-                                  project.id,
-                                  async ({ fs, projectPath }) => {
-                                    await downloadProjectAsZip(
-                                      fs as unknown as FSInterface,
-                                      projectPath,
-                                      project.name
+                            <DropdownMenuSub>
+                              <DropdownMenuSubTrigger
+                                onClick={e => e.stopPropagation()}
+                              >
+                                <Share2 className="w-4 h-4 mr-2" />
+                                Export
+                              </DropdownMenuSubTrigger>
+                              <DropdownMenuSubContent>
+                                <DropdownMenuItem
+                                  onClick={async e => {
+                                    e.stopPropagation();
+                                    await projectFsService.withMount(
+                                      project.id,
+                                      async ({ fs, projectPath }) => {
+                                        await downloadProjectAsZip(
+                                          fs as unknown as FSInterface,
+                                          projectPath,
+                                          project.name
+                                        );
+                                      }
                                     );
-                                  }
-                                );
-                              }}
-                            >
-                              <Download className="w-4 h-4 mr-2" />
-                              {m.project_download_zip()}
-                            </DropdownMenuItem>
+                                  }}
+                                >
+                                  <Download className="w-4 h-4 mr-2" />
+                                  {m.project_download_zip()}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={async e => {
+                                    e.stopPropagation();
+                                    await projectFsService.withMount(
+                                      project.id,
+                                      async ({ fs, projectPath }) => {
+                                        await downloadProjectAsTarGz(
+                                          fs as unknown as FSInterface,
+                                          projectPath,
+                                          project.name
+                                        );
+                                      }
+                                    );
+                                  }}
+                                >
+                                  <Archive className="w-4 h-4 mr-2" />
+                                  Download .tar.gz
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={async e => {
+                                    e.stopPropagation();
+                                    try {
+                                      await projectFsService.withMount(
+                                        project.id,
+                                        async ({ fs, projectPath }) => {
+                                          const gzBytes =
+                                            await packProjectAsTarGz(
+                                              fs as unknown as FSInterface,
+                                              projectPath,
+                                              ['build', 'node_modules']
+                                            );
+                                          const url = buildPackageImportUrl(
+                                            new Uint8Array(gzBytes)
+                                          );
+                                          await navigator.clipboard.writeText(
+                                            url
+                                          );
+                                          enqueueSnackbar(
+                                            'Import URL copied to clipboard',
+                                            { variant: 'success' }
+                                          );
+                                        }
+                                      );
+                                    } catch (err) {
+                                      console.error(
+                                        'Failed to copy project URL:',
+                                        err
+                                      );
+                                      enqueueSnackbar(
+                                        'Failed to copy project URL',
+                                        { variant: 'error' }
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <Link2 className="w-4 h-4 mr-2" />
+                                  Copy import URL
+                                </DropdownMenuItem>
+                              </DropdownMenuSubContent>
+                            </DropdownMenuSub>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
