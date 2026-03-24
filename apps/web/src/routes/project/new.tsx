@@ -10,7 +10,7 @@ import { Button } from '@/features/shared/components/ui/button';
 import { Input } from '@/features/shared/components/ui/input';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getRequest } from '@jaculus/jacly/project';
 import { enqueueSnackbar } from 'notistack';
 import type { JaculusProjectType } from '@jaculus/project/package';
@@ -31,21 +31,6 @@ interface JaculusProjectOptions {
   icon?: React.ReactNode;
 }
 
-const projectOptions: JaculusProjectOptions[] = [
-  {
-    type: 'jacly',
-    title: m.project_new_blocks_title(),
-    description: m.project_new_blocks_desc(),
-    icon: <BlocksIcon />,
-  },
-  {
-    type: 'code',
-    title: m.project_new_code_title(),
-    description: m.project_new_code_desc(),
-    icon: <Code2Icon />,
-  },
-];
-
 const productionRegisters = ['https://registry.jaculus.org/'];
 
 const defaultRegisters = import.meta.env.DEV
@@ -56,10 +41,25 @@ function NewProject() {
   const navigate = useNavigate();
   const { projectManService: runtimeService, projectFsService } =
     Route.useRouteContext();
-  const [projectName, setProjectName] = useState('');
-  const [projectOption, setProjectOption] = useState<JaculusProjectOptions>(
-    projectOptions[0]
+  const projectOptions = useMemo<JaculusProjectOptions[]>(
+    () => [
+      {
+        type: 'jacly',
+        title: m.project_new_blocks_title(),
+        description: m.project_new_blocks_desc(),
+        icon: <BlocksIcon />,
+      },
+      {
+        type: 'code',
+        title: m.project_new_code_title(),
+        description: m.project_new_code_desc(),
+        icon: <Code2Icon />,
+      },
+    ],
+    []
   );
+  const [projectName, setProjectName] = useState('');
+  const [projectType, setProjectType] = useState<JaculusProjectType>('jacly');
 
   const [templates, setTemplates] = useState<RegistryListTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] =
@@ -76,9 +76,7 @@ function NewProject() {
     (async () => {
       try {
         const registry = new Registry(registers, getRequest, logger);
-        const loadedTemplates = await registry.listTemplates(
-          projectOption.type
-        );
+        const loadedTemplates = await registry.listTemplates(projectType);
         setTemplates(loadedTemplates);
         if (loadedTemplates.length > 0) {
           setSelectedTemplate(loadedTemplates[0]);
@@ -92,7 +90,7 @@ function NewProject() {
         });
       }
     })();
-  }, [registers, projectOption]);
+  }, [projectType, registers]);
 
   async function handleProjectCreation() {
     if (!selectedTemplate) {
@@ -125,7 +123,7 @@ function NewProject() {
       // Create the project in the database
       const newProject = await runtimeService.createProject(
         projectName,
-        projectOption.type
+        projectType
       );
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
@@ -174,8 +172,8 @@ function NewProject() {
                 key={type.type}
                 title={type.title}
                 description={type.description}
-                isSelected={projectOption?.type === type.type}
-                onSelect={() => setProjectOption(type)}
+                isSelected={projectType === type.type}
+                onSelect={() => setProjectType(type.type)}
                 icon={type.icon}
               />
             ))}

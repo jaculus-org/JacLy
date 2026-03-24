@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   pages: write
@@ -19,16 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout Jaculus-tools
-        run: git clone https://github.com/jaculus-org/Jaculus-tools.git --branch feat/lib ../Jaculus-tools
+        run: git clone https://github.com/jaculus-org/Jaculus-tools.git --branch fix-lib-build ../Jaculus-tools
 
       # - name: Checkout wokwi-cli
       #   run: git clone https://github.com/JakubAndrysek/wokwi-cli.git --branch monorepo-separation ../wokwi-cli
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v5
         with:
           version: latest
 
@@ -39,7 +42,7 @@ jobs:
       #   run: cd ../wokwi-cli && pnpm install --frozen-lockfile && pnpm -r build
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24.x
           cache: pnpm
@@ -66,6 +69,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist
+          retention-days: 90
 
   deploy:
     needs: build

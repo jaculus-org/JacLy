@@ -5,5 +5,5 @@ export async function compileProject(
   projectPath: string,
   fs: typeof import('fs')
 ): Promise<boolean> {
-  return compileProjectPath(fs, projectPath, logger, false, '/tsLibs');
+  return compileProjectPath(fs, projectPath, logger, false, true, '/tsLibs');
 }
