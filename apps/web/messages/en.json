@@ -328,7 +328,6 @@
   "chart_panel_select_all": "All",
   "chart_panel_clear_selection": "None",
   "chart_panel_clear_console": "Clear",
-  "chart_panel_series": "Series",
   "chart_panel_empty": "No telemetry values found in the console stream yet.",
   "chart_panel_empty_selection": "Select at least one series to draw the chart.",
   "locale_selector_label": "Select language",

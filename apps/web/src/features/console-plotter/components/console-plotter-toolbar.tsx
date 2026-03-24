@@ -1,4 +1,3 @@
-import { Badge } from '@/features/shared/components/ui/badge';
 import { Button } from '@/features/shared/components/ui/button';
 import { Card } from '@/features/shared/components/ui/card';
 import { m } from '@/paraglide/messages';
@@ -62,15 +61,6 @@ export const ConsolePlotterToolbar = memo(function ConsolePlotterToolbar() {
           <Trash2 />
           {m.chart_panel_clear_console()}
         </Button>
-      </div>
-
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">
-          {m.chart_panel_series()}
-        </span>
-        <Badge variant="outline" className="text-xs">
-          {state.selectedKeys.length}/{state.availableKeys.length}
-        </Badge>
       </div>
 
       <div className="flex flex-wrap gap-1">

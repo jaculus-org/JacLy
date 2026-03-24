@@ -327,7 +327,6 @@
   "chart_panel_select_all": "Vše",
   "chart_panel_clear_selection": "Nic",
   "chart_panel_clear_console": "Vymazat",
-  "chart_panel_series": "Řady",
   "chart_panel_empty": "Ve výstupu konzole zatím nejsou žádná telemetrická data.",
   "chart_panel_empty_selection": "Vyberte alespoň jednu řadu pro vykreslení grafu.",
   "locale_selector_label": "Vyberte jazyk",
