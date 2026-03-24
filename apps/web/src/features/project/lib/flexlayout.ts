@@ -259,7 +259,9 @@ export function controlPanel(
   action: PanelAction
 ) {
   const node =
-    type === 'error' ? model.getNodeById('error-panel') : model.getNodeById(type);
+    type === 'error'
+      ? model.getNodeById('error-panel')
+      : model.getNodeById(type);
   if (!node) {
     if (type === 'error' && action === 'close') {
       return;

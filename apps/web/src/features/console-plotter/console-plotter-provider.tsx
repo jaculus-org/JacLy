@@ -1,3 +1,8 @@
+import {
+  cloneHistoryMap,
+  type KeyValueHistoryMap,
+  type KeyValueMap,
+} from '@/features/keyValue';
 import { useConsole } from '@/features/console';
 import {
   useCallback,
@@ -12,18 +17,10 @@ import {
   type ConsolePlotterContextValue,
 } from './console-plotter-context';
 
-function cloneHistory(
-  history: Record<string, Array<{ timestamp: number; value: number }>>
-) {
-  return Object.fromEntries(
-    Object.entries(history).map(([key, points]) => [key, [...points]])
-  );
-}
-
 interface PausedSnapshot {
   availableKeys: string[];
-  history: Record<string, Array<{ timestamp: number; value: number }>>;
-  latestEntries: Record<string, { timestamp: number; value: number }>;
+  history: KeyValueHistoryMap;
+  latestEntries: KeyValueMap;
 }
 
 export interface ConsolePlotterProviderProps {
@@ -116,7 +113,7 @@ export function ConsolePlotterProvider({
 
     setPausedSnapshot({
       availableKeys: liveAvailableKeys,
-      history: cloneHistory(consoleState.keyValueHistory),
+      history: cloneHistoryMap(consoleState.keyValueHistory),
       latestEntries: { ...consoleState.keyValueEntries },
     });
     setPaused(true);

@@ -34,9 +34,24 @@ export class ConsoleTelemetryService {
     }
   }
 
-  extractTelemetry(entries: ConsoleEntry[]): ConsoleTelemetrySnapshot {
-    const latestEntries: KeyValueMap = {};
-    const historyEntries: KeyValueHistoryMap = {};
+  createSnapshot(): ConsoleTelemetrySnapshot {
+    return {
+      historyEntries: {},
+      latestEntries: {},
+    };
+  }
+
+  appendTelemetry(
+    snapshot: ConsoleTelemetrySnapshot,
+    entries: ConsoleEntry[]
+  ): ConsoleTelemetrySnapshot {
+    if (entries.length === 0) {
+      return snapshot;
+    }
+
+    const latestEntries: KeyValueMap = { ...snapshot.latestEntries };
+    const historyEntries: KeyValueHistoryMap = { ...snapshot.historyEntries };
+    const mutableHistories = new Map<string, ParsedValue[]>();
 
     for (const entry of entries) {
       if (entry.type !== 'out' && entry.type !== 'err') {
@@ -53,11 +68,16 @@ export class ConsoleTelemetryService {
         };
 
         latestEntries[key] = normalizedValue;
-        const history = historyEntries[key] ?? [];
+
+        let history = mutableHistories.get(key);
+        if (!history) {
+          history = [...(historyEntries[key] ?? [])];
+          mutableHistories.set(key, history);
+          historyEntries[key] = history;
+        }
+
         history.push(normalizedValue);
         this.trimHistory(history, timestamp);
-
-        historyEntries[key] = history;
       }
     }
 
@@ -65,6 +85,10 @@ export class ConsoleTelemetryService {
       historyEntries,
       latestEntries,
     };
+  }
+
+  extractTelemetry(entries: ConsoleEntry[]): ConsoleTelemetrySnapshot {
+    return this.appendTelemetry(this.createSnapshot(), entries);
   }
 
   extractKeyValuePairs(entries: ConsoleEntry[]): KeyValueMap {

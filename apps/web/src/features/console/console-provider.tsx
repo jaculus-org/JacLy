@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -16,6 +17,29 @@ import { ConsoleContext, type ConsoleContextValue } from './console-context';
 import { ConsoleTelemetryService } from './services/console-telemetry-service';
 
 const defaultTelemetryService = new ConsoleTelemetryService();
+
+function isAppendOnlyUpdate(
+  previousEntries: ConsoleEntry[],
+  nextEntries: ConsoleEntry[]
+): boolean {
+  if (nextEntries.length < previousEntries.length) {
+    return false;
+  }
+
+  if (nextEntries.length === previousEntries.length) {
+    return false;
+  }
+
+  if (previousEntries.length === 0) {
+    return true;
+  }
+
+  return (
+    nextEntries[0] === previousEntries[0] &&
+    nextEntries[previousEntries.length - 1] ===
+      previousEntries[previousEntries.length - 1]
+  );
+}
 
 export interface ConsoleProviderProps {
   channel: string;
@@ -35,10 +59,24 @@ export function ConsoleProvider({
   const [keyValueHistory, setKeyValueHistory] = useState<KeyValueHistoryMap>(
     {}
   );
+  const previousEntriesRef = useRef<ConsoleEntry[]>([]);
+  const telemetryRef = useRef(telemetryService.createSnapshot());
 
   useEffect(() => {
     return streamBusService.subscribe(channel, channelEntries => {
-      const telemetry = telemetryService.extractTelemetry(channelEntries);
+      const previousEntries = previousEntriesRef.current;
+      const telemetry =
+        channelEntries.length === 0
+          ? telemetryService.createSnapshot()
+          : isAppendOnlyUpdate(previousEntries, channelEntries)
+            ? telemetryService.appendTelemetry(
+                telemetryRef.current,
+                channelEntries.slice(previousEntries.length)
+              )
+            : telemetryService.extractTelemetry(channelEntries);
+
+      previousEntriesRef.current = channelEntries;
+      telemetryRef.current = telemetry;
       setEntries(channelEntries);
       setKeyValueEntries(telemetry.latestEntries);
       setKeyValueHistory(telemetry.historyEntries);

@@ -1,5 +1,10 @@
 import { Card } from '@/features/shared/components/ui/card';
 import { useJacDevice } from '@/features/jac-device';
+import {
+  cloneHistoryMap,
+  type KeyValueHistoryMap,
+  type ParsedValue,
+} from '@/features/keyValue';
 import { m } from '@/paraglide/messages';
 import 'chartjs-adapter-luxon';
 import {
@@ -16,7 +21,10 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { RealTimeScale, StreamingPlugin } from '@aziham/chartjs-plugin-streaming';
+import {
+  RealTimeScale,
+  StreamingPlugin,
+} from '@aziham/chartjs-plugin-streaming';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useConsolePlotter } from '../console-plotter-context';
@@ -44,24 +52,23 @@ const DATASET_COLORS = [
   '#db2777',
 ];
 const STREAMING_DELAY_MS = 100;
+type PlotterChart = Chart<'line', (number | Point | null)[], unknown>;
+type PlotterDataset = ChartDataset<'line', { x: number; y: number }[]>;
+
+interface PausedChartSnapshot {
+  history: KeyValueHistoryMap;
+  pausedAt: number | null;
+}
 
 function toFillColor(color: string): string {
   return `${color}22`;
 }
 
-function cloneHistory(
-  history: Record<string, Array<{ timestamp: number; value: number }>>
-) {
-  return Object.fromEntries(
-    Object.entries(history).map(([key, points]) => [key, [...points]])
-  );
-}
-
 function createDataset(
   key: string,
   color: string,
-  points: Array<{ timestamp: number; value: number }>
-): ChartDataset<'line', { x: number; y: number }[]> {
+  points: ParsedValue[]
+): PlotterDataset {
   return {
     label: key,
     data: points.map(point => ({
@@ -78,23 +85,67 @@ function createDataset(
   };
 }
 
+function getChartWindow(
+  durationMs: number,
+  pausedAt: number | null,
+  isPaused: boolean
+) {
+  const end =
+    (isPaused ? (pausedAt ?? Date.now()) : Date.now()) - STREAMING_DELAY_MS;
+  return {
+    end,
+    start: end - durationMs,
+  };
+}
+
+function getVisiblePoints(
+  history: KeyValueHistoryMap,
+  key: string,
+  durationMs: number,
+  pausedAt: number | null,
+  isPaused: boolean
+) {
+  const chartWindow = getChartWindow(durationMs, pausedAt, isPaused);
+  return (history[key] ?? []).filter(
+    point =>
+      point.timestamp >= chartWindow.start && point.timestamp <= chartWindow.end
+  );
+}
+
+function syncDatasets(
+  chart: PlotterChart,
+  history: KeyValueHistoryMap,
+  selectedKeys: string[],
+  durationMs: number,
+  pausedAt: number | null,
+  isPaused: boolean
+) {
+  chart.data.datasets = selectedKeys.map((key, index) =>
+    createDataset(
+      key,
+      DATASET_COLORS[index % DATASET_COLORS.length],
+      getVisiblePoints(history, key, durationMs, pausedAt, isPaused)
+    )
+  );
+}
+
 export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
   const { state, meta } = useConsolePlotter();
   const {
     state: { connectionStatus },
   } = useJacDevice();
-  const chartRef = useRef<
-    Chart<'line', (number | Point | null)[], unknown> | undefined
-  >(undefined);
+  const chartRef = useRef<PlotterChart | undefined>(undefined);
   const historyRef = useRef(state.history);
   const selectedKeysRef = useRef(state.selectedKeys);
   const lastRenderedTimestampsRef = useRef<Record<string, number>>({});
   const pausedSelectionSignatureRef = useRef<string | null>(null);
   const isChartPaused = state.paused || connectionStatus !== 'connected';
-  const [pausedSnapshot, setPausedSnapshot] = useState(() => ({
-    history: cloneHistory(state.history),
-    pausedAt: null as number | null,
-  }));
+  const [pausedSnapshot, setPausedSnapshot] = useState<PausedChartSnapshot>(
+    () => ({
+      history: cloneHistoryMap(state.history),
+      pausedAt: null as number | null,
+    })
+  );
   const data = useMemo<ChartData<'line'>>(
     () => ({
       datasets: [],
@@ -109,7 +160,7 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
   useEffect(() => {
     if (isChartPaused) {
       setPausedSnapshot({
-        history: cloneHistory(historyRef.current),
+        history: cloneHistoryMap(historyRef.current),
         pausedAt: Date.now(),
       });
       pausedSelectionSignatureRef.current = null;
@@ -126,40 +177,36 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
     selectedKeysRef.current = state.selectedKeys;
   }, [state.selectedKeys]);
 
-  const refreshChart = useCallback(
-    (chart: Chart<'line', (number | Point | null)[], unknown>) => {
-      for (const dataset of chart.data.datasets) {
-        const key = String(dataset.label ?? '');
-        if (!selectedKeysRef.current.includes(key)) {
-          continue;
-        }
-
-        const history = historyRef.current[key] ?? [];
-        const lastRenderedTimestamp =
-          lastRenderedTimestampsRef.current[key] ?? 0;
-        const pendingPoints = history.filter(
-          point => point.timestamp > lastRenderedTimestamp
-        );
-
-        if (pendingPoints.length === 0) {
-          continue;
-        }
-
-        const datasetPoints = dataset.data as Array<{ x: number; y: number }>;
-
-        for (const point of pendingPoints) {
-          datasetPoints.push({
-            x: point.timestamp,
-            y: point.value,
-          });
-        }
-
-        lastRenderedTimestampsRef.current[key] =
-          pendingPoints[pendingPoints.length - 1].timestamp;
+  const refreshChart = useCallback((chart: PlotterChart) => {
+    for (const dataset of chart.data.datasets) {
+      const key = String(dataset.label ?? '');
+      if (!selectedKeysRef.current.includes(key)) {
+        continue;
       }
-    },
-    []
-  );
+
+      const history = historyRef.current[key] ?? [];
+      const lastRenderedTimestamp = lastRenderedTimestampsRef.current[key] ?? 0;
+      const pendingPoints = history.filter(
+        point => point.timestamp > lastRenderedTimestamp
+      );
+
+      if (pendingPoints.length === 0) {
+        continue;
+      }
+
+      const datasetPoints = dataset.data as Array<{ x: number; y: number }>;
+
+      for (const point of pendingPoints) {
+        datasetPoints.push({
+          x: point.timestamp,
+          y: point.value,
+        });
+      }
+
+      lastRenderedTimestampsRef.current[key] =
+        pendingPoints[pendingPoints.length - 1].timestamp;
+    }
+  }, []);
 
   const availableKeySignature = useMemo(
     () => state.availableKeys.join('|'),
@@ -189,19 +236,13 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
     const sourceHistory = isChartPaused
       ? pausedSnapshot.history
       : historyRef.current;
-    const chartWindowEnd =
-      (isChartPaused ? pausedSnapshot.pausedAt ?? Date.now() : Date.now()) -
-      STREAMING_DELAY_MS;
-    const chartWindowStart = chartWindowEnd - meta.durationMs;
-    chart.data.datasets = state.selectedKeys.map((key, index) =>
-      createDataset(
-        key,
-        DATASET_COLORS[index % DATASET_COLORS.length],
-        (sourceHistory[key] ?? []).filter(
-          point =>
-            point.timestamp >= chartWindowStart && point.timestamp <= chartWindowEnd
-        )
-      )
+    syncDatasets(
+      chart,
+      sourceHistory,
+      state.selectedKeys,
+      meta.durationMs,
+      pausedSnapshot.pausedAt,
+      isChartPaused
     );
 
     lastRenderedTimestampsRef.current = Object.fromEntries(
@@ -245,11 +286,10 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
           delay: STREAMING_DELAY_MS,
           duration: meta.durationMs,
           frameRate: 30,
-          onRefresh: (chart: Chart<'line', (number | Point | null)[], unknown>) =>
-            refreshChart(chart),
+          onRefresh: refreshChart,
           pause: isChartPaused,
           refresh: 250,
-          ttl: meta.durationMs + STREAMING_DELAY_MS ,
+          ttl: meta.durationMs + STREAMING_DELAY_MS,
         },
         border: {
           display: false,

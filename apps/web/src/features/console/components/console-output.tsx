@@ -19,13 +19,14 @@ export function ConsoleOutput({
   getEntryColor,
 }: ConsoleOutputProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (autoScroll && bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (!autoScroll || !scrollContainerRef.current) {
+      return;
     }
-  }, [entries, autoScroll]);
+    scrollContainerRef.current.scrollTop =
+      scrollContainerRef.current.scrollHeight;
+  }, [autoScroll, entries.length]);
 
   return (
     <Card className="flex-1 overflow-hidden">
@@ -55,7 +56,6 @@ export function ConsoleOutput({
                 <span className="break-all">{entry.content}</span>
               </div>
             ))}
-            <div ref={bottomRef} />
           </div>
         )}
       </div>
