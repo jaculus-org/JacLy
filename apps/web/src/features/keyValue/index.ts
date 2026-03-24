@@ -1,2 +1,3 @@
 export { KeyValueDisplay } from './components/keyValue';
-export type { KeyValueMap } from './lib/types';
+export { parseKeyValue } from './lib/parser/kvParser';
+export type { KeyValueHistoryMap, KeyValueMap, ParsedValue } from './lib/types';

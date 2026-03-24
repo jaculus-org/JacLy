@@ -71,6 +71,12 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
       },
       {
         type: 'tab',
+        component: 'chart',
+        id: 'chart',
+        enableClose: false,
+      },
+      {
+        type: 'tab',
         component: 'generated-code',
         id: 'generated-code',
         enableClose: false,
@@ -112,6 +118,8 @@ export function getPanelTitle(node: FlexLayout.TabNode): string | undefined {
   switch (component) {
     case 'blockly':
       return m.project_panel_blockly();
+    case 'chart':
+      return m.project_panel_chart();
     case 'file-explorer':
       return m.project_panel_fs();
     case 'packages':

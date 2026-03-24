@@ -1,4 +1,5 @@
 export { BlocklyEditorPanel } from './blockly';
+export { ChartPanel } from './chart';
 export { CodePanel } from './code';
 export { ConsolePanel } from './console';
 export { ErrorPanel } from './error';

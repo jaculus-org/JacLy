@@ -290,6 +290,7 @@ export function InstallerProvider({
         const chipWithPsram = newEsploader.chip as ChipWithPsram;
         if (typeof chipWithPsram.getPsramCap === 'function') {
           const size = await chipWithPsram.getPsramCap(newEsploader);
+          // 00 = 0 -> No PSRAM, 01 = 1 -> 2MB PSRAM, 10 = 2 -> 8MB PSRAM, 11 = 3 -> 8MB PSRAM
           switch (size) {
             case 0:
               await changeVariant('ESP32-S3-Generic-NoPSRAM', chipName);

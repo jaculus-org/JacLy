@@ -3,6 +3,7 @@ import type { PanelType } from '@/features/project/types/flexlayout-type';
 import { PanelWrapper } from '@/features/project/components';
 import {
   BlocklyEditorPanel,
+  ChartPanel,
   CodePanel,
   ConsolePanel,
   ErrorPanel,
@@ -26,6 +27,7 @@ const PANEL_COMPONENTS: Record<
   (config?: Record<string, unknown>) => React.ReactNode
 > = {
   blockly: () => <BlocklyEditorPanel />,
+  chart: () => <ChartPanel />,
   console: () => <ConsolePanel />,
   'file-explorer': () => (
     <JacFileExplorerProvider>

@@ -1,5 +1,5 @@
 import type { ConsoleBusService } from '@/services/console-bus-service';
-import type { KeyValueMap } from '@/features/keyValue';
+import type { KeyValueHistoryMap, KeyValueMap } from '@/features/keyValue';
 import {
   useCallback,
   useEffect,
@@ -32,11 +32,16 @@ export function ConsoleProvider({
 }: ConsoleProviderProps) {
   const [entries, setEntries] = useState<ConsoleEntry[]>([]);
   const [keyValueEntries, setKeyValueEntries] = useState<KeyValueMap>({});
+  const [keyValueHistory, setKeyValueHistory] = useState<KeyValueHistoryMap>(
+    {}
+  );
 
   useEffect(() => {
     return streamBusService.subscribe(channel, channelEntries => {
+      const telemetry = telemetryService.extractTelemetry(channelEntries);
       setEntries(channelEntries);
-      setKeyValueEntries(telemetryService.extractKeyValuePairs(channelEntries));
+      setKeyValueEntries(telemetry.latestEntries);
+      setKeyValueHistory(telemetry.historyEntries);
     });
   }, [channel, streamBusService, telemetryService]);
 
@@ -85,6 +90,7 @@ export function ConsoleProvider({
       state: {
         entries,
         keyValueEntries,
+        keyValueHistory,
       },
       actions: {
         addEntry,
@@ -95,7 +101,15 @@ export function ConsoleProvider({
         channel,
       },
     }),
-    [entries, keyValueEntries, addEntry, clear, clearType, channel]
+    [
+      entries,
+      keyValueEntries,
+      keyValueHistory,
+      addEntry,
+      clear,
+      clearType,
+      channel,
+    ]
   );
 
   return (

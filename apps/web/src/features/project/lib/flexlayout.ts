@@ -258,8 +258,12 @@ export function controlPanel(
   type: PanelType,
   action: PanelAction
 ) {
-  const node = model.getNodeById(type);
+  const node =
+    type === 'error' ? model.getNodeById('error-panel') : model.getNodeById(type);
   if (!node) {
+    if (type === 'error' && action === 'close') {
+      return;
+    }
     console.warn(`Panel '${type}' not found in layout`);
     return;
   }

@@ -4,3 +4,4 @@ export interface ParsedValue {
 }
 
 export type KeyValueMap = Record<string, ParsedValue>;
+export type KeyValueHistoryMap = Record<string, ParsedValue[]>;

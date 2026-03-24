@@ -223,6 +223,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@aziham/chartjs-plugin-streaming':
+        specifier: ^3.5.1
+        version: 3.5.1(chart.js@4.5.1)
       '@base-ui/react':
         specifier: ^1.2.0
         version: 1.2.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -271,6 +274,12 @@ importers:
       '@zenfs/dom':
         specifier: ^1.2.7
         version: 1.2.7(@zenfs/core@2.5.2)(kerium@1.3.8)(utilium@2.5.8)
+      chart.js:
+        specifier: ^4.5.1
+        version: 4.5.1
+      chartjs-adapter-luxon:
+        specifier: ^1.3.1
+        version: 1.3.1(chart.js@4.5.1)(luxon@3.7.2)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -310,6 +319,9 @@ importers:
       react:
         specifier: ^19.2.4
         version: 19.2.4
+      react-chartjs-2:
+        specifier: ^5.3.1
+        version: 5.3.1(chart.js@4.5.1)(react@19.2.4)
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
@@ -627,6 +639,11 @@ packages:
   '@ast-grep/napi@0.36.3':
     resolution: {integrity: sha512-ExypohE8L7FvKBHxu7UpwcV9XVfyS+AqNZKyKIfxYwJyD9l7Gw6pmMYd7J2uopJsPEIUf44/emEFds6nFUx/dw==}
     engines: {node: '>= 10'}
+
+  '@aziham/chartjs-plugin-streaming@3.5.1':
+    resolution: {integrity: sha512-6BPJOMRx5CSddO0Km9rkx8RWmE+wcPRhF5K9n/8UMBfYvSXvPpeWS57CpQFSyzHAAAhEVprQSG/qUIAtKzRDZA==}
+    peerDependencies:
+      chart.js: ^4.5.1
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -1547,6 +1564,9 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0
       react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0
+
+  '@kurkle/color@0.3.4':
+    resolution: {integrity: sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==}
 
   '@lix-js/sdk@0.4.7':
     resolution: {integrity: sha512-pRbW+joG12L0ULfMiWYosIW0plmW4AsUdiPCp+Z8rAsElJ+wJ6in58zhD3UwUcd4BNcpldEGjg6PdA7e0RgsDQ==}
@@ -3344,6 +3364,16 @@ packages:
     resolution: {integrity: sha512-1tm8DTaJhPBG3bIkVeZt1iZM9GfSX2lzOeDVZH9R9ffRHpmHvxZ/QhgQH/aDTkswQVt+YHdXAdS/In/30OjCbg==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
+  chart.js@4.5.1:
+    resolution: {integrity: sha512-GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw==}
+    engines: {pnpm: '>=8'}
+
+  chartjs-adapter-luxon@1.3.1:
+    resolution: {integrity: sha512-yxHov3X8y+reIibl1o+j18xzrcdddCLqsXhriV2+aQ4hCR66IYFchlRXUvrJVoxglJ380pgytU7YWtoqdIgqhg==}
+    peerDependencies:
+      chart.js: '>=3.0.0'
+      luxon: '>=1.0.0'
+
   chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
@@ -4878,6 +4908,10 @@ packages:
   lucide-static@0.577.0:
     resolution: {integrity: sha512-hx39J5Tq4JWF2ALY+5YRg+SxQLpeAmLJDXNcqiBJH/UuVwp43it9fyki/onZO7AVFgG5ZbB+fWwZR9mwGHE2XQ==}
 
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -5434,6 +5468,12 @@ packages:
   raw-body@3.0.2:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
+
+  react-chartjs-2@5.3.1:
+    resolution: {integrity: sha512-h5IPXKg9EXpjoBzUfyWJvllMjG2mQ4EiuHQFhms/AjUm0XSZHhyRy2xVmLXHKrtcdrPO4mnGqRtYoD0vp95A0A==}
+    peerDependencies:
+      chart.js: ^4.1.1
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
@@ -6519,6 +6559,10 @@ snapshots:
       '@ast-grep/napi-win32-ia32-msvc': 0.36.3
       '@ast-grep/napi-win32-x64-msvc': 0.36.3
 
+  '@aziham/chartjs-plugin-streaming@3.5.1(chart.js@4.5.1)':
+    dependencies:
+      chart.js: 4.5.1
+
   '@babel/code-frame@7.27.1':
     dependencies:
       '@babel/helper-validator-identifier': 7.27.1
@@ -7470,6 +7514,8 @@ snapshots:
       - canvas
       - supports-color
       - utf-8-validate
+
+  '@kurkle/color@0.3.4': {}
 
   '@lix-js/sdk@0.4.7':
     dependencies:
@@ -9386,6 +9432,15 @@ snapshots:
 
   chalk@5.5.0: {}
 
+  chart.js@4.5.1:
+    dependencies:
+      '@kurkle/color': 0.3.4
+
+  chartjs-adapter-luxon@1.3.1(chart.js@4.5.1)(luxon@3.7.2):
+    dependencies:
+      chart.js: 4.5.1
+      luxon: 3.7.2
+
   chokidar@3.6.0:
     dependencies:
       anymatch: 3.1.3
@@ -11029,6 +11084,8 @@ snapshots:
 
   lucide-static@0.577.0: {}
 
+  luxon@3.7.2: {}
+
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -11651,6 +11708,11 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.1
       unpipe: 1.0.0
+
+  react-chartjs-2@5.3.1(chart.js@4.5.1)(react@19.2.4):
+    dependencies:
+      chart.js: 4.5.1
+      react: 19.2.4
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:

@@ -9,6 +9,7 @@ export type FlexLayoutAttributes = {
 
 export type PanelType =
   | 'blockly'
+  | 'chart'
   | 'console'
   | 'file-explorer'
   | 'code'

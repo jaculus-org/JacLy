@@ -108,7 +108,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         });
       }
     },
-    [fs, projectPath, buildInfo]
+    [buildInfo]
   );
 
   useEffect(() => {
