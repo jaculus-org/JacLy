@@ -1,4 +1,4 @@
-import type { ProjectPackage } from '@jaculus/project';
+import type { ProjectBundle } from '@jaculus/project';
 import type { FSPromisesInterface } from '@jaculus/project/fs';
 import { Archive } from '@obsidize/tar-browserify';
 import pako from 'pako';
@@ -13,7 +13,7 @@ import pako from 'pako';
 export async function loadPackageUri(
   pkgUri: string,
   fsp?: FSPromisesInterface
-): Promise<ProjectPackage> {
+): Promise<ProjectBundle> {
   let gz: Uint8Array;
   if (
     pkgUri.startsWith('http://') ||
@@ -31,7 +31,7 @@ export async function loadPackageUri(
     throw new Error(`Unsupported URI scheme or missing fs for ${pkgUri}`);
   }
 
-  const dirs: string[] = [];
+  const dirs = new Set<string>();
   const files: Record<string, Uint8Array> = {};
 
   // Determine if the data is gzipped based on magic bytes (0x1f 0x8b)
@@ -46,7 +46,7 @@ export async function loadPackageUri(
     }
 
     if (entry.isDirectory()) {
-      dirs.push(fileName);
+      dirs.add(fileName);
     } else if (entry.isFile()) {
       files[fileName] = entry.content!;
     }

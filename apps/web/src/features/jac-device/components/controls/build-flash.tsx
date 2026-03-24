@@ -1,7 +1,6 @@
 import { m } from '@/paraglide/messages';
 import { useActiveProject } from '@/features/project/active-project';
 import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
-import { ButtonGroup } from '@/features/shared/components/ui/button-group';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
@@ -38,12 +37,12 @@ export function BuildFlash() {
         }
       }
 
-      const files = await jacProject!.getFlashFiles();
-      console.log(`Files to flash: ${Object.keys(files).length}`);
-      for (const [filePath, content] of Object.entries(files)) {
+      const bundle = await jacProject!.getFlashFiles();
+      console.log(`Files to flash: ${Object.keys(bundle.files).length}`);
+      for (const [filePath, content] of Object.entries(bundle.files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
-      await uploadCode(files, device);
+      await uploadCode(bundle, device);
     } catch (error) {
       controlPanel('logs', 'expand');
       enqueueSnackbar(
@@ -60,16 +59,14 @@ export function BuildFlash() {
   }
 
   return (
-    <ButtonGroup>
-      <ButtonLoading
-        onClick={handleBuildAndFlash}
-        size="sm"
-        className="gap-1 h-8 bg-blue-800 hover:bg-blue-900 text-white"
-        loading={isProcessing || connectionStatus === 'connecting'}
-        icon={<SquareArrowRightIcon className="h-4 w-4" />}
-      >
-        {m.device_btn_build_flash()}
-      </ButtonLoading>
-    </ButtonGroup>
+    <ButtonLoading
+      onClick={handleBuildAndFlash}
+      size="sm"
+      className="gap-1 h-8 bg-blue-800 hover:bg-blue-900 text-white"
+      loading={isProcessing || connectionStatus === 'connecting'}
+      icon={<SquareArrowRightIcon className="h-4 w-4" />}
+    >
+      {m.device_btn_build_flash()}
+    </ButtonLoading>
   );
 }

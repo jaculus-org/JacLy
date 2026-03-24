@@ -16,7 +16,7 @@ import { enqueueSnackbar } from 'notistack';
 import type { JaculusProjectType } from '@jaculus/project/package';
 import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
 import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
-import { createFromPackage } from '@jaculus/project/creation';
+import { createFromBundle } from '@jaculus/project/creation';
 import { Logger } from '@/features/logger';
 import { logger } from '@/services/logger-service';
 
@@ -130,7 +130,7 @@ function NewProject() {
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
 
-      await createFromPackage(fs, projectPath, pkg, logger, false, false);
+      await createFromBundle(fs, projectPath, pkg, logger, false, false);
 
       navigate({
         to: '/project/$projectId',

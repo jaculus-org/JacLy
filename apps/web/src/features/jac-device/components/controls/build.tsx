@@ -26,9 +26,9 @@ export function Build() {
   async function handleBuild() {
     setIsBuilding(true);
     try {
-      const files = await jacProject!.getFlashFiles();
-      console.log(`Files to flash: ${Object.keys(files).length}`);
-      for (const [filePath, content] of Object.entries(files)) {
+      const bundle = await jacProject!.getFlashFiles();
+      console.log(`Files to flash: ${Object.keys(bundle.files).length}`);
+      for (const [filePath, content] of Object.entries(bundle.files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
       if (!(await compileProject(projectPath, fs))) {

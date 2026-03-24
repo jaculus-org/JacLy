@@ -24,8 +24,8 @@ import {
   type PackageLoadResult,
 } from '@jaculus/project/import';
 import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
-import { decodeBase64Url } from '@jaculus/project/import';
-import { createFromPackage } from '@jaculus/project/creation';
+import { toUint8Array } from 'js-base64';
+import { createFromBundle } from '@jaculus/project/creation';
 import { logger } from '@/services/logger-service';
 import { generateNanoId } from '@/lib/utils/nanoid';
 import { Logger } from '@/features/logger';
@@ -107,8 +107,7 @@ function ImportProject() {
       let importResult: PackageLoadResult;
 
       if (inlineData) {
-        // Inline base64url-encoded archive from the `data` search param
-        const bytes = decodeBase64Url(inlineData);
+        const bytes = toUint8Array(inlineData);
         importResult = await loadPackageFromBytes(bytes);
       } else if (activeTab === 'file') {
         if (!selectedFile) {
@@ -135,7 +134,7 @@ function ImportProject() {
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
 
-      await createFromPackage(
+      await createFromBundle(
         fs,
         projectPath,
         importResult.package,

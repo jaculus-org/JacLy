@@ -17,7 +17,6 @@ import { restart, uploadCode } from '../lib/device';
 import {
   InvalidPackageJsonFormatError,
   loadPackageJson,
-  savePackageJson,
   type PackageJson,
 } from '@jaculus/project/package';
 import { Project } from '@jaculus/project';
@@ -100,34 +99,13 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
 
   const initPackageJson = useCallback(
     async (pkg: PackageJson) => {
-      let changed = false;
-      if (!pkg.jaculus?.jaclyVersion) {
-        pkg.jaculus = {
-          jaclyVersion: buildInfo.version,
-        };
-        changed = true;
-      } else if (pkg.jaculus.jaclyVersion !== buildInfo.version) {
+      if (
+        pkg.jaculus?.jaclyVersion &&
+        pkg.jaculus.jaclyVersion !== buildInfo.version
+      ) {
         enqueueSnackbar(m.jac_device_provider_outdated_package_json(), {
           variant: 'warning',
         });
-      }
-
-      if (!pkg.jaculus?.jaclyGitHash) {
-        pkg.jaculus.jaclyGitHash = buildInfo.commitHash;
-        changed = true;
-      }
-
-      if (changed) {
-        try {
-          await savePackageJson(
-            fs,
-            path.join(projectPath, 'package.json'),
-            pkg
-          );
-        } catch (error) {
-          console.error('Failed to update package.json:', error);
-          enqueueSnackbar(m.project_error_unknown(), { variant: 'error' });
-        }
       }
     },
     [fs, projectPath, buildInfo]
@@ -153,7 +131,9 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
         await initPackageJson(pkgJson);
-        setJacRegistry(new Registry(pkgJson.registry, getRequest, logger));
+        setJacRegistry(
+          new Registry(pkgJson.jaculus?.registry, getRequest, logger)
+        );
 
         if (!cancelled) {
           setJacProject(new Project(fs, projectPath, logger));

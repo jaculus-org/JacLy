@@ -2,7 +2,7 @@
 // Archive packing logic is in @jaculus/project/export.
 
 import type { FSInterface } from '@jaculus/project/fs';
-import { encodeBase64Url } from '@jaculus/project/export';
+import { fromUint8Array } from 'js-base64';
 
 export {
   packProjectAsTarGz,
@@ -16,7 +16,7 @@ export function buildPackageImportUrl(
   archiveBytes: Uint8Array,
   baseUrl: string = window.location.origin
 ): string {
-  const encoded = encodeBase64Url(archiveBytes);
+  const encoded = fromUint8Array(archiveBytes, true);
   return `${baseUrl}/project/import?data=${encoded}&auto=true`;
 }
 

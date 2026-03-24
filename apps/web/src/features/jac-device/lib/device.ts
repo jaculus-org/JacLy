@@ -1,10 +1,10 @@
-import type { JacDevice } from '@jaculus/device';
+import type { JacDevice, UploaderProgressCallback } from '@jaculus/device';
+import type { ProjectBundle } from '@jaculus/project';
 import { logger } from '@/services/logger-service';
 import { enqueueSnackbar } from 'notistack';
-import { dirname } from 'path';
 import { m } from '@/paraglide/messages';
 
-async function withLLockedDevice<T>(
+async function withLockedDevice<T>(
   device: JacDevice,
   fn: (device: JacDevice) => Promise<T>
 ): Promise<T> {
@@ -34,7 +34,7 @@ export async function testConnection(
       )
     );
 
-    await Promise.race([withLLockedDevice(device, async () => {}), timeout]);
+    await Promise.race([withLockedDevice(device, async () => {}), timeout]);
 
     return true;
   } catch {
@@ -44,7 +44,7 @@ export async function testConnection(
 
 export async function stop(device: JacDevice) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.stop();
     });
   } catch (err) {
@@ -56,7 +56,7 @@ export async function stop(device: JacDevice) {
 
 export async function start(device: JacDevice, entryFile: string = 'index.js') {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.start(entryFile);
     });
   } catch (err) {
@@ -71,7 +71,7 @@ export async function restart(
   entryFile: string = 'index.js'
 ) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.stop();
       await dev.controller.start(entryFile);
     });
@@ -84,7 +84,7 @@ export async function restart(
 
 export async function version(device: JacDevice): Promise<string[]> {
   try {
-    return await withLLockedDevice(device, async dev => {
+    return await withLockedDevice(device, async dev => {
       return await dev.controller.version();
     });
   } catch (err) {
@@ -95,50 +95,19 @@ export async function version(device: JacDevice): Promise<string[]> {
 }
 
 export async function uploadCode(
-  files: Record<string, Uint8Array>,
-  device: JacDevice
+  bundle: ProjectBundle,
+  device: JacDevice,
+  onProgress?: UploaderProgressCallback
 ) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.stop().catch((err: unknown) => {
         logger.verbose('Error stopping device: ' + err);
       });
 
-      try {
-        logger.info('Getting current data hashes');
-        const dataHashes = await dev.uploader
-          .getDirHashes('code')
-          .catch((err: unknown) => {
-            logger.verbose('Error getting data hashes: ' + err);
-            throw err;
-          });
+      await dev.uploader.uploadFiles(bundle, 'code', onProgress);
 
-        await dev.uploader.uploadIfDifferent(dataHashes, files, 'code');
-      } catch {
-        logger.info('Deleting old code');
-        await dev.uploader.deleteDirectory('code').catch((err: unknown) => {
-          logger.verbose('Error deleting directory: ' + err);
-        });
-
-        for (const [filePath, content] of Object.entries(files)) {
-          const fullPath = `code/${filePath}`;
-          const dirPath = dirname(fullPath);
-          if (dirPath) {
-            await dev.uploader
-              .createDirectory(dirPath)
-              .catch((err: unknown) => {
-                logger.verbose('Error creating directory: ' + err);
-              });
-          }
-          await dev.uploader
-            .writeFile(fullPath, content)
-            .catch((err: unknown) => {
-              logger.verbose('Error writing file: ' + err);
-            });
-        }
-      }
-
-      await dev.controller.start('index.js').catch((err: unknown) => {
+      await dev.controller.start().catch((err: unknown) => {
         logger.verbose('Error starting program: ' + err);
         throw 1;
       });
@@ -152,7 +121,7 @@ export async function uploadCode(
 
 export async function status(device: JacDevice) {
   try {
-    return await withLLockedDevice(device, async dev => {
+    return await withLockedDevice(device, async dev => {
       return await dev.controller.status();
     });
   } catch (err) {
@@ -169,7 +138,7 @@ export async function addWifiNetwork(
   password: string
 ) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.addWifiNetwork(ssid, password);
     });
     enqueueSnackbar(m.device_wifi_network_added(), { variant: 'success' });
@@ -182,7 +151,7 @@ export async function addWifiNetwork(
 
 export async function removeWifiNetwork(device: JacDevice, ssid: string) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.removeWifiNetwork(ssid);
     });
     enqueueSnackbar(m.device_wifi_network_removed(), { variant: 'success' });
@@ -197,7 +166,7 @@ export async function removeWifiNetwork(device: JacDevice, ssid: string) {
 
 export async function getWifiMode(device: JacDevice) {
   try {
-    return await withLLockedDevice(device, async dev => {
+    return await withLockedDevice(device, async dev => {
       return await dev.controller.getWifiMode();
     });
   } catch (err) {
@@ -208,7 +177,7 @@ export async function getWifiMode(device: JacDevice) {
 
 export async function setWifiMode(device: JacDevice, mode: number) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.setWifiMode(mode);
     });
     enqueueSnackbar(m.device_wifi_mode_updated(), { variant: 'success' });
@@ -221,7 +190,7 @@ export async function setWifiMode(device: JacDevice, mode: number) {
 
 export async function getWifiApSsid(device: JacDevice) {
   try {
-    return await withLLockedDevice(device, async dev => {
+    return await withLockedDevice(device, async dev => {
       return await dev.controller.getWifiApSsid();
     });
   } catch (err) {
@@ -232,7 +201,7 @@ export async function getWifiApSsid(device: JacDevice) {
 
 export async function setWifiApSsid(device: JacDevice, ssid: string) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.setWifiApSsid(ssid);
     });
     enqueueSnackbar(m.device_wifi_ap_ssid_updated(), { variant: 'success' });
@@ -245,7 +214,7 @@ export async function setWifiApSsid(device: JacDevice, ssid: string) {
 
 export async function getWifiApPassword(device: JacDevice) {
   try {
-    return await withLLockedDevice(device, async dev => {
+    return await withLockedDevice(device, async dev => {
       return await dev.controller.getWifiApPassword();
     });
   } catch (err) {
@@ -256,7 +225,7 @@ export async function getWifiApPassword(device: JacDevice) {
 
 export async function setWifiApPassword(device: JacDevice, password: string) {
   try {
-    await withLLockedDevice(device, async dev => {
+    await withLockedDevice(device, async dev => {
       await dev.controller.setWifiApPassword(password);
     });
     enqueueSnackbar(m.device_wifi_ap_password_updated(), {
@@ -271,7 +240,7 @@ export async function setWifiApPassword(device: JacDevice, password: string) {
 
 export async function getCurrentWifiIp(device: JacDevice) {
   try {
-    return await withLLockedDevice(device, async dev => {
+    return await withLockedDevice(device, async dev => {
       return await dev.controller.getCurrentWifiIp();
     });
   } catch (err) {
