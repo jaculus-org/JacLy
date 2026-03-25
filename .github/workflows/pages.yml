@@ -57,13 +57,10 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Build dependencies
-        run: pnpm -r build
-
-      - name: Build web app
+      - name: Build everything
         env:
           CI: true
-        run: pnpm --filter "@jaculus/jacly-web" build
+        run: pnpm -r build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
