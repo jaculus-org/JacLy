@@ -12,6 +12,7 @@
 // Adapted from Blockly's built-in procedure generator with async/await support
 
 import { BlockExtended } from '@/blocks/types/custom-block';
+import { Block } from 'blockly/core';
 import {
   JavascriptGenerator,
   javascriptGenerator as jsg,
@@ -20,6 +21,8 @@ import {
 
 jsg.forBlock['procedures_defreturn'] = procedures_defreturn;
 jsg.forBlock['procedures_defnoreturn'] = procedures_defreturn;
+jsg.forBlock['procedures_callreturn'] = procedures_callreturn;
+jsg.forBlock['procedures_callnoreturn'] = procedures_callnoreturn;
 
 function procedures_defreturn(
   block: BlockExtended,
@@ -89,4 +92,33 @@ function procedures_defreturn(
   };
   generatorWithDefinitions.definitions_['%' + funcName] = code;
   return null;
+}
+
+export function procedures_callreturn(
+  block: Block,
+  generator: JavascriptGenerator
+): [string, Order] {
+  // Call a procedure with a return value.
+  const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
+  const args = [];
+  const variables = block.getVars();
+  for (let i = 0; i < variables.length; i++) {
+    args[i] = generator.valueToCode(block, 'ARG' + i, Order.NONE) || 'null';
+  }
+  const code = 'await ' + funcName + '(' + args.join(', ') + ')';
+  return [code, Order.AWAIT];
+}
+
+export function procedures_callnoreturn(
+  block: Block,
+  generator: JavascriptGenerator
+) {
+  // Call a procedure with no return value.
+  // Generated code is for a function call as a statement is the same as a
+  // function call as a value, with the addition of line ending.
+  const tuple = generator.forBlock['procedures_callreturn'](
+    block,
+    generator
+  ) as [string, Order];
+  return tuple[0] + ';\n';
 }
