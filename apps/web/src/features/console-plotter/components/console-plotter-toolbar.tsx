@@ -64,33 +64,27 @@ export const ConsolePlotterToolbar = memo(function ConsolePlotterToolbar() {
       </div>
 
       <div className="flex flex-wrap gap-1">
-        {state.availableKeys.length === 0 ? (
-          <span className="text-xs text-muted-foreground">
-            {m.chart_panel_empty()}
-          </span>
-        ) : (
-          state.availableKeys.map(key => {
-            const isSelected = state.selectedKeys.includes(key);
-            const latestValue = state.latestEntries[key]?.value;
+        {state.availableKeys.map(key => {
+          const isSelected = state.selectedKeys.includes(key);
+          const latestValue = state.latestEntries[key]?.value;
 
-            return (
-              <Button
-                key={key}
-                size="sm"
-                variant={isSelected ? 'default' : 'outline'}
-                className="h-7 gap-1.5 px-2 font-mono text-xs"
-                onClick={() => actions.toggleSeries(key)}
-              >
-                <span>{key}</span>
-                {latestValue !== undefined && (
-                  <span className="text-[10px] opacity-80">
-                    {formatValue(latestValue)}
-                  </span>
-                )}
-              </Button>
-            );
-          })
-        )}
+          return (
+            <Button
+              key={key}
+              size="sm"
+              variant={isSelected ? 'default' : 'outline'}
+              className="h-7 gap-1.5 px-2 font-mono text-xs"
+              onClick={() => actions.toggleSeries(key)}
+            >
+              <span>{key}</span>
+              {latestValue !== undefined && (
+                <span className="text-[10px] opacity-80">
+                  {formatValue(latestValue)}
+                </span>
+              )}
+            </Button>
+          );
+        })}
       </div>
     </Card>
   );

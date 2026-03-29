@@ -10,15 +10,13 @@ import { enqueueSnackbar } from 'notistack';
 import { m } from '@/paraglide/messages';
 import { useJacDevice } from '@/features/jac-device';
 import { useActiveProject } from '@/features/project/active-project';
-import {
-  flexLayoutDefaultJson,
-  getPanelTitle,
-} from '@/features/project/lib/flexlayout-defaults';
+import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
 import {
   controlPanel,
   getUpdatedLayoutModel,
   openPanel,
 } from '@/features/project/lib/flexlayout';
+import { getPanelTitle } from '@/features/project/lib/panel-registry';
 import type {
   NewPanelProps,
   PanelAction,

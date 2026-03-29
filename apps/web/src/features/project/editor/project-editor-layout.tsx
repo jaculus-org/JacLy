@@ -11,6 +11,11 @@ export function ProjectEditorLayout() {
       <FlexLayout.Layout
         model={state.model}
         factory={factory}
+        popoutURL="/popout.html"
+        popoutWindowName="Jacly Panel"
+        icons={{
+          popout: () => <FlexLayout.PopoutIcon />,
+        }}
         onModelChange={actions.handleModelChange}
         onRenderTab={meta.onRenderTab}
       />

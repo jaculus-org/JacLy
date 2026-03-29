@@ -6,6 +6,7 @@ import type {
   PanelType,
 } from '@/features/project/types/flexlayout-type';
 import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
+import { applyPanelDefinitionToTab } from '@/features/project/lib/panel-registry';
 
 type JsonLayoutNode =
   | FlexLayout.IJsonTabNode
@@ -46,6 +47,16 @@ export function processAllTabs(
   if (model.layout) {
     processNode(model.layout);
   }
+}
+
+function normalizePanelTabs(
+  model: FlexLayout.IJsonModel
+): FlexLayout.IJsonModel {
+  processAllTabs(model, tab => {
+    Object.assign(tab, applyPanelDefinitionToTab(tab));
+  });
+
+  return model;
 }
 
 export function findAllTabIds(model: FlexLayout.IJsonModel): Set<string> {
@@ -126,12 +137,15 @@ export function getUpdatedLayoutModel(
     }
   });
 
-  // if no missing tabs, return original
-  if (tabsToAdd.length === 0) {
-    return json;
-  }
-
   const updatedModel: FlexLayout.IJsonModel = structuredClone(json);
+  updatedModel.global = {
+    ...(structuredClone(flexLayoutDefaultJson.global) ?? {}),
+    ...(updatedModel.global ?? {}),
+  };
+
+  if (tabsToAdd.length === 0) {
+    return normalizePanelTabs(updatedModel);
+  }
 
   if (!updatedModel.borders) {
     updatedModel.borders = [];
@@ -212,7 +226,7 @@ export function getUpdatedLayoutModel(
     }
   }
 
-  return updatedModel;
+  return normalizePanelTabs(updatedModel);
 }
 
 function findTargetTabset(
@@ -245,7 +259,7 @@ function addTabToModel(
   const targetId = tabset ? tabset.getId() : model.getRoot().getId();
   model.doAction(
     FlexLayout.Actions.addNode(
-      tabNode,
+      applyPanelDefinitionToTab(tabNode),
       targetId,
       FlexLayout.DockLocation.CENTER,
       -1

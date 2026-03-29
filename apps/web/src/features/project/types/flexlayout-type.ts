@@ -5,6 +5,10 @@ export type FlexLayoutAttributes = {
   name: string;
   id: string;
   enableClose: boolean;
+  component?: string;
+  enablePopout?: boolean;
+  enablePopoutIcon?: boolean;
+  enableWindowReMount?: boolean;
 };
 
 export type PanelType =

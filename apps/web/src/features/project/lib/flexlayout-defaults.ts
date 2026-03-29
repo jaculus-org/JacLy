@@ -1,6 +1,5 @@
-import { m } from '@/paraglide/messages';
 import * as FlexLayout from 'flexlayout-react';
-import type { PanelType } from '../types/flexlayout-type';
+import { applyPanelDefinitionToTab } from './panel-registry';
 
 export const defaultGlobalSettings: FlexLayout.IGlobalAttributes = {
   tabEnableClose: false,
@@ -20,11 +19,11 @@ export const defaultLayout: FlexLayout.IJsonRowNode = {
       weight: 100,
       id: 'main-tabset',
       children: [
-        {
+        applyPanelDefinitionToTab({
           type: 'tab',
           component: 'blockly',
           id: 'blockly',
-        },
+        }),
       ],
     },
   ],
@@ -37,24 +36,24 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
     size: 250,
     selected: 0,
     children: [
-      {
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'packages',
         id: 'packages',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'file-explorer',
         id: 'file-explorer',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'jaculus',
         id: 'jaculus',
         enableClose: false,
-      },
+      }),
     ],
   },
   {
@@ -63,42 +62,42 @@ export const defaultBorderLayout: FlexLayout.IJsonBorderNode[] = [
     size: 400,
     selected: -1,
     children: [
-      {
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'console',
         id: 'console',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'chart',
         id: 'chart',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'generated-code',
         id: 'generated-code',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'logs',
         id: 'logs',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'wokwi',
         id: 'wokwi',
         enableClose: false,
-      },
-      {
+      }),
+      applyPanelDefinitionToTab({
         type: 'tab',
         component: 'installer',
         id: 'installer',
         enableClose: false,
-      },
+      }),
     ],
   },
 ];
@@ -108,37 +107,3 @@ export const flexLayoutDefaultJson: FlexLayout.IJsonModel = {
   borders: defaultBorderLayout,
   layout: defaultLayout,
 };
-
-export function getPanelTitle(node: FlexLayout.TabNode): string | undefined {
-  const component = node.getComponent() as PanelType;
-  if (component === undefined) {
-    return undefined;
-  }
-
-  switch (component) {
-    case 'blockly':
-      return m.project_panel_blockly();
-    case 'chart':
-      return m.project_panel_chart();
-    case 'file-explorer':
-      return m.project_panel_fs();
-    case 'packages':
-      return m.project_panel_packages();
-    case 'jaculus':
-      return m.project_panel_jaculus();
-    case 'console':
-      return m.project_panel_console();
-    case 'generated-code':
-      return m.project_panel_code();
-    case 'logs':
-      return m.project_panel_logs();
-    case 'code':
-      return node.getName() || m.project_panel_fs();
-    case 'wokwi':
-      return m.project_panel_wokwi();
-    case 'installer':
-      return m.project_panel_installer();
-    case 'error':
-      return undefined;
-  }
-}

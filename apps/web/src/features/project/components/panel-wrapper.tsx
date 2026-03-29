@@ -1,13 +1,17 @@
+import * as FlexLayout from 'flexlayout-react';
+
 interface PanelWrapperProps {
   children: React.ReactNode;
   name?: string;
   highlight?: boolean;
+  onPopout?: () => void;
 }
 
 export function PanelWrapper({
   children,
   name,
   highlight = false,
+  onPopout,
 }: PanelWrapperProps) {
   return (
     <div
@@ -19,7 +23,7 @@ export function PanelWrapper({
     >
       {name && (
         <div
-          className={`p-2 border-b bg-white dark:bg-slate-800 ${
+          className={`flex items-center gap-2 p-2 border-b bg-white dark:bg-slate-800 ${
             highlight
               ? 'border-red-500'
               : 'border-gray-200 dark:border-gray-700'
@@ -34,6 +38,17 @@ export function PanelWrapper({
           >
             {name}
           </h2>
+          {onPopout && (
+            <button
+              type="button"
+              onClick={onPopout}
+              className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded text-gray-700 transition-colors hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-slate-700"
+              title="Pop out panel"
+              aria-label="Pop out panel"
+            >
+              <FlexLayout.PopoutIcon />
+            </button>
+          )}
         </div>
       )}
       <div className="flex-1 min-h-0">{children}</div>
