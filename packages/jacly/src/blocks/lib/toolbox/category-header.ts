@@ -8,6 +8,8 @@ type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
   gap?: string;
 };
 
+const defaultGithubDocs =
+  'https://github.com/jaculus-org/Jaculus-libraries/tree/master/';
 // Keep track of docs links to open on button click
 const docsCallbackRegistry = new Map<string, string>();
 
@@ -36,7 +38,10 @@ export function buildCategoryHeader(config: JaclyConfig): FlyoutItem[] {
   // Docs link button
   if (config.docs) {
     const callbackKey = `jacly_docs_${config.category}`;
-    docsCallbackRegistry.set(callbackKey, config.docs);
+    docsCallbackRegistry.set(
+      callbackKey,
+      `${defaultGithubDocs}${config.category}#readme`
+    );
     header.push({
       kind: 'button',
       text: '📖 Open documentation',
