@@ -51,6 +51,9 @@ export class MonacoProjectService {
   // Prevent concurrent handleChange calls for the same path
   private handlingPaths = new Set<string>();
 
+  // Set to true on dispose() to abort in-flight async operations
+  private disposed = false;
+
   constructor(
     monaco: Monaco,
     projectPath: string,
@@ -70,6 +73,10 @@ export class MonacoProjectService {
       this.traverseTypeFiles(`${this.projectPath}/node_modules`),
       this.traverseTypeFiles('/tsLibs'),
     ]);
+    // Guard: React 18 Strict Mode may have disposed this service while
+    // traversals were in-flight. Skip the final sync so we don't overwrite
+    // the new service's correctly-loaded extraLibs with stale/partial data.
+    if (this.disposed) return;
     this.syncExtraLibs();
   }
 
@@ -96,6 +103,8 @@ export class MonacoProjectService {
   }
 
   dispose(): void {
+    this.disposed = true;
+
     for (const w of this.watchers) w.close();
     this.watchers = [];
 
@@ -105,7 +114,9 @@ export class MonacoProjectService {
     this.createdModelUris.clear();
 
     this.extraLibs.clear();
-    this.syncExtraLibs();
+    // Do NOT call syncExtraLibs() here: the replacement service's initialize()
+    // will set the correct extraLibs. Calling it would clear Monaco's state
+    // and create a race with the in-flight traversals of the new service.
   }
 
   // ─── Private ────────────────────────────────────────────────────────────────
@@ -190,6 +201,7 @@ export class MonacoProjectService {
   }
 
   private createModel(fullPath: string, content: string): void {
+    if (this.disposed) return;
     const uri = this.monaco.Uri.file(fullPath);
     const existing = this.monaco.editor.getModel(uri);
     if (existing) {
@@ -206,6 +218,7 @@ export class MonacoProjectService {
 
   /** Accumulate an extraLib entry. Call syncExtraLibs() after bulk loading. */
   private registerExtraLib(fullPath: string, content: string): void {
+    if (this.disposed) return;
     this.extraLibs.set(this.monaco.Uri.file(fullPath).toString(), content);
   }
 
@@ -222,6 +235,7 @@ export class MonacoProjectService {
   }
 
   private async handleChange(fullPath: string): Promise<void> {
+    if (this.disposed) return;
     // Drop duplicate events for the same path while a change is already being processed
     if (this.handlingPaths.has(fullPath)) return;
     this.handlingPaths.add(fullPath);
@@ -265,6 +279,7 @@ export class MonacoProjectService {
   }
 
   private handleDelete(fullPath: string): void {
+    if (this.disposed) return;
     const relative = fullPath.slice(this.projectPath.length + 1);
     const role = classifyProjectFile(relative);
 
