@@ -20,10 +20,12 @@ export function MonacoProjectInitializer() {
 
     const service = new MonacoProjectService(monaco, projectPath, fs, fsp);
 
-    service.initialize().catch((err: unknown) => {
-      console.error('[MonacoProjectInitializer] Failed to initialize:', err);
-    });
-    service.watch();
+    service
+      .initialize()
+      .then(() => service.watch())
+      .catch((err: unknown) => {
+        console.error('[MonacoProjectInitializer] Failed to initialize:', err);
+      });
 
     return () => {
       service.dispose();
