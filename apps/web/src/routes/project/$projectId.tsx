@@ -5,6 +5,7 @@ import { Console } from '@/features/console';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 import { ProjectEditor } from '@/features/project/editor';
+import { MonacoProjectInitializer } from '@/features/editor-code/components/monaco-project-initializer';
 
 export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context, params }) => {
@@ -33,6 +34,7 @@ function ProjectEditorRoute() {
       projectFsService={projectFsService}
       projectManService={projectManService}
     >
+      <MonacoProjectInitializer />
       <Console.Provider
         channel={`project:${project.id}`}
         streamBusService={streamBusService}
