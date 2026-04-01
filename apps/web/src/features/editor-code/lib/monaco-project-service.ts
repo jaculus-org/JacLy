@@ -27,6 +27,9 @@ type Monaco = NonNullable<ReturnType<typeof useMonaco>>;
  * - Source files → Monaco editor models (enables cross-file IntelliSense)
  * - .d.ts files from /tsLibs and node_modules → Monaco extraLibs (enables type checking)
  * - Watches ZenFS for changes and keeps everything in sync
+ *
+ * Intended lifetime: one instance per active project. Create on project mount,
+ * call initialize() then watch(), call dispose() on project unmount.
  */
 export class MonacoProjectService {
   private readonly monaco: Monaco;
@@ -42,6 +45,9 @@ export class MonacoProjectService {
 
   // Active ZenFS watchers
   private watchers: Array<{ close(): void }> = [];
+
+  // Prevent concurrent handleChange calls for the same path
+  private handlingPaths = new Set<string>();
 
   constructor(
     monaco: Monaco,
@@ -198,7 +204,7 @@ export class MonacoProjectService {
 
   /** Accumulate an extraLib entry. Call syncExtraLibs() after bulk loading. */
   private registerExtraLib(fullPath: string, content: string): void {
-    this.extraLibs.set(`file://${fullPath}`, content);
+    this.extraLibs.set(this.monaco.Uri.file(fullPath).toString(), content);
   }
 
   /** Push the current extraLibs map to Monaco TS/JS defaults. */
@@ -214,9 +220,16 @@ export class MonacoProjectService {
   }
 
   private async handleChange(fullPath: string): Promise<void> {
+    // Drop duplicate events for the same path while a change is already being processed
+    if (this.handlingPaths.has(fullPath)) return;
+    this.handlingPaths.add(fullPath);
+
     const relative = fullPath.slice(this.projectPath.length + 1);
     const role = classifyProjectFile(relative);
-    if (role === 'skip') return;
+    if (role === 'skip') {
+      this.handlingPaths.delete(fullPath);
+      return;
+    }
 
     try {
       const content = (await this.fsp.readFile(fullPath, 'utf-8')) as string;
@@ -244,6 +257,8 @@ export class MonacoProjectService {
       }
     } catch {
       // file is a directory or unreadable — ignore
+    } finally {
+      this.handlingPaths.delete(fullPath);
     }
   }
 
@@ -259,7 +274,7 @@ export class MonacoProjectService {
         this.createdModelUris.delete(uriStr);
       }
     } else if (role === 'typedef') {
-      const uri = `file://${fullPath}`;
+      const uri = this.monaco.Uri.file(fullPath).toString();
       if (this.extraLibs.delete(uri)) {
         this.syncExtraLibs();
       }
