@@ -37,4 +37,9 @@ describe('classifyProjectFile', () => {
     expect(classifyProjectFile('build/index.js')).to.equal('skip');
     expect(classifyProjectFile('build/output.d.ts')).to.equal('skip');
   });
+
+  it('skips non-code files like .jacly', () => {
+    expect(classifyProjectFile('src/index.jacly')).to.equal('skip');
+    expect(classifyProjectFile('README.md')).to.equal('skip');
+  });
 });

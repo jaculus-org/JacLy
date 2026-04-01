@@ -17,6 +17,8 @@ export function classifyProjectFile(relativePath: string): FileRole {
 
   if (relativePath.endsWith('.d.ts')) return 'typedef';
 
+  if (!/\.(ts|tsx|js|jsx|mjs|cjs|json)$/.test(relativePath)) return 'skip';
+
   return 'source';
 }
 
