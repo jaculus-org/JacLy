@@ -183,7 +183,6 @@ export function CodeEditorBasic({
       theme={themeNormalized === 'dark' ? 'vs-dark' : 'light'}
       options={{
         readOnly: readOnlyInternal,
-        renderValidationDecorations: 'off',
         minimap: { enabled: false },
         automaticLayout: true,
       }}
