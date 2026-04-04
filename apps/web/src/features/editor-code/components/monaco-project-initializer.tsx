@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMonaco } from '@monaco-editor/react';
 import { useActiveProject } from '@/features/project/active-project';
+import { editorSyncService } from '@/services/editor-sync-service';
 import { MonacoProjectService } from '../lib/monaco-project-service';
 
 /**
@@ -18,7 +19,13 @@ export function MonacoProjectInitializer() {
   useEffect(() => {
     if (!monaco) return;
 
-    const service = new MonacoProjectService(monaco, projectPath, fs, fsp);
+    const service = new MonacoProjectService(
+      monaco,
+      projectPath,
+      fs,
+      fsp,
+      editorSyncService
+    );
 
     service
       .initialize()

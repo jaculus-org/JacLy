@@ -1,6 +1,6 @@
 import type { useMonaco } from '@monaco-editor/react';
 import { inferLanguageFromPath } from './language';
-import { editorSyncService } from './editor-sync-service';
+import type { EditorSyncService } from '@/services/editor-sync-service';
 
 export type FileRole = 'source' | 'typedef' | 'skip';
 
@@ -39,32 +39,26 @@ export class MonacoProjectService {
   private readonly projectPath: string;
   private readonly fs: typeof import('fs');
   private readonly fsp: typeof import('fs').promises;
+  private readonly syncService: EditorSyncService;
 
-  // Track URIs of models we created so we only dispose ours on cleanup
   private createdModelUris = new Set<string>();
-
-  // Track extraLibs by URI → content so we can rebuild the list on deletion
   private extraLibs = new Map<string, string>();
-
-  // Active ZenFS watchers
   private watchers: Array<{ close(): void }> = [];
-
-  // Prevent concurrent handleChange calls for the same path
   private handlingPaths = new Set<string>();
-
-  // Set to true on dispose() to abort in-flight async operations
   private disposed = false;
 
   constructor(
     monaco: Monaco,
     projectPath: string,
     fs: typeof import('fs'),
-    fsp: typeof import('fs').promises
+    fsp: typeof import('fs').promises,
+    syncService: EditorSyncService
   ) {
     this.monaco = monaco;
     this.projectPath = projectPath;
     this.fs = fs;
     this.fsp = fsp;
+    this.syncService = syncService;
   }
 
   async initialize(): Promise<void> {
@@ -148,7 +142,6 @@ export class MonacoProjectService {
     this.monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
   }
 
-  /** Walk project dir, skip node_modules and build, create models for non-.d.ts files. */
   private async traverseSourceFiles(dirPath: string): Promise<void> {
     let entries: import('fs').Dirent[];
     try {
@@ -175,13 +168,12 @@ export class MonacoProjectService {
     }
   }
 
-  /** Walk a directory and register all .d.ts files as extraLibs. */
   private async traverseTypeFiles(dirPath: string): Promise<void> {
     let entries: import('fs').Dirent[];
     try {
       entries = await this.fsp.readdir(dirPath, { withFileTypes: true });
     } catch {
-      return; // directory doesn't exist — that's fine
+      return;
     }
     for (const entry of entries) {
       const fullPath = `${dirPath}/${entry.name}`;
@@ -206,8 +198,6 @@ export class MonacoProjectService {
     const uri = this.monaco.Uri.file(fullPath);
     const existing = this.monaco.editor.getModel(uri);
     if (existing) {
-      // Only update if content has drifted — calling setValue unconditionally
-      // triggers onChange → a debounced save even when content is unchanged.
       if (existing.getValue() !== content) {
         existing.setValue(content);
       }
@@ -221,13 +211,11 @@ export class MonacoProjectService {
     }
   }
 
-  /** Accumulate an extraLib entry. Call syncExtraLibs() after bulk loading. */
   private registerExtraLib(fullPath: string, content: string): void {
     if (this.disposed) return;
     this.extraLibs.set(this.monaco.Uri.file(fullPath).toString(), content);
   }
 
-  /** Push the current extraLibs map to Monaco TS/JS defaults. */
   private syncExtraLibs(): void {
     const libs = Array.from(this.extraLibs.entries()).map(
       ([filePath, content]) => ({
@@ -241,18 +229,15 @@ export class MonacoProjectService {
 
   private async handleChange(fullPath: string): Promise<void> {
     if (this.disposed) return;
-    // Drop duplicate events for the same path while a change is already being processed
     if (this.handlingPaths.has(fullPath)) return;
 
     const relative = fullPath.slice(this.projectPath.length + 1);
     const role = classifyProjectFile(relative);
 
-    // Check BEFORE reading — avoids reading partial/stale content while the editor
-    // is still writing the file (writeFile may not have flushed to IndexedDB yet).
     if (role === 'skip') return;
     if (
       role === 'source' &&
-      editorSyncService.shouldIgnoreWatcherEvent(fullPath)
+      this.syncService.shouldIgnoreWatcherEvent(fullPath)
     )
       return;
 
@@ -261,12 +246,8 @@ export class MonacoProjectService {
       const content = (await this.fsp.readFile(fullPath, 'utf-8')) as string;
 
       if (role === 'source') {
-        // Notify the currently-open editor component so it sets applyingExternalChangeRef
-        // before model.setValue fires, preventing the onChange from writing back to ZenFS.
-        editorSyncService.notifyExternalChange(fullPath, content);
+        this.syncService.notifyExternalChange(fullPath, content);
 
-        // Also update the model for files not currently open in any editor instance.
-        // pushEditOperations preserves undo history; setValue would destroy it.
         const uri = this.monaco.Uri.file(fullPath);
         const model = this.monaco.editor.getModel(uri);
         if (model && model.getValue() !== content) {
@@ -279,7 +260,6 @@ export class MonacoProjectService {
           this.createModel(fullPath, content);
         }
       } else {
-        // typedef: update the extraLib map and sync to Monaco
         this.registerExtraLib(fullPath, content);
         this.syncExtraLibs();
       }

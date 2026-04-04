@@ -21,7 +21,7 @@ import {
   RegistryFetchError,
   type RegistryListProject,
 } from '@jaculus/project/registry';
-import { editorSyncService } from '@/features/editor-code/lib/editor-sync-service';
+import { editorSyncService } from '@/services/editor-sync-service';
 import { JacPackagesContext } from './jac-packages-context';
 
 export function JacPackagesProvider({ children }: { children: ReactNode }) {
