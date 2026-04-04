@@ -5,8 +5,9 @@ export function inferLanguageFromPath(path: string): string {
     case 'ts':
       return 'typescript';
     case 'js':
-    case 'jacly':
       return 'javascript';
+    case 'jacly':
+      return 'json';
     case 'json':
       return 'json';
     case 'txt':

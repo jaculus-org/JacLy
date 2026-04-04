@@ -38,8 +38,11 @@ describe('classifyProjectFile', () => {
     expect(classifyProjectFile('build/output.d.ts')).to.equal('skip');
   });
 
-  it('skips non-code files like .jacly', () => {
-    expect(classifyProjectFile('src/index.jacly')).to.equal('skip');
+  it('classifies .jacly files as source (rendered as json, not javascript)', () => {
+    expect(classifyProjectFile('src/index.jacly')).to.equal('source');
+  });
+
+  it('skips non-code files like markdown', () => {
     expect(classifyProjectFile('README.md')).to.equal('skip');
   });
 });

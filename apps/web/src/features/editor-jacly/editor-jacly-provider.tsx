@@ -1,4 +1,10 @@
-import { type ReactNode, useState, useEffect, useCallback } from 'react';
+import {
+  type ReactNode,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 import { dirname } from 'path';
 import { enqueueSnackbar } from 'notistack';
 
@@ -7,6 +13,7 @@ import { useJacDevice } from '@/features/jac-device';
 import { getLocale } from '@/paraglide/runtime';
 import { m } from '@/paraglide/messages';
 import { editorSyncService } from '@/features/editor-code/lib/editor-sync-service';
+import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';
 
 import { EditorJaclyContext } from './editor-jacly-context';
@@ -80,17 +87,30 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     };
   }, [fs, fsp, getFileName, jacProject, nodeModulesVersion]);
 
-  const handleJsonChange = useCallback(
-    async (json: object) => {
-      try {
+  // Debounced: rapid block moves fire many changes; debouncing prevents
+  // concurrent writes that race with each other and the ZenFS watcher.
+  // markEditorSaveStart/End blocks the watcher for the full write duration.
+  // notifyExternalChange pushes the correct content to Monaco directly,
+  // bypassing the racy watcher read.
+  const handleJsonChange = useMemo(
+    () =>
+      debounce(async (json: object) => {
+        const content = JSON.stringify(json, null, 2);
         const filePath = getFileName('JACLY_INDEX');
-        await ensureDir(fsp, dirname(filePath));
-        await writeFile(fsp, filePath, JSON.stringify(json, null, 2));
-      } catch (error) {
-        console.error('Failed to save JSON:', error);
-        enqueueSnackbar(m.editor_jacly_save_json_error(), { variant: 'error' });
-      }
-    },
+        editorSyncService.markEditorSaveStart(filePath);
+        try {
+          await ensureDir(fsp, dirname(filePath));
+          await writeFile(fsp, filePath, content);
+          editorSyncService.notifyExternalChange(filePath, content);
+        } catch (error) {
+          console.error('Failed to save JSON:', error);
+          enqueueSnackbar(m.editor_jacly_save_json_error(), {
+            variant: 'error',
+          });
+        } finally {
+          editorSyncService.markEditorSaveEnd(filePath);
+        }
+      }, 300),
     [fsp, getFileName]
   );
 
