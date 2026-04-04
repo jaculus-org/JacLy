@@ -1,5 +1,5 @@
-import { useActiveProject } from '@/features/project/active-project';
-import { ProjectLoadError } from '@/features/project/components';
+import { useActiveProject } from '@/project';
+import { ProjectLoadError } from '@/project';
 
 export function ErrorPanel() {
   const {

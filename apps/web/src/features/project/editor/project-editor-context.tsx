@@ -4,7 +4,7 @@ import type {
   NewPanelProps,
   PanelAction,
   PanelType,
-} from '@/features/project/types/flexlayout-type';
+} from '@/project/types/flexlayout-type';
 
 export interface ProjectEditorState {
   model: FlexLayout.Model;

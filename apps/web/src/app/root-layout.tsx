@@ -1,4 +1,4 @@
-import { AppRouterProviders } from '@/providers/app-router-provider';
+import { AppRouterProviders } from '@/app/app-router-provider';
 import { GeneralHeader } from '@/ui/components/custom/general-header';
 import { Outlet, useMatches } from '@tanstack/react-router';
 

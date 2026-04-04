@@ -4,9 +4,9 @@ import type {
   NewPanelProps,
   PanelAction,
   PanelType,
-} from '@/features/project/types/flexlayout-type';
-import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
-import { applyPanelDefinitionToTab } from '@/features/project/lib/panel-registry';
+} from '@/project/types/flexlayout-type';
+import { flexLayoutDefaultJson } from '@/project/lib/flexlayout-defaults';
+import { applyPanelDefinitionToTab } from '@/project/lib/panel-registry';
 
 type JsonLayoutNode =
   | FlexLayout.IJsonTabNode

@@ -17,9 +17,9 @@ import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { useJacDevice } from '../../state/device-context';
 import { useConsole } from '@/console';
-import { useActiveProject } from '@/features/project/active-project';
+import { useActiveProject } from '@/project';
 import { testConnection, uploadCode } from '../../services/device-operations';
-import { useProjectEditor } from '@/features/project/editor';
+import { useProjectEditor } from '@/project';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import {
   Tooltip,

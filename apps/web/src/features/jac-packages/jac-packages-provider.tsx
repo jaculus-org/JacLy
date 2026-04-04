@@ -11,8 +11,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useActiveProject } from '@/features/project/active-project';
-import { useProjectEditor } from '@/features/project/editor';
+import { useActiveProject } from '@/project';
+import { useProjectEditor } from '@/project';
 import path from 'path';
 import type { Dependencies } from '@jaculus/project/package';
 import { InvalidPackageJsonFormatError } from '@jaculus/project/package';

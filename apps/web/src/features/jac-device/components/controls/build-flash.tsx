@@ -1,5 +1,5 @@
 import { m } from '@/core/paraglide/messages';
-import { useActiveProject } from '@/features/project/active-project';
+import { useActiveProject } from '@/project';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 import { compileProject } from '@/device';
 import { useJacDevice } from '@/device';
 import { uploadCode } from '@/device';
-import { useProjectEditor } from '@/features/project/editor';
+import { useProjectEditor } from '@/project';
 
 export function BuildFlash() {
   const {

@@ -11,13 +11,10 @@ import {
   JaculusPanel,
   LogsPanel,
   WokwiPanel,
-} from '@/features/project/panels';
+} from '@/project/panels';
 import { JacPackagesPanel, JacPackagesProvider } from '@/packages';
-import {
-  JacFileExplorerPanel,
-  JacFileExplorerProvider,
-} from '@/features/jac-file-explorer';
-import type { PanelType } from '@/features/project/types/flexlayout-type';
+import { JacFileExplorerPanel, JacFileExplorerProvider } from '@/project';
+import type { PanelType } from '@/project/types/flexlayout-type';
 
 export interface PanelDefinition {
   canPopout?: boolean;

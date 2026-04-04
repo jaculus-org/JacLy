@@ -1,5 +1,5 @@
 import * as FlexLayout from 'flexlayout-react';
-import { factory } from '@/features/project/lib/flexlayout-components';
+import { factory } from '@/project/lib/flexlayout-components';
 import { useProjectEditor } from './project-editor-context';
 import './styles/flexlayout.css';
 

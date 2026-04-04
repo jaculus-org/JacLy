@@ -1,6 +1,6 @@
 import Editor, { type OnMount } from '@monaco-editor/react';
 import { useMemo, useRef } from 'react';
-import { useActiveProject } from '@/features/project/active-project';
+import { useActiveProject } from '@/project';
 import { inferLanguageFromPath } from '../services/language';
 import { debounce } from '@jaculus/jacly/utils';
 

@@ -9,8 +9,8 @@ import {
   type ReactNode,
 } from 'react';
 import { enqueueSnackbar } from 'notistack';
-import { useActiveProject } from '@/features/project/active-project';
-import { useProjectEditor } from '@/features/project/editor';
+import { useActiveProject } from '@/project';
+import { useProjectEditor } from '@/project';
 import { debounce } from '@jaculus/jacly/utils';
 import { JacFileExplorerContext } from './jac-file-explorer-context';
 import type { FileSystemItem } from './file-explorer-types';

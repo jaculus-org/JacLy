@@ -8,15 +8,9 @@ import {
 import * as fs from 'fs';
 import path from 'path';
 import type { IDbProject } from '@/core/types/project';
-import {
-  ProjectFsService,
-  type ProjectFsInterface,
-} from '@/services/project-fs-service';
-import type { ProjectManagementService } from '@/services/project-runtime-service';
-import {
-  ProjectLoadingIndicator,
-  ProjectLoadError,
-} from '@/features/project/components';
+import { ProjectFsService, type ProjectFsInterface } from '@/project';
+import type { ProjectManagementService } from '@/project';
+import { ProjectLoadingIndicator, ProjectLoadError } from '@/project';
 import { JaclyFiles } from '../types/jacly-files';
 import {
   ActiveProjectContext,

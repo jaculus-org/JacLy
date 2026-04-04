@@ -3,7 +3,7 @@ import {
   downloadProjectAsZip,
   downloadProjectAsTarGz,
   buildPackageImportUrl,
-} from '@/features/project/lib/download';
+} from '@/project';
 import { packProjectAsTarGz } from '@jaculus/project/export';
 import { enqueueSnackbar } from 'notistack';
 import { Button } from '@/ui/components/button';

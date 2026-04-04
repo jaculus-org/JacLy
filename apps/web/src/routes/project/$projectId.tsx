@@ -1,10 +1,10 @@
 import { m } from '@/core/paraglide/messages';
 import { JacDevice } from '@/device';
-import { ActiveProject } from '@/features/project/active-project';
+import { ActiveProject } from '@/project';
 import { Console } from '@/console';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
-import { ProjectEditor } from '@/features/project/editor';
+import { ProjectEditor } from '@/project';
 import { MonacoProjectInitializer } from '@/editor/components/monaco-project-initializer';
 
 export const Route = createFileRoute('/project/$projectId')({

@@ -1,7 +1,7 @@
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import { ButtonGroup } from '@/ui/components/button-group';
-import { useProjectEditor } from '@/features/project/editor';
+import { useProjectEditor } from '@/project';
 import { CableIcon } from 'lucide-react';
 import { useJacDevice } from '@/device';
 

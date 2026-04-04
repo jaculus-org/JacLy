@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from '@tanstack/react-router';
-import { makeRouterContext } from '@/router/router-context';
-import { makeRouter } from '@/router/router';
-import { AppProviders } from '@/providers/app-provider';
+import { makeRouterContext } from '@/app/router-context';
+import { makeRouter } from '@/app/router';
+import { AppProviders } from '@/app/app-provider';
 import '@/app/index.css';
 
 async function bootstrap() {

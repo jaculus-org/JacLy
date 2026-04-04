@@ -1,5 +1,5 @@
 import { m } from '@/core/paraglide/messages';
-import { useActiveProject } from '@/features/project/active-project';
+import { useActiveProject } from '@/project';
 import { useTheme } from '@/core/components/theme';
 import { editorSyncService } from '@/editor';
 import Editor from '@monaco-editor/react';

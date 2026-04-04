@@ -1,0 +1,60 @@
+import type { ProjectRepository } from '@/core/db/project-repository';
+import { generateProjectId } from '@/ui/lib/nanoid';
+import type { IDbProject } from '@/core/types/project';
+
+export class ProjectManagementService {
+  private repo: ProjectRepository;
+
+  constructor(repo: ProjectRepository) {
+    this.repo = repo;
+  }
+
+  async createProject(
+    name: string,
+    type: IDbProject['type']
+  ): Promise<IDbProject> {
+    const id = generateProjectId();
+    // const id = 'demo'
+    return await this.repo.create(id, name, type);
+  }
+
+  async getProject(id: string): Promise<IDbProject | undefined> {
+    return await this.repo.get(id);
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    await this.repo.delete(id);
+  }
+
+  async renameProject(id: string, newName: string): Promise<void> {
+    await this.repo.rename(id, newName);
+  }
+
+  async renameProjectWithId(
+    oldId: string,
+    newId: string,
+    newName: string
+  ): Promise<void> {
+    await this.repo.renameWithId(oldId, newId, newName);
+  }
+
+  async listProjects(): Promise<IDbProject[]> {
+    return await this.repo.list();
+  }
+
+  async projectExists(id: string): Promise<boolean> {
+    return (await this.repo.get(id)) !== undefined;
+  }
+
+  async touchProject(id: string): Promise<void> {
+    await this.repo.touch(id);
+  }
+
+  async updateProjectKey(
+    id: string,
+    key: keyof IDbProject,
+    value: IDbProject[typeof key]
+  ): Promise<void> {
+    await this.repo.updateKey(id, key, value);
+  }
+}

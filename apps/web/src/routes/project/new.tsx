@@ -15,7 +15,7 @@ import { getRequest } from '@jaculus/jacly/project';
 import { enqueueSnackbar } from 'notistack';
 import type { JaculusProjectType } from '@jaculus/project/package';
 import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
-import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
+import { loadPackageFromFile } from '@/project/lib/load-package';
 import { createFromBundle } from '@jaculus/project/creation';
 import { Logger } from '@/core/components/logger';
 import { logger } from '@/core/services/logger-service';

@@ -4,10 +4,10 @@ import { ButtonGroup } from '@/ui/components/button-group';
 import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { compileProject } from '../../services/compilation';
-import { useActiveProject } from '@/features/project/active-project';
+import { useActiveProject } from '@/project';
 import { useJacDevice } from '../../state/device-context';
 import { useState } from 'react';
-import { useProjectEditor } from '@/features/project/editor';
+import { useProjectEditor } from '@/project';
 
 export function Build() {
   const {

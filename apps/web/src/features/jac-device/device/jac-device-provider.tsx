@@ -8,10 +8,10 @@ import {
 import { JacDevice } from '@jaculus/device';
 import { getRequest } from '@jaculus/jacly/project';
 import path from 'path';
-import { useActiveProject } from '@/features/project/active-project';
+import { useActiveProject } from '@/project';
 import { enqueueSnackbar } from 'notistack';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
-import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
+import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
 import { m } from '@/core/paraglide/messages';
 import { restart, uploadCode } from '../lib/device';
 import {

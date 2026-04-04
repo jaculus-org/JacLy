@@ -9,21 +9,21 @@ import * as FlexLayout from 'flexlayout-react';
 import { enqueueSnackbar } from 'notistack';
 import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
-import { useActiveProject } from '@/features/project/active-project';
-import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';
+import { useActiveProject } from '@/project';
+import { flexLayoutDefaultJson } from '@/project/lib/flexlayout-defaults';
 import {
   controlPanel,
   getUpdatedLayoutModel,
   openPanel,
-} from '@/features/project/lib/flexlayout';
-import { getPanelTitle } from '@/features/project/lib/panel-registry';
+} from '@/project/lib/flexlayout';
+import { getPanelTitle } from '@/project/lib/panel-registry';
 import type {
   NewPanelProps,
   PanelAction,
   PanelType,
-} from '@/features/project/types/flexlayout-type';
-import type { ProjectManagementService } from '@/services/project-runtime-service';
-import { ProjectLoadingIndicator } from '@/features/project/components';
+} from '@/project/types/flexlayout-type';
+import type { ProjectManagementService } from '@/project';
+import { ProjectLoadingIndicator } from '@/project';
 import { useKeyboardShortcut } from '../hooks/use-keyboard-shortcut';
 import {
   ProjectEditorContext,

@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import { githubPagesSetup } from './src/vite/vite-plugin-github-pages-setup';
-import { buildInfoPlugin } from './src/vite/vite-plugin-build-info';
+import { githubPagesSetup } from './src/app/vite/vite-plugin-github-pages-setup';
+import { buildInfoPlugin } from './src/app/vite/vite-plugin-build-info';
 
 // https://vite.dev/config/
 export default defineConfig({

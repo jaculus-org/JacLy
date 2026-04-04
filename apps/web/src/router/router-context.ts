@@ -1,8 +1,8 @@
 import { AppSettingsRepository as SettingsRepository } from '@/core/db/app-settings-repository';
 import { db } from '@/core/db/db';
 import { ProjectRepository } from '@/core/db/project-repository';
-import { ProjectFsService } from '@/services/project-fs-service';
-import { ProjectManagementService } from '@/services/project-runtime-service';
+import { ProjectFsService } from '@/project';
+import { ProjectManagementService } from '@/project';
 import { SettingsService } from '@/core/services/settings-service';
 import { logger } from '@/core/services/logger-service';
 import { ConsoleBusService } from '@/console';
