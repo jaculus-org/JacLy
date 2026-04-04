@@ -205,7 +205,11 @@ export class MonacoProjectService {
     const uri = this.monaco.Uri.file(fullPath);
     const existing = this.monaco.editor.getModel(uri);
     if (existing) {
-      existing.setValue(content);
+      // Only update if content has drifted — calling setValue unconditionally
+      // triggers onChange → a debounced save even when content is unchanged.
+      if (existing.getValue() !== content) {
+        existing.setValue(content);
+      }
     } else {
       this.monaco.editor.createModel(
         content,
@@ -260,11 +264,16 @@ export class MonacoProjectService {
         // before model.setValue fires, preventing the onChange from writing back to ZenFS.
         editorSyncService.notifyExternalChange(fullPath, content);
 
-        // Also update the model for files not currently open in any editor instance
+        // Also update the model for files not currently open in any editor instance.
+        // pushEditOperations preserves undo history; setValue would destroy it.
         const uri = this.monaco.Uri.file(fullPath);
         const model = this.monaco.editor.getModel(uri);
         if (model && model.getValue() !== content) {
-          model.setValue(content);
+          model.pushEditOperations(
+            [],
+            [{ range: model.getFullModelRange(), text: content }],
+            () => null
+          );
         } else if (!model) {
           this.createModel(fullPath, content);
         }

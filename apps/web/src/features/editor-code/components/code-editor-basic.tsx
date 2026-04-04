@@ -78,23 +78,24 @@ export function CodeEditorBasic({
         setLoading(true);
         setError(null);
 
-        // Try to read the file
-        const content = await fsp.readFile(fullPath, 'utf-8');
-        setFileExists(true);
-
-        // Create or update the Monaco model
         const uri = monacoInstance.Uri.file(fullPath);
-        let model = monacoInstance.editor.getModel(uri);
 
-        if (model) {
-          model.setValue(content);
-        } else {
-          model = monacoInstance.editor.createModel(
-            content,
-            inferLanguageFromPath(filePath),
-            uri
-          );
+        // If MonacoProjectService already created the model, use it directly.
+        // Re-reading from ZenFS and calling setValue would trigger onChange →
+        // a redundant debounced save of the same content.
+        if (monacoInstance.editor.getModel(uri)) {
+          setFileExists(true);
+          return;
         }
+
+        // Model not yet available — fall back to reading from ZenFS.
+        const content = (await fsp.readFile(fullPath, 'utf-8')) as string;
+        setFileExists(true);
+        monacoInstance.editor.createModel(
+          content,
+          inferLanguageFromPath(filePath),
+          uri
+        );
       } catch (err) {
         console.error('Error loading file:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -153,8 +154,15 @@ export function CodeEditorBasic({
 
         if (model.getValue() === content) return;
 
+        // Use pushEditOperations instead of setValue to preserve the undo stack.
+        // setValue nukes undo history; pushEditOperations treats the external
+        // change as an undoable edit operation.
         applyingExternalChangeRef.current = true;
-        model.setValue(content);
+        model.pushEditOperations(
+          [],
+          [{ range: model.getFullModelRange(), text: content }],
+          () => null
+        );
         window.setTimeout(() => {
           applyingExternalChangeRef.current = false;
         }, 0);
