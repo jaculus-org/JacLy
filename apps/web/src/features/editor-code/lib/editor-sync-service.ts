@@ -3,56 +3,41 @@
  *
  * This service tracks files being saved by the editor to prevent the file watcher
  * from reloading content that was just written, avoiding race conditions.
+ *
+ * The pending-save flag is held for the full duration of the writeFile call,
+ * not a fixed timeout, so partial reads during slow IndexedDB writes are blocked.
  */
 
 type FileChangeListener = (filePath: string, content: string) => void;
 
 class EditorSyncServiceImpl {
-  // Files currently being saved by the editor (should ignore watcher events)
-  private pendingSaves = new Map<string, number>();
-
-  // Timeout duration to consider a save as "pending" (ms)
-  private readonly SAVE_TIMEOUT = 200;
+  // Files currently being written by the editor — watcher events are ignored
+  private pendingSaves = new Set<string>();
 
   // Listeners for external file changes
   private externalChangeListeners: FileChangeListener[] = [];
 
   /**
-   * Mark a file as being saved by the editor.
-   * The file watcher should ignore the next change event for this file.
+   * Mark a file as being written by the editor.
+   * Pair with markEditorSaveEnd() when the write completes.
    */
-  markEditorSave(filePath: string): void {
-    // Clear any existing timeout
-    const existingTimeout = this.pendingSaves.get(filePath);
-    if (existingTimeout) {
-      clearTimeout(existingTimeout);
-    }
+  markEditorSaveStart(filePath: string): void {
+    this.pendingSaves.add(filePath);
+  }
 
-    // Set new timeout
-    const timeoutId = window.setTimeout(() => {
-      this.pendingSaves.delete(filePath);
-    }, this.SAVE_TIMEOUT);
-
-    this.pendingSaves.set(filePath, timeoutId);
+  /**
+   * Clear the pending-save flag after the write completes (or fails).
+   */
+  markEditorSaveEnd(filePath: string): void {
+    this.pendingSaves.delete(filePath);
   }
 
   /**
    * Check if a file watcher event should be ignored.
-   * Returns true if this file was recently saved by the editor.
+   * Returns true while the editor is writing this file.
    */
   shouldIgnoreWatcherEvent(filePath: string): boolean {
     return this.pendingSaves.has(filePath);
-  }
-
-  /**
-   * Clear pending save status for a file (e.g., when save is confirmed).
-   */
-  clearPendingSave(filePath: string): void {
-    const timeoutId = this.pendingSaves.get(filePath);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      this.pendingSaves.delete(filePath);
-    }
   }
 
   /**

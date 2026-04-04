@@ -5,7 +5,7 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { inferLanguageFromPath } from '../lib/language';
 import { editorSyncService } from '../lib/editor-sync-service';
-// import { debounce } from '@jaculus/jacly/utils';
+import { debounce } from '@jaculus/jacly/utils';
 
 interface CodeEditorBasicProps {
   readonly filePath: string;
@@ -34,16 +34,21 @@ export function CodeEditorBasic({
   const fullPath = `${projectPath}/${filePath}`;
   const readOnlyInternal = filePath.startsWith('build/') ? true : readOnly;
 
-  // Debounced save function that marks saves as editor-originated
+  // Debounced save function that marks saves as editor-originated.
+  // Debouncing prevents concurrent writes on every keystroke; holding the flag
+  // for the full writeFile duration blocks the watcher from reading partial content.
   const saveToFile = useMemo(
-    () => /*debounce(*/ async (path: string, content: string) => {
-      try {
-        editorSyncService.markEditorSave(path);
-        await fsp.writeFile(path, content, 'utf-8');
-      } catch (error) {
-        console.error('Error saving file:', error);
-      }
-    } /*, 500),*/,
+    () =>
+      debounce(async (path: string, content: string) => {
+        editorSyncService.markEditorSaveStart(path);
+        try {
+          await fsp.writeFile(path, content, 'utf-8');
+        } catch (error) {
+          console.error('Error saving file:', error);
+        } finally {
+          editorSyncService.markEditorSaveEnd(path);
+        }
+      }, 300),
     [fsp]
   );
 
@@ -97,8 +102,8 @@ export function CodeEditorBasic({
 
         // Handle ifNotExists logic
         if (ifNotExists === 'create') {
+          editorSyncService.markEditorSaveStart(fullPath);
           try {
-            editorSyncService.markEditorSave(fullPath);
             await fsp.writeFile(fullPath, '', 'utf-8');
             setFileExists(true);
 
@@ -114,6 +119,8 @@ export function CodeEditorBasic({
             }
           } catch (createErr) {
             console.error('Error creating file:', createErr);
+          } finally {
+            editorSyncService.markEditorSaveEnd(fullPath);
           }
         }
       } finally {

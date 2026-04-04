@@ -238,22 +238,24 @@ export class MonacoProjectService {
     if (this.disposed) return;
     // Drop duplicate events for the same path while a change is already being processed
     if (this.handlingPaths.has(fullPath)) return;
-    this.handlingPaths.add(fullPath);
 
     const relative = fullPath.slice(this.projectPath.length + 1);
     const role = classifyProjectFile(relative);
-    if (role === 'skip') {
-      this.handlingPaths.delete(fullPath);
-      return;
-    }
 
+    // Check BEFORE reading — avoids reading partial/stale content while the editor
+    // is still writing the file (writeFile may not have flushed to IndexedDB yet).
+    if (role === 'skip') return;
+    if (
+      role === 'source' &&
+      editorSyncService.shouldIgnoreWatcherEvent(fullPath)
+    )
+      return;
+
+    this.handlingPaths.add(fullPath);
     try {
       const content = (await this.fsp.readFile(fullPath, 'utf-8')) as string;
 
       if (role === 'source') {
-        // Skip if this change was caused by the editor saving — prevents round-trips
-        if (editorSyncService.shouldIgnoreWatcherEvent(fullPath)) return;
-
         // Notify the currently-open editor component so it sets applyingExternalChangeRef
         // before model.setValue fires, preventing the onChange from writing back to ZenFS.
         editorSyncService.notifyExternalChange(fullPath, content);
