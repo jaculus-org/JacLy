@@ -1,4 +1,4 @@
-import type { KeyValueHistoryMap } from './types';
+import type { KeyValueHistoryMap } from '../types/key-value-types';
 
 export function cloneHistoryMap(
   history: KeyValueHistoryMap

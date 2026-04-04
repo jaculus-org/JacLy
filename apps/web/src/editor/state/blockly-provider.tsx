@@ -16,7 +16,7 @@ import { editorSyncService } from '../services/editor-sync-service';
 import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';
 
-import { EditorJaclyContext } from './editor-jacly-context';
+import { EditorJaclyContext } from './blockly-context';
 
 async function ensureDir(
   fsp: ReturnType<typeof useActiveProject>['state']['fsp'],

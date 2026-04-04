@@ -10,8 +10,8 @@ import {
 } from '@/ui/components/select';
 import { m } from '@/core/paraglide/messages';
 import { Globe, Loader2, Lock, RefreshCw, Trash2, Wifi } from 'lucide-react';
-import { useJacDeviceControl } from '../../jac-device-control-context';
-import { JacDeviceControlWifiModal } from '../jac-device-control-wifi-modal';
+import { useJacDeviceControl } from '../../state/device-control-context';
+import { JacDeviceControlWifiModal } from '../wifi-modal';
 
 export function JacDeviceControlSectionWifi() {
   const { state, actions } = useJacDeviceControl();

@@ -1,4 +1,4 @@
-import { CodeEditorBasic } from './code-editor-basic';
+import { CodeEditorBasic } from './code-editor';
 
 interface CodeEditorReadOnlyProps {
   readonly filePath: string;

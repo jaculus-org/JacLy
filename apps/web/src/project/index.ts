@@ -77,7 +77,7 @@ export {
   loadPackageFromUri,
   type PackageLoadResult,
 } from './lib/load-package';
-export { getRequest } from './lib/request';
+export { loadPackageUri } from './lib/request';
 
 export type {
   CodePanelProps,

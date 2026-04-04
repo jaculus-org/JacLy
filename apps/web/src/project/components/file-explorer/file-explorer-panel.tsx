@@ -2,8 +2,8 @@
 
 import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
 import { useJacFileExplorer } from './file-explorer-context';
-import { JacFileExplorerNodeMenu } from './jac-file-explorer-node-menu';
-import { JacFileExplorerTree } from './jac-file-explorer-tree';
+import { JacFileExplorerNodeMenu } from './file-explorer-node-menu';
+import { JacFileExplorerTree } from './file-explorer-tree';
 
 export function JacFileExplorerPanel() {
   const {

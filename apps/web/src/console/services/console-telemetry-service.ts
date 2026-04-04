@@ -61,7 +61,10 @@ export class ConsoleTelemetryService {
       const parsed = parseKeyValue(entry.content);
       const timestamp = entry.timestamp.getTime();
 
-      for (const [key, value] of Object.entries(parsed)) {
+      for (const [key, value] of Object.entries(parsed) as [
+        string,
+        ParsedValue,
+      ][]) {
         const normalizedValue: ParsedValue = {
           value: value.value,
           timestamp,

@@ -1,4 +1,4 @@
-import type { ProjectError } from '../active-project';
+import type { ProjectError } from '../state/active-project-context';
 
 export type FlexLayoutAttributes = {
   type: string;

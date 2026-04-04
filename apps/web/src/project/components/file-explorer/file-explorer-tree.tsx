@@ -2,8 +2,8 @@
 
 import { m } from '@/core/paraglide/messages';
 import { useJacFileExplorer } from './file-explorer-context';
-import { JacFileExplorerNodeMenu } from './jac-file-explorer-node-menu';
-import { JacFileExplorerTreeNode } from './jac-file-explorer-tree-node';
+import { JacFileExplorerNodeMenu } from './file-explorer-node-menu';
+import { JacFileExplorerTreeNode } from './file-explorer-tree-node';
 
 export function JacFileExplorerTree() {
   const {

@@ -1,7 +1,7 @@
 import { Card } from '@/ui/components/card';
 import { cn } from '@/ui/lib/cn';
 import { useEffect, useRef } from 'react';
-import type { ConsoleEntry, ConsoleType } from '../types';
+import type { ConsoleEntry, ConsoleType } from '../types/types';
 
 interface ConsoleOutputProps {
   entries: ConsoleEntry[];

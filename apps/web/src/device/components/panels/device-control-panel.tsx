@@ -1,9 +1,9 @@
 import { ScrollArea } from '@/ui/components/scroll-area';
-import { useJacDeviceControl } from '../jac-device-control-context';
-import { JacDeviceControlDisconnected } from './jac-device-control-disconnected';
-import { JacDeviceControlSectionControl } from './sections/jac-device-control-section-control';
-import { JacDeviceControlSectionInfo } from './sections/jac-device-control-section-info';
-import { JacDeviceControlSectionWifi } from './sections/jac-device-control-section-wifi';
+import { useJacDeviceControl } from '../../state/device-control-context';
+import { JacDeviceControlDisconnected } from '../device-disconnected';
+import { JacDeviceControlSectionControl } from '../sections/device-control-section-control';
+import { JacDeviceControlSectionInfo } from '../sections/device-control-section-info';
+import { JacDeviceControlSectionWifi } from '../sections/device-control-section-wifi';
 
 export function JacDeviceControlPanel() {
   const { meta } = useJacDeviceControl();

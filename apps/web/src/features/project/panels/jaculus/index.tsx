@@ -1,9 +1,0 @@
-import { DeviceControl } from '@/device';
-
-export function JaculusPanel() {
-  return (
-    <DeviceControl.Provider>
-      <DeviceControl.Panel />
-    </DeviceControl.Provider>
-  );
-}

@@ -29,7 +29,7 @@ import {
   type JacDeviceControlContextValue,
   type JacDeviceControlState,
   type WifiModalMode,
-} from './jac-device-control-context';
+} from './device-control-context';
 
 interface JacDeviceControlProviderProps {
   children: ReactNode;

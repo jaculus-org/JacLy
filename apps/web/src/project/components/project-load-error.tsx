@@ -6,7 +6,7 @@ import {
   ToolCaseIcon,
 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import type { ProjectError } from '../active-project';
+import type { ProjectError } from '../state/active-project-context';
 
 interface EditorLoadErrorProps {
   error: ProjectError;
@@ -24,6 +24,8 @@ export function ProjectLoadError({ error }: EditorLoadErrorProps) {
       case 'load-failed':
         return m.project_error_load_failed();
       case 'unknown-error':
+        return m.project_error_unknown();
+      default:
         return m.project_error_unknown();
     }
   }

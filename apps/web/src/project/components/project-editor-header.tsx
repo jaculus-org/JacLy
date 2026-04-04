@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
 import { ConnectedDevice } from '@/device';
 import { Badge } from '@/ui/components/badge';
-import { useActiveProject } from '../active-project';
+import { useActiveProject } from '../state/active-project-context';
 import { ProjectNameEditor } from './project-name-editor';
 import {
   Tooltip,

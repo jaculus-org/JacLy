@@ -1,4 +1,4 @@
-import type { KeyValueMap } from '../types';
+import type { KeyValueMap } from '../types/key-value-types';
 
 /**
  * Default parser

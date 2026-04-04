@@ -1,5 +1,5 @@
-import { EditorJaclyProvider } from '../editor-jacly-provider';
-import { EditorJaclyDisplay } from '../editor-jacly-display';
+import { EditorJaclyProvider } from '../../state/blockly-provider';
+import { EditorJaclyDisplay } from './blockly-display';
 
 // Convenience wrapper — keeps the single-component usage at call sites unchanged.
 export function JaclyEditorComponent() {

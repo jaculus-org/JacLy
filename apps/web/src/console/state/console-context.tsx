@@ -1,6 +1,6 @@
 import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
 import { createContext, useContext } from 'react';
-import type { AddToConsole, ConsoleEntry, ConsoleType } from './types';
+import type { AddToConsole, ConsoleEntry, ConsoleType } from '../types/types';
 
 export interface ConsoleState {
   entries: ConsoleEntry[];

@@ -13,7 +13,7 @@ import { enqueueSnackbar } from 'notistack';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
 import { m } from '@/core/paraglide/messages';
-import { restart, uploadCode } from '../lib/device';
+import { restart, uploadCode } from '../services/device-operations';
 import {
   InvalidPackageJsonFormatError,
   loadPackageJson,
@@ -27,7 +27,7 @@ import {
   type JacDeviceActions,
   type JacDeviceContextValue,
   type JacDeviceState,
-} from './jac-device-context';
+} from './device-context';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { logger } from '@/core/services/logger-service';
 

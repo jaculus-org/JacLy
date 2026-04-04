@@ -3,8 +3,8 @@
 import { memo } from 'react';
 import { ChevronDown, ChevronRight, FolderOpen, Folder } from 'lucide-react';
 import { cn } from '@/ui/lib/cn';
-import { getFileIcon } from '../file-explorer-helpers';
-import type { FileTreeNodeProps } from '../file-explorer-types';
+import { getFileIcon } from './file-explorer-helpers';
+import type { FileTreeNodeProps } from './file-explorer-types';
 import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
 
 export const JacFileExplorerTreeNode = memo(

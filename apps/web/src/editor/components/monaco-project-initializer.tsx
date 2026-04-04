@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useMonaco } from '@monaco-editor/react';
 import { useActiveProject } from '@/project';
 import { editorSyncService } from '../services/editor-sync-service';
-import { MonacoProjectService } from '../lib/monaco-project-service';
+import { MonacoProjectService } from '../services/monaco-project-service';
 
 /**
  * Renderless component that initializes MonacoProjectService for the active project.

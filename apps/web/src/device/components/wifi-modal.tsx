@@ -10,7 +10,7 @@ import {
 } from '@/ui/components/alert-dialog';
 import { Input } from '@/ui/components/input';
 import { m } from '@/core/paraglide/messages';
-import { useJacDeviceControl } from '../jac-device-control-context';
+import { useJacDeviceControl } from '../state/device-control-context';
 
 export function JacDeviceControlWifiModal() {
   const { state, actions } = useJacDeviceControl();

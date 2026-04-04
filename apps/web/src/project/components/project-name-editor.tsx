@@ -1,7 +1,7 @@
 import { m } from '@/core/paraglide/messages';
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
-import { useActiveProject } from '../active-project';
+import { useActiveProject } from '../state/active-project-context';
 import { Button } from '@/ui/components/button';
 import {
   Dialog,
