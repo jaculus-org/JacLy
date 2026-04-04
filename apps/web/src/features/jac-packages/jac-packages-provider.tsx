@@ -21,6 +21,7 @@ import {
   RegistryFetchError,
   type RegistryListProject,
 } from '@jaculus/project/registry';
+import { editorSyncService } from '@/services/editor-sync-service';
 import { JacPackagesContext } from './jac-packages-context';
 
 export function JacPackagesProvider({ children }: { children: ReactNode }) {
@@ -31,7 +32,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   const { jacProject, jacRegistry } = jacState;
   const { reloadNodeModules } = jacActions;
   const {
-    state: { projectPath, fs },
+    state: { projectPath, fs, fsp },
   } = useActiveProject();
 
   function classifyError(err: unknown, fallback: string): string {
@@ -77,6 +78,21 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     [controlPanel]
   );
 
+  const runPackageOperation = useCallback(
+    async (operation: () => Promise<void>) => {
+      const pkgJsonPath = path.join(projectPath, 'package.json');
+      editorSyncService.markEditorSaveStart(pkgJsonPath);
+      try {
+        await operation();
+        const content = (await fsp.readFile(pkgJsonPath, 'utf-8')) as string;
+        editorSyncService.notifyExternalChange(pkgJsonPath, content);
+      } finally {
+        editorSyncService.markEditorSaveEnd(pkgJsonPath);
+      }
+    },
+    [fsp, projectPath]
+  );
+
   const availableLibChoices = useMemo(
     () => availableLibs.filter(lib => !(lib.id in installedLibs)),
     [availableLibs, installedLibs]
@@ -95,7 +111,9 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     try {
       setIsInstalling(true);
       setError(null);
-      setInstalledLibs(await jacProject.install(jacRegistry));
+      await runPackageOperation(async () => {
+        setInstalledLibs(await jacProject.install(jacRegistry));
+      });
       reloadNodeModules();
     } catch (err) {
       setErrorAndLogPanel(
@@ -105,7 +123,13 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsInstalling(false);
     }
-  }, [jacProject, jacRegistry, reloadNodeModules, setErrorAndLogPanel]);
+  }, [
+    jacProject,
+    jacRegistry,
+    reloadNodeModules,
+    runPackageOperation,
+    setErrorAndLogPanel,
+  ]);
 
   const addLibrary = useCallback(async () => {
     if (!jacProject || !jacRegistry) return;
@@ -117,13 +141,15 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         return;
       }
       const versionToInstall = selectedLibVersion ?? availableLibVersions[0];
-      setInstalledLibs(
-        await jacProject.addLibraryVersion(
-          jacRegistry,
-          selectedLib,
-          versionToInstall
-        )
-      );
+      await runPackageOperation(async () => {
+        setInstalledLibs(
+          await jacProject.addLibraryVersion(
+            jacRegistry,
+            selectedLib,
+            versionToInstall
+          )
+        );
+      });
       reloadNodeModules();
       enqueueSnackbar(
         m.project_panel_pkg_added({
@@ -147,6 +173,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     selectedLibVersion,
     availableLibVersions,
     reloadNodeModules,
+    runPackageOperation,
     setErrorAndLogPanel,
   ]);
 
@@ -156,7 +183,11 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
       try {
         setIsInstalling(true);
         setError(null);
-        setInstalledLibs(await jacProject.removeLibrary(jacRegistry, library));
+        await runPackageOperation(async () => {
+          setInstalledLibs(
+            await jacProject.removeLibrary(jacRegistry, library)
+          );
+        });
         reloadNodeModules();
         enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
           variant: 'success',
@@ -170,7 +201,13 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         setIsInstalling(false);
       }
     },
-    [jacProject, jacRegistry, reloadNodeModules, setErrorAndLogPanel]
+    [
+      jacProject,
+      jacRegistry,
+      reloadNodeModules,
+      runPackageOperation,
+      setErrorAndLogPanel,
+    ]
   );
 
   useEffect(() => {

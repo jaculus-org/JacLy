@@ -3,13 +3,16 @@ export function inferLanguageFromPath(path: string): string {
   const extension = path.split('.').pop()?.toLowerCase();
   switch (extension) {
     case 'ts':
+    case 'tsx':
       return 'typescript';
     case 'js':
-    case 'jacly':
+    case 'jsx':
+    case 'mjs':
+    case 'cjs':
       return 'javascript';
+    case 'jacly':
     case 'json':
       return 'json';
-    case 'txt':
     case undefined:
       return 'plaintext';
     default:
