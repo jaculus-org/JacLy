@@ -12,7 +12,7 @@ import {
   LogsPanel,
   WokwiPanel,
 } from '@/features/project/panels';
-import { JacPackagesPanel, JacPackagesProvider } from '@/features/jac-packages';
+import { JacPackagesPanel, JacPackagesProvider } from '@/packages';
 import {
   JacFileExplorerPanel,
   JacFileExplorerProvider,

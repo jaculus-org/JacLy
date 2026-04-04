@@ -1,4 +1,4 @@
-import type { ConsoleEntry, ConsoleType } from '@/features/console/types';
+import type { ConsoleEntry, ConsoleType } from '@/console/types';
 
 type ConsoleListener = (entries: ConsoleEntry[]) => void;
 

@@ -4,7 +4,7 @@ import {
   cloneHistoryMap,
   type KeyValueHistoryMap,
   type ParsedValue,
-} from '@/features/keyValue';
+} from '@/console';
 import { m } from '@/core/paraglide/messages';
 import 'chartjs-adapter-luxon';
 import {

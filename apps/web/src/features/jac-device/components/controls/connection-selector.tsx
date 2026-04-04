@@ -16,7 +16,7 @@ import type { ConnectionInfo, ConnectionType } from '@/device';
 import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { useJacDevice } from '@/device';
-import { useConsole } from '@/features/console';
+import { useConsole } from '@/console';
 import { useActiveProject } from '@/features/project/active-project';
 import { testConnection, uploadCode } from '@/device';
 import { useProjectEditor } from '@/features/project/editor';

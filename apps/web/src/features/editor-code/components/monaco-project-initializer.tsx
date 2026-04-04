@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMonaco } from '@monaco-editor/react';
 import { useActiveProject } from '@/features/project/active-project';
-import { editorSyncService } from '@/services/editor-sync-service';
+import { editorSyncService } from '@/editor';
 import { MonacoProjectService } from '../lib/monaco-project-service';
 
 /**

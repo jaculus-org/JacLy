@@ -1,4 +1,4 @@
-import { JaclyEditorComponent } from '@/features/editor-jacly/components';
+import { JaclyEditorComponent } from '@/editor/components/blockly';
 import './index.css';
 
 export function BlocklyEditorPanel() {

@@ -12,7 +12,7 @@ import { useActiveProject } from '@/features/project/active-project';
 import { useJacDevice } from '@/device';
 import { getLocale } from '@/core/paraglide/runtime';
 import { m } from '@/core/paraglide/messages';
-import { editorSyncService } from '@/services/editor-sync-service';
+import { editorSyncService } from '@/editor';
 import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';
 

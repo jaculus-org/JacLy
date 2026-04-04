@@ -5,7 +5,7 @@ import { useConsole } from '../console-context';
 import { sendToDeviceStr } from '@/device';
 import { useJacDevice } from '@/device';
 import { Card } from '@/ui/components/card';
-import { KeyValueDisplay } from '@/features/keyValue';
+import { KeyValueDisplay } from '@/console';
 import { ConsoleInput } from './console-input';
 import { ConsoleToolbar } from './console-toolbar';
 import { ConsoleOutput } from './console-output';

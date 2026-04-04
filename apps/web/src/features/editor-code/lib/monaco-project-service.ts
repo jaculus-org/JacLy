@@ -1,6 +1,6 @@
 import type { useMonaco } from '@monaco-editor/react';
 import { inferLanguageFromPath } from './language';
-import type { EditorSyncService } from '@/services/editor-sync-service';
+import type { EditorSyncService } from '@/editor';
 
 export type FileRole = 'source' | 'typedef' | 'skip';
 

@@ -4,10 +4,10 @@ import { JacDevice } from '@jaculus/device';
 import { logger } from '@/core/services/logger-service';
 import { JacStreamSerial } from './jac-stream-serial';
 import type { Duplex } from '@jaculus/link/stream';
-import type { AddToConsole } from '@/features/console';
+import type { AddToConsole } from '@/console';
 import { JacStreamWokwi } from './jac-stream-wokwi';
 import { JacStreamBle } from './jac-stream-ble';
-import { getDefaultDiagram } from '@/features/wokwi-simulator/lib/wowki';
+import { getDefaultDiagram } from '@/simulator/services/wokwi';
 
 export async function getAvailableConnectionTypes(): Promise<ConnectionInfo[]> {
   const types: ConnectionInfo[] = [];

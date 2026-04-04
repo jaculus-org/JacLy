@@ -1,5 +1,5 @@
-import { Installer } from '@/features/jac-installer';
-import { Logger } from '@/core/components/logger';
+import { Logger } from '@/core';
+import { Installer } from '@/packages';
 import { m } from '@/core/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
 

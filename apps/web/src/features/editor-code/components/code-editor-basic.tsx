@@ -1,7 +1,7 @@
 import { m } from '@/core/paraglide/messages';
 import { useActiveProject } from '@/features/project/active-project';
 import { useTheme } from '@/core/components/theme';
-import { editorSyncService } from '@/services/editor-sync-service';
+import { editorSyncService } from '@/editor';
 import Editor from '@monaco-editor/react';
 import { useMemo, useCallback } from 'react';
 import { inferLanguageFromPath } from '../lib/language';

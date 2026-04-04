@@ -1,5 +1,5 @@
-import type { ConsoleBusService } from '@/services/console-bus-service';
-import type { KeyValueHistoryMap, KeyValueMap } from '@/features/keyValue';
+import type { ConsoleBusService } from '@/console';
+import type { KeyValueHistoryMap, KeyValueMap } from '@/console';
 import {
   useCallback,
   useEffect,

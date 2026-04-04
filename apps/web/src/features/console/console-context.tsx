@@ -1,4 +1,4 @@
-import type { KeyValueHistoryMap, KeyValueMap } from '@/features/keyValue';
+import type { KeyValueHistoryMap, KeyValueMap } from '@/console';
 import { createContext, useContext } from 'react';
 import type { AddToConsole, ConsoleEntry, ConsoleType } from './types';
 

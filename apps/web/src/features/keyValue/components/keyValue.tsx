@@ -5,7 +5,7 @@ import { Card } from '@/ui/components/card';
 import { Separator } from '@/ui/components/separator';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { ChevronDown, ChevronUp, Trash2Icon } from 'lucide-react';
-import { useConsole } from '@/features/console';
+import { useConsole } from '@/console';
 import {
   Tooltip,
   TooltipContent,

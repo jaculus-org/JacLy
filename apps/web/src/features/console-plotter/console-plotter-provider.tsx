@@ -2,8 +2,8 @@ import {
   cloneHistoryMap,
   type KeyValueHistoryMap,
   type KeyValueMap,
-} from '@/features/keyValue';
-import { useConsole } from '@/features/console';
+} from '@/console';
+import { useConsole } from '@/console';
 import {
   useCallback,
   useEffect,

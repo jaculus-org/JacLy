@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMonaco } from '@monaco-editor/react';
-import { editorSyncService } from '@/services/editor-sync-service';
+import { editorSyncService } from '@/editor';
 import { inferLanguageFromPath } from '../lib/language';
 
 interface UseMonacoModelOptions {

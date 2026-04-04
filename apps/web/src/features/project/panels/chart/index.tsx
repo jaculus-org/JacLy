@@ -1,4 +1,4 @@
-import { ConsolePlotter } from '@/features/console-plotter';
+import { ConsolePlotter } from '@/console';
 
 export function ChartPanel() {
   return (
