@@ -1,18 +1,18 @@
 import { ConnectionSelector } from '@/features/jac-device';
-import { LocaleSelector } from '@/features/locale';
-import { ThemeToggle } from '@/features/theme/components/theme-toggle';
+import { LocaleSelector } from '@/core/components/locale';
+import { ThemeToggle } from '@/core/components/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
 import { ConnectedDevice } from '@/features/jac-device';
-import { Badge } from '@/features/shared/components/ui/badge';
+import { Badge } from '@/ui/components/badge';
 import { useActiveProject } from '../active-project';
 import { ProjectNameEditor } from './project-name-editor';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/features/shared/components/ui/tooltip';
-import { m } from '@/paraglide/messages';
+} from '@/ui/components/tooltip';
+import { m } from '@/core/paraglide/messages';
 
 export function ProjectEditorHeader() {
   const {

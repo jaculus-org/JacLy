@@ -1,7 +1,7 @@
 import * as FlexLayout from 'flexlayout-react';
 import type { PanelType } from '@/features/project/types/flexlayout-type';
 import { PanelWrapper } from '@/features/project/components';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { getPanelDefinition, getPanelTitle } from './panel-registry';
 
 export function factory(node: FlexLayout.TabNode) {

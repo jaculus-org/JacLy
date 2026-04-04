@@ -1,8 +1,8 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
 import { useActiveProject } from '../active-project';
-import { Button } from '@/features/shared/components/ui/button';
+import { Button } from '@/ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/features/shared/components/ui/dialog';
-import { Input } from '@/features/shared/components/ui/input';
+} from '@/ui/components/dialog';
+import { Input } from '@/ui/components/input';
 
 const projectNamePattern = /^[a-zA-Z0-9-_ ]+$/;
 

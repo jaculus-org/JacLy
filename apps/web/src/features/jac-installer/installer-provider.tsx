@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   ESPLoader,
   Transport,
@@ -20,10 +20,7 @@ import {
   type BoardsIndex,
 } from '@jaculus/firmware/boards';
 import { enqueueSnackbar } from 'notistack';
-import {
-  executeWithTimeout,
-  TimeoutError,
-} from '@/features/shared/lib/timeout';
+import { executeWithTimeout, TimeoutError } from '@/ui/lib/timeout';
 import {
   InstallerContext,
   type InstallerSourceTab,
@@ -31,7 +28,7 @@ import {
 } from './installer-context';
 import { ESP32Flasher } from './libs/flasher';
 import { getRequest } from '@jaculus/jacly/project';
-import { logger } from '@/services/logger-service';
+import { logger } from '@/core/services/logger-service';
 
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;

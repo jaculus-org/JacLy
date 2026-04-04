@@ -1,7 +1,7 @@
 import React from 'react';
-import { ThemeProvider } from '@/features/theme';
-import { Logger } from '@/features/logger';
-import { logger } from '@/services/logger-service';
+import { ThemeProvider } from '@/core/components/theme';
+import { Logger } from '@/core/components/logger';
+import { logger } from '@/core/services/logger-service';
 
 export function AppRouterProviders({
   children,

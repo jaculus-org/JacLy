@@ -10,8 +10,8 @@ import { enqueueSnackbar } from 'notistack';
 
 import { useActiveProject } from '@/features/project/active-project';
 import { useJacDevice } from '@/features/jac-device';
-import { getLocale } from '@/paraglide/runtime';
-import { m } from '@/paraglide/messages';
+import { getLocale } from '@/core/paraglide/runtime';
+import { m } from '@/core/paraglide/messages';
 import { editorSyncService } from '@/services/editor-sync-service';
 import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';

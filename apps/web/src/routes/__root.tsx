@@ -2,7 +2,7 @@ import { createRootRouteWithContext, redirect } from '@tanstack/react-router';
 import { NotFoundPage } from '@/routes/not-found';
 import type { RouterContext } from '@/router/router-context';
 import { RootLayout } from '@/app/root-layout';
-import { getLocale, shouldRedirect } from '@/paraglide/runtime';
+import { getLocale, shouldRedirect } from '@/core/paraglide/runtime';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {

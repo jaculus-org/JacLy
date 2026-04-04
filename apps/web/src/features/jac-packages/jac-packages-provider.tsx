@@ -1,7 +1,7 @@
 'use client';
 
-import { m } from '@/paraglide/messages';
-import { logger } from '@/services/logger-service';
+import { m } from '@/core/paraglide/messages';
+import { logger } from '@/core/services/logger-service';
 import { useJacDevice } from '@/features/jac-device';
 import { enqueueSnackbar } from 'notistack';
 import {

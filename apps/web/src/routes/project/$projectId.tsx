@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { JacDevice } from '@/features/jac-device';
 import { ActiveProject } from '@/features/project/active-project';
 import { Console } from '@/features/console';

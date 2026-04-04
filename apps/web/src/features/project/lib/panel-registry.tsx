@@ -1,5 +1,5 @@
 import * as FlexLayout from 'flexlayout-react';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   BlocklyEditorPanel,
   ChartPanel,

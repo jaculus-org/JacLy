@@ -1,5 +1,5 @@
-import { m } from '@/paraglide/messages';
-import { Card } from '@/features/shared/components/ui/card';
+import { m } from '@/core/paraglide/messages';
+import { Card } from '@/ui/components/card';
 import { Unplug } from 'lucide-react';
 
 export function JacDeviceControlDisconnected() {

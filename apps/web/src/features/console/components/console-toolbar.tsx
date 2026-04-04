@@ -1,12 +1,12 @@
-import { m } from '@/paraglide/messages';
-import { Button } from '@/features/shared/components/ui/button';
-import { Badge } from '@/features/shared/components/ui/badge';
-import { Textarea } from '@/features/shared/components/ui/textarea';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { Badge } from '@/ui/components/badge';
+import { Textarea } from '@/ui/components/textarea';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/features/shared/components/ui/tooltip';
+} from '@/ui/components/tooltip';
 import {
   Send,
   Trash2,

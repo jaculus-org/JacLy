@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import type * as fs from 'fs';
-import type { IDbProject } from '@/types/project';
+import type { IDbProject } from '@/core/types/project';
 import { JaclyFiles } from '../types/jacly-files';
 
 export type ProjectErrorReason =

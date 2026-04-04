@@ -1,6 +1,6 @@
-import { m } from '@/paraglide/messages';
-import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
-import { ButtonGroup } from '@/features/shared/components/ui/button-group';
+import { m } from '@/core/paraglide/messages';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
+import { ButtonGroup } from '@/ui/components/button-group';
 import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { compileProject } from '@/features/jac-device/lib/compilation';

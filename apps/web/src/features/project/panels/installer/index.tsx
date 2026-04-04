@@ -1,5 +1,5 @@
 import { Installer } from '@/features/jac-installer';
-import { Logger } from '@/features/logger';
+import { Logger } from '@/core/components/logger';
 
 export function InstallerPanel() {
   return (

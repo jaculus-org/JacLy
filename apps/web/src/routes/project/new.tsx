@@ -1,13 +1,13 @@
-import { m } from '@/paraglide/messages';
-import { ProjectCard } from '@/features/shared/components/custom/project-card';
+import { m } from '@/core/paraglide/messages';
+import { ProjectCard } from '@/ui/components/custom/project-card';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/features/shared/components/ui/accordion';
-import { Button } from '@/features/shared/components/ui/button';
-import { Input } from '@/features/shared/components/ui/input';
+} from '@/ui/components/accordion';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -17,8 +17,8 @@ import type { JaculusProjectType } from '@jaculus/project/package';
 import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
 import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
 import { createFromBundle } from '@jaculus/project/creation';
-import { Logger } from '@/features/logger';
-import { logger } from '@/services/logger-service';
+import { Logger } from '@/core/components/logger';
+import { logger } from '@/core/services/logger-service';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,

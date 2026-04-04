@@ -1,6 +1,6 @@
 import { Installer } from '@/features/jac-installer';
-import { Logger } from '@/features/logger';
-import { m } from '@/paraglide/messages';
+import { Logger } from '@/core/components/logger';
+import { m } from '@/core/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/installer')({

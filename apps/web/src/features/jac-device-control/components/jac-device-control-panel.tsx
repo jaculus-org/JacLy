@@ -1,4 +1,4 @@
-import { ScrollArea } from '@/features/shared/components/ui/scroll-area';
+import { ScrollArea } from '@/ui/components/scroll-area';
 import { useJacDeviceControl } from '../jac-device-control-context';
 import { JacDeviceControlDisconnected } from './jac-device-control-disconnected';
 import { JacDeviceControlSectionControl } from './sections/jac-device-control-section-control';

@@ -1,10 +1,10 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { useConsole } from '../console-context';
 import { sendToDeviceStr } from '@/features/jac-device/lib/connection';
 import { useJacDevice } from '@/features/jac-device';
-import { Card } from '@/features/shared/components/ui/card';
+import { Card } from '@/ui/components/card';
 import { KeyValueDisplay } from '@/features/keyValue';
 import { ConsoleInput } from './console-input';
 import { ConsoleToolbar } from './console-toolbar';

@@ -1,11 +1,11 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/features/shared/components/ui/select';
+} from '@/ui/components/select';
 import { useEffect, useState } from 'react';
 import {
   connectDevice,
@@ -17,18 +17,18 @@ import type {
   ConnectionType,
 } from '@/features/jac-device/types/connection';
 import { enqueueSnackbar } from 'notistack';
-import { ButtonGroup } from '@/features/shared/components/ui/button-group';
+import { ButtonGroup } from '@/ui/components/button-group';
 import { useJacDevice } from '@/features/jac-device';
 import { useConsole } from '@/features/console';
 import { useActiveProject } from '@/features/project/active-project';
 import { testConnection, uploadCode } from '@/features/jac-device/lib/device';
 import { useProjectEditor } from '@/features/project/editor';
-import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/features/shared/components/ui/tooltip';
+} from '@/ui/components/tooltip';
 
 export function ConnectionSelector() {
   const [availableConnections, setAvailableConnections] = useState<

@@ -1,6 +1,6 @@
-import { m } from '@/paraglide/messages';
-import { Field, FieldLabel } from '@/features/shared/components/ui/field';
-import { Progress } from '@/features/shared/components/ui/progress';
+import { m } from '@/core/paraglide/messages';
+import { Field, FieldLabel } from '@/ui/components/field';
+import { Progress } from '@/ui/components/progress';
 import { useInstaller } from '../installer-context';
 
 export function InstallerProgress() {

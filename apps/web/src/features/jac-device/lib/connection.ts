@@ -1,7 +1,7 @@
 import { BluetoothIcon, MonitorIcon, UsbIcon } from 'lucide-react';
 import type { ConnectionInfo, ConnectionType } from '../types/connection';
 import { JacDevice } from '@jaculus/device';
-import { logger } from '@/services/logger-service';
+import { logger } from '@/core/services/logger-service';
 import { JacStreamSerial } from './jac-stream-serial';
 import type { Duplex } from '@jaculus/link/stream';
 import type { AddToConsole } from '@/features/console';

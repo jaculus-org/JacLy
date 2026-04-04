@@ -1,8 +1,8 @@
-import { m } from '@/paraglide/messages';
-import { Badge } from '@/features/shared/components/ui/badge';
-import { Card } from '@/features/shared/components/ui/card';
-import { Separator } from '@/features/shared/components/ui/separator';
-import { CollapsibleCard } from '@/features/shared/components/custom/collapsible-card';
+import { m } from '@/core/paraglide/messages';
+import { Badge } from '@/ui/components/badge';
+import { Card } from '@/ui/components/card';
+import { Separator } from '@/ui/components/separator';
+import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
 import { Info, Power, RefreshCw, RotateCw } from 'lucide-react';
 import { useJacDeviceControl } from '../../jac-device-control-context';
 

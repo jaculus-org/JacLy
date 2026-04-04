@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-} from '@/features/shared/components/ui/context-menu';
+import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
 import { useJacFileExplorer } from '../jac-file-explorer-context';
 import { JacFileExplorerNodeMenu } from './jac-file-explorer-node-menu';
 import { JacFileExplorerTree } from './jac-file-explorer-tree';

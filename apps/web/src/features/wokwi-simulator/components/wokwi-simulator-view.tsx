@@ -1,8 +1,8 @@
-import { StatusCard } from '@/features/shared/components/custom/status-card';
+import { StatusCard } from '@/ui/components/custom/status-card';
 import { useWokwiSimulator } from '../wokwi-simulator-context';
 import { WokwiSimulatorEmbed } from './wokwi-simulator-embed';
 import { AlertCircle, Unplug } from 'lucide-react';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 
 export function WokwiSimulatorView() {
   const { state } = useWokwiSimulator();

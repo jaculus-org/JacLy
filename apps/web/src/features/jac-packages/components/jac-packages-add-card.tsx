@@ -1,8 +1,8 @@
 'use client';
 
-import { m } from '@/paraglide/messages';
-import { Button } from '@/features/shared/components/ui/button';
-import { Card } from '@/features/shared/components/ui/card';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
 import {
   Combobox,
   ComboboxContent,
@@ -10,14 +10,14 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from '@/features/shared/components/ui/combobox';
+} from '@/ui/components/combobox';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/features/shared/components/ui/select';
+} from '@/ui/components/select';
 import { Plus } from 'lucide-react';
 import { useJacPackages } from '../jac-packages-context';
 import type { RegistryListProject } from '@jaculus/project/registry';

@@ -1,6 +1,6 @@
-import type { ProjectRepository } from '@/lib/db/project-repository';
-import { generateProjectId } from '@/lib/utils/nanoid';
-import type { IDbProject } from '@/types/project';
+import type { ProjectRepository } from '@/core/db/project-repository';
+import { generateProjectId } from '@/ui/lib/nanoid';
+import type { IDbProject } from '@/core/types/project';
 
 export class ProjectManagementService {
   private repo: ProjectRepository;

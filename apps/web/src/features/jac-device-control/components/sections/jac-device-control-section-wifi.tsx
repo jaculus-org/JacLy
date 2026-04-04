@@ -1,14 +1,14 @@
-import { Button } from '@/features/shared/components/ui/button';
-import { Card } from '@/features/shared/components/ui/card';
-import { CollapsibleCard } from '@/features/shared/components/custom/collapsible-card';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
+import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/features/shared/components/ui/select';
-import { m } from '@/paraglide/messages';
+} from '@/ui/components/select';
+import { m } from '@/core/paraglide/messages';
 import { Globe, Loader2, Lock, RefreshCw, Trash2, Wifi } from 'lucide-react';
 import { useJacDeviceControl } from '../../jac-device-control-context';
 import { JacDeviceControlWifiModal } from '../jac-device-control-wifi-modal';

@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { HomeIcon, ArrowLeftIcon } from 'lucide-react';
 

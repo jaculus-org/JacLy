@@ -1,6 +1,6 @@
-import { Button } from '@/features/shared/components/ui/button';
-import { Card } from '@/features/shared/components/ui/card';
-import { m } from '@/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
+import { m } from '@/core/paraglide/messages';
 import { CheckCheck, Pause, Play, Trash2, X } from 'lucide-react';
 import { memo } from 'react';
 import { useConsolePlotter } from '../console-plotter-context';

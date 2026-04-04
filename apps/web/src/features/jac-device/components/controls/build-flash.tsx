@@ -1,6 +1,6 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { useActiveProject } from '@/features/project/active-project';
-import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';

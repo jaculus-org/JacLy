@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   Card,
@@ -6,8 +6,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/features/shared/components/ui/card';
-import { Button } from '@/features/shared/components/ui/button';
+} from '@/ui/components/card';
+import { Button } from '@/ui/components/button';
 import {
   BlocksIcon,
   Code2Icon,

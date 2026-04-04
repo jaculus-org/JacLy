@@ -7,7 +7,7 @@ import {
 } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { enqueueSnackbar } from 'notistack';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/features/jac-device';
 import { useActiveProject } from '@/features/project/active-project';
 import { flexLayoutDefaultJson } from '@/features/project/lib/flexlayout-defaults';

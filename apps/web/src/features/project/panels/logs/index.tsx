@@ -1,4 +1,4 @@
-import { Logger } from '@/features/logger';
+import { Logger } from '@/core/components/logger';
 
 export function LogsPanel() {
 	return (

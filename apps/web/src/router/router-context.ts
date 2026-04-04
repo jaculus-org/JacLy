@@ -1,10 +1,10 @@
-import { AppSettingsRepository as SettingsRepository } from '@/lib/db/app-settings-repository';
-import { db } from '@/lib/db/db';
-import { ProjectRepository } from '@/lib/db/project-repository';
+import { AppSettingsRepository as SettingsRepository } from '@/core/db/app-settings-repository';
+import { db } from '@/core/db/db';
+import { ProjectRepository } from '@/core/db/project-repository';
 import { ProjectFsService } from '@/services/project-fs-service';
 import { ProjectManagementService } from '@/services/project-runtime-service';
-import { SettingsService } from '@/services/settings-service';
-import { logger } from '@/services/logger-service';
+import { SettingsService } from '@/core/services/settings-service';
+import { logger } from '@/core/services/logger-service';
 import { ConsoleBusService } from '@/services/console-bus-service';
 
 export type RouterContext = ReturnType<typeof makeRouterContext>;

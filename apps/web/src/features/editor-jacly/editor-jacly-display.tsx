@@ -1,6 +1,6 @@
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
-import { useTheme } from '@/features/theme';
-import { getLocale } from '@/paraglide/runtime';
+import { useTheme } from '@/core/components/theme';
+import { getLocale } from '@/core/paraglide/runtime';
 import { useEditorJacly } from './editor-jacly-context';
 
 export function EditorJaclyDisplay() {

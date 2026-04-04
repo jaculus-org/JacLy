@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   AlertCircleIcon,
   ArrowLeftIcon,

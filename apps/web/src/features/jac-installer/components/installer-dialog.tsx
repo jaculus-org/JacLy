@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -7,7 +7,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/features/shared/components/ui/alert-dialog';
+} from '@/ui/components/alert-dialog';
 import { useInstaller } from '../installer-context';
 
 export function InstallerDialog() {

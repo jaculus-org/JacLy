@@ -3,7 +3,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from '@/features/shared/components/ui/resizable';
+} from '@/ui/components/resizable';
 import { Console } from '@/features/console';
 
 export function WokwiPanel() {

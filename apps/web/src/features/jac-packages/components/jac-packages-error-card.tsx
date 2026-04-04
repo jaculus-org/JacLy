@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@/features/shared/components/ui/card';
+import { Card } from '@/ui/components/card';
 import { useJacPackages } from '../jac-packages-context';
 
 export function JacPackagesErrorCard() {

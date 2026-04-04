@@ -1,11 +1,11 @@
-import { Card } from '@/features/shared/components/ui/card';
+import { Card } from '@/ui/components/card';
 import { useJacDevice } from '@/features/jac-device';
 import {
   cloneHistoryMap,
   type KeyValueHistoryMap,
   type ParsedValue,
 } from '@/features/keyValue';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import 'chartjs-adapter-luxon';
 import {
   Chart,

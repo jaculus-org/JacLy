@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import { Button } from '@/features/shared/components/ui/button';
-import { Card } from '@/features/shared/components/ui/card';
-import { Separator } from '@/features/shared/components/ui/separator';
-import { ButtonGroup } from '@/features/shared/components/ui/button-group';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
+import { Separator } from '@/ui/components/separator';
+import { ButtonGroup } from '@/ui/components/button-group';
 import { ChevronDown, ChevronUp, Trash2Icon } from 'lucide-react';
 import { useConsole } from '@/features/console';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/features/shared/components/ui/tooltip';
-import { m } from '@/paraglide/messages';
+} from '@/ui/components/tooltip';
+import { m } from '@/core/paraglide/messages';
 
 type SortMode = 'alpha' | 'time';
 

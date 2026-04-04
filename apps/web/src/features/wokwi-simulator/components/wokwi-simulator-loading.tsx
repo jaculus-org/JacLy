@@ -1,5 +1,5 @@
-import { Card } from '@/features/shared/components/ui/card';
-import { m } from '@/paraglide/messages';
+import { Card } from '@/ui/components/card';
+import { m } from '@/core/paraglide/messages';
 import { Loader2 } from 'lucide-react';
 
 export function WokwiSimulatorLoading() {

@@ -1,7 +1,7 @@
 'use client';
 
-import { m } from '@/paraglide/messages';
-import { Separator } from '@/features/shared/components/ui/separator';
+import { m } from '@/core/paraglide/messages';
+import { Separator } from '@/ui/components/separator';
 import { useJacPackages } from '../jac-packages-context';
 import { JacPackagesAddCard } from './jac-packages-add-card';
 import { JacPackagesErrorCard } from './jac-packages-error-card';

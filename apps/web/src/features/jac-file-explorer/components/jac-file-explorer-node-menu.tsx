@@ -1,10 +1,10 @@
 'use client';
 
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   ContextMenuContent,
   ContextMenuItem,
-} from '@/features/shared/components/ui/context-menu';
+} from '@/ui/components/context-menu';
 import {
   CopyIcon,
   FilePlusIcon,

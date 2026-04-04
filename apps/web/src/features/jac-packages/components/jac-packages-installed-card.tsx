@@ -1,9 +1,9 @@
 'use client';
 
-import { m } from '@/paraglide/messages';
-import { Badge } from '@/features/shared/components/ui/badge';
-import { Button } from '@/features/shared/components/ui/button';
-import { Card } from '@/features/shared/components/ui/card';
+import { m } from '@/core/paraglide/messages';
+import { Badge } from '@/ui/components/badge';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/features/shared/components/ui/alert-dialog';
+} from '@/ui/components/alert-dialog';
 import { Package, Trash2 } from 'lucide-react';
 import { useJacPackages } from '../jac-packages-context';
 

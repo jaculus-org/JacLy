@@ -19,7 +19,7 @@ export default defineConfig({
     tailwindcss(),
     paraglideVitePlugin({
       project: './project.inlang',
-      outdir: './src/paraglide',
+      outdir: './src/core/paraglide',
       // Use cookie/localStorage for locale - URL stays the same regardless of language
       strategy: ['cookie', 'localStorage', 'preferredLanguage', 'baseLocale'],
     }),

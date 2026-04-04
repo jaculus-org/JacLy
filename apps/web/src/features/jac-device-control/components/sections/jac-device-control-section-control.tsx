@@ -1,6 +1,6 @@
-import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
-import { CollapsibleCard } from '@/features/shared/components/custom/collapsible-card';
-import { m } from '@/paraglide/messages';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
+import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
+import { m } from '@/core/paraglide/messages';
 import { Power, RotateCw } from 'lucide-react';
 import { useJacDeviceControl } from '../../jac-device-control-context';
 

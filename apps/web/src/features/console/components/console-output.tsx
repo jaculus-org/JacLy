@@ -1,5 +1,5 @@
-import { Card } from '@/features/shared/components/ui/card';
-import { cn } from '@/lib/utils/cn';
+import { Card } from '@/ui/components/card';
+import { cn } from '@/ui/lib/cn';
 import { useEffect, useRef } from 'react';
 import type { ConsoleEntry, ConsoleType } from '../types';
 

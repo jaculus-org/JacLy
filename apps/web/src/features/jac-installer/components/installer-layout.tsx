@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { FieldSet } from '@/features/shared/components/ui/field';
+import { FieldSet } from '@/ui/components/field';
 
 export function InstallerLayout({ children }: { children: ReactNode }) {
   return (

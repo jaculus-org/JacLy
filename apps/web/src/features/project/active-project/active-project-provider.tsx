@@ -7,7 +7,7 @@ import {
 } from 'react';
 import * as fs from 'fs';
 import path from 'path';
-import type { IDbProject } from '@/types/project';
+import type { IDbProject } from '@/core/types/project';
 import {
   ProjectFsService,
   type ProjectFsInterface,

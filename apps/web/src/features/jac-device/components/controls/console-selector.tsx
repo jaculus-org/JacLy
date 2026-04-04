@@ -1,6 +1,6 @@
-import { m } from '@/paraglide/messages';
-import { Button } from '@/features/shared/components/ui/button';
-import { ButtonGroup } from '@/features/shared/components/ui/button-group';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { ButtonGroup } from '@/ui/components/button-group';
 import { useProjectEditor } from '@/features/project/editor';
 import { CableIcon } from 'lucide-react';
 import { useJacDevice } from '@/features/jac-device';

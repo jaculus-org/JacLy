@@ -1,7 +1,7 @@
 'use client';
 
-import { m } from '@/paraglide/messages';
-import { Button } from '@/features/shared/components/ui/button';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
 import { RefreshCw } from 'lucide-react';
 import { useJacPackages } from '../jac-packages-context';
 

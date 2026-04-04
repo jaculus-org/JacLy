@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   downloadProjectAsZip,
   downloadProjectAsTarGz,
@@ -6,13 +6,8 @@ import {
 } from '@/features/project/lib/download';
 import { packProjectAsTarGz } from '@jaculus/project/export';
 import { enqueueSnackbar } from 'notistack';
-import { Button } from '@/features/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/features/shared/components/ui/card';
+import { Button } from '@/ui/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/components/card';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/features/shared/components/ui/dialog';
+} from '@/ui/components/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,8 +24,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@/features/shared/components/ui/dropdown-menu';
-import { Input } from '@/features/shared/components/ui/input';
+} from '@/ui/components/dropdown-menu';
+import { Input } from '@/ui/components/input';
 import type { FSInterface } from '@jaculus/project/fs';
 import path from 'path';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';

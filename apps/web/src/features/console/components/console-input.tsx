@@ -1,11 +1,11 @@
-import { m } from '@/paraglide/messages';
-import { Button } from '@/features/shared/components/ui/button';
-import { Textarea } from '@/features/shared/components/ui/textarea';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { Textarea } from '@/ui/components/textarea';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/features/shared/components/ui/tooltip';
+} from '@/ui/components/tooltip';
 import { ChevronDown, Send } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
 

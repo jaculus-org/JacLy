@@ -1,4 +1,4 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import {
   Select,
   SelectContent,
@@ -7,23 +7,18 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/features/shared/components/ui/select';
-import { Separator } from '@/features/shared/components/ui/separator';
+} from '@/ui/components/select';
+import { Separator } from '@/ui/components/separator';
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from '@/features/shared/components/ui/field';
-import { Input } from '@/features/shared/components/ui/input';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/features/shared/components/ui/tabs';
-import { Button } from '@/features/shared/components/ui/button';
-import { ButtonLoading } from '@/features/shared/components/custom/button-loading';
+} from '@/ui/components/field';
+import { Input } from '@/ui/components/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
+import { Button } from '@/ui/components/button';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { type InstallerSourceTab, useInstaller } from '../installer-context';
 
 export function InstallerControls() {

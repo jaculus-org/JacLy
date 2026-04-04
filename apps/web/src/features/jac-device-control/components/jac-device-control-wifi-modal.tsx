@@ -7,9 +7,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/features/shared/components/ui/alert-dialog';
-import { Input } from '@/features/shared/components/ui/input';
-import { m } from '@/paraglide/messages';
+} from '@/ui/components/alert-dialog';
+import { Input } from '@/ui/components/input';
+import { m } from '@/core/paraglide/messages';
 import { useJacDeviceControl } from '../jac-device-control-context';
 
 export function JacDeviceControlWifiModal() {

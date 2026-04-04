@@ -12,7 +12,7 @@ import { useActiveProject } from '@/features/project/active-project';
 import { enqueueSnackbar } from 'notistack';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import { useKeyboardShortcut } from '@/features/project/hooks/use-keyboard-shortcut';
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { restart, uploadCode } from '../lib/device';
 import {
   InvalidPackageJsonFormatError,
@@ -28,8 +28,8 @@ import {
   type JacDeviceContextValue,
   type JacDeviceState,
 } from './jac-device-context';
-import { useBuildInfo } from '@/hooks/use-build-info';
-import { logger } from '@/services/logger-service';
+import { useBuildInfo } from '@/core/hooks/use-build-info';
+import { logger } from '@/core/services/logger-service';
 
 interface JacDeviceProviderProps {
   children: ReactNode;

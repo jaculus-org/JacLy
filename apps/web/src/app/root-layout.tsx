@@ -1,5 +1,5 @@
 import { AppRouterProviders } from '@/providers/app-router-provider';
-import { GeneralHeader } from '@/features/shared/components/custom/general-header';
+import { GeneralHeader } from '@/ui/components/custom/general-header';
 import { Outlet, useMatches } from '@tanstack/react-router';
 
 export function RootLayout() {
