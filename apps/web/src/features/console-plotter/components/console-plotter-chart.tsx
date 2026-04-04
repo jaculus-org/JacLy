@@ -1,5 +1,5 @@
 import { Card } from '@/ui/components/card';
-import { useJacDevice } from '@/features/jac-device';
+import { useJacDevice } from '@/device';
 import {
   cloneHistoryMap,
   type KeyValueHistoryMap,

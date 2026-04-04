@@ -1,5 +1,5 @@
 import { m } from '@/core/paraglide/messages';
-import { JacDevice } from '@/features/jac-device';
+import { JacDevice } from '@/device';
 import { ActiveProject } from '@/features/project/active-project';
 import { Console } from '@/features/console';
 import { createFileRoute, redirect } from '@tanstack/react-router';

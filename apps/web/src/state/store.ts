@@ -1,8 +1,5 @@
 import { create } from 'zustand';
-import {
-  createDeviceSlice,
-  type DeviceSlice,
-} from '@/state/slices/device-slice';
+import { createDeviceSlice, type DeviceSlice } from '@/device';
 
 export type AppState = DeviceSlice;
 

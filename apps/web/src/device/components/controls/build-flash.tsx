@@ -4,9 +4,9 @@ import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
-import { compileProject } from '@/device';
-import { useJacDevice } from '@/device';
-import { uploadCode } from '@/device';
+import { compileProject } from '../../services/compilation';
+import { useJacDevice } from '../../state/device-context';
+import { uploadCode } from '../../services/device-operations';
 import { useProjectEditor } from '@/features/project/editor';
 
 export function BuildFlash() {

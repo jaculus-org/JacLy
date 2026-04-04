@@ -2,7 +2,7 @@
 
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
-import { useJacDevice } from '@/features/jac-device';
+import { useJacDevice } from '@/device';
 import { enqueueSnackbar } from 'notistack';
 import {
   useCallback,

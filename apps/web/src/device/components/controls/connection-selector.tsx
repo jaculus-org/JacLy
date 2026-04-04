@@ -11,14 +11,14 @@ import {
   connectDevice,
   getAvailableConnectionTypes,
   UnknownConnectionTypeError,
-} from '@/device';
-import type { ConnectionInfo, ConnectionType } from '@/device';
+} from '../../services/connection';
+import type { ConnectionInfo, ConnectionType } from '../../types/connection';
 import { enqueueSnackbar } from 'notistack';
 import { ButtonGroup } from '@/ui/components/button-group';
-import { useJacDevice } from '@/device';
+import { useJacDevice } from '../../state/device-context';
 import { useConsole } from '@/features/console';
 import { useActiveProject } from '@/features/project/active-project';
-import { testConnection, uploadCode } from '@/device';
+import { testConnection, uploadCode } from '../../services/device-operations';
 import { useProjectEditor } from '@/features/project/editor';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import {

@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useJacDevice } from '@/device';
+import { useJacDevice } from './device-context';
 import {
   addWifiNetwork,
   getCurrentWifiIp,
@@ -21,7 +21,7 @@ import {
   status,
   stop,
   version,
-} from '@/device';
+} from '../services/device-operations';
 import {
   JacDeviceControlContext,
   type DeviceStatusInfo,

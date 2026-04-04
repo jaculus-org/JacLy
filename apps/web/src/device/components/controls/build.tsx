@@ -3,9 +3,9 @@ import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
-import { compileProject } from '@/device';
+import { compileProject } from '../../services/compilation';
 import { useActiveProject } from '@/features/project/active-project';
-import { useJacDevice } from '@/device';
+import { useJacDevice } from '../../state/device-context';
 import { useState } from 'react';
 import { useProjectEditor } from '@/features/project/editor';
 

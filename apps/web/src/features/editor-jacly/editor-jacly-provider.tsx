@@ -9,7 +9,7 @@ import { dirname } from 'path';
 import { enqueueSnackbar } from 'notistack';
 
 import { useActiveProject } from '@/features/project/active-project';
-import { useJacDevice } from '@/features/jac-device';
+import { useJacDevice } from '@/device';
 import { getLocale } from '@/core/paraglide/runtime';
 import { m } from '@/core/paraglide/messages';
 import { editorSyncService } from '@/services/editor-sync-service';

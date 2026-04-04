@@ -1,6 +1,6 @@
 import { DeviceControl } from '@/device';
 
-export function JaculusPanel() {
+export function DeviceControlPanelWrapper() {
   return (
     <DeviceControl.Provider>
       <DeviceControl.Panel />

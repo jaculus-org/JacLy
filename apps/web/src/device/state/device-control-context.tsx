@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { JacDevice } from '@jaculus/device';
-import type { ConnectionStatus } from '@/device';
+import type { ConnectionStatus } from '../types/connection';
 
 export type WifiModalMode = 'network' | 'ap' | 'remove' | null;
 

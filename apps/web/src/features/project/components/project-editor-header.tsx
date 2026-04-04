@@ -1,9 +1,9 @@
-import { ConnectionSelector } from '@/features/jac-device';
+import { ConnectionSelector } from '@/device';
 import { LocaleSelector } from '@/core/components/locale';
 import { ThemeToggle } from '@/core/components/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
-import { ConnectedDevice } from '@/features/jac-device';
+import { ConnectedDevice } from '@/device';
 import { Badge } from '@/ui/components/badge';
 import { useActiveProject } from '../active-project';
 import { ProjectNameEditor } from './project-name-editor';

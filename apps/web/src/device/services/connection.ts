@@ -1,0 +1,176 @@
+import { BluetoothIcon, MonitorIcon, UsbIcon } from 'lucide-react';
+import type { ConnectionInfo, ConnectionType } from '../types/connection';
+import { JacDevice } from '@jaculus/device';
+import { logger } from '@/core/services/logger-service';
+import { JacStreamSerial } from './jac-stream-serial';
+import type { Duplex } from '@jaculus/link/stream';
+import type { AddToConsole } from '@/features/console';
+import { JacStreamWokwi } from './jac-stream-wokwi';
+import { JacStreamBle } from './jac-stream-ble';
+import { getDefaultDiagram } from '@/features/wokwi-simulator/lib/wowki';
+
+export async function getAvailableConnectionTypes(): Promise<ConnectionInfo[]> {
+  const types: ConnectionInfo[] = [];
+  if (isWebSerialAvailable()) {
+    types.push({ type: 'serial', name: 'Web Serial', icon: UsbIcon });
+  }
+  if (await isWebBLEAvailable()) {
+    types.push({ type: 'ble', name: 'Web Bluetooth', icon: BluetoothIcon });
+  }
+  if (isWokwiAvailable()) {
+    types.push({ type: 'wokwi', name: 'Wokwi Simulator', icon: MonitorIcon });
+  }
+  return types;
+}
+
+// create custom Error class
+export class UnknownConnectionTypeError extends Error {
+  constructor(type: ConnectionType) {
+    super(`Unknown connection type: ${type}`);
+    this.name = 'UnknownConnectionTypeError';
+  }
+}
+
+export async function connectDevice(
+  type: ConnectionType,
+  addToConsole: AddToConsole,
+  onDisconnect: () => void,
+  projectPath: string,
+  fs: typeof import('fs')
+): Promise<JacDevice> {
+  switch (type) {
+    case 'serial':
+      return connectDeviceWebSerial(addToConsole, onDisconnect);
+    case 'ble':
+      return connectDeviceWebBLE(addToConsole, onDisconnect);
+    case 'wokwi':
+      return connectDeviceWokwiSimulator(
+        addToConsole,
+        onDisconnect,
+        projectPath,
+        fs
+      );
+    default:
+      return Promise.reject(new UnknownConnectionTypeError(type));
+  }
+}
+
+function setupJacDevice(stream: Duplex, addToConsole: AddToConsole): JacDevice {
+  const device = new JacDevice(stream, logger);
+
+  device.programOutput.onData(data => {
+    const msg = String.fromCharCode(...data);
+    addToConsole('out', msg);
+  });
+
+  device.programError.onData(data => {
+    const msg = String.fromCharCode(...data);
+    addToConsole('err', msg);
+  });
+
+  return device;
+}
+
+export function sendToDevice(
+  device: JacDevice,
+  input: Uint8Array,
+  addToConsole: AddToConsole
+): void {
+  addToConsole('in', new TextDecoder().decode(input));
+  device.programInput.write(input);
+}
+
+export function sendToDeviceStr(
+  device: JacDevice,
+  input: string,
+  addToConsole: AddToConsole
+): void {
+  addToConsole('in', input);
+  device.programInput.write(new TextEncoder().encode(input));
+}
+
+// WEB SERIAL
+
+export function isWebSerialAvailable(): boolean {
+  return 'serial' in navigator;
+}
+
+export async function connectDeviceWebSerial(
+  addToConsole: AddToConsole,
+  onDisconnect: () => void
+): Promise<JacDevice> {
+  const port = await navigator.serial.requestPort();
+  await port.open({ baudRate: 921600 });
+
+  const stream = new JacStreamSerial(port, logger);
+  const device = setupJacDevice(stream, addToConsole);
+  stream.onEnd(() => onDisconnect());
+
+  return device;
+}
+
+// WEB BLE
+
+export async function isWebBLEAvailable(): Promise<boolean> {
+  return (
+    'bluetooth' in navigator && (await navigator.bluetooth.getAvailability())
+  );
+}
+
+export async function connectDeviceWebBLE(
+  addToConsole: AddToConsole,
+  onDisconnect: () => void
+): Promise<JacDevice> {
+  const bleDevice = await navigator.bluetooth.requestDevice({
+    filters: [
+      {
+        services: [0xffe0], // Jaculus BLE UART service
+      },
+    ],
+    optionalServices: [],
+  });
+
+  const stream = new JacStreamBle(bleDevice, logger);
+  const device = setupJacDevice(stream, addToConsole);
+  stream.onEnd(() => onDisconnect());
+
+  return device;
+}
+
+// WOKWI SIMULATOR
+
+export function isWokwiAvailable(): boolean {
+  return true;
+}
+
+export async function connectDeviceWokwiSimulator(
+  addToConsole: AddToConsole,
+  onDisconnect: () => void,
+  projectPath: string,
+  fs: typeof import('fs')
+): Promise<JacDevice> {
+  const stream = new JacStreamWokwi(logger, {
+    handleReadDiagram: async () => {
+      const diagramPath = `${projectPath}/diagram.json`;
+      try {
+        const content = await fs.promises.readFile(diagramPath);
+        return content.toString();
+      } catch {
+        return JSON.stringify(getDefaultDiagram());
+      }
+    },
+    handleWriteDiagram: async (data: Uint8Array | string) => {
+      const diagramPath = `${projectPath}/diagram.json`;
+      await fs.promises.writeFile(diagramPath, data);
+    },
+    handleReadFirmware: async () => {
+      const firmwareResponse = await fetch('/bin/jaculus-esp32s3-quad.uf2');
+      return new Uint8Array(await firmwareResponse.arrayBuffer());
+    },
+  });
+
+  const device = setupJacDevice(stream, addToConsole);
+  stream.onEnd(() => onDisconnect());
+
+  return device;
+}

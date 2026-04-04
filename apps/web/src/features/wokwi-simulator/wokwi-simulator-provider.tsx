@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useJacDevice } from '@/features/jac-device';
+import { useJacDevice } from '@/device';
 import { WokwiSimulatorContext } from './wokwi-simulator-context';
 
 interface WokwiSimulatorProviderProps {

@@ -3,7 +3,7 @@ import { Button } from '@/ui/components/button';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { useProjectEditor } from '@/features/project/editor';
 import { CableIcon } from 'lucide-react';
-import { useJacDevice } from '@/device';
+import { useJacDevice } from '../../state/device-context';
 
 export function ConsoleSelector() {
   const {
