@@ -65,6 +65,7 @@ export function registerBlocklyBlock(
       this.jsonInit(block);
       this.code = block.code;
       this.isProgramStart = block.isProgramStart;
+      this.package = jaclyConfig.package;
 
       if (block.constructs) {
         this.mixin(getConstructorMixin(block.constructs));

@@ -301,6 +301,7 @@ export const JaclyConfigSchema = z.object({
   github: Identifier.optional(),
   license: z.string().nonempty('license is required'),
 
+  package: Identifier,
   category: Identifier,
   parentCategory: Identifier.optional(),
 

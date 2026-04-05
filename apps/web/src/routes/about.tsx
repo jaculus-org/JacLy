@@ -1,6 +1,6 @@
-import { m } from '@/paraglide/messages';
+import { m } from '@/core/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
-import { useBuildInfo } from '@/hooks/use-build-info';
+import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { LinkIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/about')({

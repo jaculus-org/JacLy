@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
-import { classifyProjectFile } from '../../../src/features/editor-code/lib/monaco-project-service';
+import { classifyProjectFile } from '../../../src/editor/services/monaco-project-service.ts';
 
 const expect = chai.expect;
 

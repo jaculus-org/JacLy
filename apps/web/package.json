@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm run paraglide:compile && pnpm run generate:schema && tsc -b && vite build",
-    "paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/core/paraglide",
     "generate:schema": "tsx scripts/generate-schema.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

@@ -1,19 +1,14 @@
-import { m } from '@/paraglide/messages';
-import { Button } from '@/features/shared/components/ui/button';
-import { Input } from '@/features/shared/components/ui/input';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { Input } from '@/ui/components/input';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/features/shared/components/ui/card';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@/features/shared/components/ui/tabs';
+} from '@/ui/components/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/components/tabs';
 import { createFileRoute } from '@tanstack/react-router';
 import { UploadIcon, LinkIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -23,12 +18,12 @@ import {
   loadPackageFromUri,
   type PackageLoadResult,
 } from '@jaculus/project/import';
-import { loadPackageFromFile } from '@/features/project/lib/loadPackage';
+import { loadPackageFromFile } from '@/project/services/load-package';
 import { toUint8Array } from 'js-base64';
 import { createFromBundle } from '@jaculus/project/creation';
-import { logger } from '@/services/logger-service';
-import { generateNanoId } from '@/lib/utils/nanoid';
-import { Logger } from '@/features/logger';
+import { logger } from '@/core/services/logger-service';
+import { generateNanoId } from '@/ui/lib/nanoid';
+import { Logger } from '@/core/components/logger';
 import { getRequest } from '@jaculus/jacly/project';
 
 interface ImportSearchParams {
