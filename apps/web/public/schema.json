@@ -21,6 +21,10 @@
       "type": "string",
       "minLength": 1
     },
+    "package": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9-_]+$"
+    },
     "category": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9-_]+$"
@@ -743,6 +747,7 @@
     "version",
     "author",
     "license",
+    "package",
     "category",
     "name"
   ],

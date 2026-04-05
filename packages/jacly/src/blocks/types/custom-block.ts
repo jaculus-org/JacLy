@@ -7,7 +7,7 @@ import {
 } from 'blockly/core';
 
 interface BlockExtension {
-  library?: string;
+  package?: string;
   code?: string;
   isProgramStart?: boolean;
   previousStatement?: string | null;
