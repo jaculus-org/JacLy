@@ -3,13 +3,8 @@ import type { FSPromisesInterface } from '@jaculus/project/fs';
 import { Archive } from '@obsidize/tar-browserify';
 import pako from 'pako';
 
-/**
- * Load a package from a URI - Web/Node implementation
- * For node-only implementation, see @jaculus/tools
- * @param pkgUri URI of the package to load (http://, https://, file://)
- * @param fsp File system promises interface, required for file:// URIs
- * @returns Async iterable of archive entries
- */
+// Loads a package from a URI in the web app. For the node-only version,
+// see @jaculus/tools. `fsp` is only needed for file:// URIs.
 export async function loadPackageUri(
   pkgUri: string,
   fsp?: FSPromisesInterface

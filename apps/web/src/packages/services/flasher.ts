@@ -13,10 +13,7 @@ export interface FlashProgress {
   percentage: number;
 }
 
-/**
- * ESP32 Firmware Flasher
- * Downloads, extracts, and flashes firmware to ESP32 family devices
- */
+// Downloads, extracts, and flashes firmware to ESP32 family devices.
 export class ESP32Flasher {
   private esploader: ESPLoader | null = null;
   private terminal: IEspLoaderTerminal;
@@ -30,9 +27,7 @@ export class ESP32Flasher {
     this.onProgress = onProgress;
   }
 
-  /**
-   * Download and extract firmware package
-   */
+  // Downloads and extracts the firmware package.
   private async downloadAndExtract(
     url: string
   ): Promise<{ manifest: Manifest; files: Record<string, Uint8Array> }> {
@@ -101,9 +96,7 @@ export class ESP32Flasher {
     return { manifest, files };
   }
 
-  /**
-   * Setup flasher with an already-initialized ESPLoader instance
-   */
+  // Attaches an already-initialized ESPLoader instance.
   async setup(esploader: ESPLoader): Promise<void> {
     this.esploader = esploader;
     this.terminal.writeLine(
@@ -111,9 +104,7 @@ export class ESP32Flasher {
     );
   }
 
-  /**
-   * Flash firmware to the device
-   */
+  // Flashes the firmware package to the connected device.
   async flash(firmwareUrl: string, noErase: boolean = false): Promise<void> {
     if (!this.esploader) {
       throw new Error('ESPLoader not initialized. Call setup() first.');
@@ -204,9 +195,7 @@ export class ESP32Flasher {
     this.terminal.writeLine('\n=== Flashing complete! ===');
   }
 
-  /**
-   * Disconnect from the device
-   */
+  // Disconnects from the current device.
   async disconnect(): Promise<void> {
     if (this.esploader) {
       try {

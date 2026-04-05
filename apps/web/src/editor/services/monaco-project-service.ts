@@ -21,10 +21,8 @@ export function classifyProjectFile(relativePath: string): FileRole {
 
 type Monaco = NonNullable<ReturnType<typeof useMonaco>>;
 
-/**
- * Manages Monaco models and type definitions for a ZenFS-backed project.
- * Lifetime: initialize() → watch() on mount, dispose() on unmount.
- */
+// Manages Monaco models and type definitions for a ZenFS-backed project.
+// Lifetime: initialize() -> watch() on mount, dispose() on unmount.
 export class MonacoProjectService {
   private readonly monaco: Monaco;
   private readonly projectPath: string;

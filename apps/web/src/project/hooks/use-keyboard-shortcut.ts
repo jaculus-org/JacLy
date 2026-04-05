@@ -9,15 +9,13 @@ interface KeyboardShortcutOptions {
   enabled?: boolean;
 }
 
-/**
- * Hook to register keyboard shortcuts
- * @example
- * // Ctrl/Cmd + U
- * useKeyboardShortcut({ key: 'u', ctrl: true, meta: true }, handleUpload);
- *
- * // Ctrl/Cmd + Shift + S
- * useKeyboardShortcut({ key: 's', ctrl: true, meta: true, shift: true }, handleSave);
- */
+// Registers a keyboard shortcut handler.
+// Example:
+// Ctrl/Cmd + U
+// useKeyboardShortcut({ key: 'u', ctrl: true, meta: true }, handleUpload);
+//
+// Ctrl/Cmd + Shift + S
+// useKeyboardShortcut({ key: 's', ctrl: true, meta: true, shift: true }, handleSave);
 export function useKeyboardShortcut(
   options: KeyboardShortcutOptions,
   callback: () => void
