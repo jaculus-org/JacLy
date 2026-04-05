@@ -20,11 +20,7 @@ export function buildPackageImportUrl(
   return `${baseUrl}/project/import?data=${encoded}&auto=true`;
 }
 
-function triggerDownload(
-  data: Uint8Array,
-  filename: string,
-  mimeType: string
-) {
+function triggerDownload(data: Uint8Array, filename: string, mimeType: string) {
   const blob = new Blob([Uint8Array.from(data)], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
