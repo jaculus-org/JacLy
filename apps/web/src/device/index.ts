@@ -18,8 +18,6 @@ export {
 } from './state/device-control-context';
 export { JacDeviceControlProvider } from './state/device-control-provider';
 
-export { createDeviceSlice, type DeviceSlice } from './state/device-slice';
-
 export type { ConnectionStatus, ConnectionType } from './types/connection';
 export type { JacStream } from './types/stream';
 export {

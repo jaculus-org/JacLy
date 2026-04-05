@@ -12,8 +12,6 @@ export type { IDbProject } from './types/project';
 export type { ISettings } from './types/settings';
 export { defaultSettings } from './types/settings';
 
-export { useAppStore, type AppState } from './state/store';
-
 export { LocaleSelector } from './components/locale';
 export { ThemeProvider, ThemeToggle } from './components/theme';
 export { useTheme } from './state/theme-context';
