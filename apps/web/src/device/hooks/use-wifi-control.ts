@@ -82,21 +82,27 @@ export function useWifiControl(device: JacDevice | null) {
     await withLoading('getWifiInfo', fetchWifiState);
   }, [withLoading, fetchWifiState]);
 
-  const setWifiMode = useCallback((value: string) => {
-    if (!device) return;
-    void withLoading('setWifiMode', async () => {
-      await applyWifiMode(device, parseInt(value));
-      setWifiModeState(value);
-      setWifiIpState('');
-      startAutoRefresh();
-    });
-  }, [device, withLoading, startAutoRefresh]);
+  const setWifiMode = useCallback(
+    (value: string) => {
+      if (!device) return;
+      void withLoading('setWifiMode', async () => {
+        await applyWifiMode(device, parseInt(value));
+        setWifiModeState(value);
+        setWifiIpState('');
+        startAutoRefresh();
+      });
+    },
+    [device, withLoading, startAutoRefresh]
+  );
 
-  const openWifiModal = useCallback((mode: WifiModalMode) => {
-    if (mode === 'ap') setApSsidState(wifiApSsid);
-    setWifiModalMode(mode);
-    setWifiModalOpen(true);
-  }, [wifiApSsid]);
+  const openWifiModal = useCallback(
+    (mode: WifiModalMode) => {
+      if (mode === 'ap') setApSsidState(wifiApSsid);
+      setWifiModalMode(mode);
+      setWifiModalOpen(true);
+    },
+    [wifiApSsid]
+  );
 
   const closeWifiModal = useCallback(() => {
     setWifiModalOpen(false);
@@ -156,8 +162,16 @@ export function useWifiControl(device: JacDevice | null) {
       removeNetworkSsid,
     }),
     [
-      wifiMode, wifiApSsid, wifiIp, wifiModalOpen, wifiModalMode,
-      newNetworkSsid, newNetworkPassword, apSsid, apPassword, removeNetworkSsid,
+      wifiMode,
+      wifiApSsid,
+      wifiIp,
+      wifiModalOpen,
+      wifiModalMode,
+      newNetworkSsid,
+      newNetworkPassword,
+      apSsid,
+      apPassword,
+      removeNetworkSsid,
     ]
   );
 
@@ -177,8 +191,13 @@ export function useWifiControl(device: JacDevice | null) {
       setRemoveNetworkSsid,
     }),
     [
-      refreshWifi, setWifiMode, openWifiModal, closeWifiModal,
-      addNetwork, removeNetwork, configureAp,
+      refreshWifi,
+      setWifiMode,
+      openWifiModal,
+      closeWifiModal,
+      addNetwork,
+      removeNetwork,
+      configureAp,
     ]
   );
 

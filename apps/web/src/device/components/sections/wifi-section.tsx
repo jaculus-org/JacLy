@@ -35,10 +35,7 @@ export function WifiSection() {
           <label className="text-xs font-medium">
             {m.config_wifi_mode_label()}
           </label>
-          <Select
-            value={state.wifiMode}
-            onValueChange={actions.setWifiMode}
-          >
+          <Select value={state.wifiMode} onValueChange={actions.setWifiMode}>
             <SelectTrigger className="h-8 w-full text-xs">
               <SelectValue placeholder={m.config_wifi_mode_placeholder()} />
             </SelectTrigger>

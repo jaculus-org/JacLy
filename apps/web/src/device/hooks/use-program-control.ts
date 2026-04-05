@@ -1,12 +1,20 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { JacDevice } from '@jaculus/device';
-import { restart, start, status, stop, version } from '../services/device-operations';
+import {
+  restart,
+  start,
+  status,
+  stop,
+  version,
+} from '../services/device-operations';
 import type { DeviceStatusInfo } from '../state/device-control-context';
 import { useLoadingState } from './use-loading';
 
 export function useProgramControl(device: JacDevice | null) {
   const { loading, withLoading } = useLoadingState();
-  const [deviceStatus, setDeviceStatus] = useState<DeviceStatusInfo | null>(null);
+  const [deviceStatus, setDeviceStatus] = useState<DeviceStatusInfo | null>(
+    null
+  );
   const [deviceVersion, setDeviceVersion] = useState<string[]>([]);
 
   const refreshDevice = useCallback(async () => {

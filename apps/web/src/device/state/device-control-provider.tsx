@@ -7,7 +7,11 @@ import {
 import { useWifiControl } from '../hooks/use-wifi-control';
 import { useProgramControl } from '../hooks/use-program-control';
 
-export function JacDeviceControlProvider({ children }: { children: ReactNode }) {
+export function JacDeviceControlProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const {
     state: { device, connectionStatus },
   } = useJacDevice();
