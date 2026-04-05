@@ -1,6 +1,6 @@
 import { DeviceControl } from '@/device';
 
-export function DeviceControlPanelWrapper() {
+export function DevicePanel() {
   return (
     <DeviceControl.Provider>
       <DeviceControl.Panel />

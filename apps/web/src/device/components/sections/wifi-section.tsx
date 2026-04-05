@@ -11,9 +11,9 @@ import {
 import { m } from '@/core/paraglide/messages';
 import { Globe, Loader2, Lock, RefreshCw, Trash2, Wifi } from 'lucide-react';
 import { useJacDeviceControl } from '../../state/device-control-context';
-import { JacDeviceControlWifiModal } from '../wifi-modal';
+import { WifiModal } from './wifi-modal';
 
-export function JacDeviceControlSectionWifi() {
+export function WifiSection() {
   const { state, actions } = useJacDeviceControl();
 
   return (
@@ -76,7 +76,7 @@ export function JacDeviceControlSectionWifi() {
             <Lock className="w-4 h-4" />
             {state.wifiApSsid
               ? m.config_configure_ap_current({ ssid: state.wifiApSsid })
-              : 'Configure AP'}
+              : m.config_configure_ap_title()}
           </Button>
 
           <Button
@@ -100,7 +100,7 @@ export function JacDeviceControlSectionWifi() {
           </Button>
         </div>
 
-        <JacDeviceControlWifiModal />
+        <WifiModal />
       </CollapsibleCard.Content>
     </CollapsibleCard>
   );

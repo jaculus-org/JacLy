@@ -2,7 +2,7 @@ import { m } from '@/core/paraglide/messages';
 import { Card } from '@/ui/components/card';
 import { Unplug } from 'lucide-react';
 
-export function JacDeviceControlDisconnected() {
+export function DeviceDisconnected() {
   return (
     <div className="h-full p-2">
       <Card className="h-full flex flex-col items-center justify-center gap-3">

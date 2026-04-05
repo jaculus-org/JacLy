@@ -6,7 +6,7 @@ import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
 import { Info, Power, RefreshCw, RotateCw } from 'lucide-react';
 import { useJacDeviceControl } from '../../state/device-control-context';
 
-export function JacDeviceControlSectionInfo() {
+export function InfoSection() {
   const { state, actions } = useJacDeviceControl();
 
   return (

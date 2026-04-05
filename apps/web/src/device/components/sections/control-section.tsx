@@ -4,7 +4,7 @@ import { m } from '@/core/paraglide/messages';
 import { Power, RotateCw } from 'lucide-react';
 import { useJacDeviceControl } from '../../state/device-control-context';
 
-export function JacDeviceControlSectionControl() {
+export function ControlSection() {
   const { state, actions } = useJacDeviceControl();
 
   return (
