@@ -1,10 +1,8 @@
 import { JaclyBlock, JaclyConfig } from '../schema';
 import { ToolboxItemInfoSort } from '../types/toolbox';
-import {
-  editInternalBlocks,
-  enrichBlockInputs,
-  registerBlocklyBlock,
-} from '../registration/block-registration';
+import { registerBlocklyBlock } from '../registration/block-registration';
+import { enrichBlockInputs } from '../registration/input-enrichment';
+import { editInternalBlocks } from '../registration/internal-blocks';
 import { registerCodeGenerator } from '../codegen/code-generation';
 import { registerAllBlockImports } from '../codegen/block-imports';
 import { buildCategoryHeader } from './category-header';

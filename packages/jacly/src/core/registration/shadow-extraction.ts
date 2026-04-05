@@ -1,4 +1,4 @@
-import { JaclyBlockKindBlock } from '@/core/schema';
+import { JaclyBlockKindBlock } from '../schema';
 
 export function processInputsForRegistration(
   block: JaclyBlockKindBlock,

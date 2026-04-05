@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import 'mocha';
 import { createEngineState } from '../../src/core/engine-state';
+import { JaclyEngine } from '../../src/core/engine';
 
 const expect = chai.expect;
 
@@ -28,8 +29,7 @@ describe('createEngineState', () => {
 });
 
 describe('JaclyEngine', () => {
-  it('can be imported', async () => {
-    const { JaclyEngine } = await import('../../src/core/engine');
+  it('can be imported', () => {
     expect(JaclyEngine).to.be.a('function');
   });
 });

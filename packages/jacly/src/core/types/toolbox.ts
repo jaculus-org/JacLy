@@ -1,4 +1,4 @@
-import { ToolboxItemInfo } from '@/editor/types/toolbox';
+import { ToolboxItemInfo } from '../../editor/types/toolbox';
 
 export type ToolboxItemInfoSort = ToolboxItemInfo & {
   category?: string;

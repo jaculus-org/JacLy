@@ -1,4 +1,4 @@
-import { JaclyBlockKindBlock } from '@/core/schema';
+import { JaclyBlockKindBlock } from '../schema';
 
 export function processArgsForRegistration(block: JaclyBlockKindBlock) {
   if (block.args0 && block.args0.length > 0 && block.message0) {
