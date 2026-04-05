@@ -31,6 +31,10 @@ interface ActiveProjectProviderProps {
   children: ReactNode;
 }
 
+function toPackageName(name: string): string {
+  return name.toLowerCase().replace(/[^a-zA-Z0-9-_]/g, '-');
+}
+
 export function ActiveProjectProvider({
   dbProject: project,
   projectFsService,
@@ -80,9 +84,7 @@ export function ActiveProjectProvider({
     async (newName: string) => {
       const projectNamePatternJson = /^[a-z0-9-_]+$/;
       const projectId = project.id;
-      const nextNamePackage = newName
-        .toLowerCase()
-        .replace(/[^a-zA-Z0-9-_]/g, '-');
+      const nextNamePackage = toPackageName(newName);
 
       if (projectNamePatternJson.test(nextNamePackage)) {
         await projectFsService.withMount(

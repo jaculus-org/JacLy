@@ -20,32 +20,34 @@ export function buildPackageImportUrl(
   return `${baseUrl}/project/import?data=${encoded}&auto=true`;
 }
 
+function triggerDownload(
+  data: Uint8Array,
+  filename: string,
+  mimeType: string
+) {
+  const blob = new Blob([Uint8Array.from(data)], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 // Download a project as a ZIP file (browser-only).
 export async function downloadProjectAsZip(
   fs: FSInterface,
   projectPath: string,
   projectName: string
 ): Promise<void> {
-  try {
-    const zipData = await packProjectAsZip(fs, projectPath);
-
-    const blob = new Blob([new Uint8Array(zipData)], {
-      type: 'application/zip',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${projectName}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    console.log(`Downloaded project as ${projectName}.zip`);
-  } catch (error) {
-    console.error('Failed to download project as ZIP:', error);
-    throw error;
-  }
+  const zipData = await packProjectAsZip(fs, projectPath);
+  triggerDownload(
+    new Uint8Array(zipData),
+    `${projectName}.zip`,
+    'application/zip'
+  );
 }
 
 // Download a project as a .tar.gz file (browser-only).
@@ -54,24 +56,10 @@ export async function downloadProjectAsTarGz(
   projectPath: string,
   projectName: string
 ): Promise<void> {
-  try {
-    const gzData = await packProjectAsTarGz(fs, projectPath);
-
-    const blob = new Blob([new Uint8Array(gzData)], {
-      type: 'application/gzip',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${projectName}.tar.gz`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    console.log(`Downloaded project as ${projectName}.tar.gz`);
-  } catch (error) {
-    console.error('Failed to download project as TAR.GZ:', error);
-    throw error;
-  }
+  const gzData = await packProjectAsTarGz(fs, projectPath);
+  triggerDownload(
+    new Uint8Array(gzData),
+    `${projectName}.tar.gz`,
+    'application/gzip'
+  );
 }

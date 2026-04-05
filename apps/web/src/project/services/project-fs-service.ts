@@ -16,7 +16,7 @@ export interface ProjectFsInterface {
   projectPath: string;
 }
 
-// Base filesystem initialization (singleton pattern)
+// Initialize the shared base filesystem once.
 let initPromise: Promise<void> | null = null;
 
 async function ensureBaseFs(): Promise<void> {
@@ -33,7 +33,6 @@ async function ensureBaseFs(): Promise<void> {
   return initPromise;
 }
 
-// Helper functions
 const getMountPath = (projectId: string) => `/${projectId}`;
 const getStoreName = (projectId: string) => `jacly-${projectId}`;
 
@@ -87,10 +86,6 @@ export function unmountProject(projectId: string): void {
   }
 }
 
-/**
- * Delete the IndexedDB store backing a project.
- * The project must be unmounted first.
- */
 function deleteProjectStore(projectId: string): Promise<void> {
   const storeName = getStoreName(projectId);
   return new Promise((resolve, reject) => {
@@ -108,15 +103,9 @@ function deleteProjectStore(projectId: string): Promise<void> {
   });
 }
 
-/**
- * Rename a project by copying its filesystem to a new IndexedDB store
- * and deleting the old one.
- *
- * 1. Mount both old and new projects
- * 2. Copy all files using copyFolder
- * 3. Unmount both
- * 4. Delete the old IndexedDB store
- */
+// Renames a project by copying all files to a new IndexedDB store,
+// then deleting the old one. We copy first because IndexedDB
+// doesn't support renaming stores directly.
 export async function renameProject(
   oldProjectId: string,
   newProjectId: string
@@ -134,10 +123,7 @@ export async function renameProject(
   await deleteProjectStore(oldProjectId);
 }
 
-/**
- * Service class for dependency injection in React context.
- * Wraps the module functions for easier testing and provider usage.
- */
+// Wrap the filesystem operations so providers can depend on an instance.
 export class ProjectFsService {
   isMounted = isMounted;
   mount = mountProject;
