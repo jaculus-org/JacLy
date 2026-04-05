@@ -15,19 +15,17 @@ export { defaultSettings } from './types/settings';
 export { useAppStore, type AppState } from './state/store';
 
 export { LocaleSelector } from './components/locale';
-export { ThemeProvider, ThemeToggle, useTheme } from './components/theme';
+export { ThemeProvider, ThemeToggle } from './components/theme';
+export { useTheme } from './state/theme-context';
 export {
   Logger,
-  LoggerProvider,
-  useLogger,
   LoggerLogs,
   LOG_LEVELS,
   LOG_LEVEL_ORDER,
   getLogLevelColor,
 } from './components/logger';
-export type { LoggerContextValue } from './components/logger';
-export type {
-  LogLevel,
-  LoggerEntry,
-  LoggerProviderProps,
-} from './components/logger';
+export type { LogLevel, LoggerEntry } from './components/logger';
+export { LoggerProvider } from './state/logger-provider';
+export { useLogger } from './state/logger-context';
+export type { LoggerContextValue } from './state/logger-context';
+export type { LoggerProviderProps } from './state/logger-provider';

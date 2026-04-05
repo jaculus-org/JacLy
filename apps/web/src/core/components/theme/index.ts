@@ -1,2 +1,3 @@
 export { ThemeToggle } from './components/theme-toggle';
-export { ThemeProvider, useTheme } from './components/theme-provider';
+export { ThemeProvider } from './components/theme-provider';
+export { useTheme } from '../../state/theme-context';

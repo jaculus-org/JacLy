@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { LoggerEntry } from './types';
+import type { LoggerEntry } from '../components/logger/types';
 
 export interface LoggerState {
   entries: LoggerEntry[];

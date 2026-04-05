@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { LoggerEntry } from './types';
+import type { LoggerEntry } from '../components/logger/types';
 import { LoggerContext, type LoggerContextValue } from './logger-context';
 
 export interface LoggerProviderProps {
