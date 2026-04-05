@@ -6,16 +6,8 @@ export interface WokwiSimulatorState {
   isInitializing: boolean;
 }
 
-export type WokwiSimulatorActions = Record<string, never>;
-
-export interface WokwiSimulatorMeta {
-  embedUrl: string;
-}
-
 export interface WokwiSimulatorContextValue {
   state: WokwiSimulatorState;
-  actions: WokwiSimulatorActions;
-  meta: WokwiSimulatorMeta;
 }
 
 export const WokwiSimulatorContext = createContext<

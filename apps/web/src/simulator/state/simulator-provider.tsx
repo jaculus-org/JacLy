@@ -22,10 +22,6 @@ export function WokwiSimulatorProvider({
           isInitializing:
             connectionStatus === 'connecting' && connectionType === 'wokwi',
         },
-        actions: {},
-        meta: {
-          embedUrl: 'https://wokwi.com/experimental/embed',
-        },
       }}
     >
       {children}

@@ -1,9 +1,7 @@
 export {
   useWokwiSimulator,
   WokwiSimulatorContext,
-  type WokwiSimulatorActions,
   type WokwiSimulatorContextValue,
-  type WokwiSimulatorMeta,
   type WokwiSimulatorState,
 } from './state/simulator-context';
 export { WokwiSimulatorProvider } from './state/simulator-provider';
@@ -14,6 +12,7 @@ export {
   WokwiSimulatorView,
 } from './components';
 export { WokwiPanel } from './components/panels/wokwi-panel';
+export { WOKWI_EMBED_URL } from './constants';
 
 import { WokwiSimulatorProvider } from './state/simulator-provider';
 import { WokwiSimulatorEmbed, WokwiSimulatorView } from './components';

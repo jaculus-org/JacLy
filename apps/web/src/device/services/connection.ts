@@ -7,7 +7,7 @@ import type { Duplex } from '@jaculus/link/stream';
 import type { AddToConsole } from '@/console';
 import { JacStreamWokwi } from './streams/wokwi';
 import { JacStreamBle } from './streams/ble';
-import { getDefaultDiagram } from '@/simulator/services/wokwi';
+import defaultDiagram from '@/simulator/assets/diagram.json';
 
 export async function getAvailableConnectionTypes(): Promise<ConnectionInfo[]> {
   const types: ConnectionInfo[] = [];
@@ -155,7 +155,7 @@ export async function connectDeviceWokwiSimulator(
         const content = await fs.promises.readFile(diagramPath);
         return content.toString();
       } catch {
-        return JSON.stringify(getDefaultDiagram());
+        return JSON.stringify(defaultDiagram);
       }
     },
     handleWriteDiagram: async (data: Uint8Array | string) => {
