@@ -52,12 +52,13 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
         const jaclyFile = getFileName('JACLY_INDEX');
         await ensureDir(fsp, dirname(jaclyFile));
 
-        const jsonData = fs.existsSync(jaclyFile)
-          ? JSON.parse(fs.readFileSync(jaclyFile, 'utf-8'))
-          : (() => {
-              fsp.writeFile(jaclyFile, '{}', 'utf-8');
-              return {};
-            })();
+        let jsonData: object;
+        if (fs.existsSync(jaclyFile)) {
+          jsonData = JSON.parse(fs.readFileSync(jaclyFile, 'utf-8'));
+        } else {
+          void fsp.writeFile(jaclyFile, '{}', 'utf-8');
+          jsonData = {};
+        }
 
         const jaclyData = await jacProject.getJaclyData(getLocale());
 
@@ -77,6 +78,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
+    // nodeModulesVersion changes when deps are installed, triggering a fresh load.
   }, [fs, fsp, getFileName, jacProject, nodeModulesVersion]);
 
   const handleJsonChange = useMemo(

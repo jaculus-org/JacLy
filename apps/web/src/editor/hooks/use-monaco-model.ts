@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { RefObject } from 'react';
 import { useMonaco } from '@monaco-editor/react';
 import { editorSyncService } from '../services/editor-sync-service';
 import { inferLanguageFromPath } from '../services/language';
@@ -14,7 +15,7 @@ interface UseMonacoModelResult {
   loading: boolean;
   fileExists: boolean;
   error: string | null;
-  applyingExternalChangeRef: React.MutableRefObject<boolean>;
+  applyingExternalChangeRef: RefObject<boolean>;
 }
 
 export function useMonacoModel({
@@ -104,7 +105,7 @@ export function useMonacoModel({
 
       if (model.getValue() === content) return;
 
-      // Use pushEditOperations instead of setValue to preserve the undo stack.
+      // pushEditOperations preserves the undo stack, setValue does not.
       applyingExternalChangeRef.current = true;
       model.pushEditOperations(
         [],

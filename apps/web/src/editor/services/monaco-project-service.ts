@@ -35,7 +35,7 @@ export class MonacoProjectService {
   private createdModelUris = new Set<string>();
   private extraLibs = new Map<string, string>();
   private watchers: Array<{ close(): void }> = [];
-  private handlingPaths = new Set<string>();
+  private handlingPaths = new Set<string>(); // prevents re-entrant reads for the same path
   private disposed = false;
 
   constructor(
@@ -102,11 +102,12 @@ export class MonacoProjectService {
   }
 
   private setCompilerOptions(): void {
-    this.monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-      target: this.monaco.languages.typescript.ScriptTarget.ESNext,
-      module: this.monaco.languages.typescript.ModuleKind.ESNext,
-      moduleResolution:
-        this.monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    const ts = this.monaco.languages.typescript;
+
+    ts.typescriptDefaults.setCompilerOptions({
+      target: ts.ScriptTarget.ESNext,
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
       allowJs: true,
       checkJs: true,
       strict: false,
@@ -114,17 +115,16 @@ export class MonacoProjectService {
       esModuleInterop: true,
       allowSyntheticDefaultImports: true,
     });
-    this.monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target: this.monaco.languages.typescript.ScriptTarget.ESNext,
-      module: this.monaco.languages.typescript.ModuleKind.ESNext,
-      moduleResolution:
-        this.monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    ts.javascriptDefaults.setCompilerOptions({
+      target: ts.ScriptTarget.ESNext,
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
       allowJs: true,
       checkJs: true,
       noEmit: true,
     });
-    this.monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-    this.monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+    ts.typescriptDefaults.setEagerModelSync(true);
+    ts.javascriptDefaults.setEagerModelSync(true);
   }
 
   private async traverseSourceFiles(dirPath: string): Promise<void> {

@@ -1,13 +1,8 @@
 type FileChangeListener = (filePath: string, content: string) => void;
 
-/**
- * Coordinates editor saves and filesystem changes.
- *
- * Tracks files being written by any editor so the ZenFS watcher never reads
- * partially-written content. Every writer must bracket its writeFile call with
- * markEditorSaveStart / markEditorSaveEnd and call notifyExternalChange after
- * writes that originate outside the Monaco text editor.
- */
+// Prevents ZenFS watcher events from racing concurrent editor writes.
+// Writers call markEditorSaveStart/End around writeFile to suppress watcher events;
+// non-Monaco writers call notifyExternalChange so Monaco receives the update directly.
 export class EditorSyncService {
   private pendingSaves = new Set<string>();
   private externalChangeListeners: FileChangeListener[] = [];
