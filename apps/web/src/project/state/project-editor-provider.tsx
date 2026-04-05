@@ -14,9 +14,9 @@ import {
   controlPanel,
   getUpdatedLayoutModel,
   openPanel,
-} from '../lib/flexlayout';
-import { flexLayoutDefaultJson } from '../lib/flexlayout-defaults';
-import { getPanelTitle } from '../lib/panel-registry';
+} from '../lib/flexlayout/model';
+import { flexLayoutDefaultJson } from '../lib/flexlayout/defaults';
+import { getPanelTitle } from '../lib/flexlayout/panel-registry';
 import type {
   NewPanelProps,
   PanelAction,

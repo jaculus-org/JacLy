@@ -1,11 +1,11 @@
 'use client';
 
 import { m } from '@/core/paraglide/messages';
-import { useJacFileExplorer } from './file-explorer-context';
-import { JacFileExplorerNodeMenu } from './file-explorer-node-menu';
-import { JacFileExplorerTreeNode } from './file-explorer-tree-node';
+import { useJacFileExplorer } from '../state/context';
+import { FileExplorerNodeMenu } from '../node-menu';
+import { FileExplorerTreeNode } from './node';
 
-export function JacFileExplorerTree() {
+export function FileExplorerTree() {
   const {
     state: { fileTree, selectedItem, loading, expandedFolders },
     actions: { toggleDirectory, openItem, selectItem },
@@ -30,7 +30,7 @@ export function JacFileExplorerTree() {
   return (
     <div className="min-h-full">
       {fileTree.map(item => (
-        <JacFileExplorerTreeNode
+        <FileExplorerTreeNode
           key={item.path}
           item={item}
           depth={0}
@@ -39,7 +39,7 @@ export function JacFileExplorerTree() {
           onToggle={toggleDirectory}
           onOpen={openItem}
           onSelect={selectItem}
-          ContextMenuComponent={JacFileExplorerNodeMenu}
+          ContextMenuComponent={FileExplorerNodeMenu}
         />
       ))}
     </div>

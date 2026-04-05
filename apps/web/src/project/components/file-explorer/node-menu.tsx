@@ -12,10 +12,10 @@ import {
   FolderPenIcon,
   FolderPlusIcon,
 } from 'lucide-react';
-import { useJacFileExplorer } from './file-explorer-context';
-import type { FileSystemItem } from './file-explorer-types';
+import { useJacFileExplorer } from './state/context';
+import type { FileSystemItem } from './types';
 
-export function JacFileExplorerNodeMenu({ item }: { item: FileSystemItem }) {
+export function FileExplorerNodeMenu({ item }: { item: FileSystemItem }) {
   const {
     actions: {
       createNewFile,

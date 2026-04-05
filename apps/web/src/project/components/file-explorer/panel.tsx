@@ -1,11 +1,11 @@
 'use client';
 
 import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
-import { useJacFileExplorer } from './file-explorer-context';
-import { JacFileExplorerNodeMenu } from './file-explorer-node-menu';
-import { JacFileExplorerTree } from './file-explorer-tree';
+import { useJacFileExplorer } from './state/context';
+import { FileExplorerNodeMenu } from './node-menu';
+import { FileExplorerTree } from './tree/tree';
 
-export function JacFileExplorerPanel() {
+export function FileExplorerPanel() {
   const {
     meta: { rootItem },
   } = useJacFileExplorer();
@@ -14,10 +14,10 @@ export function JacFileExplorerPanel() {
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <div className="flex-1 overflow-auto p-1 min-h-full">
-          <JacFileExplorerTree />
+          <FileExplorerTree />
         </div>
       </ContextMenuTrigger>
-      <JacFileExplorerNodeMenu item={rootItem} />
+      <FileExplorerNodeMenu item={rootItem} />
     </ContextMenu>
   );
 }

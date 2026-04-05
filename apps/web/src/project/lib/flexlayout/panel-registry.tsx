@@ -10,11 +10,13 @@ import {
   JacPackagesProvider,
 } from '@/packages';
 import { WokwiPanel } from '@/simulator';
-import { JacFileExplorerPanel } from '../components/file-explorer/file-explorer-panel';
-import { JacFileExplorerProvider } from '../components/file-explorer/file-explorer-provider';
-import { ErrorPanel } from '../components/panels/error-panel';
-import { LogsPanel } from '../components/panels/logs-panel';
-import type { PanelType } from '../types/flexlayout-type';
+import {
+  FileExplorerPanel,
+  FileExplorerProvider,
+} from '../../components/file-explorer';
+import { ErrorPanel } from '../../components/panels/error-panel';
+import { LogsPanel } from '../../components/panels/logs-panel';
+import type { PanelType } from '../../types/flexlayout-type';
 
 export interface PanelDefinition {
   canPopout?: boolean;
@@ -46,9 +48,9 @@ export const PANEL_DEFINITIONS: Record<PanelType, PanelDefinition> = {
   'file-explorer': {
     canPopout: false,
     render: () => (
-      <JacFileExplorerProvider>
-        <JacFileExplorerPanel />
-      </JacFileExplorerProvider>
+      <FileExplorerProvider>
+        <FileExplorerPanel />
+      </FileExplorerProvider>
     ),
     getTitle: () => m.project_panel_fs(),
   },

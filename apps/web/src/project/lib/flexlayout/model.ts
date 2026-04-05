@@ -4,8 +4,8 @@ import type {
   NewPanelProps,
   PanelAction,
   PanelType,
-} from '../types/flexlayout-type';
-import { flexLayoutDefaultJson } from './flexlayout-defaults';
+} from '../../types/flexlayout-type';
+import { flexLayoutDefaultJson } from './defaults';
 import { applyPanelDefinitionToTab } from './panel-registry';
 
 type JsonLayoutNode =

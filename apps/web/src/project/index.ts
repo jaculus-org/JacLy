@@ -30,9 +30,11 @@ export { ProjectNameEditor } from './components/project-name-editor';
 export { ErrorPanel } from './components/panels/error-panel';
 export { LogsPanel } from './components/panels/logs-panel';
 
-export { JacFileExplorerPanel as FileExplorerPanel } from './components/file-explorer/file-explorer-panel';
-export { JacFileExplorerProvider as FileExplorerProvider } from './components/file-explorer/file-explorer-provider';
-export { useJacFileExplorer } from './components/file-explorer/file-explorer-context';
+export {
+  FileExplorerPanel,
+  FileExplorerProvider,
+  useJacFileExplorer,
+} from './components/file-explorer';
 
 export {
   ProjectFsService,
@@ -49,7 +51,7 @@ export {
   getPanelDefinition,
   getPanelTitle,
   applyPanelDefinitionToTab,
-} from './lib/panel-registry';
+} from './lib/flexlayout/panel-registry';
 export {
   buildPackageImportUrl,
   collectFiles,
@@ -57,27 +59,27 @@ export {
   downloadProjectAsZip,
   packProjectAsTarGz,
   packProjectAsZip,
-} from './lib/download';
+} from './services/download';
 export {
   defaultBorderLayout,
   defaultGlobalSettings,
   defaultLayout,
   flexLayoutDefaultJson,
-} from './lib/flexlayout-defaults';
+} from './lib/flexlayout/defaults';
 export {
   controlPanel,
   findAllTabIds,
   getUpdatedLayoutModel,
   openPanel,
   processAllTabs,
-} from './lib/flexlayout';
+} from './lib/flexlayout/model';
 export {
   loadPackageFromBytes,
   loadPackageFromFile,
   loadPackageFromUri,
   type PackageLoadResult,
-} from './lib/load-package';
-export { loadPackageUri } from './lib/request';
+} from './services/load-package';
+export { loadPackageUri } from './services/request';
 
 export type {
   CodePanelProps,

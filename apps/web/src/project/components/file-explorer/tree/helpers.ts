@@ -1,5 +1,6 @@
 'use client';
 
+import { createElement } from 'react';
 import {
   Blocks,
   File,
@@ -10,7 +11,7 @@ import {
   FileVideo,
 } from 'lucide-react';
 import type fs from 'fs';
-import type { FileSystemItem } from './file-explorer-types';
+import type { FileSystemItem } from '../types';
 
 export async function buildFileTree(
   fsp: typeof fs.promises,
@@ -63,7 +64,7 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
 
   switch (ext) {
     case undefined:
-      return <File {...iconProps} />;
+      return createElement(File, iconProps);
     case 'js':
     case 'ts':
     case 'jsx':
@@ -72,7 +73,10 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
     case 'java':
     case 'cpp':
     case 'c':
-      return <FileCode {...iconProps} className="text-yellow-400" />;
+      return createElement(FileCode, {
+        ...iconProps,
+        className: 'text-yellow-400',
+      });
     case 'txt':
     case 'md':
     case 'json':
@@ -80,26 +84,44 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
     case 'html':
     case 'css':
       if (doubleExts === 'jacly.json') {
-        return <Blocks {...iconProps} className="text-orange-400" />;
+        return createElement(Blocks, {
+          ...iconProps,
+          className: 'text-orange-400',
+        });
       }
-      return <FileText {...iconProps} className="text-green-400" />;
+      return createElement(FileText, {
+        ...iconProps,
+        className: 'text-green-400',
+      });
     case 'png':
     case 'jpg':
     case 'jpeg':
     case 'gif':
     case 'svg':
-      return <FileImage {...iconProps} className="text-purple-400" />;
+      return createElement(FileImage, {
+        ...iconProps,
+        className: 'text-purple-400',
+      });
     case 'mp4':
     case 'avi':
     case 'mov':
-      return <FileVideo {...iconProps} className="text-red-400" />;
+      return createElement(FileVideo, {
+        ...iconProps,
+        className: 'text-red-400',
+      });
     case 'mp3':
     case 'wav':
     case 'ogg':
-      return <FileAudio {...iconProps} className="text-pink-400" />;
+      return createElement(FileAudio, {
+        ...iconProps,
+        className: 'text-pink-400',
+      });
     case 'jacly':
-      return <Blocks {...iconProps} className="text-orange-400" />;
+      return createElement(Blocks, {
+        ...iconProps,
+        className: 'text-orange-400',
+      });
     default:
-      return <File {...iconProps} />;
+      return createElement(File, iconProps);
   }
 }

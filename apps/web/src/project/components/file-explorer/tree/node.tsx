@@ -3,11 +3,11 @@
 import { memo } from 'react';
 import { ChevronDown, ChevronRight, FolderOpen, Folder } from 'lucide-react';
 import { cn } from '@/ui/lib/cn';
-import { getFileIcon } from './file-explorer-helpers';
-import type { FileTreeNodeProps } from './file-explorer-types';
+import { getFileIcon } from './helpers';
+import type { FileTreeNodeProps } from '../types';
 import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
 
-export const JacFileExplorerTreeNode = memo(
+export const FileExplorerTreeNode = memo(
   ({
     item,
     depth,
@@ -83,7 +83,7 @@ export const JacFileExplorerTreeNode = memo(
         {item.isDirectory && isExpanded && item.children && (
           <div>
             {item.children.map(child => (
-              <JacFileExplorerTreeNode
+              <FileExplorerTreeNode
                 key={child.path}
                 item={child}
                 depth={depth + 1}
@@ -102,4 +102,4 @@ export const JacFileExplorerTreeNode = memo(
   }
 );
 
-JacFileExplorerTreeNode.displayName = 'JacFileExplorerTreeNode';
+FileExplorerTreeNode.displayName = 'FileExplorerTreeNode';

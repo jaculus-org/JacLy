@@ -1,16 +1,16 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import type { FileSystemItem } from './file-explorer-types';
+import type { FileSystemItem } from '../types';
 
-export interface JacFileExplorerState {
+export interface FileExplorerState {
   fileTree: FileSystemItem[];
   selectedItem: string | null;
   loading: boolean;
   expandedFolders: Set<string>;
 }
 
-export interface JacFileExplorerActions {
+export interface FileExplorerActions {
   refreshTree: (isBackground?: boolean) => Promise<void>;
   openItem: (item: FileSystemItem) => void;
   toggleDirectory: (item: FileSystemItem) => Promise<void>;
@@ -22,26 +22,26 @@ export interface JacFileExplorerActions {
   copyPath: (item: FileSystemItem) => void;
 }
 
-export interface JacFileExplorerMeta {
+export interface FileExplorerMeta {
   rootItem: FileSystemItem;
   hasProject: boolean;
 }
 
-export interface JacFileExplorerContextValue {
-  state: JacFileExplorerState;
-  actions: JacFileExplorerActions;
-  meta: JacFileExplorerMeta;
+export interface FileExplorerContextValue {
+  state: FileExplorerState;
+  actions: FileExplorerActions;
+  meta: FileExplorerMeta;
 }
 
-export const JacFileExplorerContext = createContext<
-  JacFileExplorerContextValue | undefined
+export const FileExplorerContext = createContext<
+  FileExplorerContextValue | undefined
 >(undefined);
 
 export function useJacFileExplorer() {
-  const ctx = useContext(JacFileExplorerContext);
+  const ctx = useContext(FileExplorerContext);
   if (!ctx)
     throw new Error(
-      'JacFileExplorer.* components must be within JacFileExplorer.Provider'
+      'FileExplorer components must be within FileExplorerProvider'
     );
   return ctx;
 }

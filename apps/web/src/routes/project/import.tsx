@@ -18,7 +18,7 @@ import {
   loadPackageFromUri,
   type PackageLoadResult,
 } from '@jaculus/project/import';
-import { loadPackageFromFile } from '@/project/lib/load-package';
+import { loadPackageFromFile } from '@/project/services/load-package';
 import { toUint8Array } from 'js-base64';
 import { createFromBundle } from '@jaculus/project/creation';
 import { logger } from '@/core/services/logger-service';

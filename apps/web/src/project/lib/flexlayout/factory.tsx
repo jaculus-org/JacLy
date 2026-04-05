@@ -1,6 +1,6 @@
 import * as FlexLayout from 'flexlayout-react';
-import { PanelWrapper } from '../components/panel-wrapper';
-import type { PanelType } from '../types/flexlayout-type';
+import { PanelWrapper } from '../../components/panel-wrapper';
+import type { PanelType } from '../../types/flexlayout-type';
 import { m } from '@/core/paraglide/messages';
 import { getPanelDefinition, getPanelTitle } from './panel-registry';
 

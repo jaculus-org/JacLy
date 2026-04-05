@@ -9,14 +9,14 @@ import {
   type ReactNode,
 } from 'react';
 import { enqueueSnackbar } from 'notistack';
-import { useActiveProject } from '../../state/active-project-context';
-import { useProjectEditor } from '../../state/project-editor-context';
+import { useActiveProject } from '../../../state/active-project-context';
+import { useProjectEditor } from '../../../state/project-editor-context';
 import { debounce } from '@jaculus/jacly/utils';
-import { JacFileExplorerContext } from './file-explorer-context';
-import type { FileSystemItem } from './file-explorer-types';
-import { buildFileTree, loadDirectoryChildren } from './file-explorer-helpers';
+import { FileExplorerContext } from './context';
+import type { FileSystemItem } from '../types';
+import { buildFileTree, loadDirectoryChildren } from '../tree/helpers';
 
-export function JacFileExplorerProvider({ children }: { children: ReactNode }) {
+export function FileExplorerProvider({ children }: { children: ReactNode }) {
   const {
     state: { fsp, projectPath },
   } = useActiveProject();
@@ -278,7 +278,7 @@ export function JacFileExplorerProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <JacFileExplorerContext.Provider
+    <FileExplorerContext.Provider
       value={{
         state: { fileTree, selectedItem, loading, expandedFolders },
         actions: {
@@ -296,6 +296,6 @@ export function JacFileExplorerProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </JacFileExplorerContext.Provider>
+    </FileExplorerContext.Provider>
   );
 }
