@@ -29,14 +29,14 @@ export interface JacDeviceControlState {
 }
 
 export interface JacDeviceControlActions {
-  handleGetWifiInfo: () => Promise<void>;
-  handleGetDeviceInfo: () => Promise<void>;
-  handleWifiModeChange: (value: string) => void;
-  handleOpenWifiModal: (mode: WifiModalMode) => void;
-  handleCloseWifiModal: () => void;
-  handleAddNetwork: () => Promise<void>;
-  handleRemoveNetwork: () => Promise<void>;
-  handleConfigureAp: () => Promise<void>;
+  refreshWifi: () => Promise<void>;
+  refreshDevice: () => Promise<void>;
+  setWifiMode: (value: string) => void;
+  openWifiModal: (mode: WifiModalMode) => void;
+  closeWifiModal: () => void;
+  addNetwork: () => Promise<void>;
+  removeNetwork: () => Promise<void>;
+  configureAp: () => Promise<void>;
   setNewNetworkSsid: (value: string) => void;
   setNewNetworkPassword: (value: string) => void;
   setApSsid: (value: string) => void;

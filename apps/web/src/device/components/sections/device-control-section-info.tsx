@@ -14,7 +14,7 @@ export function JacDeviceControlSectionInfo() {
       <CollapsibleCard.Header
         name={m.config_device_info_title()}
         icon={<Info className="w-3.5 h-3.5" />}
-        action={actions.handleGetDeviceInfo}
+        action={actions.refreshDevice}
         actionIcon={
           <RefreshCw
             className={`w-4 h-4 ${state.loading['getDeviceInfo'] ? 'animate-spin' : ''}`}

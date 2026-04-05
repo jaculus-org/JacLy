@@ -21,7 +21,7 @@ export function JacDeviceControlSectionWifi() {
       <CollapsibleCard.Header
         name={m.config_wifi_title()}
         icon={<Wifi className="w-3.5 h-3.5" />}
-        action={actions.handleGetWifiInfo}
+        action={actions.refreshWifi}
         actionIcon={
           <RefreshCw
             className={`w-4 h-4 ${state.loading['getWifiInfo'] ? 'animate-spin' : ''}`}
@@ -37,7 +37,7 @@ export function JacDeviceControlSectionWifi() {
           </label>
           <Select
             value={state.wifiMode}
-            onValueChange={actions.handleWifiModeChange}
+            onValueChange={actions.setWifiMode}
           >
             <SelectTrigger className="h-8 w-full text-xs">
               <SelectValue placeholder={m.config_wifi_mode_placeholder()} />
@@ -71,7 +71,7 @@ export function JacDeviceControlSectionWifi() {
             size="sm"
             variant="outline"
             className="w-full justify-start h-8"
-            onClick={() => actions.handleOpenWifiModal('ap')}
+            onClick={() => actions.openWifiModal('ap')}
           >
             <Lock className="w-4 h-4" />
             {state.wifiApSsid
@@ -83,7 +83,7 @@ export function JacDeviceControlSectionWifi() {
             size="sm"
             variant="outline"
             className="w-full justify-start h-8"
-            onClick={() => actions.handleOpenWifiModal('network')}
+            onClick={() => actions.openWifiModal('network')}
           >
             <Wifi className="w-4 h-4" />
             {m.config_add_network_title()}
@@ -93,7 +93,7 @@ export function JacDeviceControlSectionWifi() {
             size="sm"
             variant="outline"
             className="w-full justify-start h-8"
-            onClick={() => actions.handleOpenWifiModal('remove')}
+            onClick={() => actions.openWifiModal('remove')}
           >
             <Trash2 className="w-4 h-4" />
             {m.config_remove_network_title()}

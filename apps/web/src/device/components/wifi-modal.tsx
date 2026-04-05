@@ -18,7 +18,7 @@ export function JacDeviceControlWifiModal() {
   return (
     <AlertDialog
       open={state.wifiModalOpen}
-      onOpenChange={actions.handleCloseWifiModal}
+      onOpenChange={actions.closeWifiModal}
     >
       <AlertDialogContent>
         {state.wifiModalMode === 'ap' && (
@@ -47,7 +47,7 @@ export function JacDeviceControlWifiModal() {
             <AlertDialogFooter>
               <AlertDialogCancel>{m.config_btn_cancel()}</AlertDialogCancel>
               <AlertDialogAction
-                onClick={actions.handleConfigureAp}
+                onClick={actions.configureAp}
                 disabled={
                   state.loading['configureAp'] ||
                   !state.apSsid ||
@@ -88,7 +88,7 @@ export function JacDeviceControlWifiModal() {
             <AlertDialogFooter>
               <AlertDialogCancel>{m.config_btn_cancel()}</AlertDialogCancel>
               <AlertDialogAction
-                onClick={actions.handleAddNetwork}
+                onClick={actions.addNetwork}
                 disabled={
                   state.loading['addNetwork'] ||
                   !state.newNetworkSsid ||
@@ -121,7 +121,7 @@ export function JacDeviceControlWifiModal() {
             <AlertDialogFooter>
               <AlertDialogCancel>{m.config_btn_cancel()}</AlertDialogCancel>
               <AlertDialogAction
-                onClick={actions.handleRemoveNetwork}
+                onClick={actions.removeNetwork}
                 disabled={
                   state.loading['removeNetwork'] || !state.removeNetworkSsid
                 }
