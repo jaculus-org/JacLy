@@ -1,9 +1,4 @@
-import {
-  AppSettingsRepository,
-  db,
-  logger,
-  ProjectRepository,
-} from '@/core';
+import { AppSettingsRepository, db, logger, ProjectRepository } from '@/core';
 import { ConsoleBusService } from '@/console';
 import { ProjectFsService, ProjectManagementService } from '@/project';
 

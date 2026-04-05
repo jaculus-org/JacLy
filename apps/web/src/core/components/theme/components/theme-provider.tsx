@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  ThemeContext,
-  type Theme,
-} from '../../../state/theme-context';
+import { ThemeContext, type Theme } from '../../../state/theme-context';
 
 type ThemeNormalized = 'dark' | 'light';
 
