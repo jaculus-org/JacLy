@@ -131,7 +131,6 @@ export async function status(device: JacDevice) {
   }
 }
 
-// WiFi Configuration Functions
 export async function addWifiNetwork(
   device: JacDevice,
   ssid: string,

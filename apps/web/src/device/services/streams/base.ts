@@ -14,9 +14,6 @@ export class JacStreamError extends Error {
   }
 }
 
-/**
- * Base class for JacStream implementations providing common callback handling
- */
 export abstract class JacStreamBase implements Duplex {
   protected callbacks: StreamCallbacks = {};
   protected isDestroyed = false;

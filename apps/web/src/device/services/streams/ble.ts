@@ -1,6 +1,6 @@
 import { type Duplex } from '@jaculus/link/stream';
 import { type Logger } from '@jaculus/common';
-import { JacStreamBase, JacStreamError } from './jac-stream-base';
+import { JacStreamBase, JacStreamError } from './base';
 
 const SERVICE_UUID = 0xffe0;
 const CHARACTERISTIC_UUID = 0xffe1;

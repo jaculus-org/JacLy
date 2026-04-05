@@ -6,7 +6,7 @@ import {
   type APIEvent,
   type SerialMonitorDataPayload,
 } from '@wokwi/client';
-import { JacStreamBase, JacStreamError } from './jac-stream-base';
+import { JacStreamBase, JacStreamError } from './base';
 
 export interface JacStreamWokwiHandlers {
   handleReadDiagram: () => Promise<Uint8Array | string>;
