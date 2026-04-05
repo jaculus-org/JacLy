@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { m } from '@/core/paraglide/messages';
 import { ConsolePanel, ChartPanel } from '@/console';
-import { DeviceControlPanelWrapper } from '@/device';
+import { DevicePanel } from '@/device';
 import { JaclyEditorPanel, CodePanel, GeneratedCode } from '@/editor';
 import {
   InstallerPanel,
@@ -83,7 +83,7 @@ export const PANEL_DEFINITIONS: Record<PanelType, PanelDefinition> = {
   },
   jaculus: {
     canPopout: false,
-    render: () => <DeviceControlPanelWrapper />,
+    render: () => <DevicePanel />,
     getTitle: () => m.project_panel_jaculus(),
   },
   installer: {

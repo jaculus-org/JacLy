@@ -58,25 +58,25 @@ export {
 export {
   Build,
   BuildFlash,
+  ConnectedDevice,
   ConnectionSelector,
   ConsoleSelector,
 } from './components/controls';
-export { ConnectedDevice } from './components/status/connected-device';
 
 export { JacDeviceControlPanel } from './components/panels/device-control-panel';
-export { JacDeviceControlDisconnected } from './components/device-disconnected';
-export { JacDeviceControlWifiModal } from './components/wifi-modal';
-export { JacDeviceControlSectionControl } from './components/sections/device-control-section-control';
-export { JacDeviceControlSectionInfo } from './components/sections/device-control-section-info';
-export { JacDeviceControlSectionWifi } from './components/sections/device-control-section-wifi';
-export { DeviceControlPanelWrapper } from './components/panels/device-control-panel-wrapper';
+export { DevicePanel } from './components/panels/device-panel';
+export { DeviceDisconnected } from './components/panels/disconnected';
+export { WifiModal } from './components/sections/wifi-modal';
+export { ControlSection } from './components/sections/control-section';
+export { InfoSection } from './components/sections/info-section';
+export { WifiSection } from './components/sections/wifi-section';
 
 import { JacDeviceProvider } from './state/device-provider';
 import { JacDeviceControlProvider } from './state/device-control-provider';
 import { JacDeviceControlPanel } from './components/panels/device-control-panel';
-import { JacDeviceControlSectionControl } from './components/sections/device-control-section-control';
-import { JacDeviceControlSectionInfo } from './components/sections/device-control-section-info';
-import { JacDeviceControlSectionWifi } from './components/sections/device-control-section-wifi';
+import { ControlSection } from './components/sections/control-section';
+import { InfoSection } from './components/sections/info-section';
+import { WifiSection } from './components/sections/wifi-section';
 
 export const JacDevice = {
   Provider: JacDeviceProvider,
@@ -85,7 +85,7 @@ export const JacDevice = {
 export const DeviceControl = {
   Provider: JacDeviceControlProvider,
   Panel: JacDeviceControlPanel,
-  ControlSection: JacDeviceControlSectionControl,
-  InfoSection: JacDeviceControlSectionInfo,
-  WifiSection: JacDeviceControlSectionWifi,
+  ControlSection,
+  InfoSection,
+  WifiSection,
 };
