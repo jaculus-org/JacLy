@@ -1,42 +1,16 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 
-// Types
 import { Theme } from '@/editor/types/theme';
-import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
+import { WorkspaceSvgExtended } from '@/core/types/custom-block';
 import { JaclyBlocksData } from '@jaculus/project';
-
-// Lib
 import { getBlocklyTheme } from '@/editor/lib/theme';
-import { generateCodeFromWorkspace } from '../lib/code-generation';
-import { registerJaclyCustomCategory } from '../lib/custom-category';
-
-// Hooks
 import { useBlocklyMessages } from '../hooks/use-blockly-messages';
-
-// Blocks
-import {
-  loadToolboxConfiguration,
-  registerDocsCallbacks,
-} from '@/blocks/lib/toolbox';
-import { registerWorkspaceChangeListener } from '@/blocks/lib/workspace';
-import '@/blocks/new-blocks';
-
-// Utils
+import { JaclyEngine } from '@/core/engine';
 import { debounce } from '@/utils/debouncer';
-
-// Components
 import { JaclyLoading } from './loading';
-
-// Styles
 import '../styles/toolbox.css';
-
-// Extensions
-import { registerFieldColour } from '@blockly/field-colour';
-import { registerCrossTabCopyPaste } from '../plugins/cross-tab-copy-paste';
-
-registerJaclyCustomCategory();
 
 interface JaclyEditorProps {
   jaclyBlocksData: JaclyBlocksData;
@@ -57,15 +31,26 @@ export function JaclyEditor({
 }: JaclyEditorProps) {
   const messagesLoaded = useBlocklyMessages(locale);
 
-  const listenerRegistered = useRef(false);
+  const engine = useMemo(() => new JaclyEngine(), []);
+
+  const toolboxConfiguration = useMemo(
+    () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
+    [jaclyBlocksData, messagesLoaded, engine]
+  );
+
+  const blocksKey = useMemo(
+    () => JSON.stringify(jaclyBlocksData),
+    [jaclyBlocksData]
+  );
 
   const debouncedGenerate = useMemo(
     () =>
       debounce((workspace: WorkspaceSvgExtended) => {
-        onGeneratedCode(generateCodeFromWorkspace(workspace));
+        onGeneratedCode(engine.generateCode(workspace));
       }, 300),
-    [onGeneratedCode]
+    [engine, onGeneratedCode]
   );
+
   const debouncedJsonChange = useMemo(
     () =>
       debounce((json: object) => {
@@ -74,29 +59,12 @@ export function JaclyEditor({
     [onJsonChange]
   );
 
-  const toolboxConfiguration = useMemo(
-    () => (messagesLoaded ? loadToolboxConfiguration(jaclyBlocksData) : null),
-    [jaclyBlocksData, messagesLoaded]
-  );
-  const blocksKey = useMemo(
-    () => JSON.stringify(jaclyBlocksData),
-    [jaclyBlocksData]
-  );
-
   const handleWorkspaceChange = useCallback(
     (workspace: WorkspaceSvgExtended) => {
-      if (!listenerRegistered.current) {
-        registerWorkspaceChangeListener(workspace);
-        registerCrossTabCopyPaste();
-        registerFieldColour();
-        registerDocsCallbacks(workspace);
-        // registerVariableCategoryCallback(workspace);
-        listenerRegistered.current = true;
-      }
-
+      engine.attachToWorkspace(workspace);
       debouncedGenerate(workspace);
     },
-    [debouncedGenerate]
+    [engine, debouncedGenerate]
   );
 
   if (!messagesLoaded || !toolboxConfiguration) {
