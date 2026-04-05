@@ -3,27 +3,31 @@ import type { ISettings } from '@/core/types/settings';
 import { Route } from '@/routes/__root';
 
 export const useSettings = () => {
-  const { settingsService } = Route.useRouteContext();
+  const { settingsRepo } = Route.useRouteContext();
 
-  if (!settingsService) {
-    throw new Error('settingsService is not available in RouterContext');
+  if (!settingsRepo) {
+    throw new Error('settingsRepo is not available in RouterContext');
   }
 
-  const settings = useLiveQuery(() => settingsService.getSettings(), []);
+  const settings = useLiveQuery(() => settingsRepo.get(), []);
 
   const updateSettings = async (value: Partial<ISettings>) => {
-    await settingsService.updateSettings(value);
+    await settingsRepo.update(value);
   };
 
   const setSettings = async (
     key: keyof ISettings,
     value: ISettings[typeof key]
   ) => {
-    await settingsService.setSettings(key, value);
+    const currentSettings = await settingsRepo.get();
+    await settingsRepo.update({
+      ...currentSettings,
+      [key]: value,
+    });
   };
 
   const resetSettings = async () => {
-    await settingsService.resetSettings();
+    await settingsRepo.reset();
   };
 
   return {

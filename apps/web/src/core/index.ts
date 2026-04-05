@@ -3,7 +3,6 @@ export { ProjectRepository } from './db/project-repository';
 export { AppSettingsRepository } from './db/app-settings-repository';
 
 export { LoggerBusService, logger } from './services/logger-service';
-export { SettingsService } from './services/settings-service';
 
 export { useBuildInfo } from './hooks/use-build-info';
 export { useSettings } from './hooks/use-settings';
