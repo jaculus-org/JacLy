@@ -20,10 +20,10 @@
       "import": "./dist/project/index.js",
       "default": "./dist/project/index.js"
     },
-    "./blocks": {
-      "types": "./dist/blocks/index.d.ts",
-      "import": "./dist/blocks/index.js",
-      "default": "./dist/blocks/index.js"
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "default": "./dist/core/index.js"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",

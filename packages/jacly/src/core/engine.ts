@@ -1,4 +1,4 @@
-import './built-in-blocks/index.ts';
+import './built-in-blocks';
 
 import * as Blockly from 'blockly/core';
 import { JaclyBlocksData } from '@jaculus/project';

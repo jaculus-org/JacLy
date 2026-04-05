@@ -1,6 +1,0 @@
-import './color';
-import './promiseAll';
-import './blockly-overrides/loops';
-import './angle';
-import './slider';
-import './blockly-overrides/procedures';
