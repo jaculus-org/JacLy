@@ -37,8 +37,6 @@ export function CodeEditorBasic({
       fsp,
     });
 
-  // Debounced save: holds the pending-save flag for the full writeFile duration
-  // so the watcher never reads partially-written content.
   const saveToFile = useMemo(
     () =>
       debounce(async (path: string, content: string) => {

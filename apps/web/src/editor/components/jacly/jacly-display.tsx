@@ -1,7 +1,7 @@
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
 import { useTheme } from '@/core/components/theme';
 import { getLocale } from '@/core/paraglide/runtime';
-import { useEditorJacly } from '../../state/blockly-context';
+import { useEditorJacly } from '../../state/jacly-context';
 
 export function EditorJaclyDisplay() {
   const { themeNormalized } = useTheme();

@@ -12,22 +12,18 @@ export class EditorSyncService {
   private pendingSaves = new Set<string>();
   private externalChangeListeners: FileChangeListener[] = [];
 
-  /** Mark a file as being written. Pair with markEditorSaveEnd when done. */
   markEditorSaveStart(filePath: string): void {
     this.pendingSaves.add(filePath);
   }
 
-  /** Clear the pending-save flag after the write completes or fails. */
   markEditorSaveEnd(filePath: string): void {
     this.pendingSaves.delete(filePath);
   }
 
-  /** Returns true while a file is being written — watcher events should be ignored. */
   shouldIgnoreWatcherEvent(filePath: string): boolean {
     return this.pendingSaves.has(filePath);
   }
 
-  /** Subscribe to external file changes. Returns an unsubscribe function. */
   onExternalChange(listener: FileChangeListener): () => void {
     this.externalChangeListeners.push(listener);
     return () => {
@@ -36,7 +32,6 @@ export class EditorSyncService {
     };
   }
 
-  /** Notify all listeners of a file change from a non-editor source. */
   notifyExternalChange(filePath: string, content: string): void {
     for (const listener of this.externalChangeListeners) {
       try {

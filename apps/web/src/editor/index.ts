@@ -1,4 +1,3 @@
-export { CodeEditor } from './components';
 export { CodeEditorBasic } from './components/code-editor';
 export { CodeEditorReadOnly } from './components/code-editor-read';
 export { MonacoProjectInitializer } from './components/monaco-project-initializer';
@@ -10,19 +9,11 @@ export {
   editorSyncService,
 } from './services/editor-sync-service';
 
-export { useEditorJacly } from './state/blockly-context';
-export { EditorJaclyProvider } from './state/blockly-provider';
-export { EditorJaclyDisplay } from './components/blockly/blockly-display';
-export { JaclyEditorComponent } from './components/blockly';
+export { useEditorJacly } from './state/jacly-context';
+export { EditorJaclyProvider } from './state/jacly-provider';
+export { EditorJaclyDisplay } from './components/jacly/jacly-display';
+export { JaclyEditorComponent } from './components/jacly';
 
-export { BlocklyEditorPanel } from './components/panels/blockly-panel';
+export { JaclyEditorPanel } from './components/panels/jacly-panel';
 export { CodePanel } from './components/panels/code-panel';
 export { GeneratedCode } from './components/panels/generated-code-panel';
-
-import { EditorJaclyProvider } from './state/blockly-provider';
-import { EditorJaclyDisplay } from './components/blockly/blockly-display';
-
-export const EditorJacly = {
-  Provider: EditorJaclyProvider,
-  Display: EditorJaclyDisplay,
-};

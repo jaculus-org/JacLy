@@ -4,12 +4,6 @@ import { useActiveProject } from '@/project';
 import { editorSyncService } from '../services/editor-sync-service';
 import { MonacoProjectService } from '../services/monaco-project-service';
 
-/**
- * Renderless component that initializes MonacoProjectService for the active project.
- * Must be mounted inside ActiveProjectProvider.
- * Creates Monaco models for source files and extraLibs for type definitions,
- * then watches ZenFS for real-time changes.
- */
 export function MonacoProjectInitializer() {
   const monaco = useMonaco();
   const {

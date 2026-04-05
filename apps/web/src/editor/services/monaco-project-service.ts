@@ -4,10 +4,6 @@ import type { EditorSyncService } from './editor-sync-service';
 
 export type FileRole = 'source' | 'typedef' | 'skip';
 
-/**
- * Classify a project file by its relative path (relative to projectPath).
- * Returns 'source' for editor models, 'typedef' for Monaco extraLibs, 'skip' to ignore.
- */
 export function classifyProjectFile(relativePath: string): FileRole {
   if (relativePath.startsWith('build/')) return 'skip';
 
@@ -27,12 +23,7 @@ type Monaco = NonNullable<ReturnType<typeof useMonaco>>;
 
 /**
  * Manages Monaco models and type definitions for a ZenFS-backed project.
- * - Source files → Monaco editor models (enables cross-file IntelliSense)
- * - .d.ts files from /tsLibs and node_modules → Monaco extraLibs (enables type checking)
- * - Watches ZenFS for changes and keeps everything in sync
- *
- * Intended lifetime: one instance per active project. Create on project mount,
- * call initialize() then watch(), call dispose() on project unmount.
+ * Lifetime: initialize() → watch() on mount, dispose() on unmount.
  */
 export class MonacoProjectService {
   private readonly monaco: Monaco;
@@ -68,9 +59,7 @@ export class MonacoProjectService {
       this.traverseTypeFiles(`${this.projectPath}/node_modules`),
       this.traverseTypeFiles('/tsLibs'),
     ]);
-    // Guard: React 18 Strict Mode may have disposed this service while
-    // traversals were in-flight. Skip the final sync so we don't overwrite
-    // the new service's correctly-loaded extraLibs with stale/partial data.
+    // Strict Mode may dispose this service while traversals are in-flight.
     if (this.disposed) return;
     this.syncExtraLibs();
   }
@@ -109,12 +98,8 @@ export class MonacoProjectService {
     this.createdModelUris.clear();
 
     this.extraLibs.clear();
-    // Do NOT call syncExtraLibs() here: the replacement service's initialize()
-    // will set the correct extraLibs. Calling it would clear Monaco's state
-    // and create a race with the in-flight traversals of the new service.
+    // Don't call syncExtraLibs() — the replacement service's initialize() will set them.
   }
-
-  // ─── Private ────────────────────────────────────────────────────────────────
 
   private setCompilerOptions(): void {
     this.monaco.languages.typescript.typescriptDefaults.setCompilerOptions({

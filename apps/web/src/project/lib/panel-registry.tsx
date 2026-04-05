@@ -3,7 +3,7 @@ import * as FlexLayout from 'flexlayout-react';
 import { m } from '@/core/paraglide/messages';
 import { ConsolePanel, ChartPanel } from '@/console';
 import { DeviceControlPanelWrapper } from '@/device';
-import { BlocklyEditorPanel, CodePanel, GeneratedCode } from '@/editor';
+import { JaclyEditorPanel, CodePanel, GeneratedCode } from '@/editor';
 import {
   InstallerPanel,
   JacPackagesPanel,
@@ -29,7 +29,7 @@ export interface PanelDefinition {
 export const PANEL_DEFINITIONS: Record<PanelType, PanelDefinition> = {
   blockly: {
     canPopout: false,
-    render: () => <BlocklyEditorPanel />,
+    render: () => <JaclyEditorPanel />,
     getTitle: () => m.project_panel_blockly(),
   },
   chart: {

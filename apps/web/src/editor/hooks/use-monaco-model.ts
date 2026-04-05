@@ -14,17 +14,9 @@ interface UseMonacoModelResult {
   loading: boolean;
   fileExists: boolean;
   error: string | null;
-  /** True while an external change is being applied — suppresses the save-back loop. */
   applyingExternalChangeRef: React.MutableRefObject<boolean>;
 }
 
-/**
- * Manages the Monaco model lifecycle for a single file:
- * - Initializes the model on mount (reuses an existing model if MonacoProjectService
- *   already created it, otherwise falls back to reading from ZenFS).
- * - Subscribes to external file changes and applies them via pushEditOperations
- *   so that undo history is preserved.
- */
 export function useMonacoModel({
   fullPath,
   filePath,
@@ -37,7 +29,6 @@ export function useMonacoModel({
   const [fileExists, setFileExists] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize model on mount
   useEffect(() => {
     if (!monaco) return;
 
@@ -48,9 +39,7 @@ export function useMonacoModel({
 
         const uri = monaco!.Uri.file(fullPath);
 
-        // If MonacoProjectService already created the model, reuse it directly.
-        // Reading from ZenFS and calling setValue would trigger onChange →
-        // a redundant debounced save of the same content.
+        // Reuse if already created by MonacoProjectService — setValue would trigger a redundant save.
         if (monaco!.editor.getModel(uri)) {
           setFileExists(true);
           return;
@@ -94,7 +83,7 @@ export function useMonacoModel({
     initializeModel();
   }, [filePath, ifNotExists, fsp, fullPath, monaco]);
 
-  // Keep model in sync with non-editor writes (e.g., Blockly, compiler)
+  // Keep model in sync with non-editor writes (e.g., Jacly code generator)
   useEffect(() => {
     if (!monaco) return;
 

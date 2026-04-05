@@ -16,7 +16,7 @@ import { editorSyncService } from '../services/editor-sync-service';
 import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';
 
-import { EditorJaclyContext } from './blockly-context';
+import { EditorJaclyContext } from './jacly-context';
 
 async function ensureDir(
   fsp: ReturnType<typeof useActiveProject>['state']['fsp'],
@@ -27,14 +27,6 @@ async function ensureDir(
   } catch (e: unknown) {
     if ((e as { code?: string })?.code !== 'EEXIST') throw e;
   }
-}
-
-async function writeFile(
-  fsp: ReturnType<typeof useActiveProject>['state']['fsp'],
-  path: string,
-  content: string
-) {
-  await fsp.writeFile(path, content, 'utf-8');
 }
 
 export function EditorJaclyProvider({ children }: { children: ReactNode }) {
@@ -87,11 +79,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     };
   }, [fs, fsp, getFileName, jacProject, nodeModulesVersion]);
 
-  // Debounced: rapid block moves fire many changes; debouncing prevents
-  // concurrent writes that race with each other and the ZenFS watcher.
-  // markEditorSaveStart/End blocks the watcher for the full write duration.
-  // notifyExternalChange pushes the correct content to Monaco directly,
-  // bypassing the racy watcher read.
   const handleJsonChange = useMemo(
     () =>
       debounce(async (json: object) => {
@@ -100,7 +87,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
         editorSyncService.markEditorSaveStart(filePath);
         try {
           await ensureDir(fsp, dirname(filePath));
-          await writeFile(fsp, filePath, content);
+          await fsp.writeFile(filePath, content, 'utf-8');
           editorSyncService.notifyExternalChange(filePath, content);
         } catch (error) {
           console.error('Failed to save JSON:', error);
@@ -119,7 +106,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
       try {
         const filePath = getFileName('GENERATED_CODE');
         await ensureDir(fsp, dirname(filePath));
-        await writeFile(fsp, filePath, code);
+        await fsp.writeFile(filePath, code, 'utf-8');
         editorSyncService.notifyExternalChange(filePath, code);
       } catch (error) {
         console.error('Failed to save generated code:', error);
