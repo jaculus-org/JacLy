@@ -21,15 +21,15 @@ import {
   type RegistryListProject,
 } from '@jaculus/project/registry';
 import { editorSyncService } from '@/editor';
+import { packageEventsService } from '../services/package-events-service';
 import { JacPackagesContext } from './packages-context';
 
 export function JacPackagesProvider({ children }: { children: ReactNode }) {
-  const { state: jacState, actions: jacActions } = useJacDevice();
+  const { state: jacState } = useJacDevice();
   const {
     actions: { controlPanel },
   } = useProjectEditor();
   const { jacProject, jacRegistry } = jacState;
-  const { reloadNodeModules } = jacActions;
   const {
     state: { projectPath, fs, fsp },
   } = useActiveProject();
@@ -113,7 +113,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
       await runPackageOperation(async () => {
         setInstalledLibs(await jacProject.install(jacRegistry));
       });
-      reloadNodeModules();
+      packageEventsService.notifyPackagesChanged();
     } catch (err) {
       setErrorAndLogPanel(
         classifyError(err, m.project_panel_pkg_install_error())
@@ -122,13 +122,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsInstalling(false);
     }
-  }, [
-    jacProject,
-    jacRegistry,
-    reloadNodeModules,
-    runPackageOperation,
-    setErrorAndLogPanel,
-  ]);
+  }, [jacProject, jacRegistry, runPackageOperation, setErrorAndLogPanel]);
 
   const addLibrary = useCallback(async () => {
     if (!jacProject || !jacRegistry) return;
@@ -149,7 +143,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
           )
         );
       });
-      reloadNodeModules();
+      packageEventsService.notifyPackagesChanged();
       enqueueSnackbar(
         m.project_panel_pkg_added({
           name: selectedLib,
@@ -171,7 +165,6 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     selectedLib,
     selectedLibVersion,
     availableLibVersions,
-    reloadNodeModules,
     runPackageOperation,
     setErrorAndLogPanel,
   ]);
@@ -187,7 +180,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
             await jacProject.removeLibrary(jacRegistry, library)
           );
         });
-        reloadNodeModules();
+        packageEventsService.notifyPackagesChanged();
         enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
           variant: 'success',
         });
@@ -200,13 +193,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         setIsInstalling(false);
       }
     },
-    [
-      jacProject,
-      jacRegistry,
-      reloadNodeModules,
-      runPackageOperation,
-      setErrorAndLogPanel,
-    ]
+    [jacProject, jacRegistry, runPackageOperation, setErrorAndLogPanel]
   );
 
   useEffect(() => {
@@ -233,7 +220,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
           setIsInstalling(true);
           setError(null);
           setInstalledLibs(await jacProject.install(jacRegistry));
-          reloadNodeModules();
+          packageEventsService.notifyPackagesChanged();
         } catch (err) {
           setErrorAndLogPanel(
             classifyError(err, m.project_panel_pkg_install_error())
@@ -244,14 +231,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         }
       }
     })();
-  }, [
-    fs,
-    jacProject,
-    jacRegistry,
-    projectPath,
-    reloadNodeModules,
-    setErrorAndLogPanel,
-  ]);
+  }, [fs, jacProject, jacRegistry, projectPath, setErrorAndLogPanel]);
 
   useEffect(() => {
     (async () => {

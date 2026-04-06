@@ -92,7 +92,10 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
           engine.reloadBlockData(jaclyData);
           setJaclyBlocksData(jaclyData);
         } catch (error) {
-          console.error('Failed to reload block data after package change:', error);
+          console.error(
+            'Failed to reload block data after package change:',
+            error
+          );
           enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
         }
       })();
