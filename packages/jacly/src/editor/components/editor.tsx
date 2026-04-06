@@ -13,6 +13,7 @@ import { JaclyLoading } from './loading';
 import '../styles/toolbox.css';
 
 interface JaclyEditorProps {
+  engine: JaclyEngine;
   jaclyBlocksData: JaclyBlocksData;
   theme: Theme;
   locale: string;
@@ -23,6 +24,7 @@ interface JaclyEditorProps {
 }
 
 export function JaclyEditor({
+  engine,
   jaclyBlocksData,
   theme,
   locale,
@@ -32,8 +34,6 @@ export function JaclyEditor({
   onMissingPackage,
 }: JaclyEditorProps) {
   const messagesLoaded = useBlocklyMessages(locale);
-
-  const engine = useMemo(() => new JaclyEngine(), []);
 
   const toolboxConfiguration = useMemo(
     () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
@@ -59,11 +59,6 @@ export function JaclyEditor({
       cancelled = true;
     };
   }, [initialJson, engine, onMissingPackage, toolboxConfiguration]);
-
-  const blocksKey = useMemo(
-    () => JSON.stringify(jaclyBlocksData),
-    [jaclyBlocksData]
-  );
 
   const debouncedGenerate = useMemo(
     () =>
@@ -95,7 +90,7 @@ export function JaclyEditor({
 
   return (
     <BlocklyWorkspace
-      key={`${theme}-${blocksKey}`}
+      key={theme}
       toolboxConfiguration={toolboxConfiguration}
       workspaceConfiguration={{
         theme: getBlocklyTheme(theme),
