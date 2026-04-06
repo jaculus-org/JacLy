@@ -53,10 +53,11 @@ export function registerBlocklyBlock(
 
   Blocks[block.type] = {
     init(this: BlockExtended) {
+      const jc = jaclyConfig;
       this.jsonInit(block);
       this.code = block.code;
       this.isProgramStart = block.isProgramStart;
-      this.package = jaclyConfig.package;
+      this.package = jc.package || jc.parentCategory || jc.category;
 
       if (block.constructs) {
         this.mixin(getConstructorMixin(block.constructs));
