@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
-import type { EngineMissingPackages } from '@jaculus/jacly/engine';
 import { useTheme } from '@/core/components/theme';
 import { getLocale } from '@/core/paraglide/runtime';
 import { m } from '@/core/paraglide/messages';
@@ -8,6 +7,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useEditorJacly } from '../../state/jacly-context';
 import { logger } from '@/core';
 import { useProjectEditor } from '@/project/state/project-editor-context';
+import type { EngineMissingPackages } from '@jaculus/jacly/engine';
 
 export function EditorJaclyDisplay() {
   const { themeNormalized } = useTheme();

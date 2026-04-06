@@ -12,8 +12,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
+    "declarationDir": "./dist",
     "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"]
