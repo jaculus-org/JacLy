@@ -210,6 +210,7 @@
   "editor_jacly_load_error": "Failed to load editor data",
   "editor_jacly_save_json_error": "Failed to save JSON",
   "editor_jacly_save_code_error": "Failed to save generated code",
+  "editor_jacly_missing_packages": "Some blocks in your workspace require packages that are not currently installed. Please review the missing packages and install them.",
   "editor_code_index_error": "Error indexing project files",
   "editor_code_file_update_error": "Error updating file",
   "project_download_no_files": "No files found in project to download",

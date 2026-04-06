@@ -1,47 +1,64 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Theme } from '@/editor/types/theme';
 import { WorkspaceSvgExtended } from '@/core/types/custom-block';
 import { JaclyBlocksData } from '@jaculus/project';
 import { getBlocklyTheme } from '@/editor/lib/theme';
 import { useBlocklyMessages } from '../hooks/use-blockly-messages';
-import { JaclyEngine } from '@/engine/engine';
+import { EngineMissingPackages, JaclyEngine } from '@/engine/engine';
 import { debounce } from '@/utils/debouncer';
 import { JaclyLoading } from './loading';
 import '../styles/toolbox.css';
 
 interface JaclyEditorProps {
+  engine: JaclyEngine;
   jaclyBlocksData: JaclyBlocksData;
   theme: Theme;
   locale: string;
   initialJson: object;
   onJsonChange: (workspaceJson: object) => void;
   onGeneratedCode: (code: string) => void;
+  onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>;
 }
 
 export function JaclyEditor({
+  engine,
   jaclyBlocksData,
   theme,
   locale,
   initialJson,
   onJsonChange,
   onGeneratedCode,
+  onMissingPackage,
 }: JaclyEditorProps) {
   const messagesLoaded = useBlocklyMessages(locale);
-
-  const engine = useMemo(() => new JaclyEngine(), []);
 
   const toolboxConfiguration = useMemo(
     () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
     [jaclyBlocksData, messagesLoaded, engine]
   );
 
-  const blocksKey = useMemo(
-    () => JSON.stringify(jaclyBlocksData),
-    [jaclyBlocksData]
-  );
+  const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
+
+  useEffect(() => {
+    if (!toolboxConfiguration) return;
+    let cancelled = false;
+    const task = onMissingPackage
+      ? engine.validateWorkspace(initialJson, onMissingPackage)
+      : Promise.resolve({
+          state: initialJson,
+          restoredTypes: [] as string[],
+          replacedTypes: [] as string[],
+        });
+    task.then(result => {
+      if (!cancelled) setSanitizedJson(result.state);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [initialJson, engine, onMissingPackage, toolboxConfiguration]);
 
   const debouncedGenerate = useMemo(
     () =>
@@ -67,13 +84,13 @@ export function JaclyEditor({
     [engine, debouncedGenerate]
   );
 
-  if (!messagesLoaded || !toolboxConfiguration) {
+  if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
     return <JaclyLoading />;
   }
 
   return (
     <BlocklyWorkspace
-      key={`${theme}-${blocksKey}`}
+      key={theme}
       toolboxConfiguration={toolboxConfiguration}
       workspaceConfiguration={{
         theme: getBlocklyTheme(theme),
@@ -96,7 +113,7 @@ export function JaclyEditor({
           snap: true,
         },
       }}
-      initialJson={initialJson}
+      initialJson={sanitizedJson}
       className="h-full w-full"
       onWorkspaceChange={handleWorkspaceChange}
       onJsonChange={debouncedJsonChange}

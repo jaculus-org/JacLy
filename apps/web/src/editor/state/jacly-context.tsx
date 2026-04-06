@@ -1,9 +1,11 @@
 import { createContext, useContext } from 'react';
 import type { JaclyBlocksData } from '@jaculus/project';
+import type { JaclyEngine } from '@jaculus/jacly/engine';
 
 export interface EditorJaclyState {
   initialJson: object | null;
   jaclyBlocksData: JaclyBlocksData | null;
+  engine: JaclyEngine;
 }
 
 export interface EditorJaclyActions {

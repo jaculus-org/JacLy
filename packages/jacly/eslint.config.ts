@@ -38,5 +38,11 @@ export default defineConfig(
     rules: {
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
     },
+  },
+  {
+    files: ['tests/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   }
 );

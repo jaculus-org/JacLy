@@ -1,8 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { JaclyEditor } from '@jaculus/jacly/editor';
+import { JaclyEngine } from '@jaculus/jacly/engine';
 
 import './dev-index.css';
+
+type MissingPackages = Record<string, Iterable<string>>;
 
 declare const acquireVsCodeApi: () => {
   postMessage: (message: unknown) => void;
@@ -33,6 +36,7 @@ const App = () => {
   const [jaclyBlocksData, setJaclyBlocksData] =
     useState<JaclyBlocksData | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [engine] = useState(() => new JaclyEngine());
 
   React.useEffect(() => {
     const handler = (event: MessageEvent<IncomingMessage>) => {
@@ -84,6 +88,17 @@ const App = () => {
     [vscode]
   );
 
+  const handleMissingPackage = useCallback(
+    async (missingPackages: MissingPackages) => {
+      for (const [packageName, blockTypes] of Object.entries(missingPackages)) {
+        console.error(
+          `Missing package: ${packageName}, required by blocks: ${[...blockTypes].join(', ')}`
+        );
+      }
+    },
+    []
+  );
+
   if (!initialJson || !jaclyBlocksData) {
     return (
       <div className="loading">
@@ -95,12 +110,14 @@ const App = () => {
   return (
     <div className="app-container">
       <JaclyEditor
+        engine={engine}
         theme={theme}
         jaclyBlocksData={jaclyBlocksData}
         locale="en"
         initialJson={initialJson}
         onJsonChange={handleJsonChange}
         onGeneratedCode={handleGeneratedCode}
+        onMissingPackage={handleMissingPackage}
       />
     </div>
   );

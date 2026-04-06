@@ -14,7 +14,6 @@ export interface JacDeviceState {
   outStream?: Writable;
   errStream?: Writable;
   pkg: PackageJson | null;
-  nodeModulesVersion: number;
   connectionStatus: ConnectionStatus;
 }
 
@@ -23,7 +22,6 @@ export interface JacDeviceActions {
     device: JacDevice | null,
     connectionType?: ConnectionType
   ) => Promise<void>;
-  reloadNodeModules: () => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
 }
 

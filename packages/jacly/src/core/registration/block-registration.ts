@@ -59,6 +59,10 @@ export function registerBlocklyBlock(
       this.isProgramStart = block.isProgramStart;
       this.package = jc.package || jc.parentCategory || jc.category;
 
+      this.saveExtraState = function (this: BlockExtended) {
+        return { package: this.package };
+      };
+
       if (block.constructs) {
         this.mixin(getConstructorMixin(block.constructs));
       }
@@ -114,8 +118,12 @@ export function registerBlocklyBlock(
               validateInstanceSelection.call(this, state, systemId, fieldName);
             };
 
+            const baseSave = this.saveExtraState!.bind(this);
             this.saveExtraState = function () {
-              return { instanceName: this.getFieldValue(fieldName) };
+              return {
+                ...baseSave(),
+                instanceName: this.getFieldValue(fieldName),
+              };
             };
 
             this.loadExtraState = function (state: BlockExtraState) {
