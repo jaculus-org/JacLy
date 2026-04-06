@@ -59,7 +59,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
         if (fs.existsSync(jaclyFile)) {
           jsonData = JSON.parse(fs.readFileSync(jaclyFile, 'utf-8'));
         } else {
-          void fsp.writeFile(jaclyFile, '{}', 'utf-8');
+          await fsp.writeFile(jaclyFile, '{}', 'utf-8');
           jsonData = {};
         }
 

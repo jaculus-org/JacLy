@@ -4,11 +4,7 @@ import { m } from '@/core/paraglide/messages';
 import { ConsolePanel, ChartPanel } from '@/console';
 import { DevicePanel } from '@/device';
 import { JaclyEditorPanel, CodePanel, GeneratedCode } from '@/editor';
-import {
-  InstallerPanel,
-  JacPackagesPanel,
-  JacPackagesProvider,
-} from '@/packages';
+import { InstallerPanel, JacPackagesPanel } from '@/packages';
 import { WokwiPanel } from '@/simulator';
 import {
   FileExplorerPanel,
@@ -71,11 +67,7 @@ export const PANEL_DEFINITIONS: Record<PanelType, PanelDefinition> = {
   },
   packages: {
     canPopout: false,
-    render: () => (
-      <JacPackagesProvider>
-        <JacPackagesPanel />
-      </JacPackagesProvider>
-    ),
+    render: () => <JacPackagesPanel />,
     getTitle: () => m.project_panel_packages(),
   },
   logs: {

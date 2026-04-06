@@ -8,6 +8,7 @@ import { useEditorJacly } from '../../state/jacly-context';
 import { logger } from '@/core';
 import { useProjectEditor } from '@/project/state/project-editor-context';
 import type { EngineMissingPackages } from '@jaculus/jacly/engine';
+import { useJacPackages } from '@/packages/state/packages-context';
 
 export function EditorJaclyDisplay() {
   const { themeNormalized } = useTheme();
@@ -15,6 +16,10 @@ export function EditorJaclyDisplay() {
     state: { initialJson, jaclyBlocksData, engine },
     actions,
   } = useEditorJacly();
+
+  const {
+    state: { isInstalling },
+  } = useJacPackages();
 
   const {
     actions: { controlPanel },
@@ -33,7 +38,7 @@ export function EditorJaclyDisplay() {
     [controlPanel]
   );
 
-  if (!initialJson || !jaclyBlocksData) {
+  if (!initialJson || !jaclyBlocksData || isInstalling) {
     return <JaclyLoading />;
   }
 

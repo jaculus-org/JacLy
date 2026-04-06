@@ -6,6 +6,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { enqueueSnackbar } from 'notistack';
 import { ProjectEditor } from '@/project';
 import { MonacoProjectInitializer } from '@/editor/components/monaco-project-initializer';
+import { JacPackages } from '@/packages';
 
 export const Route = createFileRoute('/project/$projectId')({
   loader: async ({ context, params }) => {
@@ -41,8 +42,10 @@ function ProjectEditorRoute() {
       >
         <JacDevice.Provider>
           <ProjectEditor.Provider projectManService={projectManService}>
-            <ProjectEditor.Header />
-            <ProjectEditor.Layout />
+            <JacPackages.Provider>
+              <ProjectEditor.Header />
+              <ProjectEditor.Layout />
+            </JacPackages.Provider>
           </ProjectEditor.Provider>
         </JacDevice.Provider>
       </Console.Provider>

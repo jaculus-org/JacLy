@@ -50,10 +50,11 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const captureInstallPrompt = useEffectEvent((event: Event) => {
+  const captureInstallPrompt = useEffectEvent(async (event: Event) => {
     const deferredPrompt = event as BeforeInstallPromptEvent;
 
     deferredPrompt.preventDefault();
+    await deferredPrompt.prompt();
     setInstallPrompt(deferredPrompt);
   });
 
