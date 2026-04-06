@@ -1,1 +1,1 @@
-export { JaclyEngine } from '../core/engine';
+export { JaclyEngine } from './engine';

@@ -1,16 +1,16 @@
-import './built-in-blocks';
+import '../core/built-in-blocks';
 
 import * as Blockly from 'blockly/core';
 import { JaclyBlocksData } from '@jaculus/project';
 import { registerJaclyCustomCategory } from '../editor/lib/custom-category';
 import { EngineState, createEngineState } from './engine-state';
-import { loadToolboxConfiguration } from './toolbox/toolbox-builder';
-import { generateCodeFromWorkspace } from './codegen/workspace-codegen';
-import { registerWorkspaceChangeListener } from './workspace/rules';
-import { registerDocsCallbacks } from './toolbox/category-header';
+import { loadToolboxConfiguration } from '../core/toolbox/toolbox-builder';
+import { generateCodeFromWorkspace } from '../core/codegen/workspace-codegen';
+import { registerWorkspaceChangeListener } from '../core/workspace/rules';
+import { registerDocsCallbacks } from '../core/toolbox/category-header';
 import { registerCrossTabCopyPaste } from '../editor/plugins/cross-tab-copy-paste';
 import { registerFieldColour } from '@blockly/field-colour';
-import { WorkspaceSvgExtended } from './types/custom-block';
+import { WorkspaceSvgExtended } from '../core/types/custom-block';
 
 export class JaclyEngine {
   private readonly state: EngineState = createEngineState();

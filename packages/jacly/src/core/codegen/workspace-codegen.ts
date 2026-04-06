@@ -2,7 +2,7 @@ import { IIconBlock } from '../types/custom-block';
 import { WorkspaceSvg } from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
 import { getImportsForBlock } from './block-imports';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 export function generateCodeFromWorkspace(
   state: EngineState,

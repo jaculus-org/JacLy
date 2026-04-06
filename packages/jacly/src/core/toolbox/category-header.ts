@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly/core';
 import { JaclyConfig } from '../schema';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
   'web-class'?: string;

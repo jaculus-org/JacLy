@@ -6,7 +6,7 @@ import {
   isVirtualInstance,
   resolveVirtualInstanceConnection,
 } from '../registration/constructors';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 export type FieldDropdownWithMenuGenerator = Blockly.FieldDropdown & {
   menuGenerator_?: Blockly.MenuGenerator & (() => Blockly.MenuGenerator);

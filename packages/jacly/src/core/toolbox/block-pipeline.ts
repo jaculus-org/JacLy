@@ -6,7 +6,7 @@ import { editInternalBlocks } from '../registration/internal-blocks';
 import { registerCodeGenerator } from '../codegen/code-generation';
 import { registerAllBlockImports } from '../codegen/block-imports';
 import { buildCategoryHeader } from './category-header';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 function expandLabel(
   item: Extract<JaclyBlock, { kind: 'label' }>

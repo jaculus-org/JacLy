@@ -1,5 +1,5 @@
 import { JaclyBlock } from '../schema';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 export function enrichBlockInputs(state: EngineState, block: JaclyBlock): void {
   if (block.kind !== 'block' || !block.inputs) return;

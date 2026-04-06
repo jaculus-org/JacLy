@@ -1,4 +1,4 @@
-import type { JaclyBlockKindBlock } from './schema';
+import type { JaclyBlockKindBlock } from '../core/schema';
 
 export interface VirtualInstanceDef {
   instanceof: string;

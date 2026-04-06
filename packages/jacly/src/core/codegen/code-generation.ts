@@ -6,7 +6,7 @@ import {
   Order,
 } from 'blockly/javascript';
 import { getPlaceholderValue, replacePlaceholders } from './placeholder-utils';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 function evaluateConditions(
   state: EngineState,

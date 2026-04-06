@@ -1,7 +1,7 @@
 import { Blocks } from 'blockly/core';
 import { JaclyBlock, JaclyConfig } from '../schema';
 import { BlockExtended } from '../types/custom-block';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 export function editInternalBlocks(
   state: EngineState,

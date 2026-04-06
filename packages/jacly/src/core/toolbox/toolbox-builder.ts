@@ -13,7 +13,7 @@ import {
   parseToolboxCustomBlock,
 } from './block-pipeline';
 import { localizeJaclyConfig, registerTranslations } from './translations';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 
 export function loadToolboxConfiguration(
   state: EngineState,

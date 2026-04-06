@@ -2,7 +2,7 @@ import { Blocks } from 'blockly/core';
 import { JaclyBlock, JaclyBlockKindBlock, JaclyConfig } from '../schema';
 import { BlockExtended } from '../types/custom-block';
 import * as Blockly from 'blockly/core';
-import type { EngineState } from '../engine-state';
+import type { EngineState } from '../../engine/engine-state';
 import {
   getConstructorMixin,
   getInstanceDropdownGenerator,

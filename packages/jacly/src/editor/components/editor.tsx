@@ -7,7 +7,7 @@ import { WorkspaceSvgExtended } from '@/core/types/custom-block';
 import { JaclyBlocksData } from '@jaculus/project';
 import { getBlocklyTheme } from '@/editor/lib/theme';
 import { useBlocklyMessages } from '../hooks/use-blockly-messages';
-import { JaclyEngine } from '@/core/engine';
+import { JaclyEngine } from '@/engine/engine';
 import { debounce } from '@/utils/debouncer';
 import { JaclyLoading } from './loading';
 import '../styles/toolbox.css';

@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import 'mocha';
-import { createEngineState } from '../../src/core/engine-state';
-import { JaclyEngine } from '../../src/core/engine';
+import { createEngineState } from '../../src/engine/engine-state';
+import { JaclyEngine } from '../../src/engine/engine';
 
 const expect = chai.expect;
 

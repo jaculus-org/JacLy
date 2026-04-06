@@ -1,6 +1,9 @@
 import { BlockExtended, FieldDropdownExtended } from '../types/custom-block';
 import * as Blockly from 'blockly/core';
-import type { EngineState, VirtualInstanceDef } from '../engine-state';
+import type {
+  EngineState,
+  VirtualInstanceDef,
+} from '../../engine/engine-state';
 
 export type { VirtualInstanceDef };
 
