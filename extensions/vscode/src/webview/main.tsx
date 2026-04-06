@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { JaclyEditor } from '@jaculus/jacly/editor';
+import type { EngineMissingPackages } from '@jaculus/jacly/engine';
 
 import './dev-index.css';
 
@@ -84,6 +85,17 @@ const App = () => {
     [vscode]
   );
 
+  const handleMissingPackage = useCallback(
+    async (missingPackages: EngineMissingPackages) => {
+      for (const [packageName, blockTypes] of Object.entries(missingPackages)) {
+        console.error(
+          `Missing package: ${packageName}, required by blocks: ${[...blockTypes].join(', ')}`
+        );
+      }
+    },
+    []
+  );
+
   if (!initialJson || !jaclyBlocksData) {
     return (
       <div className="loading">
@@ -101,6 +113,7 @@ const App = () => {
         initialJson={initialJson}
         onJsonChange={handleJsonChange}
         onGeneratedCode={handleGeneratedCode}
+        onMissingPackage={handleMissingPackage}
       />
     </div>
   );

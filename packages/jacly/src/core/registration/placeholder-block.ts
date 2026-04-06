@@ -1,4 +1,4 @@
-import * as Blockly from 'blockly/core';
+import { Blocks } from 'blockly/core';
 import type { BlockExtended } from '../types/custom-block';
 
 let registered = false;
@@ -15,7 +15,7 @@ export function registerPlaceholderBlock(): void {
   if (registered) return;
   registered = true;
 
-  Blockly.Blocks['unsupported_block'] = {
+  Blocks['unsupported_block'] = {
     init(this: PlaceholderBlock) {
       this.jsonInit({
         type: 'unsupported_block',

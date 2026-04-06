@@ -12,7 +12,14 @@ import { registerCrossTabCopyPaste } from '../editor/plugins/cross-tab-copy-past
 import { registerFieldColour } from '@blockly/field-colour';
 import { WorkspaceSvgExtended } from '../core/types/custom-block';
 import { registerPlaceholderBlock } from '../core/registration/placeholder-block';
-import { sanitizeWorkspaceState } from '../core/workspace/workspace-validation';
+import {
+  sanitizeWorkspaceState,
+  type SanitizationResult,
+} from '../core/workspace/workspace-validation';
+
+export interface EngineMissingPackages {
+  [packageName: string]: Set<string>;
+}
 
 export class JaclyEngine {
   private readonly state: EngineState = createEngineState();
@@ -42,11 +49,8 @@ export class JaclyEngine {
 
   async validateWorkspace(
     json: object,
-    onMissingPackage: (
-      packageName: string,
-      blockType: string
-    ) => Promise<boolean>
-  ): Promise<object> {
+    onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>
+  ): Promise<SanitizationResult> {
     return sanitizeWorkspaceState(json, onMissingPackage);
   }
 }

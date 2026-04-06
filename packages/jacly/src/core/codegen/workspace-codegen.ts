@@ -54,9 +54,7 @@ export function collectWorkspaceWarnings(workspace: WorkspaceSvg): string[] {
     const icon = block.getIcon<IIconBlock>('warning');
     if (icon && icon.textMap) {
       let blockName = block.type;
-      const varField =
-        block.getField('CONSTRUCTED_VAR_NAME') ||
-        block.getField('NVS_INSTANCE');
+      const varField = block.getField('CONSTRUCTED_VAR_NAME');
       if (varField) blockName += ` "${varField.getText()}"`;
       warnings.push(
         `Block [${blockName}]: ${Array.from(icon.textMap.values())}`

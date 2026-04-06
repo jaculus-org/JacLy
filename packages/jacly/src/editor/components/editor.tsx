@@ -7,7 +7,7 @@ import { WorkspaceSvgExtended } from '@/core/types/custom-block';
 import { JaclyBlocksData } from '@jaculus/project';
 import { getBlocklyTheme } from '@/editor/lib/theme';
 import { useBlocklyMessages } from '../hooks/use-blockly-messages';
-import { JaclyEngine } from '@/engine/engine';
+import { EngineMissingPackages, JaclyEngine } from '@/engine/engine';
 import { debounce } from '@/utils/debouncer';
 import { JaclyLoading } from './loading';
 import '../styles/toolbox.css';
@@ -19,10 +19,7 @@ interface JaclyEditorProps {
   initialJson: object;
   onJsonChange: (workspaceJson: object) => void;
   onGeneratedCode: (code: string) => void;
-  onMissingPackage?: (
-    packageName: string,
-    blockType: string
-  ) => Promise<boolean>;
+  onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>;
 }
 
 export function JaclyEditor({
@@ -50,9 +47,13 @@ export function JaclyEditor({
     let cancelled = false;
     const task = onMissingPackage
       ? engine.validateWorkspace(initialJson, onMissingPackage)
-      : Promise.resolve(initialJson);
+      : Promise.resolve({
+          state: initialJson,
+          restoredTypes: [] as string[],
+          replacedTypes: [] as string[],
+        });
     task.then(result => {
-      if (!cancelled) setSanitizedJson(result);
+      if (!cancelled) setSanitizedJson(result.state);
     });
     return () => {
       cancelled = true;
