@@ -2,12 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo/jacly.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JacLy Web</title>
     <meta name="description" content="Blockly interface for Jaculus" />
+    <meta
+      name="theme-color"
+      content="oklch(0.97 0.01 250)"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="oklch(0.15 0.05 260)"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta name="apple-mobile-web-app-title" content="JacLy" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png"
+    />
+
+    <title>JacLy Web</title>
     <script>
       (() => {
+        const lightThemeColor = 'oklch(0.97 0.01 250)';
+        const darkThemeColor = 'oklch(0.15 0.05 260)';
         const theme = localStorage.getItem('theme') || 'system';
         let resolved = theme;
         if (theme === 'system') {
@@ -15,7 +42,13 @@
             ? 'dark'
             : 'light';
         }
+
         document.documentElement.setAttribute('data-theme', resolved);
+        const themeColor =
+          resolved === 'dark' ? darkThemeColor : lightThemeColor;
+        document
+          .querySelectorAll('meta[name="theme-color"]')
+          .forEach(meta => meta.setAttribute('content', themeColor));
       })();
     </script>
   </head>

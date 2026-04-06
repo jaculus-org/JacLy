@@ -148,6 +148,8 @@
   "stream_scope_debug": "Ladění",
   "nav_home": "Domů",
   "nav_projects": "Projekty",
+  "pwa_install_button": "Nainstalovat aplikaci",
+  "pwa_install_success": "JacLy bylo nainstalováno. Můžete ho spustit z plochy nebo ze seznamu aplikací.",
   "theme_toggle_label": "Přepnout motiv",
   "theme_light": "Světlý",
   "theme_dark": "Tmavý",

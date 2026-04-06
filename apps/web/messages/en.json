@@ -150,6 +150,8 @@
   "stream_scope_debug": "Debug",
   "nav_home": "Home",
   "nav_projects": "Projects",
+  "pwa_install_button": "Install app",
+  "pwa_install_success": "JacLy was installed. You can launch it from your desktop or apps list.",
   "theme_toggle_label": "Toggle Theme",
   "theme_light": "Light",
   "theme_dark": "Dark",
