@@ -12,6 +12,12 @@ export type { ISettings } from './types/settings';
 export { defaultSettings } from './types/settings';
 
 export { LocaleSelector } from './components/locale';
+export {
+  PwaInstall,
+  PwaInstallButton,
+  PwaInstallProvider,
+  usePwaInstall,
+} from './components/pwa-install';
 export { ThemeProvider, ThemeToggle } from './components/theme';
 export { useTheme } from './state/theme-context';
 export {
