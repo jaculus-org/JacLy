@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
 import type { EngineMissingPackages } from '@jaculus/jacly/engine';
 import { useTheme } from '@/core/components/theme';
@@ -12,7 +12,7 @@ import { useProjectEditor } from '@/project/state/project-editor-context';
 export function EditorJaclyDisplay() {
   const { themeNormalized } = useTheme();
   const {
-    state: { initialJson, jaclyBlocksData },
+    state: { initialJson, jaclyBlocksData, engine },
     actions,
   } = useEditorJacly();
 
@@ -33,19 +33,13 @@ export function EditorJaclyDisplay() {
     [controlPanel]
   );
 
-  // force full remount when blocks data changes (e.g. after package install/remove)
-  const editorKey = useMemo(
-    () => JSON.stringify(jaclyBlocksData),
-    [jaclyBlocksData]
-  );
-
   if (!initialJson || !jaclyBlocksData) {
     return <JaclyLoading />;
   }
 
   return (
     <JaclyEditor
-      key={editorKey}
+      engine={engine}
       theme={themeNormalized}
       jaclyBlocksData={jaclyBlocksData}
       locale={getLocale()}
