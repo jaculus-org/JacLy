@@ -50,7 +50,6 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const [jacRegistry, setJacRegistry] = useState<Registry | null>(null);
   const [pkg, setPkg] = useState<PackageJson | null>(null);
 
-  const [nodeModulesVersion, setNodeModulesVersion] = useState(0);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>('disconnected');
 
@@ -206,11 +205,6 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     []
   );
 
-  const reloadNodeModules = useCallback(
-    () => setNodeModulesVersion(v => v + 1),
-    []
-  );
-
   const state = useMemo<JacDeviceState>(
     () => ({
       jacProject,
@@ -218,29 +212,19 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
       device,
       connectionType,
       pkg,
-      nodeModulesVersion,
       connectionStatus,
       outStream: undefined,
       errStream: undefined,
     }),
-    [
-      jacProject,
-      jacRegistry,
-      device,
-      connectionType,
-      pkg,
-      nodeModulesVersion,
-      connectionStatus,
-    ]
+    [jacProject, jacRegistry, device, connectionType, pkg, connectionStatus]
   );
 
   const actions = useMemo<JacDeviceActions>(
     () => ({
       setDevice: handleSetDevice,
-      reloadNodeModules,
       setConnectionStatus,
     }),
-    [handleSetDevice, reloadNodeModules, setConnectionStatus]
+    [handleSetDevice, setConnectionStatus]
   );
 
   const contextValue = useMemo<JacDeviceContextValue>(
