@@ -15,6 +15,7 @@ import { m } from '@/core/paraglide/messages';
 import { editorSyncService } from '../services/editor-sync-service';
 import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';
+import { JaclyEngine } from '@jaculus/jacly/engine';
 
 import { EditorJaclyContext } from './jacly-context';
 
@@ -36,8 +37,9 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   } = useActiveProject();
   const { getFileName } = actions;
   const { state: jacState } = useJacDevice();
-  const { jacProject, nodeModulesVersion } = jacState;
+  const { jacProject } = jacState;
 
+  const [engine] = useState(() => new JaclyEngine());
   const [initialJson, setInitialJson] = useState<object | null>(null);
   const [jaclyBlocksData, setJaclyBlocksData] =
     useState<JaclyBlocksData | null>(null);
@@ -78,8 +80,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-    // nodeModulesVersion changes when deps are installed, triggering a fresh load.
-  }, [fs, fsp, getFileName, jacProject, nodeModulesVersion]);
+  }, [fs, fsp, getFileName, jacProject]);
 
   const handleJsonChange = useMemo(
     () =>
@@ -121,7 +122,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   return (
     <EditorJaclyContext.Provider
       value={{
-        state: { initialJson, jaclyBlocksData },
+        state: { initialJson, jaclyBlocksData, engine },
         actions: { handleJsonChange, handleGeneratedCode },
       }}
     >
