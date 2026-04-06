@@ -87,7 +87,6 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
     if (!installPrompt || isInstalling) {
       return false;
     }
-
     setIsInstalling(true);
 
     try {

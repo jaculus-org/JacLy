@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/ui/components/alert-dialog';
-import { useInstaller } from '../../state/installer-context';
+import { useInstaller } from '../state/installer-context';
 
 export function InstallerDialog() {
   const { state, actions } = useInstaller();

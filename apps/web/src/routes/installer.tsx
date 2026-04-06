@@ -1,5 +1,5 @@
 import { Logger } from '@/core';
-import { Installer } from '@/packages';
+import { Installer } from '@/installer';
 import { m } from '@/core/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
 

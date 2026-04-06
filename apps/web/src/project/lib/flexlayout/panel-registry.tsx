@@ -4,7 +4,7 @@ import { m } from '@/core/paraglide/messages';
 import { ConsolePanel, ChartPanel } from '@/console';
 import { DevicePanel } from '@/device';
 import { JaclyEditorPanel, CodePanel, GeneratedCode } from '@/editor';
-import { InstallerPanel, JacPackagesPanel } from '@/packages';
+import { InstallerPanel } from '@/installer';
 import { WokwiPanel } from '@/simulator';
 import {
   FileExplorerPanel,
@@ -13,6 +13,7 @@ import {
 import { ErrorPanel } from '../../components/panels/error-panel';
 import { LogsPanel } from '../../components/panels/logs-panel';
 import type { PanelType } from '../../types/flexlayout-type';
+import { JacPackagesPanel } from '@/packages';
 
 export interface PanelDefinition {
   canPopout?: boolean;

@@ -22,7 +22,7 @@ import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import {
   type InstallerSourceTab,
   useInstaller,
-} from '../../state/installer-context';
+} from '../state/installer-context';
 
 export function InstallerControls() {
   const { state, actions, meta } = useInstaller();
