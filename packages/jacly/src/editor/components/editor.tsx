@@ -1,6 +1,6 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Theme } from '@/editor/types/theme';
 import { WorkspaceSvgExtended } from '@/core/types/custom-block';
@@ -19,6 +19,10 @@ interface JaclyEditorProps {
   initialJson: object;
   onJsonChange: (workspaceJson: object) => void;
   onGeneratedCode: (code: string) => void;
+  onMissingPackage?: (
+    packageName: string,
+    blockType: string
+  ) => Promise<boolean>;
 }
 
 export function JaclyEditor({
@@ -28,6 +32,7 @@ export function JaclyEditor({
   initialJson,
   onJsonChange,
   onGeneratedCode,
+  onMissingPackage,
 }: JaclyEditorProps) {
   const messagesLoaded = useBlocklyMessages(locale);
 
@@ -37,6 +42,22 @@ export function JaclyEditor({
     () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
     [jaclyBlocksData, messagesLoaded, engine]
   );
+
+  const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
+
+  useEffect(() => {
+    if (!toolboxConfiguration) return;
+    let cancelled = false;
+    const task = onMissingPackage
+      ? engine.validateWorkspace(initialJson, onMissingPackage)
+      : Promise.resolve(initialJson);
+    task.then(result => {
+      if (!cancelled) setSanitizedJson(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [initialJson, engine, onMissingPackage, toolboxConfiguration]);
 
   const blocksKey = useMemo(
     () => JSON.stringify(jaclyBlocksData),
@@ -67,7 +88,7 @@ export function JaclyEditor({
     [engine, debouncedGenerate]
   );
 
-  if (!messagesLoaded || !toolboxConfiguration) {
+  if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
     return <JaclyLoading />;
   }
 
@@ -96,7 +117,7 @@ export function JaclyEditor({
           snap: true,
         },
       }}
-      initialJson={initialJson}
+      initialJson={sanitizedJson}
       className="h-full w-full"
       onWorkspaceChange={handleWorkspaceChange}
       onJsonChange={debouncedJsonChange}

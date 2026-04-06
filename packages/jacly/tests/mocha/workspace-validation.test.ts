@@ -51,7 +51,15 @@ describe('sanitizeWorkspaceState', () => {
     const json = {
       blocks: {
         languageVersion: 0,
-        blocks: [{ type: 'ghost_block', id: '1', x: 10, y: 20, extraState: { package: 'my-pkg' } }],
+        blocks: [
+          {
+            type: 'ghost_block',
+            id: '1',
+            x: 10,
+            y: 20,
+            extraState: { package: 'my-pkg' },
+          },
+        ],
       },
     };
     const original = JSON.stringify(json);
@@ -63,10 +71,21 @@ describe('sanitizeWorkspaceState', () => {
     const json = {
       blocks: {
         languageVersion: 0,
-        blocks: [{ type: 'ghost_block', id: '1', x: 10, y: 20, extraState: { package: 'my-pkg' } }],
+        blocks: [
+          {
+            type: 'ghost_block',
+            id: '1',
+            x: 10,
+            y: 20,
+            extraState: { package: 'my-pkg' },
+          },
+        ],
       },
     };
-    const result = (await sanitizeWorkspaceState(json, async () => false)) as any;
+    const result = (await sanitizeWorkspaceState(
+      json,
+      async () => false
+    )) as any;
     const block = result.blocks.blocks[0];
     expect(block.type).to.equal('unsupported_block');
     expect(block.fields.ORIGINAL_TYPE).to.equal('ghost_block');
@@ -86,20 +105,31 @@ describe('sanitizeWorkspaceState', () => {
             x: 0,
             y: 0,
             inputs: {
-              VALUE: { block: { type: 'ghost_block', id: '2', extraState: { package: 'my-pkg' } } },
+              VALUE: {
+                block: {
+                  type: 'ghost_block',
+                  id: '2',
+                  extraState: { package: 'my-pkg' },
+                },
+              },
             },
           },
         ],
       },
     };
-    const result = (await sanitizeWorkspaceState(json, async () => false)) as any;
+    const result = (await sanitizeWorkspaceState(
+      json,
+      async () => false
+    )) as any;
     // Parent block survives
     expect(result.blocks.blocks[0].type).to.equal('known_block');
     // Nested input is cleared
-    expect(result.blocks.blocks[0].inputs?.VALUE?.block).to.be.undefined;
+    expect(result.blocks.blocks[0].inputs?.VALUE?.block).to.equal(undefined);
     // Hoisted placeholder added as top-level block
-    const placeholder = result.blocks.blocks.find((b: any) => b.type === 'unsupported_block');
-    expect(placeholder).to.exist;
+    const placeholder = result.blocks.blocks.find(
+      (b: any) => b.type === 'unsupported_block'
+    );
+    expect(placeholder).to.not.equal(undefined);
     expect(placeholder.extraState.originalState.type).to.equal('ghost_block');
   });
 
@@ -113,13 +143,24 @@ describe('sanitizeWorkspaceState', () => {
             id: '1',
             x: 0,
             y: 0,
-            next: { block: { type: 'ghost_block', id: '2', extraState: { package: 'my-pkg' } } },
+            next: {
+              block: {
+                type: 'ghost_block',
+                id: '2',
+                extraState: { package: 'my-pkg' },
+              },
+            },
           },
         ],
       },
     };
-    const result = (await sanitizeWorkspaceState(json, async () => false)) as any;
-    expect(result.blocks.blocks[0].next.block.type).to.equal('unsupported_block');
+    const result = (await sanitizeWorkspaceState(
+      json,
+      async () => false
+    )) as any;
+    expect(result.blocks.blocks[0].next.block.type).to.equal(
+      'unsupported_block'
+    );
   });
 
   it('removes an unresolved shadow block', async () => {
@@ -139,8 +180,11 @@ describe('sanitizeWorkspaceState', () => {
         ],
       },
     };
-    const result = (await sanitizeWorkspaceState(json, async () => false)) as any;
-    expect(result.blocks.blocks[0].inputs?.VALUE?.shadow).to.be.undefined;
+    const result = (await sanitizeWorkspaceState(
+      json,
+      async () => false
+    )) as any;
+    expect(result.blocks.blocks[0].inputs?.VALUE?.shadow).to.equal(undefined);
   });
 
   it('calls onMissingPackage once per unique package, not once per block', async () => {
@@ -149,13 +193,31 @@ describe('sanitizeWorkspaceState', () => {
       blocks: {
         languageVersion: 0,
         blocks: [
-          { type: 'ghost_a', id: '1', x: 0, y: 0, extraState: { package: 'pkg-x' } },
-          { type: 'ghost_b', id: '2', x: 0, y: 50, extraState: { package: 'pkg-x' } },
-          { type: 'ghost_c', id: '3', x: 0, y: 100, extraState: { package: 'pkg-y' } },
+          {
+            type: 'ghost_a',
+            id: '1',
+            x: 0,
+            y: 0,
+            extraState: { package: 'pkg-x' },
+          },
+          {
+            type: 'ghost_b',
+            id: '2',
+            x: 0,
+            y: 50,
+            extraState: { package: 'pkg-x' },
+          },
+          {
+            type: 'ghost_c',
+            id: '3',
+            x: 0,
+            y: 100,
+            extraState: { package: 'pkg-y' },
+          },
         ],
       },
     };
-    await sanitizeWorkspaceState(json, async (pkg) => {
+    await sanitizeWorkspaceState(json, async pkg => {
       calls.push(pkg);
       return false;
     });
@@ -168,13 +230,23 @@ describe('sanitizeWorkspaceState', () => {
     const json = {
       blocks: {
         languageVersion: 0,
-        blocks: [{ type: 'late_registered_block', id: '1', x: 0, y: 0, extraState: { package: 'late-pkg' } }],
+        blocks: [
+          {
+            type: 'late_registered_block',
+            id: '1',
+            x: 0,
+            y: 0,
+            extraState: { package: 'late-pkg' },
+          },
+        ],
       },
     };
-    const result = (await sanitizeWorkspaceState(json, async (pkg) => {
+    const result = (await sanitizeWorkspaceState(json, async pkg => {
       // Simulate package install: register the block
       if (pkg === 'late-pkg') {
-        (Blockly.Blocks as Record<string, object>)['late_registered_block'] = { init() {} };
+        (Blockly.Blocks as Record<string, object>)['late_registered_block'] = {
+          init() {},
+        };
       }
       return true;
     })) as any;
@@ -201,10 +273,21 @@ describe('JaclyEngine.validateWorkspace', () => {
     const json = {
       blocks: {
         languageVersion: 0,
-        blocks: [{ type: 'ghost_engine_block', id: '1', x: 0, y: 0, extraState: { package: 'ghost-pkg' } }],
+        blocks: [
+          {
+            type: 'ghost_engine_block',
+            id: '1',
+            x: 0,
+            y: 0,
+            extraState: { package: 'ghost-pkg' },
+          },
+        ],
       },
     };
-    const result = (await engine.validateWorkspace(json, async () => false)) as any;
+    const result = (await engine.validateWorkspace(
+      json,
+      async () => false
+    )) as any;
     expect(result.blocks.blocks[0].type).to.equal('unsupported_block');
   });
 });

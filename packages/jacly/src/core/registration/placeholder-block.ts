@@ -32,17 +32,14 @@ export function registerPlaceholderBlock(): void {
         colour: '#FF6B6B',
         tooltip: 'This block came from a library that is not available.',
       });
-      this.setEnabled(false);
+      this.setDisabledReason(true, 'placeholder');
     },
 
     saveExtraState(this: PlaceholderBlock): PlaceholderExtraState {
       return { originalState: this.originalState ?? null };
     },
 
-    loadExtraState(
-      this: PlaceholderBlock,
-      state: PlaceholderExtraState
-    ): void {
+    loadExtraState(this: PlaceholderBlock, state: PlaceholderExtraState): void {
       this.originalState = state.originalState ?? undefined;
       const originalType = (state.originalState as { type?: string })?.type;
       if (originalType) {

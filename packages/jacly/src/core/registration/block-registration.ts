@@ -120,7 +120,10 @@ export function registerBlocklyBlock(
 
             const baseSave = this.saveExtraState!.bind(this);
             this.saveExtraState = function () {
-              return { ...baseSave(), instanceName: this.getFieldValue(fieldName) };
+              return {
+                ...baseSave(),
+                instanceName: this.getFieldValue(fieldName),
+              };
             };
 
             this.loadExtraState = function (state: BlockExtraState) {

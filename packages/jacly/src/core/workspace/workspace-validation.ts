@@ -27,7 +27,11 @@ function isRegistered(type: string): boolean {
   return !!Blockly.Blocks[type];
 }
 
-function makePlaceholder(original: BlockState, x?: number, y?: number): BlockState {
+function makePlaceholder(
+  original: BlockState,
+  x?: number,
+  y?: number
+): BlockState {
   return {
     type: 'unsupported_block',
     fields: { ORIGINAL_TYPE: original.type },
@@ -117,7 +121,8 @@ export async function sanitizeWorkspaceState(
   // Group missing types by package
   const byPackage = new Map<string, Set<string>>();
   for (const [type, nodes] of missingByType) {
-    const pkg = (nodes[0].extraState?.package as string | undefined) ?? 'unknown';
+    const pkg =
+      (nodes[0].extraState?.package as string | undefined) ?? 'unknown';
     const types = byPackage.get(pkg) ?? new Set<string>();
     types.add(type);
     byPackage.set(pkg, types);

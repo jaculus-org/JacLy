@@ -42,7 +42,10 @@ export class JaclyEngine {
 
   async validateWorkspace(
     json: object,
-    onMissingPackage: (packageName: string, blockType: string) => Promise<boolean>
+    onMissingPackage: (
+      packageName: string,
+      blockType: string
+    ) => Promise<boolean>
   ): Promise<object> {
     return sanitizeWorkspaceState(json, onMissingPackage);
   }
