@@ -187,3 +187,24 @@ describe('sanitizeWorkspaceState', () => {
     expect(result).to.deep.equal({ variables: [] });
   });
 });
+
+import { JaclyEngine } from '../../src/engine/engine';
+
+describe('JaclyEngine.validateWorkspace', () => {
+  it('is a function on JaclyEngine instances', () => {
+    const engine = new JaclyEngine();
+    expect(engine.validateWorkspace).to.be.a('function');
+  });
+
+  it('returns a promise resolving to the sanitized workspace', async () => {
+    const engine = new JaclyEngine();
+    const json = {
+      blocks: {
+        languageVersion: 0,
+        blocks: [{ type: 'ghost_engine_block', id: '1', x: 0, y: 0, extraState: { package: 'ghost-pkg' } }],
+      },
+    };
+    const result = (await engine.validateWorkspace(json, async () => false)) as any;
+    expect(result.blocks.blocks[0].type).to.equal('unsupported_block');
+  });
+});

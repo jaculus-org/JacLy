@@ -11,6 +11,8 @@ import { registerDocsCallbacks } from '../core/toolbox/category-header';
 import { registerCrossTabCopyPaste } from '../editor/plugins/cross-tab-copy-paste';
 import { registerFieldColour } from '@blockly/field-colour';
 import { WorkspaceSvgExtended } from '../core/types/custom-block';
+import { registerPlaceholderBlock } from '../core/registration/placeholder-block';
+import { sanitizeWorkspaceState } from '../core/workspace/workspace-validation';
 
 export class JaclyEngine {
   private readonly state: EngineState = createEngineState();
@@ -18,6 +20,7 @@ export class JaclyEngine {
 
   constructor() {
     registerJaclyCustomCategory();
+    registerPlaceholderBlock();
   }
 
   buildToolbox(data: JaclyBlocksData): Blockly.utils.toolbox.ToolboxDefinition {
@@ -35,5 +38,12 @@ export class JaclyEngine {
 
   generateCode(workspace: Blockly.WorkspaceSvg): string {
     return generateCodeFromWorkspace(this.state, workspace);
+  }
+
+  async validateWorkspace(
+    json: object,
+    onMissingPackage: (packageName: string, blockType: string) => Promise<boolean>
+  ): Promise<object> {
+    return sanitizeWorkspaceState(json, onMissingPackage);
   }
 }
