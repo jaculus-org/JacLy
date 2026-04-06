@@ -19,6 +19,7 @@ export default defineConfig({
         'editor/index': path.resolve(__dirname, './src/editor/index.tsx'),
         'project/index': path.resolve(__dirname, './src/project/index.ts'),
         'core/index': path.resolve(__dirname, './src/core/index.ts'),
+        'engine/index': path.resolve(__dirname, './src/engine/index.ts'),
         'utils/index': path.resolve(__dirname, './src/utils/index.ts'),
       },
       formats: ['es'],
