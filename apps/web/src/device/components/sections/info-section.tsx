@@ -80,9 +80,11 @@ export function InfoSection() {
               </span>
             </div>
             <code className="text-xs break-all block pl-5 text-muted-foreground">
-              {state.loading['getDeviceInfo'] && !state.deviceVersion.length
+              {state.loading['getDeviceInfo'] && !state.deviceVersion
                 ? m.config_fetching()
-                : state.deviceVersion.join(' • ') || m.config_status_unknown()}
+                : state.deviceVersion
+                  ? `dcore@${state.deviceVersion.dcore} • esp32@${state.deviceVersion.esp32}`
+                  : m.config_status_unknown()}
             </code>
           </div>
         </Card>

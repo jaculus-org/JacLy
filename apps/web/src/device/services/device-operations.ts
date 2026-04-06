@@ -25,20 +25,14 @@ async function withLockedDevice<T>(
 export async function testConnection(
   device: JacDevice,
   timeoutMs: number
-): Promise<boolean> {
+): Promise<null | { esp32: string; dcore: string }> {
   try {
-    const timeout = new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error('Connection test timed out')),
-        timeoutMs
-      )
-    );
-
-    await Promise.race([withLockedDevice(device, async () => {}), timeout]);
-
-    return true;
+    return await Promise.race<null | { esp32: string; dcore: string }>([
+      version(device),
+      new Promise(resolve => setTimeout(() => resolve(null), timeoutMs)),
+    ]);
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -82,10 +76,18 @@ export async function restart(
   }
 }
 
-export async function version(device: JacDevice): Promise<string[]> {
+export async function version(
+  device: JacDevice
+): Promise<{ esp32: string; dcore: string } | null> {
   try {
     return await withLockedDevice(device, async dev => {
-      return await dev.controller.version();
+      const versionStringArr = await dev.controller.version();
+      if (versionStringArr.length < 2) {
+        return null;
+      }
+      const dcoreVersion = versionStringArr[0].split('@')[1].trim();
+      const esp32Version = versionStringArr[1].split('@')[1].trim();
+      return { dcore: dcoreVersion, esp32: esp32Version };
     });
   } catch (err) {
     enqueueSnackbar(m.device_version_failed(), { variant: 'error' });
@@ -125,8 +127,8 @@ export async function status(device: JacDevice) {
       return await dev.controller.status();
     });
   } catch (err) {
-    enqueueSnackbar(m.device_start_failed(), { variant: 'error' });
-    logger.verbose('Error starting device: ' + err);
+    enqueueSnackbar(m.device_status_failed(), { variant: 'error' });
+    logger.verbose('Error getting device status: ' + err);
     throw err;
   }
 }

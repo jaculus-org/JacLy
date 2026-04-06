@@ -91,11 +91,19 @@ export function ConnectionSelector() {
           await uploadCode(await jacProject!.getFlashFiles(), dev);
         }, 10_000);
       } else {
-        const connectionSuccess = await testConnection(dev, 3000);
+        const connectionSuccess = await testConnection(dev, 5000);
 
         if (connectionSuccess) {
-          controlPanel('console', 'expand');
-          controlPanel('packages', 'collapse');
+          if (connectionSuccess.esp32 >= '0.1.0') {
+            controlPanel('console', 'expand');
+            controlPanel('packages', 'collapse');
+          } else {
+            enqueueSnackbar(
+              m.device_firmware_outdated({ requiredVersion: '0.1.0' }),
+              { variant: 'warning' }
+            );
+            controlPanel('installer', 'expand');
+          }
         } else {
           if (selectedConnection != 'serial') {
             enqueueSnackbar(m.installer_msg_serial_required(), {

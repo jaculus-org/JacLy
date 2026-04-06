@@ -24,7 +24,6 @@ import type {
 } from '../types/flexlayout-type';
 import { useActiveProject } from './active-project-context';
 import type { ProjectManagementService } from '../services/project-runtime-service';
-import { useKeyboardShortcut } from '../hooks/use-keyboard-shortcut';
 import {
   ProjectEditorContext,
   type ProjectEditorActions,
@@ -66,22 +65,22 @@ export function ProjectEditorProvider({
     [model]
   );
 
-  useKeyboardShortcut(
-    { key: 'p', ctrl: true, meta: true, enabled: !!model },
-    () => safeControlPanel('packages', 'toggle')
-  );
-  useKeyboardShortcut(
-    { key: 'e', ctrl: true, meta: true, enabled: !!model },
-    () => safeControlPanel('file-explorer', 'toggle')
-  );
-  useKeyboardShortcut(
-    { key: 'l', ctrl: true, meta: true, enabled: !!model },
-    () => safeControlPanel('logs', 'toggle')
-  );
-  useKeyboardShortcut(
-    { key: 's', ctrl: true, meta: true, enabled: !!model },
-    () => safeControlPanel('console', 'toggle')
-  );
+  // useKeyboardShortcut(
+  //   { key: 'p', ctrl: true, meta: true, enabled: !!model },
+  //   () => safeControlPanel('packages', 'toggle')
+  // );
+  // useKeyboardShortcut(
+  //   { key: 'e', ctrl: true, meta: true, enabled: !!model },
+  //   () => safeControlPanel('file-explorer', 'toggle')
+  // );
+  // useKeyboardShortcut(
+  //   { key: 'l', ctrl: true, meta: true, enabled: !!model },
+  //   () => safeControlPanel('logs', 'toggle')
+  // );
+  // useKeyboardShortcut(
+  //   { key: 's', ctrl: true, meta: true, enabled: !!model },
+  //   () => safeControlPanel('console', 'toggle')
+  // );
 
   useEffect(() => {
     const loadLayout = async () => {

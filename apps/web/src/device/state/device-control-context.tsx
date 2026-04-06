@@ -25,7 +25,7 @@ export interface JacDeviceControlState {
   apPassword: string;
   removeNetworkSsid: string;
   deviceStatus: DeviceStatusInfo | null;
-  deviceVersion: string[];
+  deviceVersion: { esp32: string; dcore: string } | null;
 }
 
 export interface JacDeviceControlActions {

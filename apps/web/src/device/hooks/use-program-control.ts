@@ -15,7 +15,10 @@ export function useProgramControl(device: JacDevice | null) {
   const [deviceStatus, setDeviceStatus] = useState<DeviceStatusInfo | null>(
     null
   );
-  const [deviceVersion, setDeviceVersion] = useState<string[]>([]);
+  const [deviceVersion, setDeviceVersion] = useState<{
+    esp32: string;
+    dcore: string;
+  } | null>(null);
 
   const refreshDevice = useCallback(async () => {
     await withLoading('getDeviceInfo', async () => {

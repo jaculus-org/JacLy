@@ -287,7 +287,17 @@ export function InstallerProvider({
         const chipWithPsram = newEsploader.chip as ChipWithPsram;
         if (typeof chipWithPsram.getPsramCap === 'function') {
           const size = await chipWithPsram.getPsramCap(newEsploader);
-          // 00 = 0 -> No PSRAM, 01 = 1 -> 2MB PSRAM, 10 = 2 -> 8MB PSRAM, 11 = 3 -> 8MB PSRAM
+
+          // (binary) 00 = 0 -> No PSRAM, 01 = 1 -> 2MB PSRAM, 10 = 2 -> 8MB PSRAM, 11 = 3 -> 16MB PSRAM
+          const options = {
+            0: null,
+            1: '2',
+            2: '8',
+            3: '16',
+          } as const;
+
+          // terminal.writeLine("PSRAM detected: " + (options[size as keyof typeof options] ?? size + 'MB'));
+
           switch (size) {
             case 0:
               await changeVariant('ESP32-S3-Generic-NoPSRAM', chipName);
@@ -295,9 +305,14 @@ export function InstallerProvider({
             case 2:
               await changeVariant('ESP32-S3-Generic-QuadPSRAM', chipName);
               break;
+            case 3:
+              await changeVariant('ESP32-S3-Generic-OctalPSRAM', chipName);
+              break;
             default:
               enqueueSnackbar(
-                m.installer_msg_unsupported_psram({ size: size.toString() }),
+                m.installer_msg_unsupported_psram({
+                  size: options[size as keyof typeof options] ?? size,
+                }),
                 {
                   variant: 'error',
                 }
