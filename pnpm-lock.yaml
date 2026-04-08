@@ -480,6 +480,9 @@ importers:
       '@blockly/plugin-cross-tab-copy-paste':
         specifier: ^8.0.7
         version: 8.0.7(blockly@12.4.1)
+      '@blockly/workspace-backpack':
+        specifier: ^7.0.10
+        version: 7.0.10(blockly@12.4.1)
       '@jaculus/common':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/common
@@ -1356,6 +1359,12 @@ packages:
     engines: {node: '>=8.17.0'}
     peerDependencies:
       blockly: ^12.1.0
+
+  '@blockly/workspace-backpack@7.0.10':
+    resolution: {integrity: sha512-059e+bw10PMgxbQXnJhfnYAlP6PvSWxq4ImSZn5R1jL1K52IkVTb25QemGRNcQvfBpxamxAl1QMqbIStEnsdrw==}
+    engines: {node: '>=8.17.0'}
+    peerDependencies:
+      blockly: ^12.0.0
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -8422,6 +8431,10 @@ snapshots:
       blockly: 12.4.1
 
   '@blockly/plugin-cross-tab-copy-paste@8.0.7(blockly@12.4.1)':
+    dependencies:
+      blockly: 12.4.1
+
+  '@blockly/workspace-backpack@7.0.10(blockly@12.4.1)':
     dependencies:
       blockly: 12.4.1
 

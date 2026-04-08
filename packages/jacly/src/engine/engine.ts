@@ -10,6 +10,10 @@ import { generateCodeFromWorkspace } from '../core/codegen/workspace-codegen';
 import { registerWorkspaceChangeListener } from '../core/workspace/rules';
 import { registerDocsCallbacks } from '../core/toolbox/category-header';
 import { registerCrossTabCopyPaste } from '../editor/plugins/cross-tab-copy-paste';
+import {
+  attachWorkspaceBackpack,
+  disposeWorkspaceBackpack,
+} from '../editor/plugins/workspace-backpack';
 import { registerFieldColour } from '@blockly/field-colour';
 import { WorkspaceSvgExtended } from '../core/types/custom-block';
 import { registerPlaceholderBlock } from '../core/registration/placeholder-block';
@@ -57,7 +61,16 @@ export class JaclyEngine {
     registerWorkspaceChangeListener(workspace as WorkspaceSvgExtended);
     registerDocsCallbacks(this.state, workspace);
     registerCrossTabCopyPaste();
+    attachWorkspaceBackpack(workspace);
     registerFieldColour();
+  }
+
+  detachFromWorkspace(workspace: Blockly.WorkspaceSvg): void {
+    if (this.attachedWorkspace === workspace) {
+      this.attachedWorkspace = null;
+    }
+
+    disposeWorkspaceBackpack(workspace);
   }
 
   generateCode(workspace: Blockly.WorkspaceSvg): string {

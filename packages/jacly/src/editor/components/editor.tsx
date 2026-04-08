@@ -84,6 +84,13 @@ export function JaclyEditor({
     [engine, debouncedGenerate]
   );
 
+  const handleWorkspaceDispose = useCallback(
+    (workspace: WorkspaceSvgExtended) => {
+      engine.detachFromWorkspace(workspace);
+    },
+    [engine]
+  );
+
   if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
     return <JaclyLoading />;
   }
@@ -117,6 +124,7 @@ export function JaclyEditor({
       className="h-full w-full"
       onWorkspaceChange={handleWorkspaceChange}
       onJsonChange={debouncedJsonChange}
+      onDispose={handleWorkspaceDispose}
     />
   );
 }
