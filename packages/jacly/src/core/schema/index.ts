@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-const SemVer = z.string().regex(/^\d+\.\d+\.\d+$/, 'version must be x.y.z');
 const Identifier = z
   .string("must be a valid identifier - letters, numbers, '-', '_'")
   .regex(
@@ -296,11 +295,6 @@ export const JaclyBlockSchema = z.discriminatedUnion('kind', [
 
 export const JaclyConfigSchema = z.object({
   $schema: z.string().optional(),
-  version: SemVer,
-  author: z.string().nonempty('author is required'),
-  github: Identifier.optional(),
-  license: z.string().nonempty('license is required'),
-
   package: z.string().optional(),
   category: Identifier,
   parentCategory: Identifier.optional(),
