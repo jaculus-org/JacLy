@@ -41,7 +41,7 @@ The category definition files are located in the `blocks/` folder of each librar
 | `colour`         | string   |          | Hex color (e.g. `"#751F5C"`) or hue (0–360). Applied to all blocks in category                     |
 | `icon`           | string   |          | Icon name from [Lucide Icons](https://lucide.dev/icons/)                                           |
 | `priority`       | number   |          | Ordering in the toolbox — lower numbers appear first                                               |
-| `libraries`      | string[] |          | Import statements added to generated code when blocks from this category are used                  |
+| `import`         | string[] |          | Import statements added to generated code when blocks from this category are used                  |
 | `contents`       | array    |          | Array of block definitions, labels, and separators (see [Block definition](./block-definition.md)) |
 
 ## Contents Array

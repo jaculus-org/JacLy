@@ -32,10 +32,10 @@ function includeHeader(
 
   if (config.docs) {
     const callbackKey = `jacly_docs_${config.category}`;
-    state.docsCallbacks.set(
-      callbackKey,
-      `${defaultGithubDocs}${config.category}#readme`
-    );
+    const docsUrl = config.docs.startsWith('http')
+      ? config.docs
+      : `${defaultGithubDocs}${config.docs}`;
+    state.docsCallbacks.set(callbackKey, docsUrl);
     header.push({
       kind: 'button',
       text: '📖 Open documentation',
