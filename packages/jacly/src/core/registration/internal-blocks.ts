@@ -10,20 +10,23 @@ export function editInternalBlocks(
 ): void {
   if (block.kind !== 'block') return;
 
-  if (state.editedInternalBlockTypes.has(block.type)) return;
-  state.editedInternalBlockTypes.add(block.type);
-
+  // Input merging runs for every alias occurrence so each toolbox category gets
+  // an independent copy of canonical inputs. Alias-specific inputs win.
   const registeredInputs = state.blockInputs.get(block.type);
   if (registeredInputs) {
     if (!block.inputs) {
-      block.inputs = { ...registeredInputs };
+      block.inputs = JSON.parse(JSON.stringify(registeredInputs));
     } else {
-      block.inputs = { ...registeredInputs, ...block.inputs };
+      const merged = JSON.parse(JSON.stringify(registeredInputs));
+      Object.assign(merged, block.inputs);
+      block.inputs = merged;
     }
   }
 
-  const isUserDefinedBlock = state.registeredBlockTypes.has(block.type);
-  if (isUserDefinedBlock) return;
+  // Color patch is a global Blockly mutation and only needs to run once.
+  if (state.registeredBlockTypes.has(block.type)) return;
+  if (state.editedInternalBlockTypes.has(block.type)) return;
+  state.editedInternalBlockTypes.add(block.type);
 
   const colour = block.colour ?? jaclyConfig.colour;
   if (colour) block.colour = colour;

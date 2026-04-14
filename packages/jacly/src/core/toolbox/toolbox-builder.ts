@@ -1,7 +1,7 @@
 import { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
 import { ToolboxItemInfoSort } from '../types/toolbox';
-import { JaclyConfigSchema } from '../schema';
+import { JaclyConfig, JaclyConfigSchema } from '../schema';
 import {
   JaclyBlockLoadError,
   JaclyBlockParseError,
@@ -9,7 +9,8 @@ import {
 } from '../types/errors';
 import { z } from 'zod';
 import {
-  parseToolboxContentsBlock,
+  registerFullBlocks,
+  buildToolboxFromContents,
   parseToolboxCustomBlock,
 } from './block-pipeline';
 import { localizeJaclyConfig, registerTranslations } from './translations';
@@ -23,14 +24,48 @@ export function loadToolboxConfiguration(
     registerTranslations(jaclyBlocksData.translations);
   }
 
-  const toolboxContent: ToolboxItemInfoSort[] = [];
-
+  const parsedConfigs: Array<{ fileKey: string; config: JaclyConfig }> = [];
   for (const fileKey in jaclyBlocksData.blockFiles) {
     const file = jaclyBlocksData.blockFiles[fileKey];
+    const result = JaclyConfigSchema.safeParse(file);
+    if (!result.success) {
+      throw new JaclyBlockParseError(
+        `Failed to parse Jacly block file '${fileKey}': ${z.prettifyError(result.error)}`
+      );
+    }
+    const config = result.data;
+    localizeJaclyConfig(config);
+    parsedConfigs.push({ fileKey, config });
+  }
+
+  // Pass 1: register all full definitions before resolving any aliases.
+  for (const { config } of parsedConfigs) {
+    if (config.contents) {
+      registerFullBlocks(state, config);
+    }
+  }
+
+  const toolboxContent: ToolboxItemInfoSort[] = [];
+  for (const { fileKey, config } of parsedConfigs) {
     try {
-      const libToolbox = loadToolboxLibrary(state, fileKey, file);
+      let libToolbox: ToolboxItemInfoSort;
+      if (config.contents) {
+        libToolbox = buildToolboxFromContents(state, fileKey, config);
+      } else if (config.custom) {
+        libToolbox = parseToolboxCustomBlock(config);
+      } else {
+        throw new JaclyInvalidConfigError(
+          `Jacly block file '${fileKey}' must contain either 'contents' or 'custom' field.`
+        );
+      }
       toolboxContent.push(libToolbox);
     } catch (error) {
+      if (
+        error instanceof JaclyBlockLoadError ||
+        error instanceof JaclyInvalidConfigError
+      ) {
+        throw error;
+      }
       throw new JaclyBlockLoadError(
         `Failed to load toolbox library '${fileKey}': ${error}`
       );
@@ -41,32 +76,6 @@ export function loadToolboxConfiguration(
     kind: 'categoryToolbox',
     contents: buildCategoryHierarchy(toolboxContent),
   };
-}
-
-function loadToolboxLibrary(
-  state: EngineState,
-  libName: string,
-  fileContent: object
-): ToolboxItemInfoSort {
-  const result = JaclyConfigSchema.safeParse(fileContent);
-  if (!result.success) {
-    throw new JaclyBlockParseError(
-      `Failed to parse Jacly block file '${libName}': ${z.prettifyError(result.error)}`
-    );
-  }
-  const jaclyConfig = result.data;
-
-  localizeJaclyConfig(jaclyConfig);
-
-  if (jaclyConfig.contents) {
-    return parseToolboxContentsBlock(state, jaclyConfig);
-  } else if (jaclyConfig.custom) {
-    return parseToolboxCustomBlock(jaclyConfig);
-  } else {
-    throw new JaclyInvalidConfigError(
-      `Jacly block file '${libName}' must contain either 'contents' or 'custom' field.`
-    );
-  }
 }
 
 function buildCategoryHierarchy(

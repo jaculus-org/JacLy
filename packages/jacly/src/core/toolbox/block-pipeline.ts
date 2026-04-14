@@ -6,6 +6,8 @@ import { editInternalBlocks } from '../registration/internal-blocks';
 import { registerCodeGenerator } from '../codegen/code-generation';
 import { registerAllBlockImports } from '../codegen/block-imports';
 import { buildCategoryHeader } from './category-header';
+import { JaclyBlockLoadError } from '../types/errors';
+import * as Blockly from 'blockly/core';
 import type { EngineState } from '../../engine/engine-state';
 
 function expandLabel(
@@ -28,25 +30,57 @@ function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
   return result;
 }
 
-export function parseToolboxContentsBlock(
+function isFullDefinition(
+  item: Extract<JaclyBlock, { kind: 'block' }>
+): boolean {
+  return (
+    item.message0 !== undefined ||
+    item.args0 !== undefined ||
+    item.code !== undefined
+  );
+}
+
+/**
+ * Pass 1 - register all full block definitions from this config into state.
+ * Must be called for all configs before buildToolboxFromContents is called.
+ */
+export function registerFullBlocks(
   state: EngineState,
+  jaclyConfig: JaclyConfig
+): void {
+  if (!jaclyConfig.contents) return;
+  for (const item of jaclyConfig.contents) {
+    if (item.kind !== 'block') continue;
+    if (isFullDefinition(item)) {
+      registerBlocklyBlock(state, item, jaclyConfig);
+      registerCodeGenerator(state, item);
+    }
+  }
+}
+
+/**
+ * Pass 2 - resolve aliases, enrich nested inputs, filter hidden blocks, and
+ * build the toolbox item.
+ */
+export function buildToolboxFromContents(
+  state: EngineState,
+  fileKey: string,
   jaclyConfig: JaclyConfig
 ): ToolboxItemInfoSort {
   registerAllBlockImports(state, jaclyConfig.contents!, jaclyConfig);
 
   for (const item of jaclyConfig.contents!) {
     if (item.kind !== 'block') continue;
-
-    const isCustomBlock =
-      item.message0 !== undefined ||
-      item.args0 !== undefined ||
-      item.code !== undefined;
-
-    if (isCustomBlock) {
-      registerBlocklyBlock(state, item, jaclyConfig);
-      registerCodeGenerator(state, item);
-    } else {
+    if (!isFullDefinition(item)) {
       editInternalBlocks(state, item, jaclyConfig);
+      if (
+        !state.registeredBlockTypes.has(item.type) &&
+        !Blockly.Blocks[item.type]
+      ) {
+        throw new JaclyBlockLoadError(
+          `Block type '${item.type}' is referenced as an alias in '${fileKey}' but was not defined in any loaded block file.`
+        );
+      }
     }
   }
 
