@@ -20,7 +20,6 @@ import {
   RegistryFetchError,
   type RegistryListProject,
 } from '@jaculus/project/registry';
-import { editorSyncService } from '@/editor';
 import { packageEventsService } from '../services/package-events-service';
 import { JacPackagesContext } from './packages-context';
 
@@ -31,7 +30,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   } = useProjectEditor();
   const { jacProject, jacRegistry } = jacState;
   const {
-    state: { projectPath, fs, fsp },
+    state: { projectPath, fs },
   } = useActiveProject();
 
   function classifyError(err: unknown, fallback: string): string {
@@ -79,17 +78,9 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
 
   const runPackageOperation = useCallback(
     async (operation: () => Promise<void>) => {
-      const pkgJsonPath = path.join(projectPath, 'package.json');
-      editorSyncService.markEditorSaveStart(pkgJsonPath);
-      try {
-        await operation();
-        const content = (await fsp.readFile(pkgJsonPath, 'utf-8')) as string;
-        editorSyncService.notifyExternalChange(pkgJsonPath, content);
-      } finally {
-        editorSyncService.markEditorSaveEnd(pkgJsonPath);
-      }
+      await operation();
     },
-    [fsp, projectPath]
+    []
   );
 
   const availableLibChoices = useMemo(

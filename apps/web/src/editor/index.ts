@@ -1,13 +1,7 @@
 export { CodeEditorBasic } from './components/code-editor';
 export { CodeEditorReadOnly } from './components/code-editor-read';
-export { MonacoProjectInitializer } from './components/monaco-project-initializer';
-export { useMonacoModel } from './hooks/use-monaco-model';
 export { inferLanguageFromPath } from './services/language';
-export { MonacoProjectService } from './services/monaco-project-service';
-export {
-  EditorSyncService,
-  editorSyncService,
-} from './services/editor-sync-service';
+export { ZenFSProvider } from './services/zen-fs-provider';
 
 export { useEditorJacly } from './state/jacly-context';
 export { EditorJaclyProvider } from './state/jacly-provider';

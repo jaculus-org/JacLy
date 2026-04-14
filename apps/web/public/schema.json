@@ -5,22 +5,6 @@
     "$schema": {
       "type": "string"
     },
-    "version": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
-    },
-    "author": {
-      "type": "string",
-      "minLength": 1
-    },
-    "github": {
-      "type": "string",
-      "pattern": "^[a-zA-Z0-9-_]+$"
-    },
-    "license": {
-      "type": "string",
-      "minLength": 1
-    },
     "package": {
       "type": "string"
     },
@@ -743,9 +727,6 @@
     }
   },
   "required": [
-    "version",
-    "author",
-    "license",
     "category",
     "name"
   ],
