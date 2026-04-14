@@ -2,22 +2,23 @@
   "name": "jacly-monorepo",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.30.3",
   "scripts": {
     "prepare": "husky",
-    "build": "pnpm -r build",
-    "build:watch": "pnpm -r --parallel build:watch",
-    "rebuild": "pnpm clean && pnpm i && pnpm build",
-    "test": "pnpm -r test",
-    "lint": "biome lint",
+    "build": "turbo build",
+    "build:watch": "turbo build:watch",
+    "rebuild": "pnpm run clean-node && pnpm install && pnpm run build",
+    "test": "turbo test",
+    "lint": "turbo lint",
     "lint:fix": "biome lint --write",
-    "format": "biome format --write",
-    "format:check": "biome format",
+    "format": "turbo format",
+    "format:check": "turbo format:check",
     "check": "biome check --write",
-    "type-check": "pnpm -r build && pnpm -r run type-check",
+    "type-check": "turbo type-check",
     "fix-all": "biome check --write",
     "check-all": "biome check && pnpm run build",
-    "clean": "pnpm -r clean",
-    "clean-node": "pnpm -r clean-node && rm -rf node_modules",
+    "clean": "turbo clean && rm -rf node_modules/.turbo",
+    "clean-node": "turbo clean-node && rm -rf node_modules",
     "test:prepare-registry": "node --experimental-strip-types test/data/runTsScriptTest.ts"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "chai": "^6.2.0",
     "husky": "^9.1.7",
     "npm-check-updates": "^19.1.2",
-    "pako": "^2.1.0"
+    "pako": "^2.1.0",
+    "turbo": "^2.9.6"
   }
 }

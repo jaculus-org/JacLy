@@ -140,3 +140,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 *.vsix
+
+# Turborepo
+.turbo/
+**/.turbo/
+node_modules/.turbo/
