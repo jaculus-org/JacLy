@@ -1,10 +1,10 @@
 import * as chai from 'chai';
 import 'mocha';
 import { createEngineState } from '../../src/engine/engine-state';
-import { editInternalBlocks } from '../../src/core/registration/internal-blocks';
-import { registerFullBlocks } from '../../src/core/toolbox/block-pipeline';
-import { loadToolboxConfiguration } from '../../src/core/toolbox/toolbox-builder';
-import { JaclyBlockLoadError } from '../../src/core/types/errors';
+import { editInternalBlocks } from '../../src/blocks/aliases/edit-internal-block';
+import { registerFullBlocks } from '../../src/toolbox/loading/block-registration-pass';
+import { loadToolboxConfiguration } from '../../src/toolbox/loading/toolbox-loader';
+import { JaclyBlockLoadError } from '../../src/toolbox/errors';
 
 const expect = chai.expect;
 
