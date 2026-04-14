@@ -1,9 +1,7 @@
 'use client';
 
+import { Package, Trash2 } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
-import { Badge } from '@/ui/components/badge';
-import { Button } from '@/ui/components/button';
-import { Card } from '@/ui/components/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +13,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/ui/components/alert-dialog';
-import { Package, Trash2 } from 'lucide-react';
+import { Badge } from '@/ui/components/badge';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
 import { useJacPackages } from '../state/packages-context';
 
 export function JacPackagesInstalledCard() {
@@ -42,37 +42,26 @@ export function JacPackagesInstalledCard() {
       ) : (
         <div className="h-full overflow-y-auto space-y-2 pr-2">
           {Object.entries(installedLibs).map(([name, version]) => (
-            <div
-              key={name}
-              className="flex items-center justify-between rounded-lg border p-2"
-            >
+            <div key={name} className="flex items-center justify-between rounded-lg border p-2">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{name}</span>
                 <Badge variant="secondary">{version}</Badge>
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    size="icon-xs"
-                    disabled={isInstalling}
-                  >
+                  <Button variant="destructive" size="icon-xs" disabled={isInstalling}>
                     <Trash2 />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {m.project_panel_pkg_remove_title()}
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>{m.project_panel_pkg_remove_title()}</AlertDialogTitle>
                     <AlertDialogDescription>
                       {m.project_panel_pkg_remove_desc({ name })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      {m.project_panel_pkg_remove_cancel()}
-                    </AlertDialogCancel>
+                    <AlertDialogCancel>{m.project_panel_pkg_remove_cancel()}</AlertDialogCancel>
                     <AlertDialogAction onClick={() => removeLibrary(name)}>
                       {m.project_panel_pkg_remove()}
                     </AlertDialogAction>

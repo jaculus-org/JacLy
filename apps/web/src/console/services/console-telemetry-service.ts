@@ -1,10 +1,6 @@
-import type {
-  KeyValueHistoryMap,
-  KeyValueMap,
-  ParsedValue,
-} from '../types/key-value-types';
-import { parseKeyValue } from './kv-parser';
+import type { KeyValueHistoryMap, KeyValueMap, ParsedValue } from '../types/key-value-types';
 import type { ConsoleEntry } from '../types/types';
+import { parseKeyValue } from './kv-parser';
 
 export interface ConsoleTelemetrySnapshot {
   historyEntries: KeyValueHistoryMap;
@@ -43,7 +39,7 @@ export class ConsoleTelemetryService {
 
   appendTelemetry(
     snapshot: ConsoleTelemetrySnapshot,
-    entries: ConsoleEntry[]
+    entries: ConsoleEntry[],
   ): ConsoleTelemetrySnapshot {
     if (entries.length === 0) {
       return snapshot;
@@ -61,10 +57,7 @@ export class ConsoleTelemetryService {
       const parsed = parseKeyValue(entry.content);
       const timestamp = entry.timestamp.getTime();
 
-      for (const [key, value] of Object.entries(parsed) as [
-        string,
-        ParsedValue,
-      ][]) {
+      for (const [key, value] of Object.entries(parsed) as [string, ParsedValue][]) {
         const normalizedValue: ParsedValue = {
           value: value.value,
           timestamp,

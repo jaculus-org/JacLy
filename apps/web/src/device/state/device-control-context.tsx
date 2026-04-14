@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'react';
 import type { JacDevice } from '@jaculus/device';
+import { createContext, useContext } from 'react';
 import type { ConnectionStatus } from '../types/connection';
 
 export type WifiModalMode = 'network' | 'ap' | 'remove' | null;
@@ -57,16 +57,14 @@ export interface JacDeviceControlContextValue {
   meta: JacDeviceControlMeta;
 }
 
-export const JacDeviceControlContext = createContext<
-  JacDeviceControlContextValue | undefined
->(undefined);
+export const JacDeviceControlContext = createContext<JacDeviceControlContextValue | undefined>(
+  undefined,
+);
 
 export function useJacDeviceControl(): JacDeviceControlContextValue {
   const context = useContext(JacDeviceControlContext);
   if (!context) {
-    throw new Error(
-      'useJacDeviceControl must be used within JacDeviceControl.Provider'
-    );
+    throw new Error('useJacDeviceControl must be used within JacDeviceControl.Provider');
   }
   return context;
 }

@@ -1,4 +1,4 @@
-import { Writable } from 'node:stream';
+import type { Writable } from 'node:stream';
 
 export type JacStream = {
   name: string;

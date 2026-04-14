@@ -1,10 +1,5 @@
 import { CheckCircle } from 'lucide-react';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/ui/components/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
 import { cn } from '@/ui/lib/cn';
 
 interface ProjectCardProps {
@@ -15,18 +10,12 @@ interface ProjectCardProps {
   onSelect: () => void;
 }
 
-export function ProjectCard({
-  title,
-  description,
-  icon,
-  isSelected,
-  onSelect,
-}: ProjectCardProps) {
+export function ProjectCard({ title, description, icon, isSelected, onSelect }: ProjectCardProps) {
   return (
     <Card
       className={cn(
         'cursor-pointer transition-all',
-        isSelected ? 'ring-2 ring-primary' : 'hover:shadow-md'
+        isSelected ? 'ring-2 ring-primary' : 'hover:shadow-md',
       )}
       onClick={onSelect}
     >

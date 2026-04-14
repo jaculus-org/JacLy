@@ -5,16 +5,17 @@ import type { FSInterface } from '@jaculus/project/fs';
 import { fromUint8Array } from 'js-base64';
 
 export {
+  collectFiles,
   packProjectAsTarGz,
   packProjectAsZip,
-  collectFiles,
 } from '@jaculus/project/export';
+
 import { packProjectAsTarGz, packProjectAsZip } from '@jaculus/project/export';
 
 // Build a shareable JacLy import URL with the archive data embedded inline.
 export function buildPackageImportUrl(
   archiveBytes: Uint8Array,
-  baseUrl: string = window.location.origin
+  baseUrl: string = window.location.origin,
 ): string {
   const encoded = fromUint8Array(archiveBytes, true);
   return `${baseUrl}/project/import?data=${encoded}&auto=true`;
@@ -36,26 +37,18 @@ function triggerDownload(data: Uint8Array, filename: string, mimeType: string) {
 export async function downloadProjectAsZip(
   fs: FSInterface,
   projectPath: string,
-  projectName: string
+  projectName: string,
 ): Promise<void> {
   const zipData = await packProjectAsZip(fs, projectPath);
-  triggerDownload(
-    new Uint8Array(zipData),
-    `${projectName}.zip`,
-    'application/zip'
-  );
+  triggerDownload(new Uint8Array(zipData), `${projectName}.zip`, 'application/zip');
 }
 
 // Download a project as a .tar.gz file (browser-only).
 export async function downloadProjectAsTarGz(
   fs: FSInterface,
   projectPath: string,
-  projectName: string
+  projectName: string,
 ): Promise<void> {
   const gzData = await packProjectAsTarGz(fs, projectPath);
-  triggerDownload(
-    new Uint8Array(gzData),
-    `${projectName}.tar.gz`,
-    'application/gzip'
-  );
+  triggerDownload(new Uint8Array(gzData), `${projectName}.tar.gz`, 'application/gzip');
 }

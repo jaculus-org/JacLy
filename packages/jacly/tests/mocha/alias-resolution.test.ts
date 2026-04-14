@@ -1,10 +1,10 @@
 import * as chai from 'chai';
 import 'mocha';
-import { createEngineState } from '../../src/engine/engine-state';
 import { editInternalBlocks } from '../../src/blocks/aliases/edit-internal-block';
+import { createEngineState } from '../../src/engine/engine-state';
+import { JaclyBlockLoadError } from '../../src/toolbox/errors';
 import { registerFullBlocks } from '../../src/toolbox/loading/block-registration-pass';
 import { loadToolboxConfiguration } from '../../src/toolbox/loading/toolbox-loader';
-import { JaclyBlockLoadError } from '../../src/toolbox/errors';
 
 const expect = chai.expect;
 
@@ -47,8 +47,8 @@ describe('editInternalBlocks', () => {
     const cfg: any = { category: 'c', name: 'N' };
     editInternalBlocks(state, alias1, cfg);
     editInternalBlocks(state, alias2, cfg);
-    (alias1.inputs!.VAL.shadow as any).fields.NUM = 99;
-    expect((alias2.inputs!.VAL.shadow as any).fields.NUM).to.equal(0);
+    (alias1.inputs?.VAL.shadow as any).fields.NUM = 99;
+    expect((alias2.inputs?.VAL.shadow as any).fields.NUM).to.equal(0);
   });
 
   it('does nothing when no blockInputs entry exists for the type', () => {
@@ -87,10 +87,9 @@ describe('registerFullBlocks', () => {
       ],
     } as any);
     expect(state.blockInputs.has('reg_full_block_1')).to.equal(true);
-    expect(
-      (state.blockInputs.get('reg_full_block_1') as any)?.VAL?.shadow?.fields
-        ?.NUM
-    ).to.equal(7);
+    expect((state.blockInputs.get('reg_full_block_1') as any)?.VAL?.shadow?.fields?.NUM).to.equal(
+      7,
+    );
   });
 
   it('skips alias-only entries (no message0 / args0 / code)', () => {
@@ -101,9 +100,7 @@ describe('registerFullBlocks', () => {
       colour: '#334455',
       contents: [{ kind: 'block', type: 'alias_only_skip_block' }],
     } as any);
-    expect(state.registeredBlockTypes.has('alias_only_skip_block')).to.equal(
-      false
-    );
+    expect(state.registeredBlockTypes.has('alias_only_skip_block')).to.equal(false);
     expect(state.blockInputs.has('alias_only_skip_block')).to.equal(false);
   });
 });
@@ -148,16 +145,11 @@ describe('loadToolboxConfiguration - two-pass alias resolution', () => {
       },
     } as any);
 
-    const catAlias = (result.contents as any[]).find(
-      c => c.category === 'cat_alias_first'
-    );
+    const catAlias = (result.contents as any[]).find((c) => c.category === 'cat_alias_first');
     const aliasBlock = (catAlias?.contents as any[])?.find(
-      (b: any) => b.kind === 'block' && b.type === 'twopass_block_unique_x'
+      (b: any) => b.kind === 'block' && b.type === 'twopass_block_unique_x',
     );
-    expect(aliasBlock).to.not.equal(
-      undefined,
-      'alias block not found in toolbox'
-    );
+    expect(aliasBlock).to.not.equal(undefined, 'alias block not found in toolbox');
     expect(aliasBlock.inputs?.VAL?.shadow?.type).to.equal('math_number');
     expect(aliasBlock.inputs?.VAL?.shadow?.fields?.NUM).to.equal(42);
   });
@@ -174,7 +166,7 @@ describe('loadToolboxConfiguration - two-pass alias resolution', () => {
             contents: [{ kind: 'block', type: 'nonexistent_block_zzz9' }],
           },
         },
-      } as any)
+      } as any),
     ).to.throw(JaclyBlockLoadError);
   });
 });

@@ -1,10 +1,10 @@
-import { JaclyBlockKindBlock } from '@/schema';
+import type { JaclyBlockKindBlock } from '@/schema';
 
 export function processInputsForRegistration(
   block: JaclyBlockKindBlock,
-  inputs: NonNullable<JaclyBlockKindBlock['inputs']>
+  inputs: NonNullable<JaclyBlockKindBlock['inputs']>,
 ) {
-  block.args0?.forEach(arg => {
+  block.args0?.forEach((arg) => {
     if (arg.shadow) {
       inputs[arg.name] = {
         shadow: arg.shadow,

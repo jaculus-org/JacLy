@@ -1,28 +1,17 @@
-import {
-  type ReactNode,
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-} from 'react';
-import { dirname } from 'path';
-import { enqueueSnackbar } from 'notistack';
-
-import { useActiveProject } from '@/project';
-import { useJacDevice } from '@/device';
-import { getLocale } from '@/core/paraglide/runtime';
-import { m } from '@/core/paraglide/messages';
-import { packageEventsService } from '@/packages/services/package-events-service';
-import type { JaclyBlocksData } from '@jaculus/project';
+import { dirname } from 'node:path';
 import { JaclyEngine } from '@jaculus/jacly/engine';
-
-import { EditorJaclyContext } from './jacly-context';
+import type { JaclyBlocksData } from '@jaculus/project';
+import { enqueueSnackbar } from 'notistack';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { m } from '@/core/paraglide/messages';
+import { getLocale } from '@/core/paraglide/runtime';
+import { useJacDevice } from '@/device';
+import { packageEventsService } from '@/packages/services/package-events-service';
+import { useActiveProject } from '@/project';
 import { flushSaveService } from '../services/flush-save-service';
+import { EditorJaclyContext } from './jacly-context';
 
-async function ensureDir(
-  fsp: ReturnType<typeof useActiveProject>['state']['fsp'],
-  path: string
-) {
+async function ensureDir(fsp: ReturnType<typeof useActiveProject>['state']['fsp'], path: string) {
   try {
     await fsp.mkdir(path, { recursive: true });
   } catch (e: unknown) {
@@ -41,8 +30,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
 
   const [engine] = useState(() => new JaclyEngine());
   const [initialJson, setInitialJson] = useState<object | null>(null);
-  const [jaclyBlocksData, setJaclyBlocksData] =
-    useState<JaclyBlocksData | null>(null);
+  const [jaclyBlocksData, setJaclyBlocksData] = useState<JaclyBlocksData | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,10 +79,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
           engine.reloadBlockData(jaclyData);
           setJaclyBlocksData(jaclyData);
         } catch (error) {
-          console.error(
-            'Failed to reload block data after package change:',
-            error
-          );
+          console.error('Failed to reload block data after package change:', error);
           enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
         }
       })();
@@ -102,9 +87,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   }, [jacProject, engine]);
 
   const pendingJsonRef = useRef<object | null>(null);
-  const jsonSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
+  const jsonSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const flushSave = useCallback(async () => {
     if (jsonSaveTimerRef.current !== undefined) {
@@ -129,13 +112,12 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   const handleJsonChange = useCallback(
     (json: object) => {
       pendingJsonRef.current = json;
-      if (jsonSaveTimerRef.current !== undefined)
-        clearTimeout(jsonSaveTimerRef.current);
+      if (jsonSaveTimerRef.current !== undefined) clearTimeout(jsonSaveTimerRef.current);
       jsonSaveTimerRef.current = setTimeout(() => {
         void flushSave();
       }, 300);
     },
-    [flushSave]
+    [flushSave],
   );
 
   useEffect(() => {
@@ -155,15 +137,12 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   }, [flushSave]);
 
   const pendingCodeRef = useRef<string | null>(null);
-  const codeSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
+  const codeSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleGeneratedCode = useCallback(
     (code: string) => {
       pendingCodeRef.current = code;
-      if (codeSaveTimerRef.current !== undefined)
-        clearTimeout(codeSaveTimerRef.current);
+      if (codeSaveTimerRef.current !== undefined) clearTimeout(codeSaveTimerRef.current);
       codeSaveTimerRef.current = setTimeout(async () => {
         if (pendingCodeRef.current === null) return;
         const pendingCode = pendingCodeRef.current;
@@ -181,7 +160,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
         }
       }, 150);
     },
-    [fsp, getFileName]
+    [fsp, getFileName],
   );
 
   return (

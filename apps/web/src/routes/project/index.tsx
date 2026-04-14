@@ -1,11 +1,24 @@
-import { m } from '@/core/paraglide/messages';
-import {
-  downloadProjectAsZip,
-  downloadProjectAsTarGz,
-  buildPackageImportUrl,
-} from '@/project';
+import path from 'node:path';
 import { packProjectAsTarGz } from '@jaculus/project/export';
+import type { FSInterface } from '@jaculus/project/fs';
+import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { useLiveQuery } from 'dexie-react-hooks';
+import {
+  Archive,
+  Blocks,
+  Code,
+  Download,
+  Link2,
+  MoreVertical,
+  Pencil,
+  Share2,
+  Trash,
+} from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
+import { useState } from 'react';
+import { m } from '@/core/paraglide/messages';
+import { buildPackageImportUrl, downloadProjectAsTarGz, downloadProjectAsZip } from '@/project';
 import { Button } from '@/ui/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/ui/components/card';
 import {
@@ -26,36 +39,15 @@ import {
   DropdownMenuTrigger,
 } from '@/ui/components/dropdown-menu';
 import { Input } from '@/ui/components/input';
-import type { FSInterface } from '@jaculus/project/fs';
-import path from 'path';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useLiveQuery } from 'dexie-react-hooks';
-import {
-  Archive,
-  Blocks,
-  Code,
-  Download,
-  Link2,
-  MoreVertical,
-  Pencil,
-  Share2,
-  Trash,
-} from 'lucide-react';
-import { useState } from 'react';
-import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
 
 export const Route = createFileRoute('/project/')({
   component: EditorList,
 });
 
 function EditorList() {
-  const { projectManService: runtimeService, projectFsService } =
-    Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } = Route.useRouteContext();
   const navigate = useNavigate();
-  const projects = useLiveQuery(
-    () => runtimeService.listProjects(),
-    [runtimeService]
-  );
+  const projects = useLiveQuery(() => runtimeService.listProjects(), [runtimeService]);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -112,17 +104,14 @@ function EditorList() {
       const nextNamePackage = nextName.replace(/[^a-zA-Z0-9-_]/g, '-');
 
       if (projectNamePatternJson.test(nextNamePackage)) {
-        await projectFsService.withMount(
-          projectId,
-          async ({ fs, projectPath }) => {
-            const packageJsonPath = path.join(projectPath, 'package.json');
-            const pkgJson = await loadPackageJson(fs, packageJsonPath);
-            await savePackageJson(fs, packageJsonPath, {
-              ...pkgJson,
-              name: nextName,
-            });
-          }
-        );
+        await projectFsService.withMount(projectId, async ({ fs, projectPath }) => {
+          const packageJsonPath = path.join(projectPath, 'package.json');
+          const pkgJson = await loadPackageJson(fs, packageJsonPath);
+          await savePackageJson(fs, packageJsonPath, {
+            ...pkgJson,
+            name: nextName,
+          });
+        });
       }
 
       await runtimeService.renameProject(projectId, nextName);
@@ -137,9 +126,7 @@ function EditorList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        {m.project_title()}
-      </h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">{m.project_title()}</h1>
 
       <div className="flex justify-center mb-4 space-x-4">
         <Button
@@ -166,7 +153,7 @@ function EditorList() {
       {projects && projects.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map(project => {
+            {projects.map((project) => {
               const Icon = project.type === 'jacly' ? Blocks : Code;
               return (
                 <Link
@@ -175,16 +162,12 @@ function EditorList() {
                   params={{ projectId: project.id }}
                   className="block"
                 >
-                  <Card
-                    className={`transition-all duration-300 hover:shadow-lg`}
-                  >
+                  <Card className={`transition-all duration-300 hover:shadow-lg`}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <Icon className="w-5 h-5" />
-                          <CardTitle className="text-lg">
-                            {project.name}
-                          </CardTitle>
+                          <CardTitle className="text-lg">{project.name}</CardTitle>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -194,7 +177,7 @@ function EditorList() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem
-                              onClick={e => {
+                              onClick={(e) => {
                                 e.stopPropagation();
                                 runtimeService.deleteProject(project.id);
                               }}
@@ -204,7 +187,7 @@ function EditorList() {
                               {m.project_delete()}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={e => {
+                              onClick={(e) => {
                                 e.stopPropagation();
                                 startRename(project.id, project.name);
                               }}
@@ -213,15 +196,13 @@ function EditorList() {
                               {m.project_rename()}
                             </DropdownMenuItem>
                             <DropdownMenuSub>
-                              <DropdownMenuSubTrigger
-                                onClick={e => e.stopPropagation()}
-                              >
+                              <DropdownMenuSubTrigger onClick={(e) => e.stopPropagation()}>
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Export
                               </DropdownMenuSubTrigger>
                               <DropdownMenuSubContent>
                                 <DropdownMenuItem
-                                  onClick={async e => {
+                                  onClick={async (e) => {
                                     e.stopPropagation();
                                     await projectFsService.withMount(
                                       project.id,
@@ -229,9 +210,9 @@ function EditorList() {
                                         await downloadProjectAsZip(
                                           fs as unknown as FSInterface,
                                           projectPath,
-                                          project.name
+                                          project.name,
                                         );
-                                      }
+                                      },
                                     );
                                   }}
                                 >
@@ -239,7 +220,7 @@ function EditorList() {
                                   {m.project_download_zip()}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={async e => {
+                                  onClick={async (e) => {
                                     e.stopPropagation();
                                     await projectFsService.withMount(
                                       project.id,
@@ -247,9 +228,9 @@ function EditorList() {
                                         await downloadProjectAsTarGz(
                                           fs as unknown as FSInterface,
                                           projectPath,
-                                          project.name
+                                          project.name,
                                         );
-                                      }
+                                      },
                                     );
                                   }}
                                 >
@@ -257,39 +238,31 @@ function EditorList() {
                                   Download .tar.gz
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={async e => {
+                                  onClick={async (e) => {
                                     e.stopPropagation();
                                     try {
                                       await projectFsService.withMount(
                                         project.id,
                                         async ({ fs, projectPath }) => {
-                                          const gzBytes =
-                                            await packProjectAsTarGz(
-                                              fs as unknown as FSInterface,
-                                              projectPath,
-                                              ['build', 'node_modules']
-                                            );
+                                          const gzBytes = await packProjectAsTarGz(
+                                            fs as unknown as FSInterface,
+                                            projectPath,
+                                            ['build', 'node_modules'],
+                                          );
                                           const url = buildPackageImportUrl(
-                                            new Uint8Array(gzBytes)
+                                            new Uint8Array(gzBytes),
                                           );
-                                          await navigator.clipboard.writeText(
-                                            url
-                                          );
-                                          enqueueSnackbar(
-                                            'Import URL copied to clipboard',
-                                            { variant: 'success' }
-                                          );
-                                        }
+                                          await navigator.clipboard.writeText(url);
+                                          enqueueSnackbar('Import URL copied to clipboard', {
+                                            variant: 'success',
+                                          });
+                                        },
                                       );
                                     } catch (err) {
-                                      console.error(
-                                        'Failed to copy project URL:',
-                                        err
-                                      );
-                                      enqueueSnackbar(
-                                        'Failed to copy project URL',
-                                        { variant: 'error' }
-                                      );
+                                      console.error('Failed to copy project URL:', err);
+                                      enqueueSnackbar('Failed to copy project URL', {
+                                        variant: 'error',
+                                      });
                                     }
                                   }}
                                 >
@@ -324,15 +297,10 @@ function EditorList() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>{m.project_delete_title()}</DialogTitle>
-                <DialogDescription>
-                  {m.project_delete_description()}
-                </DialogDescription>
+                <DialogDescription>{m.project_delete_description()}</DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setDeleteDialogOpen(false)}
-                >
+                <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
                   {m.project_delete_cancel()}
                 </Button>
                 <Button variant="destructive" onClick={confirmDelete}>
@@ -344,7 +312,7 @@ function EditorList() {
 
           <Dialog
             open={renameDialogOpen}
-            onOpenChange={open => {
+            onOpenChange={(open) => {
               setRenameDialogOpen(open);
               if (!open) {
                 setRenameError(null);
@@ -355,30 +323,21 @@ function EditorList() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>{m.project_rename_title()}</DialogTitle>
-                <DialogDescription>
-                  {m.project_rename_description()}
-                </DialogDescription>
+                <DialogDescription>{m.project_rename_description()}</DialogDescription>
               </DialogHeader>
               <div className="space-y-2">
                 <Input
                   value={renameValue}
-                  onChange={e => setRenameValue(e.target.value)}
+                  onChange={(e) => setRenameValue(e.target.value)}
                   placeholder={m.project_rename_placeholder()}
                 />
-                {renameError && (
-                  <p className="text-sm text-destructive">{renameError}</p>
-                )}
+                {renameError && <p className="text-sm text-destructive">{renameError}</p>}
               </div>
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setRenameDialogOpen(false)}
-                >
+                <Button variant="outline" onClick={() => setRenameDialogOpen(false)}>
                   {m.project_rename_cancel()}
                 </Button>
-                <Button onClick={confirmRename}>
-                  {m.project_rename_confirm()}
-                </Button>
+                <Button onClick={confirmRename}>{m.project_rename_confirm()}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

@@ -1,5 +1,5 @@
-import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
 import { createContext, useContext } from 'react';
+import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
 
 export interface ConsolePlotterState {
   availableKeys: string[];
@@ -27,15 +27,12 @@ export interface ConsolePlotterContextValue {
   meta: ConsolePlotterMeta;
 }
 
-export const ConsolePlotterContext =
-  createContext<ConsolePlotterContextValue | null>(null);
+export const ConsolePlotterContext = createContext<ConsolePlotterContextValue | null>(null);
 
 export function useConsolePlotter(): ConsolePlotterContextValue {
   const context = useContext(ConsolePlotterContext);
   if (!context) {
-    throw new Error(
-      'ConsolePlotter.* components must be within ConsolePlotter.Provider'
-    );
+    throw new Error('ConsolePlotter.* components must be within ConsolePlotter.Provider');
   }
   return context;
 }

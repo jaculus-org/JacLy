@@ -1,20 +1,14 @@
 'use client';
 
-import { m } from '@/core/paraglide/messages';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { debounce } from '@jaculus/jacly/utils';
 import { enqueueSnackbar } from 'notistack';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { m } from '@/core/paraglide/messages';
 import { useActiveProject } from '../../../state/active-project-context';
 import { useProjectEditor } from '../../../state/project-editor-context';
-import { debounce } from '@jaculus/jacly/utils';
-import { FileExplorerContext } from './context';
-import type { FileSystemItem } from '../types';
 import { buildFileTree, loadDirectoryChildren } from '../tree/helpers';
+import type { FileSystemItem } from '../types';
+import { FileExplorerContext } from './context';
 
 export function FileExplorerProvider({ children }: { children: ReactNode }) {
   const {
@@ -27,9 +21,7 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
-    new Set()
-  );
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const expandedFoldersRef = useRef(expandedFolders);
 
   const rootItem: FileSystemItem = {
@@ -48,18 +40,14 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
     (
       nodes: FileSystemItem[],
       targetPath: string,
-      updater: (node: FileSystemItem) => FileSystemItem
+      updater: (node: FileSystemItem) => FileSystemItem,
     ): FileSystemItem[] => {
-      return nodes.map(node => {
+      return nodes.map((node) => {
         if (node.path === targetPath) {
           return updater(node);
         }
         if (node.children) {
-          const newChildren = updateTreeItem(
-            node.children,
-            targetPath,
-            updater
-          );
+          const newChildren = updateTreeItem(node.children, targetPath, updater);
           if (newChildren !== node.children) {
             return { ...node, children: newChildren };
           }
@@ -67,25 +55,19 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         return node;
       });
     },
-    []
+    [],
   );
 
   const loadTreeWithExpansion = useCallback(
-    async (
-      path: string,
-      expandedSet: Set<string>
-    ): Promise<FileSystemItem[]> => {
+    async (path: string, expandedSet: Set<string>): Promise<FileSystemItem[]> => {
       try {
         const items = await buildFileTree(fsp, path);
         await Promise.all(
-          items.map(async item => {
+          items.map(async (item) => {
             if (item.isDirectory && expandedSet.has(item.path)) {
-              item.children = await loadTreeWithExpansion(
-                item.path,
-                expandedSet
-              );
+              item.children = await loadTreeWithExpansion(item.path, expandedSet);
             }
-          })
+          }),
         );
         return items;
       } catch (error) {
@@ -93,17 +75,14 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         return [];
       }
     },
-    [fsp]
+    [fsp],
   );
 
   const refreshTree = useCallback(
     async (isBackground = false) => {
       if (!isBackground) setLoading(true);
       try {
-        const tree = await loadTreeWithExpansion(
-          projectPath,
-          expandedFoldersRef.current
-        );
+        const tree = await loadTreeWithExpansion(projectPath, expandedFoldersRef.current);
         setFileTree(tree);
       } catch (error) {
         console.error('Failed to load file tree:', error);
@@ -111,7 +90,7 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         if (!isBackground) setLoading(false);
       }
     },
-    [projectPath, loadTreeWithExpansion]
+    [projectPath, loadTreeWithExpansion],
   );
 
   useEffect(() => {
@@ -159,12 +138,12 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         openPanel('code', { filePath: path });
       }
     },
-    [projectPath, openPanel]
+    [projectPath, openPanel],
   );
 
   const toggleDirectory = useCallback(
     async (item: FileSystemItem) => {
-      setExpandedFolders(prev => {
+      setExpandedFolders((prev) => {
         const newExpanded = new Set(prev);
         if (newExpanded.has(item.path)) {
           newExpanded.delete(item.path);
@@ -180,15 +159,15 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
       ) {
         const children = await loadDirectoryChildren(fsp, item);
 
-        setFileTree(prevTree =>
-          updateTreeItem(prevTree, item.path, node => ({
+        setFileTree((prevTree) =>
+          updateTreeItem(prevTree, item.path, (node) => ({
             ...node,
             children: children,
-          }))
+          })),
         );
       }
     },
-    [fsp, updateTreeItem]
+    [fsp, updateTreeItem],
   );
 
   const selectItem = useCallback((path: string) => {
@@ -197,9 +176,7 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
 
   const createNewFile = useCallback(
     async (item: FileSystemItem) => {
-      const fileName = prompt(
-        m.project_panel_fs_create_file_prompt({ path: item.path })
-      );
+      const fileName = prompt(m.project_panel_fs_create_file_prompt({ path: item.path }));
       if (!fileName) return;
       try {
         await fsp.writeFile(`${item.path}/${fileName}`, '', 'utf-8');
@@ -212,14 +189,12 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [fsp, openPanel, projectPath]
+    [fsp, openPanel, projectPath],
   );
 
   const createNewDirectory = useCallback(
     async (item: FileSystemItem) => {
-      const dirName = prompt(
-        m.project_panel_fs_create_folder_prompt({ path: item.path })
-      );
+      const dirName = prompt(m.project_panel_fs_create_folder_prompt({ path: item.path }));
       if (!dirName) return;
       try {
         await fsp.mkdir(`${item.path}/${dirName}`);
@@ -229,15 +204,12 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [fsp]
+    [fsp],
   );
 
   const renameItem = useCallback(
     async (item: FileSystemItem) => {
-      const newName = prompt(
-        m.project_panel_fs_rename_prompt({ name: item.name }),
-        item.name
-      );
+      const newName = prompt(m.project_panel_fs_rename_prompt({ name: item.name }), item.name);
       if (!newName || newName === item.name) return;
       try {
         const newPath = item.path.replace(/[^/]+$/, newName);
@@ -248,16 +220,14 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [fsp]
+    [fsp],
   );
 
   const removeItem = useCallback(
     async (item: FileSystemItem) => {
-      if (!confirm(m.project_panel_fs_delete_confirm({ name: item.name })))
-        return;
+      if (!confirm(m.project_panel_fs_delete_confirm({ name: item.name }))) return;
       try {
-        if (item.isDirectory)
-          await fsp.rm(item.path, { recursive: true, force: true });
+        if (item.isDirectory) await fsp.rm(item.path, { recursive: true, force: true });
         else await fsp.unlink(item.path);
       } catch {
         enqueueSnackbar(m.project_panel_fs_delete_error(), {
@@ -265,16 +235,14 @@ export function FileExplorerProvider({ children }: { children: ReactNode }) {
         });
       }
     },
-    [fsp]
+    [fsp],
   );
 
   const copyPath = useCallback(
     (item: FileSystemItem) => {
-      void navigator.clipboard.writeText(
-        item.path.replace(`${projectPath}`, '')
-      );
+      void navigator.clipboard.writeText(item.path.replace(`${projectPath}`, ''));
     },
-    [projectPath]
+    [projectPath],
   );
 
   return (

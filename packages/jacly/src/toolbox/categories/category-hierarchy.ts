@@ -1,8 +1,6 @@
-import { ToolboxItemInfoSort } from '@/toolbox/types';
+import type { ToolboxItemInfoSort } from '@/toolbox/types';
 
-export function buildCategoryHierarchy(
-  items: ToolboxItemInfoSort[]
-): ToolboxItemInfoSort[] {
+export function buildCategoryHierarchy(items: ToolboxItemInfoSort[]): ToolboxItemInfoSort[] {
   const topLevelCategories: ToolboxItemInfoSort[] = [];
   const subcategoriesMap = new Map<string, ToolboxItemInfoSort[]>();
 

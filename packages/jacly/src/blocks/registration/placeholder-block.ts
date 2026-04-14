@@ -15,7 +15,7 @@ export function registerPlaceholderBlock(): void {
   if (registered) return;
   registered = true;
 
-  Blocks['unsupported_block'] = {
+  Blocks.unsupported_block = {
     init(this: PlaceholderBlock) {
       this.jsonInit({
         type: 'unsupported_block',

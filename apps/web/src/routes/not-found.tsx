@@ -1,6 +1,6 @@
-import { m } from '@/core/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { HomeIcon, ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { m } from '@/core/paraglide/messages';
 
 export const Route = createFileRoute('/not-found')({
   component: NotFoundPage,
@@ -12,19 +12,13 @@ export function NotFoundPage() {
       <div className="flex flex-col items-center gap-8 max-w-md p-8 text-center">
         {/* 404 Number */}
         <div className="relative">
-          <h1 className="text-9xl font-bold text-primary/20 select-none">
-            404
-          </h1>
+          <h1 className="text-9xl font-bold text-primary/20 select-none">404</h1>
         </div>
 
         {/* Message */}
         <div className="flex flex-col gap-3">
-          <h2 className="text-2xl font-semibold text-foreground">
-            {m.notfound_title()}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {m.notfound_description()}
-          </p>
+          <h2 className="text-2xl font-semibold text-foreground">{m.notfound_title()}</h2>
+          <p className="text-sm text-muted-foreground">{m.notfound_description()}</p>
         </div>
 
         {/* Actions */}

@@ -1,20 +1,8 @@
-import { m } from '@/core/paraglide/messages';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/ui/components/card';
+import { BlocksIcon, Code2Icon, ListIcon, PlusCircleIcon, ZapIcon } from 'lucide-react';
+import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
-import {
-  BlocksIcon,
-  Code2Icon,
-  ZapIcon,
-  ListIcon,
-  PlusCircleIcon,
-} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
 
 export const Route = createFileRoute('/')({
   component: Root,
@@ -69,7 +57,7 @@ function Root() {
 
       {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {features.map(feature => {
+        {features.map((feature) => {
           const Icon = feature.icon;
           return (
             <Card
@@ -81,9 +69,7 @@ function Root() {
                   <Icon className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle className="text-xl">{feature.title}</CardTitle>
-                <CardDescription className="text-base">
-                  {feature.description}
-                </CardDescription>
+                <CardDescription className="text-base">{feature.description}</CardDescription>
               </CardHeader>
             </Card>
           );
@@ -93,12 +79,8 @@ function Root() {
       {/* Getting Started Section */}
       <Card className="border-2">
         <CardHeader>
-          <CardTitle className="text-2xl">
-            {m.index_get_started_title()}
-          </CardTitle>
-          <CardDescription className="text-base">
-            {m.index_get_started_subtitle()}
-          </CardDescription>
+          <CardTitle className="text-2xl">{m.index_get_started_title()}</CardTitle>
+          <CardDescription className="text-base">{m.index_get_started_subtitle()}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-start gap-4 p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors">
@@ -107,9 +89,7 @@ function Root() {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold mb-1">{m.index_blocks_title()}</h3>
-              <p className="text-sm text-muted-foreground">
-                {m.index_blocks_desc()}
-              </p>
+              <p className="text-sm text-muted-foreground">{m.index_blocks_desc()}</p>
             </div>
           </div>
 
@@ -118,12 +98,8 @@ function Root() {
               <Code2Icon className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">
-                {m.index_typescript_title()}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {m.index_typescript_desc()}
-              </p>
+              <h3 className="font-semibold mb-1">{m.index_typescript_title()}</h3>
+              <p className="text-sm text-muted-foreground">{m.index_typescript_desc()}</p>
             </div>
           </div>
         </CardContent>

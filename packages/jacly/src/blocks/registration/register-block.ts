@@ -1,8 +1,11 @@
-import { Blocks } from 'blockly/core';
-import { JaclyBlock, JaclyBlockKindBlock, JaclyConfig } from '@/schema';
-import { BlockExtended } from '@/blocks/types/custom-block';
 import * as Blockly from 'blockly/core';
-import type { EngineState } from '../../engine/engine-state';
+import { Blocks } from 'blockly/core';
+import { processArgsForRegistration } from '@/blocks/definitions/message-processing';
+import { processInputsForRegistration } from '@/blocks/definitions/shadow-extraction';
+import {
+  registerCallbackVarGetters,
+  registerCallbackVarSlots,
+} from '@/blocks/instances/callback-vars';
 import {
   getConstructorMixin,
   getInstanceDropdownGenerator,
@@ -10,21 +13,18 @@ import {
   registerVirtualInstances,
   validateInstanceSelection,
 } from '@/blocks/instances/constructors';
-import {
-  registerCallbackVarGetters,
-  registerCallbackVarSlots,
-} from '@/blocks/instances/callback-vars';
+import type { BlockExtended } from '@/blocks/types/custom-block';
 import type {
-  FieldDropdownWithMenuGenerator,
   BlockExtraState,
+  FieldDropdownWithMenuGenerator,
 } from '@/codegen/placeholders/placeholder-utils';
-import { processArgsForRegistration } from '@/blocks/definitions/message-processing';
-import { processInputsForRegistration } from '@/blocks/definitions/shadow-extraction';
+import type { JaclyBlock, JaclyBlockKindBlock, JaclyConfig } from '@/schema';
+import type { EngineState } from '../../engine/engine-state';
 
 export function registerBlocklyBlock(
   state: EngineState,
   block: JaclyBlock,
-  jaclyConfig: JaclyConfig
+  jaclyConfig: JaclyConfig,
 ): void {
   if (block.kind !== 'block') return;
 
@@ -82,7 +82,7 @@ export function registerBlocklyBlock(
       }
 
       if (block.args0) {
-        block.args0.forEach(arg => {
+        block.args0.forEach((arg) => {
           if (
             arg.type === 'field_dropdown' &&
             arg.instanceof &&
@@ -97,23 +97,20 @@ export function registerBlocklyBlock(
               const dropdownField = field as FieldDropdownWithMenuGenerator;
               dropdownField.menuGenerator_ = getInstanceDropdownGenerator(
                 state,
-                systemId
+                systemId,
               ) as Blockly.MenuGenerator & (() => Blockly.MenuGenerator);
 
-              const options = getInstanceDropdownGenerator(
-                state,
-                systemId
-              ).call(field) as [string, string][];
+              const options = getInstanceDropdownGenerator(state, systemId).call(field) as [
+                string,
+                string,
+              ][];
               if (options.length === 1 && options[0][1] !== 'INVALID') {
                 this.setFieldValue(options[0][1], fieldName);
               }
             }
 
             const existingOnChange = this.onchange;
-            this.onchange = function (
-              this: BlockExtended,
-              e: Blockly.Events.Abstract
-            ) {
+            this.onchange = function (this: BlockExtended, e: Blockly.Events.Abstract) {
               if (existingOnChange) existingOnChange.call(this, e);
               validateInstanceSelection.call(this, state, systemId, fieldName);
             };

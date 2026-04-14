@@ -1,20 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
 import type { JacDevice } from '@jaculus/device';
-import {
-  restart,
-  start,
-  status,
-  stop,
-  version,
-} from '../services/device-operations';
+import { useCallback, useMemo, useState } from 'react';
+import { restart, start, status, stop, version } from '../services/device-operations';
 import type { DeviceStatusInfo } from '../state/device-control-context';
 import { useLoadingState } from './use-loading';
 
 export function useProgramControl(device: JacDevice | null) {
   const { loading, withLoading } = useLoadingState();
-  const [deviceStatus, setDeviceStatus] = useState<DeviceStatusInfo | null>(
-    null
-  );
+  const [deviceStatus, setDeviceStatus] = useState<DeviceStatusInfo | null>(null);
   const [deviceVersion, setDeviceVersion] = useState<{
     esp32: string;
     dcore: string;
@@ -23,10 +15,7 @@ export function useProgramControl(device: JacDevice | null) {
   const refreshDevice = useCallback(async () => {
     await withLoading('getDeviceInfo', async () => {
       if (!device) return;
-      const [statusInfo, versionInfo] = await Promise.all([
-        status(device),
-        version(device),
-      ]);
+      const [statusInfo, versionInfo] = await Promise.all([status(device), version(device)]);
       setDeviceStatus(statusInfo);
       setDeviceVersion(versionInfo);
     });
@@ -56,14 +45,11 @@ export function useProgramControl(device: JacDevice | null) {
     });
   }, [device, withLoading, refreshDevice]);
 
-  const state = useMemo(
-    () => ({ deviceStatus, deviceVersion }),
-    [deviceStatus, deviceVersion]
-  );
+  const state = useMemo(() => ({ deviceStatus, deviceVersion }), [deviceStatus, deviceVersion]);
 
   const actions = useMemo(
     () => ({ refreshDevice, startProgram, stopProgram, restartProgram }),
-    [refreshDevice, startProgram, stopProgram, restartProgram]
+    [refreshDevice, startProgram, stopProgram, restartProgram],
   );
 
   return { loading, state, actions };

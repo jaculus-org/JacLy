@@ -19,16 +19,14 @@ export interface CollapsibleCardContextValue {
   meta: CollapsibleCardMeta;
 }
 
-export const CollapsibleCardContext = createContext<
-  CollapsibleCardContextValue | undefined
->(undefined);
+export const CollapsibleCardContext = createContext<CollapsibleCardContextValue | undefined>(
+  undefined,
+);
 
 export function useCollapsibleCard(): CollapsibleCardContextValue {
   const context = useContext(CollapsibleCardContext);
   if (!context) {
-    throw new Error(
-      'CollapsibleCard.* must be used within CollapsibleCard.Provider'
-    );
+    throw new Error('CollapsibleCard.* must be used within CollapsibleCard.Provider');
   }
   return context;
 }

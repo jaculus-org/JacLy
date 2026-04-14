@@ -1,4 +1,4 @@
-import * as FlexLayout from 'flexlayout-react';
+import type * as FlexLayout from 'flexlayout-react';
 import { applyPanelDefinitionToTab } from './panel-registry';
 
 export const defaultGlobalSettings: FlexLayout.IGlobalAttributes = {

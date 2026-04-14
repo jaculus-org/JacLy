@@ -1,7 +1,7 @@
-import { m } from '@/core/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
-import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { LinkIcon } from 'lucide-react';
+import { useBuildInfo } from '@/core/hooks/use-build-info';
+import { m } from '@/core/paraglide/messages';
 
 export const Route = createFileRoute('/about')({
   component: RouteComponent,
@@ -18,15 +18,11 @@ function RouteComponent() {
     <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold mb-2">{m.about_title()}</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          {m.about_description()}
-        </p>
+        <p className="text-lg text-muted-foreground mb-8">{m.about_description()}</p>
 
         <div className="bg-card rounded-lg border p-6 space-y-4">
           <div className="border-b pb-4">
-            <h2 className="text-2xl font-semibold mb-4">
-              {m.about_build_info()}
-            </h2>
+            <h2 className="text-2xl font-semibold mb-4">{m.about_build_info()}</h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -48,9 +44,7 @@ function RouteComponent() {
               <label className="text-sm font-medium text-muted-foreground">
                 {m.about_commit_hash()}
               </label>
-              <p className="text-lg font-mono">
-                {buildInfo.commitHash.slice(0, 7)}
-              </p>
+              <p className="text-lg font-mono">{buildInfo.commitHash.slice(0, 7)}</p>
             </div>
 
             <div>

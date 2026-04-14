@@ -1,3 +1,4 @@
+import { m } from '@/core/paraglide/messages';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,54 +10,40 @@ import {
   AlertDialogTitle,
 } from '@/ui/components/alert-dialog';
 import { Input } from '@/ui/components/input';
-import { m } from '@/core/paraglide/messages';
 import { useJacDeviceControl } from '../../state/device-control-context';
 
 export function WifiModal() {
   const { state, actions } = useJacDeviceControl();
 
   return (
-    <AlertDialog
-      open={state.wifiModalOpen}
-      onOpenChange={actions.closeWifiModal}
-    >
+    <AlertDialog open={state.wifiModalOpen} onOpenChange={actions.closeWifiModal}>
       <AlertDialogContent>
         {state.wifiModalMode === 'ap' && (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                {m.config_configure_ap_title()}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {m.config_configure_ap_desc()}
-              </AlertDialogDescription>
+              <AlertDialogTitle>{m.config_configure_ap_title()}</AlertDialogTitle>
+              <AlertDialogDescription>{m.config_configure_ap_desc()}</AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-3">
               <Input
                 placeholder={m.config_ap_ssid_placeholder()}
                 value={state.apSsid}
-                onChange={e => actions.setApSsid(e.target.value)}
+                onChange={(e) => actions.setApSsid(e.target.value)}
               />
               <Input
                 type="password"
                 placeholder={m.config_ap_password_placeholder()}
                 value={state.apPassword}
-                onChange={e => actions.setApPassword(e.target.value)}
+                onChange={(e) => actions.setApPassword(e.target.value)}
               />
             </div>
             <AlertDialogFooter>
               <AlertDialogCancel>{m.config_btn_cancel()}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={actions.configureAp}
-                disabled={
-                  state.loading['configureAp'] ||
-                  !state.apSsid ||
-                  !state.apPassword
-                }
+                disabled={state.loading.configureAp || !state.apSsid || !state.apPassword}
               >
-                {state.loading['configureAp']
-                  ? m.config_btn_saving()
-                  : m.config_btn_save()}
+                {state.loading.configureAp ? m.config_btn_saving() : m.config_btn_save()}
               </AlertDialogAction>
             </AlertDialogFooter>
           </>
@@ -65,24 +52,20 @@ export function WifiModal() {
         {state.wifiModalMode === 'network' && (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                {m.config_add_network_title()}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {m.config_add_network_desc()}
-              </AlertDialogDescription>
+              <AlertDialogTitle>{m.config_add_network_title()}</AlertDialogTitle>
+              <AlertDialogDescription>{m.config_add_network_desc()}</AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-3">
               <Input
                 placeholder={m.config_network_ssid_placeholder()}
                 value={state.newNetworkSsid}
-                onChange={e => actions.setNewNetworkSsid(e.target.value)}
+                onChange={(e) => actions.setNewNetworkSsid(e.target.value)}
               />
               <Input
                 type="password"
                 placeholder={m.config_network_password_placeholder()}
                 value={state.newNetworkPassword}
-                onChange={e => actions.setNewNetworkPassword(e.target.value)}
+                onChange={(e) => actions.setNewNetworkPassword(e.target.value)}
               />
             </div>
             <AlertDialogFooter>
@@ -90,14 +73,10 @@ export function WifiModal() {
               <AlertDialogAction
                 onClick={actions.addNetwork}
                 disabled={
-                  state.loading['addNetwork'] ||
-                  !state.newNetworkSsid ||
-                  !state.newNetworkPassword
+                  state.loading.addNetwork || !state.newNetworkSsid || !state.newNetworkPassword
                 }
               >
-                {state.loading['addNetwork']
-                  ? m.config_btn_adding()
-                  : m.config_btn_add_network()}
+                {state.loading.addNetwork ? m.config_btn_adding() : m.config_btn_add_network()}
               </AlertDialogAction>
             </AlertDialogFooter>
           </>
@@ -106,27 +85,21 @@ export function WifiModal() {
         {state.wifiModalMode === 'remove' && (
           <>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                {m.config_remove_network_title()}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {m.config_remove_network_desc()}
-              </AlertDialogDescription>
+              <AlertDialogTitle>{m.config_remove_network_title()}</AlertDialogTitle>
+              <AlertDialogDescription>{m.config_remove_network_desc()}</AlertDialogDescription>
             </AlertDialogHeader>
             <Input
               placeholder={m.config_network_ssid_placeholder()}
               value={state.removeNetworkSsid}
-              onChange={e => actions.setRemoveNetworkSsid(e.target.value)}
+              onChange={(e) => actions.setRemoveNetworkSsid(e.target.value)}
             />
             <AlertDialogFooter>
               <AlertDialogCancel>{m.config_btn_cancel()}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={actions.removeNetwork}
-                disabled={
-                  state.loading['removeNetwork'] || !state.removeNetworkSsid
-                }
+                disabled={state.loading.removeNetwork || !state.removeNetworkSsid}
               >
-                {state.loading['removeNetwork']
+                {state.loading.removeNetwork
                   ? m.config_btn_removing()
                   : m.config_btn_remove_network()}
               </AlertDialogAction>

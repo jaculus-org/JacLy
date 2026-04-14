@@ -1,10 +1,10 @@
 {
-    "name": "test-project",
-    "version": "0.1.0",
-    "jaculus": {
-        "packageFormat": 1,
-        "registry": [
-          "http://127.0.0.1:3737/"
-      ]
-    }
+  "name": "test-project",
+  "version": "0.1.0",
+  "jaculus": {
+    "packageFormat": 1,
+    "registry": [
+      "http://127.0.0.1:3737/"
+    ]
+  }
 }

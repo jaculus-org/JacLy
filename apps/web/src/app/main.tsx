@@ -1,9 +1,9 @@
+import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider } from '@tanstack/react-router';
-import { makeRouterContext } from '@/app/router-context';
-import { makeRouter } from '@/app/router';
 import { AppProviders } from '@/app/app-provider';
+import { makeRouter } from '@/app/router';
+import { makeRouterContext } from '@/app/router-context';
 import '@/app/index.css';
 
 // register VSCode default language extensions
@@ -20,11 +20,10 @@ import getLanguagesServiceOverride from '@codingame/monaco-vscode-languages-serv
 import getModelServiceOverride from '@codingame/monaco-vscode-model-service-override';
 import getTextMateServiceOverride from '@codingame/monaco-vscode-textmate-service-override';
 import getThemeServiceOverride from '@codingame/monaco-vscode-theme-service-override';
-import { ensureBaseFs } from '@/project/services/project-fs-service';
-import { ZenFSProvider } from '@/editor/services/zen-fs-provider';
-import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-
 import * as Sentry from '@sentry/react';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+import { ZenFSProvider } from '@/editor/services/zen-fs-provider';
+import { ensureBaseFs } from '@/project/services/project-fs-service';
 
 Sentry.init({
   dsn: 'https://996565cac67dc734f86eb32e02a099fc@o4511220055670784.ingest.de.sentry.io/4511220058816592',
@@ -46,11 +45,8 @@ async function bootstrap() {
     getWorker(_workerId: string, label: string) {
       if (label === 'TextMateWorker') {
         return new Worker(
-          new URL(
-            '@codingame/monaco-vscode-textmate-service-override/worker',
-            import.meta.url
-          ),
-          { type: 'module' }
+          new URL('@codingame/monaco-vscode-textmate-service-override/worker', import.meta.url),
+          { type: 'module' },
         );
       }
       return new EditorWorker();
@@ -80,7 +76,7 @@ async function bootstrap() {
           return false;
         },
       },
-    }
+    },
   );
 
   const context = makeRouterContext();
@@ -91,7 +87,7 @@ async function bootstrap() {
       <AppProviders>
         <RouterProvider router={router} />
       </AppProviders>
-    </StrictMode>
+    </StrictMode>,
   );
 }
 

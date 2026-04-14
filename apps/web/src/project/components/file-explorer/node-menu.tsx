@@ -1,10 +1,5 @@
 'use client';
 
-import { m } from '@/core/paraglide/messages';
-import {
-  ContextMenuContent,
-  ContextMenuItem,
-} from '@/ui/components/context-menu';
 import {
   CopyIcon,
   FilePlusIcon,
@@ -12,18 +7,14 @@ import {
   FolderPenIcon,
   FolderPlusIcon,
 } from 'lucide-react';
+import { m } from '@/core/paraglide/messages';
+import { ContextMenuContent, ContextMenuItem } from '@/ui/components/context-menu';
 import { useJacFileExplorer } from './state/context';
 import type { FileSystemItem } from './types';
 
 export function FileExplorerNodeMenu({ item }: { item: FileSystemItem }) {
   const {
-    actions: {
-      createNewFile,
-      createNewDirectory,
-      renameItem,
-      removeItem,
-      copyPath,
-    },
+    actions: { createNewFile, createNewDirectory, renameItem, removeItem, copyPath },
   } = useJacFileExplorer();
 
   return (
@@ -31,27 +22,20 @@ export function FileExplorerNodeMenu({ item }: { item: FileSystemItem }) {
       {item.isDirectory && (
         <>
           <ContextMenuItem onClick={() => createNewFile(item)}>
-            <FilePlusIcon size={16} className="mr-2" />{' '}
-            {m.project_panel_fs_new_file()}
+            <FilePlusIcon size={16} className="mr-2" /> {m.project_panel_fs_new_file()}
           </ContextMenuItem>
           <ContextMenuItem onClick={() => createNewDirectory(item)}>
-            <FolderPlusIcon size={16} className="mr-2" />{' '}
-            {m.project_panel_fs_new_folder()}
+            <FolderPlusIcon size={16} className="mr-2" /> {m.project_panel_fs_new_folder()}
           </ContextMenuItem>
         </>
       )}
       {!item.isRoot && (
         <>
           <ContextMenuItem onClick={() => renameItem(item)}>
-            <FolderPenIcon size={16} className="mr-2" />{' '}
-            {m.project_panel_fs_rename()}
+            <FolderPenIcon size={16} className="mr-2" /> {m.project_panel_fs_rename()}
           </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => removeItem(item)}
-            className="text-red-500"
-          >
-            <FolderMinusIcon size={16} className="mr-2" />{' '}
-            {m.project_panel_fs_delete()}
+          <ContextMenuItem onClick={() => removeItem(item)} className="text-red-500">
+            <FolderMinusIcon size={16} className="mr-2" /> {m.project_panel_fs_delete()}
           </ContextMenuItem>
         </>
       )}

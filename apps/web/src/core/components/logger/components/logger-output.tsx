@@ -1,8 +1,8 @@
-import type { LoggerEntry } from '../types';
-import { getLogLevelColor } from '../types';
+import { useEffect, useRef } from 'react';
 import { Card } from '@/ui/components/card';
 import { cn } from '@/ui/lib/cn';
-import { useEffect, useRef } from 'react';
+import type { LoggerEntry } from '../types';
+import { getLogLevelColor } from '../types';
 
 interface LoggerOutputProps {
   entries: LoggerEntry[];
@@ -24,7 +24,7 @@ export function LoggerOutput({
     if (autoScroll && bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [entries, autoScroll]);
+  }, [autoScroll]);
 
   return (
     <Card className="flex-1 overflow-hidden">
@@ -41,10 +41,7 @@ export function LoggerOutput({
             {entries.map((entry, index) => (
               <div
                 key={index}
-                className={cn(
-                  'flex gap-1.5 leading-tight',
-                  getLogLevelColor(entry.level)
-                )}
+                className={cn('flex gap-1.5 leading-tight', getLogLevelColor(entry.level))}
               >
                 {showTimestamp && (
                   <span className="shrink-0 text-[10px] text-muted-foreground">

@@ -2,14 +2,7 @@ import type { Logger } from '@jaculus/common';
 
 export type LogLevel = keyof Logger | 'installer';
 
-export const LOG_LEVELS = [
-  'error',
-  'warn',
-  'info',
-  'verbose',
-  'debug',
-  'silly',
-] as const;
+export const LOG_LEVELS = ['error', 'warn', 'info', 'verbose', 'debug', 'silly'] as const;
 
 export type LogOrderType = 'exact' | 'upTo';
 

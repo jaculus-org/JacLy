@@ -1,15 +1,15 @@
 import { enrichBlockInputs } from '@/blocks/aliases/enrich-block-inputs';
-import { JaclyBlock, JaclyConfig } from '@/schema';
+import type { JaclyBlock, JaclyConfig } from '@/schema';
 import { buildCategoryHeader } from '@/toolbox/categories/category-header';
-import { ToolboxItemInfoSort } from '@/toolbox/types';
+import type { ToolboxItemInfoSort } from '@/toolbox/types';
 import type { EngineState } from '../../engine/engine-state';
 
 function expandLabel(
-  item: Extract<JaclyBlock, { kind: 'label' }>
+  item: Extract<JaclyBlock, { kind: 'label' }>,
 ): Extract<JaclyBlock, { kind: 'label' }>[] {
-  const lines = item.text.split('\n').filter(line => line.length > 0);
+  const lines = item.text.split('\n').filter((line) => line.length > 0);
   if (lines.length <= 1) return [item];
-  return lines.map(line => ({ ...item, text: line }));
+  return lines.map((line) => ({ ...item, text: line }));
 }
 
 function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
@@ -26,7 +26,7 @@ function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
 
 export function buildToolboxItem(
   state: EngineState,
-  jaclyConfig: JaclyConfig
+  jaclyConfig: JaclyConfig,
 ): ToolboxItemInfoSort {
   for (const item of jaclyConfig.contents!) {
     if (item.kind === 'block') {
@@ -34,7 +34,7 @@ export function buildToolboxItem(
     }
   }
 
-  jaclyConfig.contents = jaclyConfig.contents!.filter(item => {
+  jaclyConfig.contents = jaclyConfig.contents!.filter((item) => {
     if (item.kind === 'block') return item.hideInToolbox !== true;
     return true;
   });
@@ -53,9 +53,7 @@ export function buildToolboxItem(
   return toolboxItem;
 }
 
-export function parseToolboxCustomBlock(
-  jaclyConfig: JaclyConfig
-): ToolboxItemInfoSort {
+export function parseToolboxCustomBlock(jaclyConfig: JaclyConfig): ToolboxItemInfoSort {
   return {
     kind: 'category',
     ...jaclyConfig,

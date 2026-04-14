@@ -1,10 +1,4 @@
-import {
-  Block,
-  BlockSvg,
-  FieldDropdown,
-  IIcon,
-  WorkspaceSvg,
-} from 'blockly/core';
+import type { Block, BlockSvg, FieldDropdown, IIcon, WorkspaceSvg } from 'blockly/core';
 
 interface BlockExtension {
   package?: string;

@@ -1,14 +1,14 @@
 [
-    {
-        "id": "core"
-    },
-    {
-        "id": "led-strip"
-    },
-    {
-        "id": "colour"
-    },
-    {
-        "id": "basic"
-    }
+  {
+    "id": "core"
+  },
+  {
+    "id": "led-strip"
+  },
+  {
+    "id": "colour"
+  },
+  {
+    "id": "basic"
+  }
 ]

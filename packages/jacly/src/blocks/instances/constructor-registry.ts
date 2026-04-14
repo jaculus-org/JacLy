@@ -1,14 +1,11 @@
-import type {
-  EngineState,
-  VirtualInstanceDef,
-} from '../../engine/engine-state';
+import type { EngineState, VirtualInstanceDef } from '../../engine/engine-state';
 
 export type { VirtualInstanceDef };
 
 export function registerConstructorType(
   state: EngineState,
   systemId: string,
-  blockType: string
+  blockType: string,
 ): void {
   const existing = state.constructorTypes.get(systemId);
   if (existing) {
@@ -21,7 +18,7 @@ export function registerConstructorType(
 export function registerVirtualInstances(
   state: EngineState,
   constructorBlockType: string,
-  virtualInstances: VirtualInstanceDef[]
+  virtualInstances: VirtualInstanceDef[],
 ): void {
   state.virtualInstances.set(constructorBlockType, virtualInstances);
   for (const vi of virtualInstances) {

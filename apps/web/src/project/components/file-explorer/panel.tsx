@@ -1,8 +1,8 @@
 'use client';
 
 import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
-import { useJacFileExplorer } from './state/context';
 import { FileExplorerNodeMenu } from './node-menu';
+import { useJacFileExplorer } from './state/context';
 import { FileExplorerTree } from './tree/tree';
 
 export function FileExplorerPanel() {

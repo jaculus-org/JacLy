@@ -1,5 +1,7 @@
 'use client';
 
+import type { RegistryListProject } from '@jaculus/project/registry';
+import { Plus } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import { Card } from '@/ui/components/card';
@@ -18,8 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/select';
-import { Plus } from 'lucide-react';
-import type { RegistryListProject } from '@jaculus/project/registry';
 import { useJacPackages } from '../state/packages-context';
 
 export function JacPackagesAddCard() {
@@ -48,9 +48,7 @@ export function JacPackagesAddCard() {
           </label>
           <Combobox
             items={availableLibChoices}
-            onValueChange={value =>
-              selectLib((value as RegistryListProject | null)?.id ?? null)
-            }
+            onValueChange={(value) => selectLib((value as RegistryListProject | null)?.id ?? null)}
             itemToStringLabel={(item: RegistryListProject) => item.id}
             disabled={isInstalling}
             autoHighlight
@@ -68,9 +66,7 @@ export function JacPackagesAddCard() {
                     <div className="flex flex-col">
                       <span className="text-sm">{item.id}</span>
                       {item.description && (
-                        <span className="text-xs text-muted-foreground">
-                          {item.description}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
                       )}
                     </div>
                   </ComboboxItem>
@@ -86,17 +82,15 @@ export function JacPackagesAddCard() {
           </label>
           <Select
             value={selectedLibVersion ?? ''}
-            onValueChange={value => selectLibVersion(value || null)}
-            disabled={
-              isInstalling || !selectedLib || availableLibVersions.length === 0
-            }
+            onValueChange={(value) => selectLibVersion(value || null)}
+            disabled={isInstalling || !selectedLib || availableLibVersions.length === 0}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={m.project_panel_pkg_version_choose()} />
             </SelectTrigger>
             <SelectContent className="w-full">
               <div className="max-h-60 overflow-y-auto">
-                {availableLibVersions.map(version => (
+                {availableLibVersions.map((version) => (
                   <SelectItem key={version} value={version}>
                     {version}
                   </SelectItem>
@@ -108,9 +102,7 @@ export function JacPackagesAddCard() {
 
         <Button
           onClick={addLibrary}
-          disabled={
-            isInstalling || !selectedLib || availableLibVersions.length === 0
-          }
+          disabled={isInstalling || !selectedLib || availableLibVersions.length === 0}
           className="w-full"
         >
           <Plus />

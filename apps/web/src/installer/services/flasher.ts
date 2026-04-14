@@ -1,7 +1,7 @@
-import { ESPLoader, type IEspLoaderTerminal } from 'esptool-js';
-import pako from 'pako';
-import { Archive } from '@obsidize/tar-browserify';
 import { type Manifest, parseManifest } from '@jaculus/firmware/manifest';
+import { Archive } from '@obsidize/tar-browserify';
+import type { ESPLoader, IEspLoaderTerminal } from 'esptool-js';
+import pako from 'pako';
 
 export interface FlashProgress {
   stage: 'downloading' | 'extracting' | 'flashing';
@@ -19,17 +19,14 @@ export class ESP32Flasher {
   private terminal: IEspLoaderTerminal;
   private onProgress?: (progress: FlashProgress) => void;
 
-  constructor(
-    terminal: IEspLoaderTerminal,
-    onProgress?: (progress: FlashProgress) => void
-  ) {
+  constructor(terminal: IEspLoaderTerminal, onProgress?: (progress: FlashProgress) => void) {
     this.terminal = terminal;
     this.onProgress = onProgress;
   }
 
   // Downloads and extracts the firmware package.
   private async downloadAndExtract(
-    url: string
+    url: string,
   ): Promise<{ manifest: Manifest; files: Record<string, Uint8Array> }> {
     this.terminal.writeLine(`Downloading firmware from ${url}...`);
 
@@ -49,9 +46,7 @@ export class ESP32Flasher {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    this.terminal.writeLine(
-      `Downloaded ${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB`
-    );
+    this.terminal.writeLine(`Downloaded ${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB`);
 
     this.onProgress?.({
       stage: 'extracting',
@@ -84,9 +79,7 @@ export class ESP32Flasher {
       throw new Error('No manifest.json found in package');
     }
 
-    this.terminal.writeLine(
-      `Found manifest: ${manifest.board} ${manifest.version}`
-    );
+    this.terminal.writeLine(`Found manifest: ${manifest.board} ${manifest.version}`);
 
     if (manifest.platform !== 'esp32') {
       throw new Error(`Unsupported platform: ${manifest.platform}`);
@@ -99,9 +92,7 @@ export class ESP32Flasher {
   // Attaches an already-initialized ESPLoader instance.
   async setup(esploader: ESPLoader): Promise<void> {
     this.esploader = esploader;
-    this.terminal.writeLine(
-      `Using ESPLoader for chip: ${this.esploader.chip.CHIP_NAME}`
-    );
+    this.terminal.writeLine(`Using ESPLoader for chip: ${this.esploader.chip.CHIP_NAME}`);
   }
 
   // Flashes the firmware package to the connected device.
@@ -121,9 +112,7 @@ export class ESP32Flasher {
     const expectedChip = manifest.config.chip;
 
     if (detectedChip !== expectedChip) {
-      throw new Error(
-        `Chip mismatch! Expected ${expectedChip}, but detected ${detectedChip}`
-      );
+      throw new Error(`Chip mismatch! Expected ${expectedChip}, but detected ${detectedChip}`);
     }
 
     // Prepare files for flashing
@@ -133,9 +122,7 @@ export class ESP32Flasher {
     for (const partition of partitions) {
       // Skip storage partitions if noErase is enabled
       if (partition.isStorage && noErase) {
-        this.terminal.writeLine(
-          `Skipping ${partition.name} (storage partition, data preserved)`
-        );
+        this.terminal.writeLine(`Skipping ${partition.name} (storage partition, data preserved)`);
         continue;
       }
 
@@ -144,16 +131,14 @@ export class ESP32Flasher {
         throw new Error(`File not found: ${partition.file}`);
       }
 
-      const address = parseInt(partition.address);
+      const address = parseInt(partition.address, 10);
       fileArray.push({
         data: this.esploader.ui8ToBstr(fileData),
         address,
         fileName: partition.file,
       });
 
-      this.terminal.writeLine(
-        `Prepared ${partition.file} (${fileData.length} bytes)`
-      );
+      this.terminal.writeLine(`Prepared ${partition.file} (${fileData.length} bytes)`);
     }
 
     // Flash the firmware

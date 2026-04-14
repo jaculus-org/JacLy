@@ -1,13 +1,9 @@
+import { ChevronDown, Send } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import { Textarea } from '@/ui/components/textarea';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
-import { ChevronDown, Send } from 'lucide-react';
-import type { KeyboardEvent } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 
 interface ConsoleInputProps {
   input: string;
@@ -31,7 +27,7 @@ export function ConsoleInput({
       <Textarea
         placeholder={m.terminal_placeholder()}
         value={input}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
         className="min-h-8 flex-1 resize-none py-1.5"
         rows={1}

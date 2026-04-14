@@ -1,34 +1,22 @@
 import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
-import { m } from '@/core/paraglide/messages';
-import {
-  ESPLoader,
-  Transport,
-  type IEspLoaderTerminal,
-  type LoaderOptions,
-} from 'esptool-js';
-import {
+  type BoardsIndex,
   getBoardsIndex,
   getBoardVersionFirmwareTarUrl,
   getBoardVersions,
-  type BoardsIndex,
 } from '@jaculus/firmware/boards';
+import { getRequest } from '@jaculus/jacly/project';
+import { ESPLoader, type IEspLoaderTerminal, type LoaderOptions, Transport } from 'esptool-js';
 import { enqueueSnackbar } from 'notistack';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { logger } from '@/core';
+import { m } from '@/core/paraglide/messages';
 import { executeWithTimeout, TimeoutError } from '@/ui/lib/timeout';
+import { ESP32Flasher } from '../services/flasher';
 import {
   InstallerContext,
   type InstallerSourceTab,
   type InstallerState,
 } from './installer-context';
-import { ESP32Flasher } from '../services/flasher';
-import { getRequest } from '@jaculus/jacly/project';
-import { logger } from '@/core';
 
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;
@@ -74,9 +62,7 @@ export function InstallerProvider({
   initialUrl?: string;
   syncUrlParam?: boolean;
 }) {
-  const [state, setState] = useState<InstallerState>(() =>
-    createInitialState(initialUrl)
-  );
+  const [state, setState] = useState<InstallerState>(() => createInitialState(initialUrl));
   const isConnectedRef = useRef(false);
   const transportRef = useRef<Transport | null>(null);
   const flasherRef = useRef<ESP32Flasher | null>(null);
@@ -92,7 +78,7 @@ export function InstallerProvider({
         logger.installer(data);
       },
     }),
-    []
+    [],
   );
 
   const changeVariant = useCallback(
@@ -100,30 +86,29 @@ export function InstallerProvider({
       const currentChip = chipId || state.selectedChip;
       const variant =
         state.chipList
-          .find(chip => chip.chip === currentChip)
-          ?.variants.find(variant => variant.id === variantId) || null;
+          .find((chip) => chip.chip === currentChip)
+          ?.variants.find((variant) => variant.id === variantId) || null;
 
-      setState(prev => ({ ...prev, selectedVariant: variant }));
+      setState((prev) => ({ ...prev, selectedVariant: variant }));
 
       if (variant) {
         const versions = await getBoardVersions(getRequest, variant.id, logger);
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           versionList: versions,
           selectedVersion: versions[0]?.version ?? null,
         }));
       }
     },
-    [state.chipList, state.selectedChip]
+    [state.chipList, state.selectedChip],
   );
 
   const changeChip = useCallback(
     (chipId: string, chipListOverride?: BoardsIndex[]) => {
       const chipList = chipListOverride ?? state.chipList;
-      const variants =
-        chipList.find(chip => chip.chip === chipId)?.variants || [];
+      const variants = chipList.find((chip) => chip.chip === chipId)?.variants || [];
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         selectedChip: chipId,
         selectedVariant: null,
@@ -135,7 +120,7 @@ export function InstallerProvider({
         void changeVariant(variants[0].id, chipId);
       }
     },
-    [changeVariant, state.chipList]
+    [changeVariant, state.chipList],
   );
 
   useEffect(() => {
@@ -148,12 +133,12 @@ export function InstallerProvider({
     (async () => {
       const boards = await getBoardsIndex(getRequest, logger);
       if (!isMounted) return;
-      setState(prev => ({ ...prev, chipList: boards }));
+      setState((prev) => ({ ...prev, chipList: boards }));
       if (boards.length === 1) {
         // Auto-select the only available chip
         const chipId = boards[0].chip;
         const variants = boards[0].variants || [];
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           selectedChip: chipId,
           selectedVariant: null,
@@ -164,13 +149,9 @@ export function InstallerProvider({
         if (variants.length === 1) {
           const variantId = variants[0].id;
           (async () => {
-            const versions = await getBoardVersions(
-              getRequest,
-              variantId,
-              logger
-            );
+            const versions = await getBoardVersions(getRequest, variantId, logger);
             if (!isMounted) return;
-            setState(prev => ({
+            setState((prev) => ({
               ...prev,
               selectedVariant: variants[0],
               versionList: versions,
@@ -190,7 +171,7 @@ export function InstallerProvider({
     if (!syncUrlParam) return;
     const current = getUrlParam('url');
     if (!current) return;
-    setState(prev => {
+    setState((prev) => {
       if (prev.firmwareUrl === current && prev.sourceTab === 'url') {
         return prev;
       }
@@ -220,12 +201,12 @@ export function InstallerProvider({
   }, [state.firmwareUrl, state.sourceTab, syncUrlParam]);
 
   const changeVersion = useCallback((version: string) => {
-    setState(prev => ({ ...prev, selectedVersion: version }));
+    setState((prev) => ({ ...prev, selectedVersion: version }));
   }, []);
 
   const connect = useCallback(async () => {
     logger.clearLevel('installer');
-    setState(prev => ({ ...prev, autoLoading: true }));
+    setState((prev) => ({ ...prev, autoLoading: true }));
 
     let newTransport: Transport | null = null;
 
@@ -249,7 +230,7 @@ export function InstallerProvider({
       } catch (error) {
         if (error instanceof TimeoutError) {
           terminal.writeLine(m.installer_msg_timeout_bootloader());
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             showPopupText: m.installer_msg_timeout_bootloader(),
           }));
@@ -271,12 +252,12 @@ export function InstallerProvider({
         terminal.writeLine(
           m.installer_msg_flash_size({
             size: flashSize.toString(),
-          })
+          }),
         );
       }
 
-      const newFlasher = new ESP32Flasher(terminal, progress => {
-        setState(prev => ({ ...prev, flashProgress: progress }));
+      const newFlasher = new ESP32Flasher(terminal, (progress) => {
+        setState((prev) => ({ ...prev, flashProgress: progress }));
       });
       await newFlasher.setup(newEsploader);
       flasherRef.current = newFlasher;
@@ -315,14 +296,14 @@ export function InstallerProvider({
                 }),
                 {
                   variant: 'error',
-                }
+                },
               );
               break;
           }
         }
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isConnected: true,
       }));
@@ -331,15 +312,12 @@ export function InstallerProvider({
         variant: 'success',
       });
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : m.installer_msg_unknown_error();
+      const message = error instanceof Error ? error.message : m.installer_msg_unknown_error();
       terminal.writeLine(`Error: ${message}`);
       enqueueSnackbar(m.installer_msg_connection_failed({ message: message }), {
         variant: 'error',
       });
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isConnected: false,
       }));
@@ -355,7 +333,7 @@ export function InstallerProvider({
       transportRef.current = null;
       flasherRef.current = null;
     } finally {
-      setState(prev => ({ ...prev, autoLoading: false }));
+      setState((prev) => ({ ...prev, autoLoading: false }));
     }
   }, [changeChip, changeVariant, state.baudrate, terminal]);
 
@@ -374,7 +352,7 @@ export function InstallerProvider({
     transportRef.current = null;
     flasherRef.current = null;
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       isConnected: false,
       flashProgress: null,
@@ -409,10 +387,7 @@ export function InstallerProvider({
         });
         return;
       }
-      firmwareUrl = getBoardVersionFirmwareTarUrl(
-        state.selectedVariant.id,
-        state.selectedVersion
-      );
+      firmwareUrl = getBoardVersionFirmwareTarUrl(state.selectedVariant.id, state.selectedVersion);
     } else if (state.sourceTab === 'url') {
       if (!state.firmwareUrl) {
         enqueueSnackbar('Enter a firmware URL.', { variant: 'error' });
@@ -440,7 +415,7 @@ export function InstallerProvider({
       revokeUrl = firmwareUrl;
     }
 
-    setState(prev => ({ ...prev, installing: true, flashProgress: null }));
+    setState((prev) => ({ ...prev, installing: true, flashProgress: null }));
 
     try {
       terminal.writeLine(`\n${m.installer_msg_flash_starting()}`);
@@ -448,13 +423,13 @@ export function InstallerProvider({
         m.installer_msg_flash_firmware({
           variant: state.selectedVariant?.name ?? 'custom',
           version: state.selectedVersion ?? 'custom',
-        })
+        }),
       );
 
       await flasher.flash(firmwareUrl, !state.eraseFlash);
 
       enqueueSnackbar(m.installer_msg_flash_success(), { variant: 'success' });
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         showPopupText: m.installer_msg_flash_reset_hint(),
       }));
@@ -463,10 +438,7 @@ export function InstallerProvider({
         void disconnect();
       }, 2000);
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : m.installer_msg_unknown_error();
+      const message = error instanceof Error ? error.message : m.installer_msg_unknown_error();
       terminal.writeLine(`Error: ${message}`);
       enqueueSnackbar(m.installer_msg_flash_failed({ message: message }), {
         variant: 'error',
@@ -475,7 +447,7 @@ export function InstallerProvider({
       if (revokeUrl) {
         URL.revokeObjectURL(revokeUrl);
       }
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         installing: false,
         flashProgress: null,
@@ -496,42 +468,27 @@ export function InstallerProvider({
     () => ({
       state,
       actions: {
-        setBaudrate: (value: number) =>
-          setState(prev => ({ ...prev, baudrate: value })),
-        setEraseFlash: (value: boolean) =>
-          setState(prev => ({ ...prev, eraseFlash: value })),
+        setBaudrate: (value: number) => setState((prev) => ({ ...prev, baudrate: value })),
+        setEraseFlash: (value: boolean) => setState((prev) => ({ ...prev, eraseFlash: value })),
         setSourceTab: (tab: InstallerSourceTab) =>
-          setState(prev => ({ ...prev, sourceTab: tab })),
-        setFirmwareUrl: (value: string) =>
-          setState(prev => ({ ...prev, firmwareUrl: value })),
+          setState((prev) => ({ ...prev, sourceTab: tab })),
+        setFirmwareUrl: (value: string) => setState((prev) => ({ ...prev, firmwareUrl: value })),
         setFirmwareFile: (file: File | null) =>
-          setState(prev => ({ ...prev, firmwareFile: file })),
+          setState((prev) => ({ ...prev, firmwareFile: file })),
         changeChip: (chipId: string) => changeChip(chipId),
         changeVariant: (variantId: string) => changeVariant(variantId),
         changeVersion,
         connect,
         disconnect,
         flash,
-        closePopup: () => setState(prev => ({ ...prev, showPopupText: null })),
+        closePopup: () => setState((prev) => ({ ...prev, showPopupText: null })),
       },
       meta: {
         baudrates,
       },
     }),
-    [
-      changeChip,
-      changeVariant,
-      changeVersion,
-      connect,
-      disconnect,
-      flash,
-      state,
-    ]
+    [changeChip, changeVariant, changeVersion, connect, disconnect, flash, state],
   );
 
-  return (
-    <InstallerContext.Provider value={value}>
-      {children}
-    </InstallerContext.Provider>
-  );
+  return <InstallerContext.Provider value={value}>{children}</InstallerContext.Provider>;
 }

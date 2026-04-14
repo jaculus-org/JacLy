@@ -1,8 +1,7 @@
-import { BlockExtended } from '@/blocks/types/custom-block';
-import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
-
 import { FieldSlider } from '@blockly/field-slider';
 import { Blocks, FieldNumber } from 'blockly/core';
+import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
+import type { BlockExtended } from '@/blocks/types/custom-block';
 
 const DEFAULT_SLIDER_MIN = 0;
 const DEFAULT_SLIDER_MAX = 100;
@@ -16,7 +15,7 @@ interface DynamicSliderBlock extends BlockExtended {
   SLIDER_VALUE: number;
 }
 
-Blocks['jacly_field_slider'] = {
+Blocks.jacly_field_slider = {
   init: function (this: DynamicSliderBlock) {
     this.appendDummyInput('CONFIG_INPUT')
       .appendField(new FieldNumber(DEFAULT_SLIDER_MIN), 'SLIDER_MIN')
@@ -33,23 +32,19 @@ Blocks['jacly_field_slider'] = {
           DEFAULT_SLIDER_VALUE,
           DEFAULT_SLIDER_MIN,
           DEFAULT_SLIDER_MAX,
-          DEFAULT_SLIDER_STEP
+          DEFAULT_SLIDER_STEP,
         ),
-        'VALUE'
+        'VALUE',
       );
     this.setOutput(true, 'Number');
     this.setColour(230);
 
     // set default values for dynamic fields
     setTimeout(() => {
-      const min =
-        Number(this.getFieldValue('SLIDER_MIN')) || DEFAULT_SLIDER_MIN;
-      const max =
-        Number(this.getFieldValue('SLIDER_MAX')) || DEFAULT_SLIDER_MAX;
-      const step =
-        Number(this.getFieldValue('SLIDER_STEP')) || DEFAULT_SLIDER_STEP;
-      const currentValue =
-        Number(this.getFieldValue('VALUE')) || DEFAULT_SLIDER_VALUE;
+      const min = Number(this.getFieldValue('SLIDER_MIN')) || DEFAULT_SLIDER_MIN;
+      const max = Number(this.getFieldValue('SLIDER_MAX')) || DEFAULT_SLIDER_MAX;
+      const step = Number(this.getFieldValue('SLIDER_STEP')) || DEFAULT_SLIDER_STEP;
+      const currentValue = Number(this.getFieldValue('VALUE')) || DEFAULT_SLIDER_VALUE;
 
       // rebuild if changes
       if (
@@ -68,7 +63,7 @@ Blocks['jacly_field_slider'] = {
   },
 };
 
-jsg.forBlock['jacly_field_slider'] = function (codeBlock: BlockExtended) {
+jsg.forBlock.jacly_field_slider = (codeBlock: BlockExtended) => {
   const sliderValue = codeBlock.getFieldValue('VALUE');
   const code = sliderValue.toString();
 

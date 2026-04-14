@@ -1,6 +1,6 @@
-import type { Logger } from '@jaculus/common';
-import type { LogLevel, LoggerEntry } from '@/core/components/logger/types';
 import { Writable } from 'node:stream';
+import type { Logger } from '@jaculus/common';
+import type { LoggerEntry, LogLevel } from '@/core/components/logger/types';
 
 type LoggerListener = (entries: LoggerEntry[]) => void;
 
@@ -47,7 +47,7 @@ export class LoggerBusService implements Logger {
   }
 
   clearLevel(level: LogLevel): void {
-    this.entries = this.entries.filter(entry => entry.level !== level);
+    this.entries = this.entries.filter((entry) => entry.level !== level);
     this.emit();
   }
 

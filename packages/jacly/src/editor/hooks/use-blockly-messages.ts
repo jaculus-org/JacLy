@@ -8,8 +8,7 @@ const LOCALE_LOADERS: Record<string, MessageLoader> = {
   en: () => import('blockly/msg/en'),
 };
 
-const getLoader = (locale: string): MessageLoader =>
-  LOCALE_LOADERS[locale] ?? LOCALE_LOADERS['en'];
+const getLoader = (locale: string): MessageLoader => LOCALE_LOADERS[locale] ?? LOCALE_LOADERS.en;
 
 // Loads Blockly UI messages for the given locale.
 // Tracks the last successfully loaded locale so that a locale change
@@ -22,15 +21,15 @@ export function useBlocklyMessages(locale: string): boolean {
     getLoader(locale)()
       .catch(() => {
         console.warn(
-          `Failed to load Blockly messages for locale "${locale}", falling back to English`
+          `Failed to load Blockly messages for locale "${locale}", falling back to English`,
         );
         return getLoader('en')();
       })
-      .then(messages => {
+      .then((messages) => {
         Object.assign(Blockly.Msg, messages.default ?? messages);
         setLoadedLocale(locale);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Failed to load Blockly messages:', error);
       });
   }, [locale]);

@@ -1,5 +1,5 @@
-import { type Duplex } from '@jaculus/link/stream';
-import { type Logger } from '@jaculus/common';
+import type { Logger } from '@jaculus/common';
+import type { Duplex } from '@jaculus/link/stream';
 import { JacStreamBase, JacStreamError } from './base';
 
 const SERVICE_UUID = 0xffe0;
@@ -19,22 +19,18 @@ export class JacStreamBle extends JacStreamBase implements Duplex {
 
   private async initializeStreams(): Promise<void> {
     try {
-      this.device.addEventListener(
-        'gattserverdisconnected',
-        this.handleDisconnect.bind(this)
-      );
+      this.device.addEventListener('gattserverdisconnected', this.handleDisconnect.bind(this));
 
       this.server = await this.device.gatt!.connect();
       this.logger.info(`Connected to BLE device: ${this.device.name}`);
 
       this.service = await this.server.getPrimaryService(SERVICE_UUID);
-      this.characteristic =
-        await this.service.getCharacteristic(CHARACTERISTIC_UUID);
+      this.characteristic = await this.service.getCharacteristic(CHARACTERISTIC_UUID);
 
       await this.characteristic.startNotifications();
       this.characteristic.addEventListener(
         'characteristicvaluechanged',
-        this.onDataReceived.bind(this)
+        this.onDataReceived.bind(this),
       );
     } catch (error) {
       this.isDestroyed = true;
@@ -65,9 +61,7 @@ export class JacStreamBle extends JacStreamBase implements Duplex {
   }
 
   private handleDisconnect(): void {
-    this.cleanupConnection().catch(err =>
-      this.logger.error(`handleDisconnect error: ${err}`)
-    );
+    this.cleanupConnection().catch((err) => this.logger.error(`handleDisconnect error: ${err}`));
   }
 
   private onDataReceived(event: Event): void {
@@ -81,10 +75,7 @@ export class JacStreamBle extends JacStreamBase implements Duplex {
 
   public async put(c: number): Promise<void> {
     if (this.isDestroyed || !this.characteristic) {
-      throw new JacStreamError(
-        'Stream is not initialized or destroyed',
-        'WebBleError'
-      );
+      throw new JacStreamError('Stream is not initialized or destroyed', 'WebBleError');
     }
 
     try {
@@ -98,10 +89,7 @@ export class JacStreamBle extends JacStreamBase implements Duplex {
 
   public async write(buf: Uint8Array): Promise<void> {
     if (this.isDestroyed || !this.characteristic) {
-      throw new JacStreamError(
-        'Stream is not initialized or destroyed',
-        'WebBleError'
-      );
+      throw new JacStreamError('Stream is not initialized or destroyed', 'WebBleError');
     }
 
     try {
@@ -113,8 +101,8 @@ export class JacStreamBle extends JacStreamBase implements Duplex {
   }
 
   public async destroy(): Promise<void> {
-    await this.cleanupConnection().catch(err =>
-      this.logger.error(`destroy cleanup error: ${err}`)
+    await this.cleanupConnection().catch((err) =>
+      this.logger.error(`destroy cleanup error: ${err}`),
     );
   }
 }

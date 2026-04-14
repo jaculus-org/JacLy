@@ -1,8 +1,8 @@
 'use client';
 
+import { RefreshCw } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
-import { RefreshCw } from 'lucide-react';
 import { useJacPackages } from '../state/packages-context';
 
 export function JacPackagesInstallButton() {
@@ -12,16 +12,9 @@ export function JacPackagesInstallButton() {
   } = useJacPackages();
 
   return (
-    <Button
-      onClick={installAll}
-      disabled={isInstalling}
-      className="w-full"
-      size="lg"
-    >
+    <Button onClick={installAll} disabled={isInstalling} className="w-full" size="lg">
       <RefreshCw className={isInstalling ? 'animate-spin' : ''} />
-      {isInstalling
-        ? m.project_panel_pkg_installing()
-        : m.project_panel_pkg_install()}
+      {isInstalling ? m.project_panel_pkg_installing() : m.project_panel_pkg_install()}
     </Button>
   );
 }

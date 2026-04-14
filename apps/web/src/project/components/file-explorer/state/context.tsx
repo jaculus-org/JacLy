@@ -33,15 +33,10 @@ export interface FileExplorerContextValue {
   meta: FileExplorerMeta;
 }
 
-export const FileExplorerContext = createContext<
-  FileExplorerContextValue | undefined
->(undefined);
+export const FileExplorerContext = createContext<FileExplorerContextValue | undefined>(undefined);
 
 export function useJacFileExplorer() {
   const ctx = useContext(FileExplorerContext);
-  if (!ctx)
-    throw new Error(
-      'FileExplorer components must be within FileExplorerProvider'
-    );
+  if (!ctx) throw new Error('FileExplorer components must be within FileExplorerProvider');
   return ctx;
 }

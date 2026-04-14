@@ -1,6 +1,6 @@
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/ui/components/button';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/ui/lib/cn';
 import { useCollapsibleCard } from './collapsible-card-context';
 
@@ -24,12 +24,7 @@ export function CollapsibleCardHeader({
   const { state, actions } = useCollapsibleCard();
 
   return (
-    <div
-      className={cn(
-        'flex items-center justify-between px-2.5 py-1 pb-0',
-        className
-      )}
-    >
+    <div className={cn('flex items-center justify-between px-2.5 py-1 pb-0', className)}>
       <Button
         variant="ghost"
         className="h-auto p-0 text-sm text-current hover:bg-transparent"
@@ -47,7 +42,7 @@ export function CollapsibleCardHeader({
             variant="ghost"
             size="icon"
             className="h-7 w-7 text-current hover:bg-slate-800 dark:hover:bg-slate-700"
-            onClick={event => {
+            onClick={(event) => {
               event.stopPropagation();
               action();
             }}
@@ -63,11 +58,7 @@ export function CollapsibleCardHeader({
           className="h-7 w-7 text-current hover:bg-slate-800 dark:hover:bg-slate-700"
           onClick={actions.toggle}
         >
-          {state.isOpen ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
+          {state.isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </Button>
       </div>
     </div>

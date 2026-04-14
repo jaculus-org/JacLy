@@ -1,14 +1,14 @@
-import { useCallback } from 'react';
 import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
-import { useTheme } from '@/core/components/theme';
-import { getLocale } from '@/core/paraglide/runtime';
-import { m } from '@/core/paraglide/messages';
-import { enqueueSnackbar } from 'notistack';
-import { useEditorJacly } from '../../state/jacly-context';
-import { logger } from '@/core';
-import { useProjectEditor } from '@/project/state/project-editor-context';
 import type { EngineMissingPackages } from '@jaculus/jacly/engine';
+import { enqueueSnackbar } from 'notistack';
+import { useCallback } from 'react';
+import { logger } from '@/core';
+import { useTheme } from '@/core/components/theme';
+import { m } from '@/core/paraglide/messages';
+import { getLocale } from '@/core/paraglide/runtime';
 import { useJacPackages } from '@/packages/state/packages-context';
+import { useProjectEditor } from '@/project/state/project-editor-context';
+import { useEditorJacly } from '../../state/jacly-context';
 
 export function EditorJaclyDisplay() {
   const { themeNormalized } = useTheme();
@@ -29,13 +29,13 @@ export function EditorJaclyDisplay() {
     async (missingPackages: EngineMissingPackages) => {
       for (const [packageName, blockTypes] of Object.entries(missingPackages)) {
         logger.error(
-          `Missing package: ${packageName}, required by blocks: ${[...blockTypes].join(', ')}`
+          `Missing package: ${packageName}, required by blocks: ${[...blockTypes].join(', ')}`,
         );
       }
       controlPanel('logs', 'expand');
       enqueueSnackbar(m.editor_jacly_missing_packages(), { variant: 'error' });
     },
-    [controlPanel]
+    [controlPanel],
   );
 
   if (!initialJson || !jaclyBlocksData || !initialInstallDone) {

@@ -1,12 +1,8 @@
-import { closeSnackbar, SnackbarProvider } from 'notistack';
-import { type ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { closeSnackbar, SnackbarProvider } from 'notistack';
+import type { ReactNode } from 'react';
 
-export default function SnackbarProviderCustom({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function SnackbarProviderCustom({ children }: { children: ReactNode }) {
   return (
     <SnackbarProvider
       maxSnack={3}
@@ -16,7 +12,7 @@ export default function SnackbarProviderCustom({
         vertical: 'top',
         horizontal: 'right',
       }}
-      action={snackbarId => <X onClick={() => closeSnackbar(snackbarId)} />}
+      action={(snackbarId) => <X onClick={() => closeSnackbar(snackbarId)} />}
     >
       {children}
     </SnackbarProvider>

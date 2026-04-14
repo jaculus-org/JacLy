@@ -1,27 +1,13 @@
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ConsoleBusService } from '../services/console-bus-service';
-import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
-import {
-  type AddToConsole,
-  type ConsoleEntry,
-  type ConsoleType,
-} from '../types/types';
-import { ConsoleContext, type ConsoleContextValue } from './console-context';
 import { ConsoleTelemetryService } from '../services/console-telemetry-service';
+import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
+import type { AddToConsole, ConsoleEntry, ConsoleType } from '../types/types';
+import { ConsoleContext, type ConsoleContextValue } from './console-context';
 
 const defaultTelemetryService = new ConsoleTelemetryService();
 
-function isAppendOnlyUpdate(
-  previousEntries: ConsoleEntry[],
-  nextEntries: ConsoleEntry[]
-): boolean {
+function isAppendOnlyUpdate(previousEntries: ConsoleEntry[], nextEntries: ConsoleEntry[]): boolean {
   if (nextEntries.length < previousEntries.length) {
     return false;
   }
@@ -36,8 +22,7 @@ function isAppendOnlyUpdate(
 
   return (
     nextEntries[0] === previousEntries[0] &&
-    nextEntries[previousEntries.length - 1] ===
-      previousEntries[previousEntries.length - 1]
+    nextEntries[previousEntries.length - 1] === previousEntries[previousEntries.length - 1]
   );
 }
 
@@ -56,14 +41,12 @@ export function ConsoleProvider({
 }: ConsoleProviderProps) {
   const [entries, setEntries] = useState<ConsoleEntry[]>([]);
   const [keyValueEntries, setKeyValueEntries] = useState<KeyValueMap>({});
-  const [keyValueHistory, setKeyValueHistory] = useState<KeyValueHistoryMap>(
-    {}
-  );
+  const [keyValueHistory, setKeyValueHistory] = useState<KeyValueHistoryMap>({});
   const previousEntriesRef = useRef<ConsoleEntry[]>([]);
   const telemetryRef = useRef(telemetryService.createSnapshot());
 
   useEffect(() => {
-    return streamBusService.subscribe(channel, channelEntries => {
+    return streamBusService.subscribe(channel, (channelEntries) => {
       const previousEntries = previousEntriesRef.current;
       const telemetry =
         channelEntries.length === 0
@@ -71,7 +54,7 @@ export function ConsoleProvider({
           : isAppendOnlyUpdate(previousEntries, channelEntries)
             ? telemetryService.appendTelemetry(
                 telemetryRef.current,
-                channelEntries.slice(previousEntries.length)
+                channelEntries.slice(previousEntries.length),
               )
             : telemetryService.extractTelemetry(channelEntries);
 
@@ -92,7 +75,7 @@ export function ConsoleProvider({
       '\f': () => streamBusService.clear(channel),
       '\\f': () => streamBusService.clear(channel),
     }),
-    [channel, streamBusService]
+    [channel, streamBusService],
   );
 
   const addEntry = useCallback<AddToConsole>(
@@ -104,7 +87,7 @@ export function ConsoleProvider({
       }
       streamBusService.append(channel, type, content);
     },
-    [charMapCallback, streamBusService, channel]
+    [charMapCallback, streamBusService, channel],
   );
 
   const clear = useCallback(() => {
@@ -113,13 +96,13 @@ export function ConsoleProvider({
 
   const clearType = useCallback(
     (type: ConsoleType) => {
-      const filtered = entries.filter(entry => entry.type !== type);
+      const filtered = entries.filter((entry) => entry.type !== type);
       streamBusService.clear(channel);
       for (const entry of filtered) {
         streamBusService.append(channel, entry.type, entry.content);
       }
     },
-    [entries, channel, streamBusService]
+    [entries, channel, streamBusService],
   );
 
   // TODO: do I need to memoize this? Is React compiler smart enough to not re-render it incorrectly?
@@ -139,18 +122,8 @@ export function ConsoleProvider({
         channel,
       },
     }),
-    [
-      entries,
-      keyValueEntries,
-      keyValueHistory,
-      addEntry,
-      clear,
-      clearType,
-      channel,
-    ]
+    [entries, keyValueEntries, keyValueHistory, addEntry, clear, clearType, channel],
   );
 
-  return (
-    <ConsoleContext.Provider value={value}>{children}</ConsoleContext.Provider>
-  );
+  return <ConsoleContext.Provider value={value}>{children}</ConsoleContext.Provider>;
 }

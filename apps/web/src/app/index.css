@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is([data-theme="dark"] *));
 
@@ -93,7 +93,7 @@
   --sidebar-ring: oklch(0.67 0.15 245);
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --background: oklch(0.15 0.05 260); /* Dark blue background */
   --foreground: oklch(0.95 0.01 260); /* Light text */
   --card: oklch(0.2 0.06 260); /* Slightly lighter dark blue for cards */
@@ -110,9 +110,7 @@
   --accent-foreground: oklch(0.95 0.01 260); /* Light text on accent */
   --destructive: oklch(0.65 0.2 20); /* Red for destructive actions */
   --border: oklch(0.4 0.06 260); /* Lighter border for better visibility */
-  --input: oklch(
-    0.35 0.05 260
-  ); /* Lighter input background for better contrast */
+  --input: oklch(0.35 0.05 260); /* Lighter input background for better contrast */
   --ring: oklch(0.65 0.15 245); /* Focus ring matching primary */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -122,13 +120,9 @@
   --sidebar: oklch(0.18 0.055 260); /* Sidebar dark blue */
   --sidebar-foreground: oklch(0.9 0.015 260); /* Light sidebar text */
   --sidebar-primary: oklch(0.65 0.15 245); /* Bright blue for sidebar primary */
-  --sidebar-primary-foreground: oklch(
-    0.98 0.005 260
-  ); /* Light text on sidebar primary */
+  --sidebar-primary-foreground: oklch(0.98 0.005 260); /* Light text on sidebar primary */
   --sidebar-accent: oklch(0.35 0.1 260); /* Sidebar accent */
-  --sidebar-accent-foreground: oklch(
-    0.95 0.01 260
-  ); /* Light text on sidebar accent */
+  --sidebar-accent-foreground: oklch(0.95 0.01 260); /* Light text on sidebar accent */
   --sidebar-border: oklch(0.3 0.08 260); /* Sidebar border */
   --sidebar-ring: oklch(0.65 0.15 245); /* Sidebar focus ring */
 }

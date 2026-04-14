@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { Theme } from '@/editor/types/theme';
+import type { Theme } from '@/editor/types/theme';
 
 const blockStyles = {
   basic_category: {

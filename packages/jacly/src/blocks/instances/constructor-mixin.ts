@@ -1,8 +1,8 @@
-import { BlockExtended } from '@/blocks/types/custom-block';
 import * as Blockly from 'blockly/core';
+import type { BlockExtended } from '@/blocks/types/custom-block';
 
 export function getConstructorMixin(systemId: string) {
-  const prefix = systemId + '_';
+  const prefix = `${systemId}_`;
 
   return {
     onchange(this: BlockExtended, e: Blockly.Events.BlockChange) {
@@ -22,8 +22,7 @@ export function getConstructorMixin(systemId: string) {
         const constructorBlockType = this.type;
         const blocks = this.workspace.getBlocksByType(constructorBlockType);
         const duplicate = blocks.some(
-          block =>
-            block.id !== this.id && block.getFieldValue(fieldName) === newValue
+          (block) => block.id !== this.id && block.getFieldValue(fieldName) === newValue,
         );
         if (duplicate) {
           this.setFieldValue(oldValue ?? `${prefix}?`, fieldName);
@@ -34,12 +33,12 @@ export function getConstructorMixin(systemId: string) {
         const constructorBlockType = this.type;
         const blocks = this.workspace.getBlocksByType(constructorBlockType);
         let maxIndex = -1;
-        blocks.forEach(block => {
+        blocks.forEach((block) => {
           const name = block.getFieldValue(fieldName);
-          if (name && name.startsWith(prefix)) {
+          if (name?.startsWith(prefix)) {
             const suffix = name.slice(prefix.length);
-            const index = parseInt(suffix);
-            if (!isNaN(index) && index > maxIndex) maxIndex = index;
+            const index = parseInt(suffix, 10);
+            if (!Number.isNaN(index) && index > maxIndex) maxIndex = index;
           }
         });
         this.setFieldValue(prefix + (maxIndex + 1), fieldName);

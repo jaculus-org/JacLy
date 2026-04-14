@@ -1,17 +1,10 @@
+import { FieldColour } from '@blockly/field-colour';
 import * as Blockly from 'blockly/core';
 import { Blocks } from 'blockly/core';
-import { FieldColour } from '@blockly/field-colour';
-import { BlockExtended } from '@/blocks/types/custom-block';
-import {
-  JavascriptGenerator,
-  javascriptGenerator as jsg,
-  Order,
-} from 'blockly/javascript';
+import { type JavascriptGenerator, javascriptGenerator as jsg, Order } from 'blockly/javascript';
+import type { BlockExtended } from '@/blocks/types/custom-block';
 import { t } from '@/toolbox/translations/translations';
-import {
-  addShadowNumber,
-  addShadowText,
-} from '@/workspace/shadows/shadow-blocks';
+import { addShadowNumber, addShadowText } from '@/workspace/shadows/shadow-blocks';
 
 const DYNAMIC_TYPES = ['NAMES', 'RGB', 'HSL', 'HEX', 'PALETTE'] as const;
 const COLOR_NAMES: string[] = [
@@ -32,19 +25,19 @@ interface DynamicColorBlock extends BlockExtended {
   updateShape: (mode: string | null) => string | null | undefined;
 }
 
-Blocks['dynamic_color_rgb'] = {
+Blocks.dynamic_color_rgb = {
   init(this: DynamicColorBlock) {
     this.appendDummyInput()
       .appendField(t('dynamic_color_rgb_message0'))
       .appendField(
         new Blockly.FieldDropdown(
-          DYNAMIC_TYPES.map(type => [
-            t('dynamic_color_rgb_dropdown_' + type.toLowerCase()),
+          DYNAMIC_TYPES.map((type) => [
+            t(`dynamic_color_rgb_dropdown_${type.toLowerCase()}`),
             type,
           ]),
-          this.updateShape.bind(this)
+          this.updateShape.bind(this),
         ),
-        'MODE'
+        'MODE',
       );
 
     this.setOutput(true, 'Color');
@@ -55,12 +48,8 @@ Blocks['dynamic_color_rgb'] = {
     this.setInputsInline(true);
   },
 
-  updateShape: function (
-    this: DynamicColorBlock,
-    mode: string | null
-  ): string | null | undefined {
-    const newMode =
-      typeof mode === 'string' ? mode : this.getFieldValue('MODE');
+  updateShape: function (this: DynamicColorBlock, mode: string | null): string | null | undefined {
+    const newMode = typeof mode === 'string' ? mode : this.getFieldValue('MODE');
 
     if (this.mode_ === newMode) return undefined;
 
@@ -83,17 +72,12 @@ Blocks['dynamic_color_rgb'] = {
     if (this.mode_ === 'NAMES') {
       this.setInputsInline(true);
       this.appendDummyInput('NAMES_INPUT').appendField(
-        new Blockly.FieldDropdown(
-          COLOR_NAMES.map(name => [t('dynamic_color_' + name), name])
-        ),
-        'COLOR_NAME'
+        new Blockly.FieldDropdown(COLOR_NAMES.map((name) => [t(`dynamic_color_${name}`), name])),
+        'COLOR_NAME',
       );
     } else if (this.mode_ === 'PALETTE') {
       this.setInputsInline(true);
-      this.appendDummyInput('PALETTE_INPUT').appendField(
-        new FieldColour('#ff0000'),
-        'COLOR_VAL'
-      );
+      this.appendDummyInput('PALETTE_INPUT').appendField(new FieldColour('#ff0000'), 'COLOR_VAL');
     } else if (this.mode_ === 'RGB') {
       this.setInputsInline(false);
       this.appendValueInput('R_INPUT').setCheck('Number').appendField('R');
@@ -106,15 +90,9 @@ Blocks['dynamic_color_rgb'] = {
       addShadowNumber(this, 'B_INPUT', 0);
     } else if (this.mode_ === 'HSL') {
       this.setInputsInline(false);
-      this.appendValueInput('H_INPUT')
-        .setCheck('Number')
-        .appendField('Hue (0-360)');
-      this.appendValueInput('S_INPUT')
-        .setCheck('Number')
-        .appendField('Saturation (0-100) %');
-      this.appendValueInput('L_INPUT')
-        .setCheck('Number')
-        .appendField('Lightness (0-100) %');
+      this.appendValueInput('H_INPUT').setCheck('Number').appendField('Hue (0-360)');
+      this.appendValueInput('S_INPUT').setCheck('Number').appendField('Saturation (0-100) %');
+      this.appendValueInput('L_INPUT').setCheck('Number').appendField('Lightness (0-100) %');
 
       // Add shadow blocks for empty inputs
       addShadowNumber(this, 'H_INPUT', 0);
@@ -139,10 +117,7 @@ Blocks['dynamic_color_rgb'] = {
     return state;
   },
 
-  loadExtraState: function (
-    this: DynamicColorBlock,
-    state: { mode: string; colorName?: string }
-  ) {
+  loadExtraState: function (this: DynamicColorBlock, state: { mode: string; colorName?: string }) {
     this.getField('MODE')?.setValue(state.mode);
     // Reset mode_ to force updateShape to rebuild the inputs
     this.mode_ = '';
@@ -153,10 +128,7 @@ Blocks['dynamic_color_rgb'] = {
   },
 };
 
-jsg.forBlock['dynamic_color_rgb'] = function (
-  codeBlock: BlockExtended,
-  generator: JavascriptGenerator
-) {
+jsg.forBlock.dynamic_color_rgb = (codeBlock: BlockExtended, generator: JavascriptGenerator) => {
   const mode = codeBlock.getFieldValue('MODE');
   let code: string;
 
@@ -203,8 +175,7 @@ jsg.forBlock['dynamic_color_rgb'] = function (
 
     case 'HEX': {
       const hex = codeBlock.getInput('HEX_INPUT')
-        ? generator.valueToCode(codeBlock, 'HEX_INPUT', Order.NONE) ||
-          '"#ffffff"'
+        ? generator.valueToCode(codeBlock, 'HEX_INPUT', Order.NONE) || '"#ffffff"'
         : '"#ffffff"';
       code = `colors.hexToRgb(${hex})`;
       break;

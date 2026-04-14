@@ -1,34 +1,62 @@
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import js from '@eslint/js';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 
 export default [
+  js.configs.recommended,
   {
     files: ['**/*.ts'],
-  },
-  {
-    plugins: {
-      '@typescript-eslint': typescriptEslint,
-    },
-
     languageOptions: {
       parser: tsParser,
-      ecmaVersion: 2022,
-      sourceType: 'module',
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      globals: {
+        Buffer: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        setImmediate: 'readonly',
+        clearImmediate: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        exports: 'writable',
+      },
     },
-
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
     rules: {
-      '@typescript-eslint/naming-convention': [
-        'warn',
-        {
-          selector: 'import',
-          format: ['camelCase', 'PascalCase'],
-        },
+      ...tsPlugin.configs.recommended.rules,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-
-      curly: 'warn',
-      eqeqeq: 'warn',
-      'no-throw-literal': 'warn',
-      semi: 'warn',
     },
+  },
+  {
+    files: ['src/test/**/*.ts'],
+    languageOptions: {
+      globals: {
+        suite: 'readonly',
+        test: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        before: 'readonly',
+        after: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+  },
+  {
+    ignores: ['out/**', 'dist/**', 'node_modules/**'],
   },
 ];

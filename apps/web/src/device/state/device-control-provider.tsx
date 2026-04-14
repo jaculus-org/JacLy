@@ -1,17 +1,13 @@
 import { type ReactNode, useEffect, useMemo } from 'react';
+import { useProgramControl } from '../hooks/use-program-control';
+import { useWifiControl } from '../hooks/use-wifi-control';
 import { useJacDevice } from './device-context';
 import {
   JacDeviceControlContext,
   type JacDeviceControlContextValue,
 } from './device-control-context';
-import { useWifiControl } from '../hooks/use-wifi-control';
-import { useProgramControl } from '../hooks/use-program-control';
 
-export function JacDeviceControlProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function JacDeviceControlProvider({ children }: { children: ReactNode }) {
   const {
     state: { device, connectionStatus },
   } = useJacDevice();
@@ -52,12 +48,10 @@ export function JacDeviceControlProvider({
       program.loading,
       program.state,
       program.actions,
-    ]
+    ],
   );
 
   return (
-    <JacDeviceControlContext.Provider value={value}>
-      {children}
-    </JacDeviceControlContext.Provider>
+    <JacDeviceControlContext.Provider value={value}>{children}</JacDeviceControlContext.Provider>
   );
 }

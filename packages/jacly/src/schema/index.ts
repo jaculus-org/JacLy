@@ -2,26 +2,13 @@ import { z } from 'zod';
 
 const Identifier = z
   .string("must be a valid identifier - letters, numbers, '-', '_'")
-  .regex(
-    /^[a-zA-Z0-9-_]+$/,
-    'must be a valid identifier (letters, numbers, -, _)'
-  );
+  .regex(/^[a-zA-Z0-9-_]+$/, 'must be a valid identifier (letters, numbers, -, _)');
 
 const Variable = Identifier.uppercase('variable must be uppercase identifier');
 
 const BlocklyColour = z.union([
-  z
-    .string()
-    .regex(
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
-      'must be hex color like #aabbcc'
-    ),
-  z
-    .string()
-    .regex(
-      /^(?:[0-9]|[1-9]\d|[12]\d{2}|3[0-5]\d|360)$/,
-      'must be 0–360 hue string'
-    ),
+  z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'must be hex color like #aabbcc'),
+  z.string().regex(/^(?:[0-9]|[1-9]\d|[12]\d{2}|3[0-5]\d|360)$/, 'must be 0–360 hue string'),
 ]);
 
 // const DefaultType = z.enum(['Number', 'String', 'Boolean', 'Array', 'Object']);
@@ -46,10 +33,10 @@ const InputShadowSchema: z.ZodType<InputNode> = z.lazy(() =>
         z.object({
           shadow: InputShadowSchema.optional(),
           block: InputBlockSchema.optional(),
-        })
+        }),
       )
       .optional(),
-  })
+  }),
 );
 
 const InputBlockSchema: z.ZodType<InputNode> = z.lazy(() =>
@@ -62,10 +49,10 @@ const InputBlockSchema: z.ZodType<InputNode> = z.lazy(() =>
         z.object({
           shadow: InputShadowSchema.optional(),
           block: InputBlockSchema.optional(),
-        })
+        }),
       )
       .optional(),
-  })
+  }),
 );
 
 // Base schema for all args
@@ -195,7 +182,7 @@ export const ToolboxInputsSchema = z.record(
   z.object({
     block: InputBlockSchema.optional(),
     shadow: InputShadowSchema.optional(),
-  })
+  }),
 );
 
 // Schema for callback variables (scoped variables available inside callback blocks)
@@ -210,7 +197,7 @@ const CodeConditionalsSchema = z.array(
   z.object({
     condition: z.array(z.record(z.string(), z.string())),
     code: z.string().nonempty('code is required for codeConditional'),
-  })
+  }),
 );
 
 // Schema for kind: 'block'
@@ -244,23 +231,22 @@ const JaclyBlockKindBlock = z
           instanceof: Identifier.nonempty('instanceof type is required'),
           name: z.string().nonempty('instance name is required'),
           connection: z.string().nonempty('connection expression is required'),
-        })
+        }),
       )
       .optional(),
     callbackVars: z.array(CallbackVarSchema).optional(),
   })
   .refine(
-    data => {
+    (data) => {
       const hasOutput = data.output !== undefined;
       const hasStatementConnection =
-        data.previousStatement !== undefined ||
-        data.nextStatement !== undefined;
+        data.previousStatement !== undefined || data.nextStatement !== undefined;
       return !(hasOutput && hasStatementConnection);
     },
     {
       message:
         'Block cannot have both "output" and "previousStatement"/"nextStatement" - use output for value blocks OR statement connections for stackable blocks',
-    }
+    },
   );
 
 // Schema for kind: 'category'

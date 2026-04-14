@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vite';
-import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import dts from 'vite-plugin-dts';
+import { libInjectCss } from 'vite-plugin-lib-inject-css';
 
 export default defineConfig({
   plugins: [
@@ -54,8 +54,8 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name]-[hash].js',
-        assetFileNames: assetInfo => {
-          if (assetInfo.names?.some(name => name.endsWith('.css'))) {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.names?.some((name) => name.endsWith('.css'))) {
             return 'editor/styles/toolbox[extname]';
           }
           return 'assets/[name]-[hash][extname]';

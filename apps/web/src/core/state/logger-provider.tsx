@@ -1,11 +1,5 @@
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import type { LoggerBusService } from '@/core/services/logger-service';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
 import type { LoggerEntry } from '../components/logger/types';
 import { LoggerContext, type LoggerContextValue } from './logger-context';
 
@@ -14,10 +8,7 @@ export interface LoggerProviderProps {
   children: ReactNode;
 }
 
-export function LoggerProvider({
-  loggerBusService,
-  children,
-}: LoggerProviderProps) {
+export function LoggerProvider({ loggerBusService, children }: LoggerProviderProps) {
   const [entries, setEntries] = useState<LoggerEntry[]>([]);
 
   useEffect(() => {
@@ -33,10 +24,8 @@ export function LoggerProvider({
       state: { entries },
       actions: { clear },
     }),
-    [entries, clear]
+    [entries, clear],
   );
 
-  return (
-    <LoggerContext.Provider value={value}>{children}</LoggerContext.Provider>
-  );
+  return <LoggerContext.Provider value={value}>{children}</LoggerContext.Provider>;
 }

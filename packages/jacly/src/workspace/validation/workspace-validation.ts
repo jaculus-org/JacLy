@@ -1,26 +1,15 @@
+import { collectMissingBlockTypes, groupMissingPackages } from './missing-blocks';
 import type {
   BlockState,
   EngineMissingPackages,
   SanitizationResult,
   WorkspaceState,
 } from './types';
-import {
-  collectMissingBlockTypes,
-  groupMissingPackages,
-} from './missing-blocks';
-import {
-  isRegistered,
-  makePlaceholder,
-  restoreBlock,
-} from './unsupported-blocks';
+import { isRegistered, makePlaceholder, restoreBlock } from './unsupported-blocks';
 
 export type { SanitizationResult };
 
-function replaceBlock(
-  node: BlockState,
-  hoisted: BlockState[],
-  replaced: Set<string>
-): BlockState {
+function replaceBlock(node: BlockState, hoisted: BlockState[], replaced: Set<string>): BlockState {
   if (node.inputs) {
     for (const key of Object.keys(node.inputs)) {
       const input = node.inputs[key];
@@ -61,7 +50,7 @@ function replaceBlock(
 
 export async function sanitizeWorkspaceState(
   json: object,
-  onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>
+  onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>,
 ): Promise<SanitizationResult> {
   const ws = json as WorkspaceState;
   if (!ws.blocks?.blocks) {
@@ -72,9 +61,7 @@ export async function sanitizeWorkspaceState(
   const restoredTypes = new Set<string>();
   const replacedTypes = new Set<string>();
 
-  clone.blocks!.blocks = clone.blocks!.blocks.map(block =>
-    restoreBlock(block, restoredTypes)
-  );
+  clone.blocks!.blocks = clone.blocks!.blocks.map((block) => restoreBlock(block, restoredTypes));
 
   const missingByType = collectMissingBlockTypes(clone.blocks!.blocks);
 
@@ -90,7 +77,7 @@ export async function sanitizeWorkspaceState(
 
   const hoisted: BlockState[] = [];
 
-  clone.blocks!.blocks = clone.blocks!.blocks.map(block => {
+  clone.blocks!.blocks = clone.blocks!.blocks.map((block) => {
     if (!isRegistered(block.type)) {
       replacedTypes.add(block.type);
       return makePlaceholder(block, block.x, block.y);
@@ -98,7 +85,7 @@ export async function sanitizeWorkspaceState(
     return replaceBlock(block, hoisted, replacedTypes);
   });
 
-  clone.blocks!.blocks.push(...hoisted);
+  clone.blocks?.blocks.push(...hoisted);
 
   return {
     state: clone,

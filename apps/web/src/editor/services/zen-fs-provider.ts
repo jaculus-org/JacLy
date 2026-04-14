@@ -1,4 +1,6 @@
-import { fs } from '@zenfs/core';
+import { Emitter } from '@codingame/monaco-vscode-api/vscode/vs/base/common/event';
+import { Disposable } from '@codingame/monaco-vscode-api/vscode/vs/base/common/lifecycle';
+import type { URI } from '@codingame/monaco-vscode-api/vscode/vs/base/common/uri';
 import type {
   IFileChange,
   IFileDeleteOptions,
@@ -8,15 +10,13 @@ import type {
   IStat,
 } from '@codingame/monaco-vscode-api/vscode/vs/platform/files/common/files';
 import {
+  createFileSystemProviderError,
   FileChangeType,
   FileSystemProviderCapabilities,
   FileSystemProviderErrorCode,
   FileType,
-  createFileSystemProviderError,
 } from '@codingame/monaco-vscode-api/vscode/vs/platform/files/common/files';
-import { Disposable } from '@codingame/monaco-vscode-api/vscode/vs/base/common/lifecycle';
-import { Emitter } from '@codingame/monaco-vscode-api/vscode/vs/base/common/event';
-import type { URI } from '@codingame/monaco-vscode-api/vscode/vs/base/common/uri';
+import { fs } from '@zenfs/core';
 
 function toStat(raw: {
   isFile(): boolean;
@@ -40,46 +40,30 @@ function toFsError(err: unknown): never {
   const code = (err as { code?: string })?.code;
   switch (code) {
     case 'ENOENT':
-      throw createFileSystemProviderError(
-        String(err),
-        FileSystemProviderErrorCode.FileNotFound
-      );
+      throw createFileSystemProviderError(String(err), FileSystemProviderErrorCode.FileNotFound);
     case 'EEXIST':
-      throw createFileSystemProviderError(
-        String(err),
-        FileSystemProviderErrorCode.FileExists
-      );
+      throw createFileSystemProviderError(String(err), FileSystemProviderErrorCode.FileExists);
     case 'ENOTDIR':
       throw createFileSystemProviderError(
         String(err),
-        FileSystemProviderErrorCode.FileNotADirectory
+        FileSystemProviderErrorCode.FileNotADirectory,
       );
     case 'EISDIR':
       throw createFileSystemProviderError(
         String(err),
-        FileSystemProviderErrorCode.FileIsADirectory
+        FileSystemProviderErrorCode.FileIsADirectory,
       );
     case 'EPERM':
     case 'EACCES':
-      throw createFileSystemProviderError(
-        String(err),
-        FileSystemProviderErrorCode.NoPermissions
-      );
-    case undefined:
+      throw createFileSystemProviderError(String(err), FileSystemProviderErrorCode.NoPermissions);
     default:
-      throw createFileSystemProviderError(
-        String(err),
-        FileSystemProviderErrorCode.Unknown
-      );
+      throw createFileSystemProviderError(String(err), FileSystemProviderErrorCode.Unknown);
   }
 }
 
-export class ZenFSProvider
-  implements IFileSystemProviderWithFileReadWriteCapability
-{
+export class ZenFSProvider implements IFileSystemProviderWithFileReadWriteCapability {
   readonly capabilities =
-    FileSystemProviderCapabilities.FileReadWrite |
-    FileSystemProviderCapabilities.PathCaseSensitive;
+    FileSystemProviderCapabilities.FileReadWrite | FileSystemProviderCapabilities.PathCaseSensitive;
 
   private readonly _onDidChangeCapabilities = new Emitter<void>();
   readonly onDidChangeCapabilities = this._onDidChangeCapabilities.event;
@@ -117,10 +101,7 @@ export class ZenFSProvider
       const entries = await fs.promises.readdir(resource.fsPath, {
         withFileTypes: true,
       });
-      return entries.map(e => [
-        e.name,
-        e.isDirectory() ? FileType.Directory : FileType.File,
-      ]);
+      return entries.map((e) => [e.name, e.isDirectory() ? FileType.Directory : FileType.File]);
     } catch (err) {
       toFsError(err);
     }
@@ -144,16 +125,12 @@ export class ZenFSProvider
     }
   }
 
-  async rename(
-    from: URI,
-    to: URI,
-    _opts: IFileOverwriteOptions
-  ): Promise<void> {
+  async rename(from: URI, to: URI, _opts: IFileOverwriteOptions): Promise<void> {
     try {
       await fs.promises.rename(from.fsPath, to.fsPath);
       this._fireSoon(
         { type: FileChangeType.DELETED, resource: from },
-        { type: FileChangeType.ADDED, resource: to }
+        { type: FileChangeType.ADDED, resource: to },
       );
     } catch (err) {
       toFsError(err);
@@ -168,11 +145,7 @@ export class ZenFSProvider
     }
   }
 
-  async writeFile(
-    resource: URI,
-    content: Uint8Array,
-    _opts: IFileWriteOptions
-  ): Promise<void> {
+  async writeFile(resource: URI, content: Uint8Array, _opts: IFileWriteOptions): Promise<void> {
     try {
       await fs.promises.writeFile(resource.fsPath, content);
       this._fireSoon({ type: FileChangeType.UPDATED, resource });

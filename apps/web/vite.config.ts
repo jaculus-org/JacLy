@@ -1,14 +1,14 @@
+import path from 'node:path';
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
-import { defineConfig } from 'vite';
-import path from 'path';
-import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { buildInfoPlugin } from './src/app/vite/vite-plugin-build-info';
 // import { VitePWA } from 'vite-plugin-pwa';
 import { githubPagesSetup } from './src/app/vite/vite-plugin-github-pages-setup';
-import { buildInfoPlugin } from './src/app/vite/vite-plugin-build-info';
 
 // const lightBackgroundColor = 'oklch(0.97 0.01 250)';
 // const darkBackgroundColor = 'oklch(0.15 0.05 260)';
@@ -28,19 +28,13 @@ export default defineConfig({
     {
       name: 'vscode-css-inline',
       enforce: 'pre' as const,
-      async resolveId(
-        source: string,
-        importer: string | undefined,
-        options: object
-      ) {
+      async resolveId(source: string, importer: string | undefined, options: object) {
         const resolved = await this.resolve(source, importer, {
           ...(options as object),
           skipSelf: true,
         });
-        if (
-          resolved?.id.match(/node_modules\/@codingame\/monaco-vscode.*\.css$/)
-        ) {
-          return { ...resolved, id: resolved.id + '?inline' };
+        if (resolved?.id.match(/node_modules\/@codingame\/monaco-vscode.*\.css$/)) {
+          return { ...resolved, id: `${resolved.id}?inline` };
         }
       },
     },

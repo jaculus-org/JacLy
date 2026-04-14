@@ -1,18 +1,14 @@
-import { m } from '@/core/paraglide/messages';
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/core/components/theme';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/ui/components/dropdown-menu';
-import { Button } from '@/ui/components/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();

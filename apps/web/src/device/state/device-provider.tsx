@@ -1,66 +1,54 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import { JacDevice } from '@jaculus/device';
+import path from 'node:path';
+import type { JacDevice } from '@jaculus/device';
 import { getRequest } from '@jaculus/jacly/project';
-import path from 'path';
-import { useActiveProject } from '@/project';
-import { enqueueSnackbar } from 'notistack';
-import type { ConnectionStatus, ConnectionType } from '../types/connection';
-import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
-import { m } from '@/core/paraglide/messages';
-import { restart, uploadCode } from '../services/device-operations';
+import { Project } from '@jaculus/project';
 import {
   InvalidPackageJsonFormatError,
   loadPackageJson,
   type PackageJson,
 } from '@jaculus/project/package';
-import { Project } from '@jaculus/project';
 import { Registry } from '@jaculus/project/registry';
+import { enqueueSnackbar } from 'notistack';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useBuildInfo } from '@/core/hooks/use-build-info';
+import { m } from '@/core/paraglide/messages';
+import { logger } from '@/core/services/logger-service';
+import { useActiveProject } from '@/project';
+import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
 import { Route } from '@/routes/__root';
+import { restart, uploadCode } from '../services/device-operations';
+import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import {
-  JacDeviceContext,
   type JacDeviceActions,
+  JacDeviceContext,
   type JacDeviceContextValue,
   type JacDeviceState,
 } from './device-context';
-import { useBuildInfo } from '@/core/hooks/use-build-info';
-import { logger } from '@/core/services/logger-service';
 
 interface JacDeviceProviderProps {
   children: ReactNode;
 }
 
 export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
-  const { streamBusService } = Route.useRouteContext();
+  const { streamBusService: _streamBusService } = Route.useRouteContext();
   const buildInfo = useBuildInfo();
   const { state: projectState, actions: projectActions } = useActiveProject();
   const { fs, projectPath } = projectState;
   const { setError } = projectActions;
   const [device, setDevice] = useState<JacDevice | null>(null);
-  const [connectionType, setConnectionType] = useState<ConnectionType | null>(
-    null
-  );
+  const [connectionType, setConnectionType] = useState<ConnectionType | null>(null);
 
   const [jacProject, setJacProject] = useState<Project | null>(null);
   const [jacRegistry, setJacRegistry] = useState<Registry | null>(null);
   const [pkg, setPkg] = useState<PackageJson | null>(null);
 
-  const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
 
-  useKeyboardShortcut(
-    { key: 'r', ctrl: true, meta: true, shift: false },
-    async () => {
-      if (!device) return;
-      await restart(device);
-      enqueueSnackbar(m.jac_device_provider_restart(), { variant: 'success' });
-    }
-  );
+  useKeyboardShortcut({ key: 'r', ctrl: true, meta: true, shift: false }, async () => {
+    if (!device) return;
+    await restart(device);
+    enqueueSnackbar(m.jac_device_provider_restart(), { variant: 'success' });
+  });
 
   useKeyboardShortcut({ key: 'u', ctrl: true, meta: true }, async () => {
     if (!device) return;
@@ -81,7 +69,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         await fs.promises.writeFile(
           packageJsonPath,
           JSON.stringify(defaultPackageJson, null, 2),
-          'utf-8'
+          'utf-8',
         );
         setError(null);
         enqueueSnackbar(m.project_error_fix(), { variant: 'success' });
@@ -93,21 +81,18 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         enqueueSnackbar(m.project_error_unknown(), { variant: 'error' });
       }
     },
-    [fs, setError]
+    [fs, setError],
   );
 
   const initPackageJson = useCallback(
     async (pkg: PackageJson) => {
-      if (
-        pkg.jaculus?.jaclyVersion &&
-        pkg.jaculus.jaclyVersion !== buildInfo.version
-      ) {
+      if (pkg.jaculus?.jaclyVersion && pkg.jaculus.jaclyVersion !== buildInfo.version) {
         enqueueSnackbar(m.jac_device_provider_outdated_package_json(), {
           variant: 'warning',
         });
       }
     },
-    [buildInfo]
+    [buildInfo],
   );
 
   useEffect(() => {
@@ -130,9 +115,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
         await initPackageJson(pkgJson);
-        setJacRegistry(
-          new Registry(pkgJson.jaculus?.registry, getRequest, logger)
-        );
+        setJacRegistry(new Registry(pkgJson.jaculus?.registry, getRequest, logger));
 
         if (!cancelled) {
           setJacProject(new Project(fs, projectPath, logger));
@@ -148,10 +131,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
             fixCallback: () => fixMissingPackageJson(packageJsonPath),
           });
         } else {
-          console.error(
-            `Failed to load Jacly project at ${packageJsonPath}:`,
-            error
-          );
+          console.error(`Failed to load Jacly project at ${packageJsonPath}:`, error);
           if (!cancelled) {
             setJacProject(null);
             setJacRegistry(null);
@@ -167,42 +147,27 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, [
-    fs,
-    projectPath,
-    streamBusService,
-    fixMissingPackageJson,
-    setError,
-    initPackageJson,
-  ]);
+  }, [fs, projectPath, fixMissingPackageJson, setError, initPackageJson]);
 
   useEffect(() => {
     return () => {
       if (device) {
-        device
-          .destroy()
-          .catch(err =>
-            console.error('Failed to destroy device on unmount:', err)
-          );
+        device.destroy().catch((err) => console.error('Failed to destroy device on unmount:', err));
       }
     };
   }, [device]);
 
   const handleSetDevice = useCallback<JacDeviceActions['setDevice']>(
     async (newDevice, newConnectionType) => {
-      setDevice(prev => {
+      setDevice((prev) => {
         if (prev) {
-          prev
-            .destroy()
-            .catch(err =>
-              console.error('Failed to destroy previous device:', err)
-            );
+          prev.destroy().catch((err) => console.error('Failed to destroy previous device:', err));
         }
         return newDevice;
       });
       setConnectionType(newConnectionType || null);
     },
-    []
+    [],
   );
 
   const state = useMemo<JacDeviceState>(
@@ -216,7 +181,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
       outStream: undefined,
       errStream: undefined,
     }),
-    [jacProject, jacRegistry, device, connectionType, pkg, connectionStatus]
+    [jacProject, jacRegistry, device, connectionType, pkg, connectionStatus],
   );
 
   const actions = useMemo<JacDeviceActions>(
@@ -224,7 +189,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
       setDevice: handleSetDevice,
       setConnectionStatus,
     }),
-    [handleSetDevice, setConnectionStatus]
+    [handleSetDevice],
   );
 
   const contextValue = useMemo<JacDeviceContextValue>(
@@ -233,12 +198,8 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
       actions,
       meta: {},
     }),
-    [state, actions]
+    [state, actions],
   );
 
-  return (
-    <JacDeviceContext.Provider value={contextValue}>
-      {children}
-    </JacDeviceContext.Provider>
-  );
+  return <JacDeviceContext.Provider value={contextValue}>{children}</JacDeviceContext.Provider>;
 }

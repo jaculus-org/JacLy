@@ -1,8 +1,8 @@
-import { Button } from '@/ui/components/button';
-import { Card } from '@/ui/components/card';
-import { m } from '@/core/paraglide/messages';
 import { CheckCheck, Pause, Play, Trash2, X } from 'lucide-react';
 import { memo } from 'react';
+import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { Card } from '@/ui/components/card';
 import { useConsolePlotter } from '../../state/plotter-context';
 
 function formatValue(value: number): string {
@@ -64,7 +64,7 @@ export const ConsolePlotterToolbar = memo(function ConsolePlotterToolbar() {
       </div>
 
       <div className="flex flex-wrap gap-1">
-        {state.availableKeys.map(key => {
+        {state.availableKeys.map((key) => {
           const isSelected = state.selectedKeys.includes(key);
           const latestValue = state.latestEntries[key]?.value;
 
@@ -78,9 +78,7 @@ export const ConsolePlotterToolbar = memo(function ConsolePlotterToolbar() {
             >
               <span>{key}</span>
               {latestValue !== undefined && (
-                <span className="text-[10px] opacity-80">
-                  {formatValue(latestValue)}
-                </span>
+                <span className="text-[10px] opacity-80">{formatValue(latestValue)}</span>
               )}
             </Button>
           );

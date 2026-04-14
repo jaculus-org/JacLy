@@ -1,4 +1,10 @@
+import { enqueueSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
+import { useConsole } from '@/console';
 import { m } from '@/core/paraglide/messages';
+import { useActiveProject, useProjectEditor } from '@/project';
+import { ButtonGroup } from '@/ui/components/button-group';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import {
   Select,
   SelectContent,
@@ -6,31 +12,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/select';
-import { useEffect, useState } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 import {
   connectDevice,
   getAvailableConnectionTypes,
   UnknownConnectionTypeError,
 } from '../../services/connection';
-import type { ConnectionInfo, ConnectionType } from '../../types/connection';
-import { enqueueSnackbar } from 'notistack';
-import { ButtonGroup } from '@/ui/components/button-group';
-import { useJacDevice } from '../../state/device-context';
-import { useConsole } from '@/console';
-import { useActiveProject } from '@/project';
 import { testConnection, uploadCode } from '../../services/device-operations';
-import { useProjectEditor } from '@/project';
-import { ButtonLoading } from '@/ui/components/custom/button-loading';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
+import { useJacDevice } from '../../state/device-context';
+import type { ConnectionInfo, ConnectionType } from '../../types/connection';
 
 export function ConnectionSelector() {
-  const [availableConnections, setAvailableConnections] = useState<
-    ConnectionInfo[]
-  >([]);
+  const [availableConnections, setAvailableConnections] = useState<ConnectionInfo[]>([]);
   const {
     actions: { addEntry },
   } = useConsole();
@@ -43,12 +36,12 @@ export function ConnectionSelector() {
   const { actions } = useProjectEditor();
   const { controlPanel } = actions;
 
-  const [selectedConnection, setSelectedConnection] = useState<
-    ConnectionType | undefined
-  >(undefined);
+  const [selectedConnection, setSelectedConnection] = useState<ConnectionType | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
-    getAvailableConnectionTypes().then(connections => {
+    getAvailableConnectionTypes().then((connections) => {
       setAvailableConnections(connections);
       setSelectedConnection(connections[0].type);
     });
@@ -73,13 +66,7 @@ export function ConnectionSelector() {
   async function handleConnect() {
     if (!selectedConnection) return;
     try {
-      const dev = await connectDevice(
-        selectedConnection,
-        addEntry,
-        onDisconnect,
-        projectPath,
-        fs
-      );
+      const dev = await connectDevice(selectedConnection, addEntry, onDisconnect, projectPath, fs);
 
       await setDevice(dev, selectedConnection);
 
@@ -98,14 +85,13 @@ export function ConnectionSelector() {
             controlPanel('console', 'expand');
             controlPanel('packages', 'collapse');
           } else {
-            enqueueSnackbar(
-              m.device_firmware_outdated({ requiredVersion: '0.1.0' }),
-              { variant: 'warning' }
-            );
+            enqueueSnackbar(m.device_firmware_outdated({ requiredVersion: '0.1.0' }), {
+              variant: 'warning',
+            });
             controlPanel('installer', 'expand');
           }
         } else {
-          if (selectedConnection != 'serial') {
+          if (selectedConnection !== 'serial') {
             enqueueSnackbar(m.installer_msg_serial_required(), {
               variant: 'info',
             });
@@ -150,27 +136,20 @@ export function ConnectionSelector() {
         <ButtonGroup>
           <Select
             value={selectedConnection ?? undefined}
-            onValueChange={value =>
-              setSelectedConnection(value as ConnectionType)
-            }
-            disabled={
-              connectionStatus === 'connected' ||
-              connectionStatus === 'connecting'
-            }
+            onValueChange={(value) => setSelectedConnection(value as ConnectionType)}
+            disabled={connectionStatus === 'connected' || connectionStatus === 'connecting'}
           >
             <SelectTrigger className=" h-8">
               <SelectValue placeholder={m.device_connection_placeholder()} />
             </SelectTrigger>
             <SelectContent>
-              {availableConnections.map(connection => {
+              {availableConnections.map((connection) => {
                 const Icon = connection.icon;
                 return (
                   <SelectItem key={connection.type} value={connection.type}>
                     <div className="flex items-center gap-2">
                       <Icon className="h-4 w-4" />
-                      {connectionStatus !== 'connected' && (
-                        <span>{connection.name}</span>
-                      )}
+                      {connectionStatus !== 'connected' && <span>{connection.name}</span>}
                     </div>
                   </SelectItem>
                 );
@@ -185,9 +164,7 @@ export function ConnectionSelector() {
             disabled={!selectedConnection}
             loading={connectionStatus === 'connecting'}
           >
-            {connectionStatus === 'connected'
-              ? m.device_btn_disconnect()
-              : m.device_btn_connect()}
+            {connectionStatus === 'connected' ? m.device_btn_disconnect() : m.device_btn_connect()}
           </ButtonLoading>
         </ButtonGroup>
       </TooltipTrigger>

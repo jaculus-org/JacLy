@@ -1,11 +1,6 @@
-import { m } from '@/core/paraglide/messages';
-import {
-  AlertCircleIcon,
-  ArrowLeftIcon,
-  RefreshCcwIcon,
-  ToolCaseIcon,
-} from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { AlertCircleIcon, ArrowLeftIcon, RefreshCcwIcon, ToolCaseIcon } from 'lucide-react';
+import { m } from '@/core/paraglide/messages';
 import type { ProjectError } from '../state/active-project-context';
 
 interface EditorLoadErrorProps {
@@ -45,9 +40,7 @@ export function ProjectLoadError({ error }: EditorLoadErrorProps) {
               ? m.project_error_recoverable()
               : m.project_error_unrecoverable()}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            {getErrorDetails(error)}
-          </p>
+          <p className="text-sm text-muted-foreground">{getErrorDetails(error)}</p>
         </div>
 
         {/* Actions */}

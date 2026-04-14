@@ -1,25 +1,21 @@
-import { m } from '@/core/paraglide/messages';
-import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import { useConsole } from '../state/console-context';
-import { sendToDeviceStr } from '@/device';
-import { useJacDevice } from '@/device';
+import { useState } from 'react';
+import { m } from '@/core/paraglide/messages';
+import { sendToDeviceStr, useJacDevice } from '@/device';
 import { Card } from '@/ui/components/card';
-import { KeyValueDisplay } from './key-value/key-value';
-import { ConsoleInput } from './console-input';
-import { ConsoleToolbar } from './console-toolbar';
-import { ConsoleOutput } from './console-output';
+import { useConsole } from '../state/console-context';
 import type { ConsoleType } from '../types/types';
+import { ConsoleInput } from './console-input';
+import { ConsoleOutput } from './console-output';
+import { ConsoleToolbar } from './console-toolbar';
+import { KeyValueDisplay } from './key-value/key-value';
 
 interface ConsoleProps {
   displayKeyValue?: boolean;
   tooltipCollapsed?: boolean;
 }
 
-export function Console({
-  displayKeyValue = true,
-  tooltipCollapsed = false,
-}: ConsoleProps) {
+export function Console({ displayKeyValue = true, tooltipCollapsed = false }: ConsoleProps) {
   const { state, actions } = useConsole();
   const {
     state: { device },
@@ -28,8 +24,7 @@ export function Console({
   const [showTimestamp, setShowTimestamp] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [isToolbarCollapsed, setIsToolbarCollapsed] =
-    useState(tooltipCollapsed);
+  const [isToolbarCollapsed, setIsToolbarCollapsed] = useState(tooltipCollapsed);
 
   function getStreamEntryColor(type: ConsoleType): string {
     switch (type) {
@@ -44,7 +39,7 @@ export function Console({
 
   async function handleMessage(message: string) {
     if (!device) return;
-    sendToDeviceStr(device, message + '\n', actions.addEntry);
+    sendToDeviceStr(device, `${message}\n`, actions.addEntry);
   }
 
   const handleSubmit = async () => {
@@ -63,10 +58,8 @@ export function Console({
 
   const handleCopyToClipboard = async () => {
     const content = state.entries
-      .map(entry => {
-        const timestamp = showTimestamp
-          ? `[${entry.timestamp.toLocaleTimeString()}] `
-          : '';
+      .map((entry) => {
+        const timestamp = showTimestamp ? `[${entry.timestamp.toLocaleTimeString()}] ` : '';
         return `${timestamp}${entry.content}`;
       })
       .join('');
@@ -104,8 +97,8 @@ export function Console({
             onSubmit={handleSubmit}
             onKeyDown={handleKeyDown}
             onCollapse={() => setIsToolbarCollapsed(true)}
-            onToggleTimestamp={() => setShowTimestamp(v => !v)}
-            onToggleAutoscroll={() => setAutoScroll(v => !v)}
+            onToggleTimestamp={() => setShowTimestamp((v) => !v)}
+            onToggleAutoscroll={() => setAutoScroll((v) => !v)}
             onCopy={handleCopyToClipboard}
             onClear={actions.clear}
           />

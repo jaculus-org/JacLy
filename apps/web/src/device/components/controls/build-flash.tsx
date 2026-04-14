@@ -1,13 +1,12 @@
-import { m } from '@/core/paraglide/messages';
-import { useActiveProject } from '@/project';
-import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
+import { m } from '@/core/paraglide/messages';
+import { useActiveProject, useProjectEditor } from '@/project';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { compileProject } from '../../services/compilation';
-import { useJacDevice } from '../../state/device-context';
 import { uploadCode } from '../../services/device-operations';
-import { useProjectEditor } from '@/project';
+import { useJacDevice } from '../../state/device-context';
 
 export function BuildFlash() {
   const {
@@ -28,7 +27,7 @@ export function BuildFlash() {
     }
 
     try {
-      if (pkg?.jaculus?.projectType == 'code') {
+      if (pkg?.jaculus?.projectType === 'code') {
         if (!(await compileProject(projectPath, fs))) {
           enqueueSnackbar(m.device_build_compile_failed(), {
             variant: 'error',
@@ -45,10 +44,9 @@ export function BuildFlash() {
       await uploadCode(bundle, device);
     } catch (error) {
       controlPanel('logs', 'expand');
-      enqueueSnackbar(
-        error instanceof Error ? error.message : m.device_build_flash_failed(),
-        { variant: 'error' }
-      );
+      enqueueSnackbar(error instanceof Error ? error.message : m.device_build_flash_failed(), {
+        variant: 'error',
+      });
     } finally {
       setIsProcessing(false);
     }

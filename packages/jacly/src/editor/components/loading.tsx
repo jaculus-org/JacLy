@@ -1,4 +1,4 @@
-import { Loader2, Blocks } from 'lucide-react';
+import { Blocks, Loader2 } from 'lucide-react';
 
 export function JaclyLoading() {
   return (
@@ -8,9 +8,7 @@ export function JaclyLoading() {
       </div>
       <div className="flex flex-col items-center gap-2">
         <h3 className="text-lg font-medium text-foreground">Loading Editor</h3>
-        <p className="text-sm text-muted-foreground">
-          Preparing your workspace...
-        </p>
+        <p className="text-sm text-muted-foreground">Preparing your workspace...</p>
         <Blocks className="h-16 w-16 text-muted-foreground/30" />
       </div>
     </div>

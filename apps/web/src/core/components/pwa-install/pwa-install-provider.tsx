@@ -1,6 +1,6 @@
-import { m } from '@/core/paraglide/messages';
 import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useEffect, useEffectEvent, useState } from 'react';
+import { m } from '@/core/paraglide/messages';
 // import { useRegisterSW } from 'virtual:pwa-register/react';
 import { PwaInstallContext } from './pwa-install-context';
 
@@ -29,8 +29,7 @@ function isStandaloneDisplayMode() {
 }
 
 export function PwaInstallProvider({ children }: { children: ReactNode }) {
-  const [installPrompt, setInstallPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(isStandaloneDisplayMode);
   const [isInstalling, setIsInstalling] = useState(false);
 
@@ -111,8 +110,7 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
           promptInstall,
         },
         meta: {
-          isSupported:
-            typeof window !== 'undefined' && 'serviceWorker' in navigator,
+          isSupported: typeof window !== 'undefined' && 'serviceWorker' in navigator,
         },
       }}
     >

@@ -1,5 +1,5 @@
-import { type Duplex } from '@jaculus/link/stream';
-import { type Logger } from '@jaculus/common';
+import type { Logger } from '@jaculus/common';
+import type { Duplex } from '@jaculus/link/stream';
 import { JacStreamBase, JacStreamError } from './base';
 export class JacStreamSerial extends JacStreamBase implements Duplex {
   private port: SerialPort;
@@ -74,10 +74,7 @@ export class JacStreamSerial extends JacStreamBase implements Duplex {
     this.logger.warn(`Serial connection ended: ${reason}`);
 
     if (this.disconnectHandler) {
-      navigator.serial.removeEventListener(
-        'disconnect',
-        this.disconnectHandler
-      );
+      navigator.serial.removeEventListener('disconnect', this.disconnectHandler);
       this.disconnectHandler = null;
     }
 
@@ -116,10 +113,7 @@ export class JacStreamSerial extends JacStreamBase implements Duplex {
     this.isDestroyed = true;
 
     if (this.disconnectHandler) {
-      navigator.serial.removeEventListener(
-        'disconnect',
-        this.disconnectHandler
-      );
+      navigator.serial.removeEventListener('disconnect', this.disconnectHandler);
       this.disconnectHandler = null;
     }
 

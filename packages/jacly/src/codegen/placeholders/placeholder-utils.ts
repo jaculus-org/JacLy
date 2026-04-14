@@ -1,11 +1,11 @@
-import { JaclyBlockKindBlock } from '@/schema';
-import { BlockExtended } from '@/blocks/types/custom-block';
-import * as Blockly from 'blockly/core';
-import { JavascriptGenerator, Order } from 'blockly/javascript';
+import type * as Blockly from 'blockly/core';
+import { type JavascriptGenerator, Order } from 'blockly/javascript';
 import {
   isVirtualInstance,
   resolveVirtualInstanceConnection,
 } from '@/blocks/instances/constructors';
+import type { BlockExtended } from '@/blocks/types/custom-block';
+import type { JaclyBlockKindBlock } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 
 export type FieldDropdownWithMenuGenerator = Blockly.FieldDropdown & {
@@ -20,7 +20,7 @@ export function getPlaceholderValue(
   state: EngineState,
   arg: NonNullable<JaclyBlockKindBlock['args0']>[number],
   codeBlock: BlockExtended,
-  generator: JavascriptGenerator
+  generator: JavascriptGenerator,
 ): string {
   const argName = arg.name;
 
@@ -33,11 +33,7 @@ export function getPlaceholderValue(
     case 'field_dropdown': {
       const rawValue = codeBlock.getFieldValue(argName) || '';
       if (isVirtualInstance(rawValue)) {
-        const resolved = resolveVirtualInstanceConnection(
-          state,
-          rawValue,
-          codeBlock.workspace
-        );
+        const resolved = resolveVirtualInstanceConnection(state, rawValue, codeBlock.workspace);
         if (resolved !== null) return resolved;
       }
       return rawValue;
@@ -63,19 +59,14 @@ export function replacePlaceholders(
   code: string,
   args: JaclyBlockKindBlock['args0'],
   codeBlock: BlockExtended,
-  generator: JavascriptGenerator
+  generator: JavascriptGenerator,
 ): string {
   if (!args) return code;
 
-  args.forEach(arg => {
+  args.forEach((arg) => {
     const placeholder = `$[${arg.name}]`;
     if (code.includes(placeholder)) {
-      const replaceValue = getPlaceholderValue(
-        state,
-        arg,
-        codeBlock,
-        generator
-      );
+      const replaceValue = getPlaceholderValue(state, arg, codeBlock, generator);
       code = code.replaceAll(placeholder, replaceValue);
     }
   });

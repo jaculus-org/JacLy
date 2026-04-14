@@ -1,10 +1,6 @@
-import { createContext, useContext, type ReactNode } from 'react';
 import type * as FlexLayout from 'flexlayout-react';
-import type {
-  NewPanelProps,
-  PanelAction,
-  PanelType,
-} from '../types/flexlayout-type';
+import { createContext, type ReactNode, useContext } from 'react';
+import type { NewPanelProps, PanelAction, PanelType } from '../types/flexlayout-type';
 
 export interface ProjectEditorState {
   model: FlexLayout.Model;
@@ -26,7 +22,7 @@ export interface ProjectEditorMeta {
       leading: ReactNode;
       content: ReactNode;
       buttons: ReactNode[];
-    }
+    },
   ) => void;
 }
 
@@ -36,16 +32,12 @@ export interface ProjectEditorContextValue {
   meta: ProjectEditorMeta;
 }
 
-export const ProjectEditorContext = createContext<
-  ProjectEditorContextValue | undefined
->(undefined);
+export const ProjectEditorContext = createContext<ProjectEditorContextValue | undefined>(undefined);
 
 export function useProjectEditor(): ProjectEditorContextValue {
   const context = useContext(ProjectEditorContext);
   if (!context) {
-    throw new Error(
-      'useProjectEditor must be used within a ProjectEditor.Provider'
-    );
+    throw new Error('useProjectEditor must be used within a ProjectEditor.Provider');
   }
   return context;
 }

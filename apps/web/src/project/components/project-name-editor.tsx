@@ -1,7 +1,6 @@
-import { m } from '@/core/paraglide/messages';
-import { useState } from 'react';
 import { Pencil } from 'lucide-react';
-import { useActiveProject } from '../state/active-project-context';
+import { useState } from 'react';
+import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import {
   Dialog,
@@ -12,6 +11,7 @@ import {
   DialogTitle,
 } from '@/ui/components/dialog';
 import { Input } from '@/ui/components/input';
+import { useActiveProject } from '../state/active-project-context';
 
 const projectNamePattern = /^[a-zA-Z0-9-_ ]+$/;
 
@@ -84,26 +84,20 @@ export function ProjectNameEditor() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{m.project_rename_title()}</DialogTitle>
-            <DialogDescription>
-              {m.project_rename_description()}
-            </DialogDescription>
+            <DialogDescription>{m.project_rename_description()}</DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <Input
               value={value}
-              onChange={e => setValue(e.target.value)}
+              onChange={(e) => setValue(e.target.value)}
               placeholder={m.project_rename_placeholder()}
-              onKeyDown={e => e.key === 'Enter' && confirm()}
+              onKeyDown={(e) => e.key === 'Enter' && confirm()}
               autoFocus
             />
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={loading}
-            >
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               {m.project_rename_cancel()}
             </Button>
             <Button onClick={confirm} disabled={loading}>

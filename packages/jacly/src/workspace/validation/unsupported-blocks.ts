@@ -5,11 +5,7 @@ export function isRegistered(type: string): boolean {
   return !!Blockly.Blocks[type];
 }
 
-export function makePlaceholder(
-  original: BlockState,
-  x?: number,
-  y?: number
-): BlockState {
+export function makePlaceholder(original: BlockState, x?: number, y?: number): BlockState {
   const extra: UnsupportedBlockExtraState = { originalState: original };
   return {
     type: 'unsupported_block',
@@ -27,9 +23,7 @@ function tryRestore(node: BlockState): {
   if (node.type !== 'unsupported_block') {
     return { block: node, restored: false };
   }
-  const extra = node.extraState as unknown as
-    | UnsupportedBlockExtraState
-    | undefined;
+  const extra = node.extraState as unknown as UnsupportedBlockExtraState | undefined;
   const original = extra?.originalState;
   if (!original || !isRegistered(original.type)) {
     return { block: node, restored: false };
@@ -37,10 +31,7 @@ function tryRestore(node: BlockState): {
   return { block: original, restored: true };
 }
 
-export function restoreBlock(
-  node: BlockState,
-  restored: Set<string>
-): BlockState {
+export function restoreBlock(node: BlockState, restored: Set<string>): BlockState {
   const { block: current, restored: didRestore } = tryRestore(node);
   if (didRestore) {
     restored.add(current.type);

@@ -1,5 +1,15 @@
+import { getRequest } from '@jaculus/jacly/project';
+import { createFromBundle } from '@jaculus/project/creation';
+import type { JaculusProjectType } from '@jaculus/project/package';
+import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { BlocksIcon, Code2Icon } from 'lucide-react';
+import { enqueueSnackbar } from 'notistack';
+import { useEffect, useMemo, useState } from 'react';
+import { Logger } from '@/core/components/logger';
 import { m } from '@/core/paraglide/messages';
-import { ProjectCard } from '@/ui/components/custom/project-card';
+import { logger } from '@/core/services/logger-service';
+import { loadPackageFromFile } from '@/project/services/load-package';
 import {
   Accordion,
   AccordionContent,
@@ -7,18 +17,8 @@ import {
   AccordionTrigger,
 } from '@/ui/components/accordion';
 import { Button } from '@/ui/components/button';
+import { ProjectCard } from '@/ui/components/custom/project-card';
 import { Input } from '@/ui/components/input';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { BlocksIcon, Code2Icon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { getRequest } from '@jaculus/jacly/project';
-import { enqueueSnackbar } from 'notistack';
-import type { JaculusProjectType } from '@jaculus/project/package';
-import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
-import { loadPackageFromFile } from '@/project/services/load-package';
-import { createFromBundle } from '@jaculus/project/creation';
-import { Logger } from '@/core/components/logger';
-import { logger } from '@/core/services/logger-service';
 
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
@@ -39,8 +39,7 @@ const defaultRegisters = import.meta.env.DEV
 
 function NewProject() {
   const navigate = useNavigate();
-  const { projectManService: runtimeService, projectFsService } =
-    Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } = Route.useRouteContext();
   const projectOptions = useMemo<JaculusProjectOptions[]>(
     () => [
       {
@@ -56,14 +55,13 @@ function NewProject() {
         icon: <Code2Icon />,
       },
     ],
-    []
+    [],
   );
   const [projectName, setProjectName] = useState('');
   const [projectType, setProjectType] = useState<JaculusProjectType>('jacly');
 
   const [templates, setTemplates] = useState<RegistryListTemplate[]>([]);
-  const [selectedTemplate, setSelectedTemplate] =
-    useState<RegistryListTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<RegistryListTemplate | null>(null);
   const [registers, setRegisters] = useState<string[]>(defaultRegisters);
 
   const [isCreating, setIsCreating] = useState(false);
@@ -107,10 +105,7 @@ function NewProject() {
     try {
       const registry = new Registry(registers, getRequest, logger);
       const versions = await registry.listVersions(selectedTemplate.id);
-      const tgz = await registry.getPackageTgz(
-        selectedTemplate.id,
-        versions[0]
-      );
+      const tgz = await registry.getPackageTgz(selectedTemplate.id, versions[0]);
 
       // Load package using unified utility - convert Uint8Array to File
       const file = new File([new Uint8Array(tgz)], 'package.tar.gz', {
@@ -121,10 +116,7 @@ function NewProject() {
       const pkg = importResult.package;
 
       // Create the project in the database
-      const newProject = await runtimeService.createProject(
-        projectName,
-        projectType
-      );
+      const newProject = await runtimeService.createProject(projectName, projectType);
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
 
@@ -147,27 +139,22 @@ function NewProject() {
 
       <div className="space-y-6">
         <div>
-          <label
-            htmlFor="projectName"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-1">
             {m.project_new_name_label()}
           </label>
           <Input
             id="projectName"
             value={projectName}
-            onChange={e => setProjectName(e.target.value)}
+            onChange={(e) => setProjectName(e.target.value)}
             placeholder={m.project_new_name_placeholder()}
             autoFocus
           />
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-2">
-            {m.project_new_type_title()}
-          </h2>
+          <h2 className="text-lg font-semibold mb-2">{m.project_new_type_title()}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projectOptions.map(type => (
+            {projectOptions.map((type) => (
               <ProjectCard
                 key={type.type}
                 title={type.title}
@@ -181,16 +168,14 @@ function NewProject() {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-2">
-            {m.project_new_template_title()}
-          </h2>
+          <h2 className="text-lg font-semibold mb-2">{m.project_new_template_title()}</h2>
           <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-2">
             {templates.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">
                 {m.project_new_template_loading()}
               </p>
             ) : (
-              templates.map(template => (
+              templates.map((template) => (
                 <div
                   key={template.id}
                   onClick={() => setSelectedTemplate(template)}
@@ -201,9 +186,7 @@ function NewProject() {
                   }`}
                 >
                   <span className="font-medium">{template.id}</span>
-                  <p className="text-sm text-gray-500">
-                    {template.description}
-                  </p>
+                  <p className="text-sm text-gray-500">{template.description}</p>
                 </div>
               ))
             )}
@@ -225,10 +208,8 @@ function NewProject() {
                   <Input
                     id="defaultRegisters"
                     value={registers.join('; ')}
-                    onChange={e => {
-                      setRegisters(
-                        e.target.value.split(';').map(s => s.trim())
-                      );
+                    onChange={(e) => {
+                      setRegisters(e.target.value.split(';').map((s) => s.trim()));
                     }}
                     className="text-sm"
                   />
@@ -246,16 +227,10 @@ function NewProject() {
           className="w-full"
           disabled={!selectedTemplate || isCreating}
         >
-          {isCreating
-            ? m.project_new_btn_creating()
-            : m.project_new_btn_create()}
+          {isCreating ? m.project_new_btn_creating() : m.project_new_btn_create()}
         </Button>
 
-        <Logger.Logs
-          defaultLevel="silly"
-          logLevelSelector={false}
-          hideIfEmpty
-        />
+        <Logger.Logs defaultLevel="silly" logLevelSelector={false} hideIfEmpty />
       </div>
     </div>
   );

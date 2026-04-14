@@ -1,24 +1,20 @@
-import { m } from '@/core/paraglide/messages';
-import { Button } from '@/ui/components/button';
-import { Badge } from '@/ui/components/badge';
-import { Textarea } from '@/ui/components/textarea';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
-import {
-  Send,
-  Trash2,
-  Clock,
+  Check,
   ChevronDown,
   ChevronsDown,
+  ChevronUp,
+  Clock,
   ClockFadingIcon,
   Copy,
-  Check,
-  ChevronUp,
+  Send,
+  Trash2,
 } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
+import { m } from '@/core/paraglide/messages';
+import { Badge } from '@/ui/components/badge';
+import { Button } from '@/ui/components/button';
+import { Textarea } from '@/ui/components/textarea';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 
 interface ConsoleToolbarProps {
   input: string;
@@ -59,7 +55,7 @@ export function ConsoleToolbar({
         <Textarea
           placeholder={m.terminal_placeholder()}
           value={input}
-          onChange={e => onChangeInput(e.target.value)}
+          onChange={(e) => onChangeInput(e.target.value)}
           onKeyDown={onKeyDown}
           className="min-h-8 flex-1 resize-none py-1.5"
           rows={1}
@@ -91,37 +87,23 @@ export function ConsoleToolbar({
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant={showTimestamp ? 'default' : 'outline'}
-                onClick={onToggleTimestamp}
-              >
+              <Button variant={showTimestamp ? 'default' : 'outline'} onClick={onToggleTimestamp}>
                 {showTimestamp ? <Clock /> : <ClockFadingIcon />}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>
-                {showTimestamp
-                  ? m.terminal_timestamp_hide()
-                  : m.terminal_timestamp_show()}
-              </p>
+              <p>{showTimestamp ? m.terminal_timestamp_hide() : m.terminal_timestamp_show()}</p>
             </TooltipContent>
           </Tooltip>
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant={autoScroll ? 'default' : 'outline'}
-                onClick={onToggleAutoscroll}
-              >
+              <Button variant={autoScroll ? 'default' : 'outline'} onClick={onToggleAutoscroll}>
                 {autoScroll ? <ChevronsDown /> : <ChevronDown />}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>
-                {autoScroll
-                  ? m.terminal_autoscroll_disable()
-                  : m.terminal_autoscroll_enable()}
-              </p>
+              <p>{autoScroll ? m.terminal_autoscroll_disable() : m.terminal_autoscroll_enable()}</p>
             </TooltipContent>
           </Tooltip>
 

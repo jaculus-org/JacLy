@@ -3,27 +3,20 @@ import { JaclyDocument } from './document';
 import { buildWebviewHtml } from './html-builder';
 import { setupWebviewHandler } from './webview-handler';
 
-export class JaclyEditorProvider
-  implements vscode.CustomReadonlyEditorProvider<JaclyDocument>
-{
+export class JaclyEditorProvider implements vscode.CustomReadonlyEditorProvider<JaclyDocument> {
   public static readonly viewType = 'jacly.editor';
 
   private readonly statusBarItem: vscode.StatusBarItem;
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new JaclyEditorProvider(context);
-    return vscode.window.registerCustomEditorProvider(
-      JaclyEditorProvider.viewType,
-      provider,
-      { supportsMultipleEditorsPerDocument: false }
-    );
+    return vscode.window.registerCustomEditorProvider(JaclyEditorProvider.viewType, provider, {
+      supportsMultipleEditorsPerDocument: false,
+    });
   }
 
   public constructor(private readonly context: vscode.ExtensionContext) {
-    this.statusBarItem = vscode.window.createStatusBarItem(
-      vscode.StatusBarAlignment.Left,
-      100
-    );
+    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     this.statusBarItem.text = '$(gear) Jacly';
     this.statusBarItem.show();
     context.subscriptions.push(this.statusBarItem);
@@ -32,7 +25,7 @@ export class JaclyEditorProvider
   async openCustomDocument(
     uri: vscode.Uri,
     _openContext: vscode.CustomDocumentOpenContext,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<JaclyDocument> {
     const fileBytes = await vscode.workspace.fs.readFile(uri);
     const content = Buffer.from(fileBytes).toString('utf8');
@@ -41,7 +34,7 @@ export class JaclyEditorProvider
 
   async resolveCustomEditor(
     document: JaclyDocument,
-    webviewPanel: vscode.WebviewPanel
+    webviewPanel: vscode.WebviewPanel,
   ): Promise<void> {
     webviewPanel.webview.options = {
       enableScripts: true,
@@ -55,7 +48,7 @@ export class JaclyEditorProvider
     setupWebviewHandler(document, webviewPanel, this.statusBarItem);
     webviewPanel.webview.html = await buildWebviewHtml(
       webviewPanel.webview,
-      this.context.extensionUri
+      this.context.extensionUri,
     );
   }
 }
