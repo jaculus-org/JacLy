@@ -2,58 +2,57 @@ import React, { useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { JaclyEditor } from '@jaculus/jacly/editor';
 import { JaclyEngine } from '@jaculus/jacly/engine';
+import type { JaclyBlocksData } from '@jaculus/project';
+import type {
+  ExtensionToWebviewMessage,
+  WebviewToExtensionMessage,
+} from '../messages';
 
 import './dev-index.css';
 
 type MissingPackages = Record<string, Iterable<string>>;
 
 declare const acquireVsCodeApi: () => {
-  postMessage: (message: unknown) => void;
+  postMessage: (message: WebviewToExtensionMessage) => void;
   setState: (state: unknown) => void;
   getState: () => unknown;
 };
 
-interface JaclyBlocksData {
-  blockFiles: Record<string, object>;
-  translations: Record<string, string>;
-}
-
-type IncomingMessage =
-  | {
-      type: 'load';
-      initialJson: object;
-      jaclyBlocksData: JaclyBlocksData;
-    }
-  | {
-      type: 'reloadBlocks';
-      jaclyBlocksData: JaclyBlocksData;
-    };
-
 const App = () => {
   const vscode = React.useMemo(() => acquireVsCodeApi(), []);
+
+  type LoadPhase = 'connecting' | 'loading-blocks' | 'ready';
 
   const [initialJson, setInitialJson] = useState<object | null>(null);
   const [jaclyBlocksData, setJaclyBlocksData] =
     useState<JaclyBlocksData | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [engine] = useState(() => new JaclyEngine());
+  const [error, setError] = useState<string | null>(null);
+  const [loadPhase, setLoadPhase] = useState<LoadPhase>('connecting');
 
   React.useEffect(() => {
-    const handler = (event: MessageEvent<IncomingMessage>) => {
+    const handler = (event: MessageEvent<ExtensionToWebviewMessage>) => {
       const message = event.data;
       if (message?.type === 'load') {
+        setLoadPhase('ready');
         setInitialJson(message.initialJson ?? {});
         setJaclyBlocksData(
           message.jaclyBlocksData ?? { blockFiles: {}, translations: {} }
         );
+        setError(null);
       } else if (message?.type === 'reloadBlocks') {
         setJaclyBlocksData(
           message.jaclyBlocksData ?? { blockFiles: {}, translations: {} }
         );
+        setError(null);
+      } else if (message?.type === 'error') {
+        setError(message.message);
       }
     };
     window.addEventListener('message', handler);
     vscode.postMessage({ type: 'ready' });
+    setLoadPhase('loading-blocks');
     return () => window.removeEventListener('message', handler);
   }, [vscode]);
 
@@ -99,10 +98,50 @@ const App = () => {
     []
   );
 
-  if (!initialJson || !jaclyBlocksData) {
+  if (error) {
     return (
-      <div className="loading">
-        <p>Loading editor...</p>
+      <div className="jacly-error">
+        <p className="jacly-error__title">Jacly failed to load</p>
+        <pre className="jacly-error__message">{error}</pre>
+      </div>
+    );
+  }
+
+  if (!initialJson || !jaclyBlocksData) {
+    const steps: { label: string; phase: LoadPhase }[] = [
+      { label: 'Connecting to workspace', phase: 'connecting' },
+      { label: 'Loading block definitions', phase: 'loading-blocks' },
+      { label: 'Initializing editor', phase: 'ready' },
+    ];
+    const currentIndex = steps.findIndex(s => s.phase === loadPhase);
+
+    return (
+      <div className="jacly-loading">
+        <div className="jacly-loading__spinner" aria-hidden="true" />
+        <p className="jacly-loading__title">Loading JacLy</p>
+        <ul className="jacly-loading__steps">
+          {steps.map((step, i) => {
+            const isDone = i < currentIndex;
+            const isActive = i === currentIndex;
+            return (
+              <li
+                key={step.phase}
+                className={[
+                  'jacly-loading__step',
+                  isDone ? 'jacly-loading__step--done' : '',
+                  isActive ? 'jacly-loading__step--active' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                <span className="jacly-loading__step-icon">
+                  {isDone ? '✓' : isActive ? '›' : '○'}
+                </span>
+                {step.label}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     );
   }

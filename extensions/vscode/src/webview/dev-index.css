@@ -31,14 +31,103 @@ body,
   width: 100%;
 }
 
-.loading {
+.jacly-loading {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  width: 100%;
+  font-family: system-ui, sans-serif;
+  color: #ccc;
+}
+
+.jacly-loading__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #444;
+  border-top-color: #6c9ef8;
+  border-radius: 50%;
+  animation: jacly-spin 0.8s linear infinite;
+}
+
+@keyframes jacly-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.jacly-loading__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ddd;
+  margin: 0;
+}
+
+.jacly-loading__steps {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jacly-loading__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.jacly-loading__step--active {
+  color: #6c9ef8;
+}
+
+.jacly-loading__step--done {
+  color: #4ec994;
+}
+
+.jacly-loading__step-icon {
+  width: 14px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.jacly-error {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
-  color: #ccc;
+  padding: 24px;
+  box-sizing: border-box;
   font-family: system-ui, sans-serif;
+}
+
+.jacly-error__title {
+  color: #f48771;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.jacly-error__message {
+  color: #ccc;
+  font-family: monospace;
+  font-size: 13px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 12px 16px;
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* Blockly overrides for dark theme in VS Code */
