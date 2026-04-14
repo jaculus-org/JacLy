@@ -437,6 +437,9 @@ importers:
 
   extensions/vscode:
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.39.2
+        version: 9.39.2
       '@jaculus/common':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/common
