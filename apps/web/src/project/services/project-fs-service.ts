@@ -1,15 +1,8 @@
-import {
-  configure,
-  fs,
-  mount,
-  mounts,
-  resolveMountConfig,
-  umount,
-} from '@zenfs/core';
-import { IndexedDB } from '@zenfs/dom';
-import { Zip } from '@zenfs/archives';
-import { enqueueSnackbar } from 'notistack';
 import { copyFolder, type FSInterface } from '@jaculus/project/fs';
+import { Zip } from '@zenfs/archives';
+import { configure, fs, mount, mounts, resolveMountConfig, umount } from '@zenfs/core';
+import { IndexedDB } from '@zenfs/dom';
+import { enqueueSnackbar } from 'notistack';
 
 export interface ProjectFsInterface {
   fs: FSInterface;
@@ -41,9 +34,7 @@ export function isMounted(projectId: string): boolean {
   return mounts.has(path) || mounts.has(`${path}/`);
 }
 
-export async function mountProject(
-  projectId: string
-): Promise<ProjectFsInterface> {
+export async function mountProject(projectId: string): Promise<ProjectFsInterface> {
   await ensureBaseFs();
 
   const mountPath = getMountPath(projectId);
@@ -91,7 +82,7 @@ function deleteProjectStore(projectId: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.deleteDatabase(storeName);
     req.onsuccess = () => resolve();
-    req.onerror = event => reject(event);
+    req.onerror = (event) => reject(event);
     req.onblocked = () => {
       const message = `Deletion of IndexedDB store "${storeName}" is blocked. Reloading page in 3 seconds...`;
       console.warn(message);
@@ -106,10 +97,7 @@ function deleteProjectStore(projectId: string): Promise<void> {
 // Renames a project by copying all files to a new IndexedDB store,
 // then deleting the old one. We copy first because IndexedDB
 // doesn't support renaming stores directly.
-export async function renameProject(
-  oldProjectId: string,
-  newProjectId: string
-): Promise<void> {
+export async function renameProject(oldProjectId: string, newProjectId: string): Promise<void> {
   const oldFs = await mountProject(oldProjectId);
   const newFs = await mountProject(newProjectId);
 
@@ -132,7 +120,7 @@ export class ProjectFsService {
 
   async withMount<T>(
     projectId: string,
-    action: (fsInterface: ProjectFsInterface) => Promise<T>
+    action: (fsInterface: ProjectFsInterface) => Promise<T>,
   ): Promise<T> {
     const wasMounted = isMounted(projectId);
     const fsInterface = await mountProject(projectId);

@@ -1,9 +1,6 @@
-import * as Blockly from 'blockly/core';
+import type * as Blockly from 'blockly/core';
 import { Events } from 'blockly/core';
-import {
-  BlockSvgExtended,
-  WorkspaceSvgExtended,
-} from '@/blocks/types/custom-block';
+import type { BlockSvgExtended, WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 
 const OUTSIDE_ENTRY_DISABLED_REASON = 'outside_entry_block';
 
@@ -14,9 +11,7 @@ const codeChangeEvents = [
   Events.BLOCK_CHANGE,
 ];
 
-export function registerWorkspaceChangeListener(
-  workspace: WorkspaceSvgExtended
-) {
+export function registerWorkspaceChangeListener(workspace: WorkspaceSvgExtended) {
   listenersFunctionsMap.forEach((eventTypes, listenerFunction) => {
     workspace.addChangeListener((event: Blockly.Events.Abstract) => {
       if (eventTypes === undefined || eventTypes.includes(event.type)) {
@@ -37,7 +32,7 @@ const listenersFunctionsMap: Map<
 
 export function autoCloseToolboxOnCreate(
   workspace: WorkspaceSvgExtended,
-  event?: Blockly.Events.Abstract
+  event?: Blockly.Events.Abstract,
 ) {
   if (!event || event.type !== Events.BLOCK_CREATE) return;
   const toolbox = workspace.getToolbox() as Blockly.Toolbox | null;
@@ -45,10 +40,7 @@ export function autoCloseToolboxOnCreate(
 
   for (const item of toolbox.getToolboxItems()) {
     const collapsible = item as Blockly.CollapsibleToolboxCategory;
-    if (
-      typeof collapsible.isCollapsible === 'function' &&
-      collapsible.isCollapsible()
-    ) {
+    if (typeof collapsible.isCollapsible === 'function' && collapsible.isCollapsible()) {
       // close only categories with own blocks (4 blocks are default header)
       const contents = collapsible.getContents();
       const hasOwnBlocks = Array.isArray(contents) && contents.length > 4;
@@ -64,7 +56,7 @@ export function autoCloseToolboxOnCreate(
 export function processWorkspaceBlocks(workspace: WorkspaceSvgExtended) {
   const blocks = workspace.getAllBlocks(false);
 
-  blocks.forEach(block => {
+  blocks.forEach((block) => {
     applyOutsideEntryRule(block);
   });
 }
@@ -74,8 +66,7 @@ function applyOutsideEntryRule(block: BlockSvgExtended): void {
 
   // isProgramStartActive might have name starting procedure definition
   const isProgramStartActive =
-    !!rootBlock &&
-    (rootBlock?.isProgramStart || rootBlock?.type.startsWith('procedures_'));
+    !!rootBlock && (rootBlock?.isProgramStart || rootBlock?.type.startsWith('procedures_'));
   const shouldDisable = !isProgramStartActive;
   const hasReason = block.hasDisabledReason(OUTSIDE_ENTRY_DISABLED_REASON);
 

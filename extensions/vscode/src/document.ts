@@ -1,9 +1,9 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
 export class JaclyDocument implements vscode.CustomDocument {
   constructor(
     public readonly uri: vscode.Uri,
-    public content: string
+    public content: string,
   ) {}
 
   dispose(): void {}

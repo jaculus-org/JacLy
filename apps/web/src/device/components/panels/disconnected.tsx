@@ -1,6 +1,6 @@
+import { Unplug } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { Card } from '@/ui/components/card';
-import { Unplug } from 'lucide-react';
 
 export function DeviceDisconnected() {
   return (
@@ -9,9 +9,7 @@ export function DeviceDisconnected() {
         <Unplug className="h-10 w-10 text-muted-foreground" />
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">{m.config_no_device()}</h3>
-          <p className="text-sm text-muted-foreground">
-            {m.config_no_device_hint()}
-          </p>
+          <p className="text-sm text-muted-foreground">{m.config_no_device_hint()}</p>
         </div>
       </Card>
     </div>

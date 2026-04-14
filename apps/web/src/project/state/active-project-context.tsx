@@ -1,7 +1,7 @@
+import type * as fs from 'node:fs';
 import { createContext, useContext } from 'react';
-import type * as fs from 'fs';
 import type { IDbProject } from '@/core/types/project';
-import { JaclyFiles } from '../types/jacly-files';
+import type { JaclyFiles } from '../types/jacly-files';
 
 export type ProjectErrorReason =
   | 'fs-mount-failed'
@@ -41,16 +41,12 @@ export interface ActiveProjectContextValue {
   meta: ActiveProjectMeta;
 }
 
-export const ActiveProjectContext = createContext<
-  ActiveProjectContextValue | undefined
->(undefined);
+export const ActiveProjectContext = createContext<ActiveProjectContextValue | undefined>(undefined);
 
 export function useActiveProject(): ActiveProjectContextValue {
   const context = useContext(ActiveProjectContext);
   if (!context) {
-    throw new Error(
-      'useActiveProject must be used within an ActiveProject.Provider'
-    );
+    throw new Error('useActiveProject must be used within an ActiveProject.Provider');
   }
   return context;
 }

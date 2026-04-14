@@ -1,32 +1,18 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import { enqueueSnackbar } from 'notistack';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
 import { ProjectLoadingIndicator } from '../components/project-loading';
-import {
-  controlPanel,
-  getUpdatedLayoutModel,
-  openPanel,
-} from '../lib/flexlayout/model';
 import { flexLayoutDefaultJson } from '../lib/flexlayout/defaults';
+import { controlPanel, getUpdatedLayoutModel, openPanel } from '../lib/flexlayout/model';
 import { getPanelTitle } from '../lib/flexlayout/panel-registry';
-import type {
-  NewPanelProps,
-  PanelAction,
-  PanelType,
-} from '../types/flexlayout-type';
-import { useActiveProject } from './active-project-context';
 import type { ProjectManagementService } from '../services/project-runtime-service';
+import type { NewPanelProps, PanelAction, PanelType } from '../types/flexlayout-type';
+import { useActiveProject } from './active-project-context';
 import {
-  ProjectEditorContext,
   type ProjectEditorActions,
+  ProjectEditorContext,
   type ProjectEditorContextValue,
 } from './project-editor-context';
 
@@ -35,10 +21,7 @@ interface ProjectEditorProviderProps {
   projectManService: ProjectManagementService;
 }
 
-export function ProjectEditorProvider({
-  children,
-  projectManService,
-}: ProjectEditorProviderProps) {
+export function ProjectEditorProvider({ children, projectManService }: ProjectEditorProviderProps) {
   const {
     state: { dbProject, error },
   } = useActiveProject();
@@ -51,18 +34,15 @@ export function ProjectEditorProvider({
       if (!model) return;
       controlPanel(model, type, action);
     },
-    [model]
+    [model],
   );
 
   const safeOpenPanel = useCallback(
-    (
-      type: 'code' | 'error',
-      props: NewPanelProps['code'] | NewPanelProps['error']
-    ) => {
+    (type: 'code' | 'error', props: NewPanelProps['code'] | NewPanelProps['error']) => {
       if (!model) return;
       openPanel(model, type as never, props as never);
     },
-    [model]
+    [model],
   );
 
   // useKeyboardShortcut(
@@ -85,8 +65,7 @@ export function ProjectEditorProvider({
   useEffect(() => {
     const loadLayout = async () => {
       try {
-        const savedLayout = (await projectManService.getProject(dbProject.id))
-          ?.layout;
+        const savedLayout = (await projectManService.getProject(dbProject.id))?.layout;
         setModel(FlexLayout.Model.fromJson(getUpdatedLayoutModel(savedLayout)));
       } catch (error) {
         console.error('Failed to load layout settings:', error);
@@ -119,23 +98,17 @@ export function ProjectEditorProvider({
     }
   }, [model, pkg, error, safeControlPanel, safeOpenPanel]);
 
-  const handleModelChange = useCallback<
-    ProjectEditorActions['handleModelChange']
-  >(
-    async newModel => {
+  const handleModelChange = useCallback<ProjectEditorActions['handleModelChange']>(
+    async (newModel) => {
       setModel(newModel);
 
       try {
-        await projectManService.updateProjectKey(
-          dbProject.id,
-          'layout',
-          newModel.toJson()
-        );
+        await projectManService.updateProjectKey(dbProject.id, 'layout', newModel.toJson());
       } catch (_error) {
         console.error('Error saving layout model:', _error);
       }
     },
-    [projectManService, dbProject.id]
+    [projectManService, dbProject.id],
   );
 
   const onRenderTab = useCallback(
@@ -145,14 +118,14 @@ export function ProjectEditorProvider({
         leading: React.ReactNode;
         content: React.ReactNode;
         buttons: React.ReactNode[];
-      }
+      },
     ) => {
       const translatedName = getPanelTitle(node);
       if (translatedName) {
         renderValues.content = translatedName;
       }
     },
-    []
+    [],
   );
 
   const value = useMemo<ProjectEditorContextValue | null>(() => {
@@ -173,9 +146,5 @@ export function ProjectEditorProvider({
     return <ProjectLoadingIndicator message="Loading layout..." />;
   }
 
-  return (
-    <ProjectEditorContext.Provider value={value}>
-      {children}
-    </ProjectEditorContext.Provider>
-  );
+  return <ProjectEditorContext.Provider value={value}>{children}</ProjectEditorContext.Provider>;
 }

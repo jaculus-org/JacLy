@@ -1,21 +1,20 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
+import type { JaclyBlocksData } from '@jaculus/project';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-import { Theme } from '@/editor/types/theme';
-import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
-import { JaclyBlocksData } from '@jaculus/project';
-import { getBlocklyTheme } from '@/editor/theme/theme';
-import { useBlocklyMessages } from '../hooks/use-blockly-messages';
-import { JaclyEngine } from '@/engine/engine';
-import type { EngineMissingPackages } from '@/workspace/validation/types';
-import { debounce } from '@/utils/debouncer';
-import { JaclyLoading } from './loading';
+import type { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import {
   attachBlocklyEditorWorkspace,
   detachBlocklyEditorWorkspace,
   registerBlocklyEditorIntegrations,
 } from '@/editor/integrations/blockly-editor-adapter';
+import { getBlocklyTheme } from '@/editor/theme/theme';
+import type { Theme } from '@/editor/types/theme';
+import type { JaclyEngine } from '@/engine/engine';
+import { debounce } from '@/utils/debouncer';
+import type { EngineMissingPackages } from '@/workspace/validation/types';
+import { useBlocklyMessages } from '../hooks/use-blockly-messages';
+import { JaclyLoading } from './loading';
 import '../styles/toolbox.css';
 
 interface JaclyEditorProps {
@@ -44,7 +43,7 @@ export function JaclyEditor({
 
   const toolboxConfiguration = useMemo(
     () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
-    [jaclyBlocksData, messagesLoaded, engine]
+    [jaclyBlocksData, messagesLoaded, engine],
   );
 
   const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
@@ -59,7 +58,7 @@ export function JaclyEditor({
           restoredTypes: [] as string[],
           replacedTypes: [] as string[],
         });
-    task.then(result => {
+    task.then((result) => {
       if (!cancelled) setSanitizedJson(result.state);
     });
     return () => {
@@ -72,7 +71,7 @@ export function JaclyEditor({
       debounce((workspace: WorkspaceSvgExtended) => {
         onGeneratedCode(engine.generateCode(workspace));
       }, 300),
-    [engine, onGeneratedCode]
+    [engine, onGeneratedCode],
   );
 
   const debouncedJsonChange = useMemo(
@@ -80,7 +79,7 @@ export function JaclyEditor({
       debounce((json: object) => {
         onJsonChange(json);
       }, 300),
-    [onJsonChange]
+    [onJsonChange],
   );
 
   const handleWorkspaceChange = useCallback(
@@ -89,7 +88,7 @@ export function JaclyEditor({
       attachBlocklyEditorWorkspace(workspace);
       debouncedGenerate(workspace);
     },
-    [engine, debouncedGenerate]
+    [engine, debouncedGenerate],
   );
 
   const handleWorkspaceDispose = useCallback(
@@ -97,7 +96,7 @@ export function JaclyEditor({
       detachBlocklyEditorWorkspace(workspace);
       engine.detachFromWorkspace(workspace);
     },
-    [engine]
+    [engine],
   );
 
   if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {

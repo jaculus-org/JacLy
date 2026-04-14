@@ -1,10 +1,10 @@
 export { CollapsibleCardContent } from './collapsible-card-content';
 export {
-  useCollapsibleCard,
   type CollapsibleCardActions,
   type CollapsibleCardContextValue,
   type CollapsibleCardMeta,
   type CollapsibleCardState,
+  useCollapsibleCard,
 } from './collapsible-card-context';
 export { CollapsibleCardHeader } from './collapsible-card-header';
 export { CollapsibleCardProvider } from './collapsible-card-provider';

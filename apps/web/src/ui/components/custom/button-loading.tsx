@@ -1,13 +1,11 @@
-import * as React from 'react';
-import { Button } from '@/ui/components/button';
-import { Loader2 } from 'lucide-react';
 import type { VariantProps } from 'class-variance-authority';
+import { Loader2 } from 'lucide-react';
+import type * as React from 'react';
+import { Button } from '@/ui/components/button';
 
 type ButtonVariants = VariantProps<typeof Button>;
 
-interface ButtonLoadingProps
-  extends React.ComponentProps<typeof Button>,
-    ButtonVariants {
+interface ButtonLoadingProps extends React.ComponentProps<typeof Button>, ButtonVariants {
   loading?: boolean;
   spinnerPosition?: 'start' | 'end';
   icon?: React.ReactNode;

@@ -1,5 +1,5 @@
-import { AppSettingsRepository, db, logger, ProjectRepository } from '@/core';
 import { ConsoleBusService } from '@/console';
+import { AppSettingsRepository, db, logger, ProjectRepository } from '@/core';
 import { ProjectFsService, ProjectManagementService } from '@/project';
 
 export type RouterContext = ReturnType<typeof makeRouterContext>;

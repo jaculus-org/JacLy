@@ -1,14 +1,14 @@
 {
-    "name": "core",
-    "version": "0.0.24",
-    "author": "cubicap",
-    "license": "MIT",
-    "description": "Minimal template for a new library",
-    "type": "module",
-    "main": "",
-    "types": "dist/types/index.d.ts",
-    "jaculus": {
-        "packageFormat": 1,
-        "blocks": "blocks"
-    }
+  "name": "core",
+  "version": "0.0.24",
+  "author": "cubicap",
+  "license": "MIT",
+  "description": "Minimal template for a new library",
+  "type": "module",
+  "main": "",
+  "types": "dist/types/index.d.ts",
+  "jaculus": {
+    "packageFormat": 1,
+    "blocks": "blocks"
+  }
 }

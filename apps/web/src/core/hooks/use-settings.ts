@@ -15,10 +15,7 @@ export const useSettings = () => {
     await settingsRepo.update(value);
   };
 
-  const setSettings = async (
-    key: keyof ISettings,
-    value: ISettings[typeof key]
-  ) => {
+  const setSettings = async (key: keyof ISettings, value: ISettings[typeof key]) => {
     const currentSettings = await settingsRepo.get();
     await settingsRepo.update({
       ...currentSettings,

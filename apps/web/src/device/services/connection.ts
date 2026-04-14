@@ -1,13 +1,13 @@
-import { BluetoothIcon, MonitorIcon, UsbIcon } from 'lucide-react';
-import type { ConnectionInfo, ConnectionType } from '../types/connection';
 import { JacDevice } from '@jaculus/device';
-import { logger } from '@/core/services/logger-service';
-import { JacStreamSerial } from './streams/serial';
 import type { Duplex } from '@jaculus/link/stream';
+import { BluetoothIcon, MonitorIcon, UsbIcon } from 'lucide-react';
 import type { AddToConsole } from '@/console';
-import { JacStreamWokwi } from './streams/wokwi';
-import { JacStreamBle } from './streams/ble';
+import { logger } from '@/core/services/logger-service';
 import defaultDiagram from '@/simulator/assets/diagram.json';
+import type { ConnectionInfo, ConnectionType } from '../types/connection';
+import { JacStreamBle } from './streams/ble';
+import { JacStreamSerial } from './streams/serial';
+import { JacStreamWokwi } from './streams/wokwi';
 
 export async function getAvailableConnectionTypes(): Promise<ConnectionInfo[]> {
   const types: ConnectionInfo[] = [];
@@ -35,7 +35,7 @@ export async function connectDevice(
   addToConsole: AddToConsole,
   onDisconnect: () => void,
   projectPath: string,
-  fs: typeof import('fs')
+  fs: typeof import('fs'),
 ): Promise<JacDevice> {
   switch (type) {
     case 'serial':
@@ -43,12 +43,7 @@ export async function connectDevice(
     case 'ble':
       return connectDeviceWebBLE(addToConsole, onDisconnect);
     case 'wokwi':
-      return connectDeviceWokwiSimulator(
-        addToConsole,
-        onDisconnect,
-        projectPath,
-        fs
-      );
+      return connectDeviceWokwiSimulator(addToConsole, onDisconnect, projectPath, fs);
     default:
       return Promise.reject(new UnknownConnectionTypeError(type));
   }
@@ -57,12 +52,12 @@ export async function connectDevice(
 function setupJacDevice(stream: Duplex, addToConsole: AddToConsole): JacDevice {
   const device = new JacDevice(stream, logger);
 
-  device.programOutput.onData(data => {
+  device.programOutput.onData((data) => {
     const msg = String.fromCharCode(...data);
     addToConsole('out', msg);
   });
 
-  device.programError.onData(data => {
+  device.programError.onData((data) => {
     const msg = String.fromCharCode(...data);
     addToConsole('err', msg);
   });
@@ -73,7 +68,7 @@ function setupJacDevice(stream: Duplex, addToConsole: AddToConsole): JacDevice {
 export function sendToDevice(
   device: JacDevice,
   input: Uint8Array,
-  addToConsole: AddToConsole
+  addToConsole: AddToConsole,
 ): void {
   addToConsole('in', new TextDecoder().decode(input));
   device.programInput.write(input);
@@ -82,7 +77,7 @@ export function sendToDevice(
 export function sendToDeviceStr(
   device: JacDevice,
   input: string,
-  addToConsole: AddToConsole
+  addToConsole: AddToConsole,
 ): void {
   addToConsole('in', input);
   device.programInput.write(new TextEncoder().encode(input));
@@ -96,7 +91,7 @@ export function isWebSerialAvailable(): boolean {
 
 export async function connectDeviceWebSerial(
   addToConsole: AddToConsole,
-  onDisconnect: () => void
+  onDisconnect: () => void,
 ): Promise<JacDevice> {
   const port = await navigator.serial.requestPort();
   await port.open({ baudRate: 921600 });
@@ -111,14 +106,12 @@ export async function connectDeviceWebSerial(
 // WEB BLE
 
 export async function isWebBLEAvailable(): Promise<boolean> {
-  return (
-    'bluetooth' in navigator && (await navigator.bluetooth.getAvailability())
-  );
+  return 'bluetooth' in navigator && (await navigator.bluetooth.getAvailability());
 }
 
 export async function connectDeviceWebBLE(
   addToConsole: AddToConsole,
-  onDisconnect: () => void
+  onDisconnect: () => void,
 ): Promise<JacDevice> {
   const bleDevice = await navigator.bluetooth.requestDevice({
     filters: [
@@ -146,7 +139,7 @@ export async function connectDeviceWokwiSimulator(
   addToConsole: AddToConsole,
   onDisconnect: () => void,
   projectPath: string,
-  fs: typeof import('fs')
+  fs: typeof import('fs'),
 ): Promise<JacDevice> {
   const stream = new JacStreamWokwi(logger, {
     handleReadDiagram: async () => {

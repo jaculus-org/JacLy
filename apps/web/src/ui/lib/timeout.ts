@@ -5,10 +5,7 @@ export class TimeoutError extends Error {
   }
 }
 
-export async function executeWithTimeout<T>(
-  promise: Promise<T>,
-  ms: number
-): Promise<T> {
+export async function executeWithTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   let timeoutId: NodeJS.Timeout;
   const timeoutPromise = new Promise<T>((_, reject) => {
     timeoutId = setTimeout(() => {
@@ -16,7 +13,7 @@ export async function executeWithTimeout<T>(
     }, ms);
   });
 
-  return Promise.race([promise, timeoutPromise]).then(result => {
+  return Promise.race([promise, timeoutPromise]).then((result) => {
     clearTimeout(timeoutId);
     return result;
   });

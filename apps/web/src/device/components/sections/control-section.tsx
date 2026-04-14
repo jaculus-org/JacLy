@@ -1,7 +1,7 @@
+import { Power, RotateCw } from 'lucide-react';
+import { m } from '@/core/paraglide/messages';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
-import { m } from '@/core/paraglide/messages';
-import { Power, RotateCw } from 'lucide-react';
 import { useJacDeviceControl } from '../../state/device-control-context';
 
 export function ControlSection() {
@@ -18,7 +18,7 @@ export function ControlSection() {
         <ButtonLoading
           size="sm"
           className="w-full justify-start h-8"
-          loading={state.loading['start']}
+          loading={state.loading.start}
           icon={<Power className="w-3.5 h-3.5" />}
           onClick={actions.startProgram}
         >
@@ -29,7 +29,7 @@ export function ControlSection() {
           size="sm"
           className="w-full justify-start h-8"
           variant="secondary"
-          loading={state.loading['stop']}
+          loading={state.loading.stop}
           icon={<Power className="w-3.5 h-3.5" />}
           onClick={actions.stopProgram}
         >
@@ -40,7 +40,7 @@ export function ControlSection() {
           size="sm"
           className="w-full justify-start h-8"
           variant="outline"
-          loading={state.loading['restart']}
+          loading={state.loading.restart}
           icon={<RotateCw className="w-3.5 h-3.5" />}
           onClick={actions.restartProgram}
         >

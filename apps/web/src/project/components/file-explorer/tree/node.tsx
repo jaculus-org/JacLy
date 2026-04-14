@@ -1,11 +1,11 @@
 'use client';
 
+import { ChevronDown, ChevronRight, Folder, FolderOpen } from 'lucide-react';
 import { memo } from 'react';
-import { ChevronDown, ChevronRight, FolderOpen, Folder } from 'lucide-react';
-import { cn } from '@/ui/lib/cn';
-import { getFileIcon } from './helpers';
-import type { FileTreeNodeProps } from '../types';
 import { ContextMenu, ContextMenuTrigger } from '@/ui/components/context-menu';
+import { cn } from '@/ui/lib/cn';
+import type { FileTreeNodeProps } from '../types';
+import { getFileIcon } from './helpers';
 
 export const FileExplorerTreeNode = memo(
   ({
@@ -30,14 +30,14 @@ export const FileExplorerTreeNode = memo(
                 'flex items-center gap-1 px-2 py-1 text-sm cursor-pointer rounded transition-colors select-none',
                 isSelected
                   ? 'bg-slate-200 dark:bg-slate-700'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800',
               )}
               style={{ paddingLeft: `${depth * 15 + 8}px` }}
               onClick={() => {
                 onSelect(item.path);
                 onOpen(item);
               }}
-              onDoubleClick={e => {
+              onDoubleClick={(e) => {
                 e.stopPropagation();
                 onToggle(item);
               }}
@@ -47,19 +47,15 @@ export const FileExplorerTreeNode = memo(
                   'flex items-center justify-center w-4 h-4 shrink-0',
                   item.isDirectory
                     ? 'cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded'
-                    : 'invisible'
+                    : 'invisible',
                 )}
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation();
                   onToggle(item);
                 }}
               >
                 {item.isDirectory &&
-                  (isExpanded ? (
-                    <ChevronDown size={12} />
-                  ) : (
-                    <ChevronRight size={12} />
-                  ))}
+                  (isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />)}
               </div>
 
               {item.isDirectory ? (
@@ -69,9 +65,7 @@ export const FileExplorerTreeNode = memo(
                   <Folder size={16} className="text-blue-500 shrink-0" />
                 )
               ) : (
-                <span className="shrink-0">
-                  {getFileIcon(item.name, false)}
-                </span>
+                <span className="shrink-0">{getFileIcon(item.name, false)}</span>
               )}
 
               <span className="truncate flex-1 ml-1">{item.name}</span>
@@ -82,7 +76,7 @@ export const FileExplorerTreeNode = memo(
 
         {item.isDirectory && isExpanded && item.children && (
           <div>
-            {item.children.map(child => (
+            {item.children.map((child) => (
               <FileExplorerTreeNode
                 key={child.path}
                 item={child}
@@ -99,7 +93,7 @@ export const FileExplorerTreeNode = memo(
         )}
       </div>
     );
-  }
+  },
 );
 
 FileExplorerTreeNode.displayName = 'FileExplorerTreeNode';

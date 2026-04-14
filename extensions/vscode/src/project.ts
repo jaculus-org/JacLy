@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Project } from '@jaculus/project';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type { JaclyBlocksData } from '@jaculus/project';
+import { Project } from '@jaculus/project';
+import * as vscode from 'vscode';
 import { logger } from './logger';
 
 export function findProjectRoot(fileUri: vscode.Uri): string | null {
@@ -17,13 +17,11 @@ export function findProjectRoot(fileUri: vscode.Uri): string | null {
   return null;
 }
 
-export async function loadJaclyData(
-  fileUri: vscode.Uri
-): Promise<JaclyBlocksData> {
+export async function loadJaclyData(fileUri: vscode.Uri): Promise<JaclyBlocksData> {
   const projectPath = findProjectRoot(fileUri);
   if (!projectPath) {
     vscode.window.showWarningMessage(
-      'No package.json found. Please open a .jacly file in a project directory with a package.json.'
+      'No package.json found. Please open a .jacly file in a project directory with a package.json.',
     );
     return { blockFiles: {}, translations: {} };
   }

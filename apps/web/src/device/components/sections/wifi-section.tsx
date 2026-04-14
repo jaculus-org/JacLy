@@ -1,3 +1,5 @@
+import { Globe, Loader2, Lock, RefreshCw, Trash2, Wifi } from 'lucide-react';
+import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import { Card } from '@/ui/components/card';
 import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
@@ -8,8 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/select';
-import { m } from '@/core/paraglide/messages';
-import { Globe, Loader2, Lock, RefreshCw, Trash2, Wifi } from 'lucide-react';
 import { useJacDeviceControl } from '../../state/device-control-context';
 import { WifiModal } from './wifi-modal';
 
@@ -23,18 +23,14 @@ export function WifiSection() {
         icon={<Wifi className="w-3.5 h-3.5" />}
         action={actions.refreshWifi}
         actionIcon={
-          <RefreshCw
-            className={`w-4 h-4 ${state.loading['getWifiInfo'] ? 'animate-spin' : ''}`}
-          />
+          <RefreshCw className={`w-4 h-4 ${state.loading.getWifiInfo ? 'animate-spin' : ''}`} />
         }
-        actionDisabled={state.loading['getWifiInfo']}
+        actionDisabled={state.loading.getWifiInfo}
       />
 
       <CollapsibleCard.Content className="p-2 space-y-2">
         <div className="space-y-1.5">
-          <label className="text-xs font-medium">
-            {m.config_wifi_mode_label()}
-          </label>
+          <label className="text-xs font-medium">{m.config_wifi_mode_label()}</label>
           <Select value={state.wifiMode} onValueChange={actions.setWifiMode}>
             <SelectTrigger className="h-8 w-full text-xs">
               <SelectValue placeholder={m.config_wifi_mode_placeholder()} />
@@ -49,7 +45,7 @@ export function WifiSection() {
 
         <Card className="p-2 text-xs">
           <div className="flex items-center gap-2">
-            {state.loading['getWifiInfo'] ? (
+            {state.loading.getWifiInfo ? (
               <Loader2 className="w-3 h-3 animate-spin" />
             ) : (
               <Globe className="w-3 h-3" />
@@ -57,7 +53,7 @@ export function WifiSection() {
             <span className="font-medium">{m.config_current_ip_label()}</span>
           </div>
           <code className="break-all text-muted-foreground">
-            {state.loading['getWifiInfo'] && !state.wifiIp
+            {state.loading.getWifiInfo && !state.wifiIp
               ? m.config_fetching()
               : state.wifiIp || m.config_no_ip()}
           </code>

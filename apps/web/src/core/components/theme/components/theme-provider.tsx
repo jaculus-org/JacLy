@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { ThemeContext, type Theme } from '../../../state/theme-context';
+import { type Theme, ThemeContext } from '../../../state/theme-context';
 
 type ThemeNormalized = 'dark' | 'light';
 
 function themeNormalized(theme: Theme): ThemeNormalized {
   if (theme === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
   return theme;
 }
@@ -25,7 +23,7 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
 
   useEffect(() => {
@@ -33,8 +31,7 @@ export function ThemeProvider({
 
     const updateTheme = () => {
       if (theme === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-          .matches
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light';
 

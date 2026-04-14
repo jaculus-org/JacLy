@@ -1,28 +1,19 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import * as fs from 'fs';
-import path from 'path';
+import type * as fs from 'node:fs';
+import path from 'node:path';
+import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import type { IDbProject } from '@/core/types/project';
-import {
-  ProjectFsService,
-  type ProjectFsInterface,
-} from '../services/project-fs-service';
-import type { ProjectManagementService } from '../services/project-runtime-service';
-import { ProjectLoadingIndicator } from '../components/project-loading';
 import { ProjectLoadError } from '../components/project-load-error';
+import { ProjectLoadingIndicator } from '../components/project-loading';
+import type { ProjectFsInterface, ProjectFsService } from '../services/project-fs-service';
+import type { ProjectManagementService } from '../services/project-runtime-service';
 import { JaclyFiles } from '../types/jacly-files';
 import {
-  ActiveProjectContext,
   type ActiveProjectActions,
+  ActiveProjectContext,
   type ActiveProjectContextValue,
   type ActiveProjectState,
 } from './active-project-context';
-import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
 
 interface ActiveProjectProviderProps {
   dbProject: IDbProject;
@@ -42,9 +33,7 @@ export function ActiveProjectProvider({
   children,
 }: ActiveProjectProviderProps) {
   const [currentProject, setCurrentProject] = useState<IDbProject>(project);
-  const [fsInterface, setFsInterface] = useState<ProjectFsInterface | null>(
-    null
-  );
+  const [fsInterface, setFsInterface] = useState<ProjectFsInterface | null>(null);
   const [error, setError] = useState<ActiveProjectState['error']>(null);
 
   useEffect(() => {
@@ -77,7 +66,7 @@ export function ActiveProjectProvider({
     (fileType: keyof typeof JaclyFiles) => {
       return `${fsInterface?.projectPath}/${JaclyFiles[fileType]}`;
     },
-    [fsInterface?.projectPath]
+    [fsInterface?.projectPath],
   );
 
   const renameProject = useCallback(
@@ -87,23 +76,20 @@ export function ActiveProjectProvider({
       const nextNamePackage = toPackageName(newName);
 
       if (projectNamePatternJson.test(nextNamePackage)) {
-        await projectFsService.withMount(
-          projectId,
-          async ({ fs: mountedFs, projectPath }) => {
-            const packageJsonPath = path.join(projectPath, 'package.json');
-            const pkgJson = await loadPackageJson(mountedFs, packageJsonPath);
-            await savePackageJson(mountedFs, packageJsonPath, {
-              ...pkgJson,
-              name: nextNamePackage,
-            });
-          }
-        );
+        await projectFsService.withMount(projectId, async ({ fs: mountedFs, projectPath }) => {
+          const packageJsonPath = path.join(projectPath, 'package.json');
+          const pkgJson = await loadPackageJson(mountedFs, packageJsonPath);
+          await savePackageJson(mountedFs, packageJsonPath, {
+            ...pkgJson,
+            name: nextNamePackage,
+          });
+        });
       }
 
       await projectManService.renameProject(projectId, newName);
-      setCurrentProject(prev => ({ ...prev, name: newName }));
+      setCurrentProject((prev) => ({ ...prev, name: newName }));
     },
-    [project.id, projectFsService, projectManService]
+    [project.id, projectFsService, projectManService],
   );
 
   const state = useMemo<ActiveProjectState | null>(() => {
@@ -124,7 +110,7 @@ export function ActiveProjectProvider({
       getFileName,
       renameProject,
     }),
-    [setError, getFileName, renameProject]
+    [getFileName, renameProject],
   );
 
   const contextValue = useMemo<ActiveProjectContextValue | null>(() => {
@@ -146,8 +132,6 @@ export function ActiveProjectProvider({
   }
 
   return (
-    <ActiveProjectContext.Provider value={contextValue}>
-      {children}
-    </ActiveProjectContext.Provider>
+    <ActiveProjectContext.Provider value={contextValue}>{children}</ActiveProjectContext.Provider>
   );
 }

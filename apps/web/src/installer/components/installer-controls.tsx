@@ -1,4 +1,8 @@
 import { m } from '@/core/paraglide/messages';
+import { Button } from '@/ui/components/button';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/ui/components/field';
+import { Input } from '@/ui/components/input';
 import {
   Select,
   SelectContent,
@@ -9,20 +13,8 @@ import {
   SelectValue,
 } from '@/ui/components/select';
 import { Separator } from '@/ui/components/separator';
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from '@/ui/components/field';
-import { Input } from '@/ui/components/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
-import { Button } from '@/ui/components/button';
-import { ButtonLoading } from '@/ui/components/custom/button-loading';
-import {
-  type InstallerSourceTab,
-  useInstaller,
-} from '../state/installer-context';
+import { type InstallerSourceTab, useInstaller } from '../state/installer-context';
 
 export function InstallerControls() {
   const { state, actions, meta } = useInstaller();
@@ -31,23 +23,19 @@ export function InstallerControls() {
     <>
       <FieldGroup>
         <Field>
-          <FieldLabel htmlFor="baudrate-select">
-            {m.installer_baudrate_label()}
-          </FieldLabel>
+          <FieldLabel htmlFor="baudrate-select">{m.installer_baudrate_label()}</FieldLabel>
           <Select
-            onValueChange={val => actions.setBaudrate(Number(val))}
+            onValueChange={(val) => actions.setBaudrate(Number(val))}
             value={state.baudrate.toString()}
             disabled={state.autoLoading || state.isConnected}
           >
             <SelectTrigger className="w-full" id="baudrate-select">
-              <SelectValue
-                placeholder={m.installer_baudrate_select_placeholder()}
-              />
+              <SelectValue placeholder={m.installer_baudrate_select_placeholder()} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{m.installer_baudrate_label()}</SelectLabel>
-                {meta.baudrates.map(baud => (
+                {meta.baudrates.map((baud) => (
                   <SelectItem key={baud} value={baud.toString()}>
                     {baud} bps
                   </SelectItem>
@@ -59,11 +47,7 @@ export function InstallerControls() {
         </Field>
 
         {!state.isConnected ? (
-          <ButtonLoading
-            onClick={actions.connect}
-            loading={state.autoLoading}
-            className="w-full"
-          >
+          <ButtonLoading onClick={actions.connect} loading={state.autoLoading} className="w-full">
             {m.installer_btn_connect()}
           </ButtonLoading>
         ) : (
@@ -84,9 +68,7 @@ export function InstallerControls() {
 
           <Tabs
             value={state.sourceTab}
-            onValueChange={value =>
-              actions.setSourceTab(value as InstallerSourceTab)
-            }
+            onValueChange={(value) => actions.setSourceTab(value as InstallerSourceTab)}
           >
             <TabsList className="grid w-full grid-cols-3" variant="default">
               <TabsTrigger value="online">Online</TabsTrigger>
@@ -97,23 +79,19 @@ export function InstallerControls() {
             <TabsContent value="online" className="mt-4">
               <FieldGroup>
                 <Field>
-                  <FieldLabel htmlFor="chip-select">
-                    {m.installer_chip_label()}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="chip-select">{m.installer_chip_label()}</FieldLabel>
                   <Select
                     onValueChange={actions.changeChip}
                     value={state.selectedChip || undefined}
                     disabled={state.autoLoading || state.isConnected}
                   >
                     <SelectTrigger className="w-full" id="chip-select">
-                      <SelectValue
-                        placeholder={m.installer_chip_select_placeholder()}
-                      />
+                      <SelectValue placeholder={m.installer_chip_select_placeholder()} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>{m.installer_chip_label()}</SelectLabel>
-                        {state.chipList.map(chip => (
+                        {state.chipList.map((chip) => (
                           <SelectItem key={chip.chip} value={chip.chip}>
                             {chip.chip}
                           </SelectItem>
@@ -124,29 +102,21 @@ export function InstallerControls() {
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="variant-select">
-                    {m.installer_variant_label()}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="variant-select">{m.installer_variant_label()}</FieldLabel>
                   <Select
                     onValueChange={actions.changeVariant}
                     value={state.selectedVariant?.id || undefined}
-                    disabled={
-                      !state.selectedChip ||
-                      state.autoLoading ||
-                      state.installing
-                    }
+                    disabled={!state.selectedChip || state.autoLoading || state.installing}
                   >
                     <SelectTrigger className="w-full" id="variant-select">
-                      <SelectValue
-                        placeholder={m.installer_variant_select_placeholder()}
-                      />
+                      <SelectValue placeholder={m.installer_variant_select_placeholder()} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>{m.installer_variant_label()}</SelectLabel>
                         {state.chipList
-                          .find(chip => chip.chip === state.selectedChip)
-                          ?.variants.map(variant => (
+                          .find((chip) => chip.chip === state.selectedChip)
+                          ?.variants.map((variant) => (
                             <SelectItem key={variant.id} value={variant.id}>
                               {variant.name}
                             </SelectItem>
@@ -154,44 +124,33 @@ export function InstallerControls() {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  <FieldDescription>
-                    {m.installer_variant_desc()}
-                  </FieldDescription>
+                  <FieldDescription>{m.installer_variant_desc()}</FieldDescription>
                 </Field>
 
                 <Separator />
 
                 <Field>
-                  <FieldLabel htmlFor="version-select">
-                    {m.installer_version_label()}
-                  </FieldLabel>
+                  <FieldLabel htmlFor="version-select">{m.installer_version_label()}</FieldLabel>
                   <Select
                     onValueChange={actions.changeVersion}
                     value={state.selectedVersion || undefined}
                     disabled={!state.selectedVariant || state.installing}
                   >
                     <SelectTrigger className="w-full" id="version-select">
-                      <SelectValue
-                        placeholder={m.installer_version_select_placeholder()}
-                      />
+                      <SelectValue placeholder={m.installer_version_select_placeholder()} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>{m.installer_version_label()}</SelectLabel>
-                        {state.versionList.map(version => (
-                          <SelectItem
-                            key={version.version}
-                            value={version.version}
-                          >
+                        {state.versionList.map((version) => (
+                          <SelectItem key={version.version} value={version.version}>
                             {version.version}
                           </SelectItem>
                         ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  <FieldDescription>
-                    {m.installer_version_desc()}
-                  </FieldDescription>
+                  <FieldDescription>{m.installer_version_desc()}</FieldDescription>
                 </Field>
               </FieldGroup>
             </TabsContent>
@@ -203,14 +162,10 @@ export function InstallerControls() {
                   id="firmware-url"
                   placeholder="https://example.com/firmware.tar.gz"
                   value={state.firmwareUrl}
-                  onChange={event =>
-                    actions.setFirmwareUrl(event.currentTarget.value)
-                  }
+                  onChange={(event) => actions.setFirmwareUrl(event.currentTarget.value)}
                   disabled={state.autoLoading || state.installing}
                 />
-                <FieldDescription>
-                  Must be a .tar.gz or .tgz firmware package.
-                </FieldDescription>
+                <FieldDescription>Must be a .tar.gz or .tgz firmware package.</FieldDescription>
               </Field>
             </TabsContent>
 
@@ -221,45 +176,33 @@ export function InstallerControls() {
                   id="firmware-file"
                   type="file"
                   accept=".tar.gz,.tgz,application/gzip,application/x-gzip"
-                  onChange={event =>
-                    actions.setFirmwareFile(
-                      event.currentTarget.files?.[0] ?? null
-                    )
+                  onChange={(event) =>
+                    actions.setFirmwareFile(event.currentTarget.files?.[0] ?? null)
                   }
                   disabled={state.autoLoading || state.installing}
                 />
-                <FieldDescription>
-                  Upload a .tar.gz or .tgz firmware package.
-                </FieldDescription>
+                <FieldDescription>Upload a .tar.gz or .tgz firmware package.</FieldDescription>
               </Field>
             </TabsContent>
           </Tabs>
 
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="erase-select">
-                {m.installer_erase_label()}
-              </FieldLabel>
+              <FieldLabel htmlFor="erase-select">{m.installer_erase_label()}</FieldLabel>
               <Select
-                onValueChange={val => actions.setEraseFlash(val === 'yes')}
+                onValueChange={(val) => actions.setEraseFlash(val === 'yes')}
                 value={state.eraseFlash ? 'yes' : 'no'}
                 disabled={state.autoLoading || state.installing}
               >
                 <SelectTrigger className="w-full" id="erase-select">
-                  <SelectValue
-                    placeholder={m.installer_erase_select_placeholder()}
-                  />
+                  <SelectValue placeholder={m.installer_erase_select_placeholder()} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>
-                      {m.installer_erase_select_placeholder()}
-                    </SelectLabel>
+                    <SelectLabel>{m.installer_erase_select_placeholder()}</SelectLabel>
                     <SelectItem value="yes">
                       <div className="flex flex-col items-start">
-                        <span className="font-medium">
-                          {m.installer_erase_yes()}
-                        </span>
+                        <span className="font-medium">{m.installer_erase_yes()}</span>
                         <span className="text-xs text-muted-foreground">
                           {m.installer_erase_yes_desc()}
                         </span>
@@ -267,9 +210,7 @@ export function InstallerControls() {
                     </SelectItem>
                     <SelectItem value="no">
                       <div className="flex flex-col items-start">
-                        <span className="font-medium">
-                          {m.installer_erase_no()}
-                        </span>
+                        <span className="font-medium">{m.installer_erase_no()}</span>
                         <span className="text-xs text-muted-foreground">
                           {m.installer_erase_no_desc()}
                         </span>

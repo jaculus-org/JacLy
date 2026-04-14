@@ -1,8 +1,8 @@
 'use client';
 
-import { createContext, useContext } from 'react';
 import type { Dependencies } from '@jaculus/project/package';
 import type { RegistryListProject } from '@jaculus/project/registry';
+import { createContext, useContext } from 'react';
 
 export interface JacPackagesState {
   installedLibs: Dependencies;
@@ -33,15 +33,10 @@ export interface JacPackagesContextValue {
   meta: JacPackagesMeta;
 }
 
-export const JacPackagesContext = createContext<
-  JacPackagesContextValue | undefined
->(undefined);
+export const JacPackagesContext = createContext<JacPackagesContextValue | undefined>(undefined);
 
 export function useJacPackages() {
   const ctx = useContext(JacPackagesContext);
-  if (!ctx)
-    throw new Error(
-      'JacPackages.* components must be within JacPackages.Provider'
-    );
+  if (!ctx) throw new Error('JacPackages.* components must be within JacPackages.Provider');
   return ctx;
 }

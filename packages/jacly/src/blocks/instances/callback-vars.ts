@@ -1,42 +1,32 @@
-import { Blocks } from 'blockly/core';
 import * as Blockly from 'blockly/core';
-import { JaclyBlockKindBlock, JaclyConfig } from '@/schema';
-import {
-  BlockSvgExtended,
-  WorkspaceSvgExtended,
-} from '@/blocks/types/custom-block';
+import { Blocks } from 'blockly/core';
 import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
+import type { BlockSvgExtended, WorkspaceSvgExtended } from '@/blocks/types/custom-block';
+import type { JaclyBlockKindBlock, JaclyConfig } from '@/schema';
 
 export function registerCallbackVarSlots(
   block: JaclyBlockKindBlock,
-  inputsEdit: NonNullable<JaclyBlockKindBlock['inputs']>
+  inputsEdit: NonNullable<JaclyBlockKindBlock['inputs']>,
 ) {
-  if (
-    block.callbackVars &&
-    block.callbackVars.length > 0 &&
-    block.args0 &&
-    block.message0
-  ) {
-    const varInputArgs = block.callbackVars.map(cbVar => ({
+  if (block.callbackVars && block.callbackVars.length > 0 && block.args0 && block.message0) {
+    const varInputArgs = block.callbackVars.map((cbVar) => ({
       type: 'input_value' as const,
       name: `CALLBACK_VAR_${cbVar.name}`,
       check: cbVar.type,
     }));
 
-    const stmtIndex = block.args0.findIndex(
-      arg => arg.type === 'input_statement'
-    );
+    const stmtIndex = block.args0.findIndex((arg) => arg.type === 'input_statement');
 
     if (stmtIndex !== -1) {
       block.args0.splice(stmtIndex, 0, ...varInputArgs);
 
       const stmtPlaceholder = `$[${block.args0[stmtIndex + varInputArgs.length].name}]`;
       const inputPlaceholders = block.callbackVars
-        .map(cbVar => `$[CALLBACK_VAR_${cbVar.name}]`)
+        .map((cbVar) => `$[CALLBACK_VAR_${cbVar.name}]`)
         .join(' ');
       block.message0 = block.message0.replace(
         stmtPlaceholder,
-        `${inputPlaceholders}\n${stmtPlaceholder}`
+        `${inputPlaceholders}\n${stmtPlaceholder}`,
       );
 
       for (const cbVar of block.callbackVars) {
@@ -53,7 +43,7 @@ export function registerCallbackVarSlots(
 
 export function registerCallbackVarGetters(
   parentBlock: JaclyBlockKindBlock,
-  jaclyConfig: JaclyConfig
+  jaclyConfig: JaclyConfig,
 ) {
   void jaclyConfig;
   if (!parentBlock.callbackVars) return;
@@ -82,11 +72,7 @@ export function registerCallbackVarGetters(
 
             if (oldParent && moveEvent.oldInputName) {
               const input = oldParent.getInput(moveEvent.oldInputName);
-              if (
-                input &&
-                input.connection &&
-                !input.connection.targetBlock()
-              ) {
+              if (input?.connection && !input.connection.targetBlock()) {
                 const newBlock = workspace.newBlock(this.type);
                 newBlock.callbackVarInputName = this.callbackVarInputName;
                 newBlock.initSvg();
@@ -102,8 +88,6 @@ export function registerCallbackVarGetters(
       },
     };
 
-    jsg.forBlock[getterType] = function () {
-      return [cbVar.codeName, Order.ATOMIC];
-    };
+    jsg.forBlock[getterType] = () => [cbVar.codeName, Order.ATOMIC];
   }
 }

@@ -1,21 +1,13 @@
 'use client';
 
+import type fs from 'node:fs';
+import { Blocks, File, FileAudio, FileCode, FileImage, FileText, FileVideo } from 'lucide-react';
 import { createElement } from 'react';
-import {
-  Blocks,
-  File,
-  FileAudio,
-  FileCode,
-  FileImage,
-  FileText,
-  FileVideo,
-} from 'lucide-react';
-import type fs from 'fs';
 import type { FileSystemItem } from '../types';
 
 export async function buildFileTree(
   fsp: typeof fs.promises,
-  path: string
+  path: string,
 ): Promise<FileSystemItem[]> {
   try {
     const entries = await fsp.readdir(path, { withFileTypes: true });
@@ -49,7 +41,7 @@ export async function buildFileTree(
 
 export async function loadDirectoryChildren(
   fsp: typeof fs.promises,
-  item: FileSystemItem
+  item: FileSystemItem,
 ): Promise<FileSystemItem[]> {
   if (!item.isDirectory) return [];
   return buildFileTree(fsp, item.path);

@@ -1,10 +1,7 @@
-import { JaclyBlock, JaclyConfig } from '@/schema';
+import type { JaclyBlock, JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 
-export function getImportsForBlock(
-  state: EngineState,
-  blockType: string
-): string[] {
+export function getImportsForBlock(state: EngineState, blockType: string): string[] {
   const imports = state.blockImports.get(blockType);
   return imports ? Array.from(imports) : [];
 }
@@ -12,7 +9,7 @@ export function getImportsForBlock(
 export function registerAllBlockImports(
   state: EngineState,
   blocks: JaclyBlock[],
-  jaclyConfig: JaclyConfig
+  jaclyConfig: JaclyConfig,
 ): void {
   const configImports = jaclyConfig.import ?? [];
 
@@ -20,9 +17,7 @@ export function registerAllBlockImports(
     if (block.kind !== 'block') continue;
 
     const isCustomBlock =
-      block.message0 !== undefined ||
-      block.args0 !== undefined ||
-      block.code !== undefined;
+      block.message0 !== undefined || block.args0 !== undefined || block.code !== undefined;
     if (!isCustomBlock) continue;
 
     const hasBlockImports = block.import && block.import.length > 0;

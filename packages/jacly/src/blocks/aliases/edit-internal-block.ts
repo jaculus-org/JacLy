@@ -1,12 +1,12 @@
 import { Blocks } from 'blockly/core';
-import { JaclyBlock, JaclyConfig } from '@/schema';
-import { BlockExtended } from '@/blocks/types/custom-block';
+import type { BlockExtended } from '@/blocks/types/custom-block';
+import type { JaclyBlock, JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 
 export function editInternalBlocks(
   state: EngineState,
   block: JaclyBlock,
-  jaclyConfig: JaclyConfig
+  jaclyConfig: JaclyConfig,
 ): void {
   if (block.kind !== 'block') return;
 

@@ -1,18 +1,8 @@
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { cloneHistoryMap } from '../services/key-value-history';
 import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
 import { useConsole } from './console-context';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
-import {
-  ConsolePlotterContext,
-  type ConsolePlotterContextValue,
-} from './plotter-context';
+import { ConsolePlotterContext, type ConsolePlotterContextValue } from './plotter-context';
 
 interface PausedSnapshot {
   availableKeys: string[];
@@ -31,21 +21,18 @@ export function ConsolePlotterProvider({
 }: ConsolePlotterProviderProps) {
   const { state: consoleState, actions: consoleActions } = useConsole();
   const [paused, setPaused] = useState(false);
-  const [pausedSnapshot, setPausedSnapshot] = useState<PausedSnapshot | null>(
-    null
-  );
+  const [pausedSnapshot, setPausedSnapshot] = useState<PausedSnapshot | null>(null);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const previousAvailableKeysRef = useRef<string[]>([]);
 
   const liveAvailableKeys = useMemo(
     () => Object.keys(consoleState.keyValueHistory).sort(),
-    [consoleState.keyValueHistory]
+    [consoleState.keyValueHistory],
   );
 
   const availableKeys = pausedSnapshot?.availableKeys ?? liveAvailableKeys;
   const history = pausedSnapshot?.history ?? consoleState.keyValueHistory;
-  const latestEntries =
-    pausedSnapshot?.latestEntries ?? consoleState.keyValueEntries;
+  const latestEntries = pausedSnapshot?.latestEntries ?? consoleState.keyValueEntries;
 
   useEffect(() => {
     if (paused) {
@@ -55,10 +42,8 @@ export function ConsolePlotterProvider({
     const previousAvailableKeys = previousAvailableKeysRef.current;
     previousAvailableKeysRef.current = liveAvailableKeys;
 
-    setSelectedKeys(currentSelectedKeys => {
-      const filteredKeys = currentSelectedKeys.filter(key =>
-        liveAvailableKeys.includes(key)
-      );
+    setSelectedKeys((currentSelectedKeys) => {
+      const filteredKeys = currentSelectedKeys.filter((key) => liveAvailableKeys.includes(key));
 
       if (
         previousAvailableKeys.length === 0 &&
@@ -69,8 +54,7 @@ export function ConsolePlotterProvider({
       }
 
       const newlyAvailableKeys = liveAvailableKeys.filter(
-        key =>
-          !previousAvailableKeys.includes(key) && !filteredKeys.includes(key)
+        (key) => !previousAvailableKeys.includes(key) && !filteredKeys.includes(key),
       );
 
       return [...filteredKeys, ...newlyAvailableKeys];
@@ -79,18 +63,17 @@ export function ConsolePlotterProvider({
 
   const toggleSeries = useCallback(
     (key: string) => {
-      setSelectedKeys(currentSelectedKeys => {
+      setSelectedKeys((currentSelectedKeys) => {
         if (currentSelectedKeys.includes(key)) {
-          return currentSelectedKeys.filter(item => item !== key);
+          return currentSelectedKeys.filter((item) => item !== key);
         }
 
         return availableKeys.filter(
-          availableKey =>
-            availableKey === key || currentSelectedKeys.includes(availableKey)
+          (availableKey) => availableKey === key || currentSelectedKeys.includes(availableKey),
         );
       });
     },
-    [availableKeys]
+    [availableKeys],
   );
 
   const selectAll = useCallback(() => {
@@ -114,12 +97,7 @@ export function ConsolePlotterProvider({
       latestEntries: { ...consoleState.keyValueEntries },
     });
     setPaused(true);
-  }, [
-    consoleState.keyValueEntries,
-    consoleState.keyValueHistory,
-    liveAvailableKeys,
-    paused,
-  ]);
+  }, [consoleState.keyValueEntries, consoleState.keyValueHistory, liveAvailableKeys, paused]);
 
   const clearConsole = useCallback(() => {
     consoleActions.clear();
@@ -157,12 +135,8 @@ export function ConsolePlotterProvider({
       togglePause,
       toggleSeries,
       durationMs,
-    ]
+    ],
   );
 
-  return (
-    <ConsolePlotterContext.Provider value={value}>
-      {children}
-    </ConsolePlotterContext.Provider>
-  );
+  return <ConsolePlotterContext.Provider value={value}>{children}</ConsolePlotterContext.Provider>;
 }

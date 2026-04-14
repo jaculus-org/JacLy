@@ -1,7 +1,7 @@
 import * as FlexLayout from 'flexlayout-react';
+import { m } from '@/core/paraglide/messages';
 import { PanelWrapper } from '../../components/panel-wrapper';
 import type { PanelType } from '../../types/flexlayout-type';
-import { m } from '@/core/paraglide/messages';
 import { getPanelDefinition, getPanelTitle } from './panel-registry';
 
 export function factory(node: FlexLayout.TabNode) {
@@ -14,7 +14,7 @@ export function factory(node: FlexLayout.TabNode) {
   const wrapComponent = (
     children: React.ReactNode,
     showName: boolean = false,
-    highlight: boolean = false
+    highlight: boolean = false,
   ) => (
     <PanelWrapper
       key={`${node.getId()}:${node.getWindowId()}`}
@@ -22,10 +22,7 @@ export function factory(node: FlexLayout.TabNode) {
       highlight={highlight}
       onPopout={
         canPopout
-          ? () =>
-              node
-                .getModel()
-                .doAction(FlexLayout.Actions.popoutTab(node.getId()))
+          ? () => node.getModel().doAction(FlexLayout.Actions.popoutTab(node.getId()))
           : undefined
       }
     >

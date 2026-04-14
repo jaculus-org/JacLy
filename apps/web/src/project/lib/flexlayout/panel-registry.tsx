@@ -1,27 +1,21 @@
+import type * as FlexLayout from 'flexlayout-react';
 import type { ReactNode } from 'react';
-import * as FlexLayout from 'flexlayout-react';
+import { ChartPanel, ConsolePanel } from '@/console';
 import { m } from '@/core/paraglide/messages';
-import { ConsolePanel, ChartPanel } from '@/console';
 import { DevicePanel } from '@/device';
-import { JaclyEditorPanel, CodePanel, GeneratedCode } from '@/editor';
+import { CodePanel, GeneratedCode, JaclyEditorPanel } from '@/editor';
 import { InstallerPanel } from '@/installer';
+import { JacPackagesPanel } from '@/packages';
 import { WokwiPanel } from '@/simulator';
-import {
-  FileExplorerPanel,
-  FileExplorerProvider,
-} from '../../components/file-explorer';
+import { FileExplorerPanel, FileExplorerProvider } from '../../components/file-explorer';
 import { ErrorPanel } from '../../components/panels/error-panel';
 import { LogsPanel } from '../../components/panels/logs-panel';
 import type { PanelType } from '../../types/flexlayout-type';
-import { JacPackagesPanel } from '@/packages';
 
 export interface PanelDefinition {
   canPopout?: boolean;
   enableWindowReMount?: boolean;
-  render: (
-    config: Record<string, unknown> | undefined,
-    node: FlexLayout.TabNode
-  ) => ReactNode;
+  render: (config: Record<string, unknown> | undefined, node: FlexLayout.TabNode) => ReactNode;
   getTitle: (node: FlexLayout.TabNode) => string | undefined;
 }
 
@@ -53,8 +47,8 @@ export const PANEL_DEFINITIONS: Record<PanelType, PanelDefinition> = {
   },
   code: {
     canPopout: false,
-    render: config => <CodePanel filePath={config?.filePath as string} />,
-    getTitle: node => node.getName() || m.project_panel_fs(),
+    render: (config) => <CodePanel filePath={config?.filePath as string} />,
+    getTitle: (node) => node.getName() || m.project_panel_fs(),
   },
   'generated-code': {
     canPopout: true,
@@ -102,9 +96,7 @@ export function getPanelTitle(node: FlexLayout.TabNode): string | undefined {
   return getPanelDefinition(node.getComponent())?.getTitle(node);
 }
 
-export function applyPanelDefinitionToTab<T extends FlexLayout.IJsonTabNode>(
-  tab: T
-): T {
+export function applyPanelDefinitionToTab<T extends FlexLayout.IJsonTabNode>(tab: T): T {
   const definition = getPanelDefinition(tab.component);
 
   return {

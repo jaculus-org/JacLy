@@ -1,6 +1,6 @@
-import { createContext, useContext } from 'react';
-import type { JaclyBlocksData } from '@jaculus/project';
 import type { JaclyEngine } from '@jaculus/jacly/engine';
+import type { JaclyBlocksData } from '@jaculus/project';
+import { createContext, useContext } from 'react';
 
 export interface EditorJaclyState {
   initialJson: object | null;
@@ -19,13 +19,10 @@ export interface EditorJaclyContextValue {
   actions: EditorJaclyActions;
 }
 
-export const EditorJaclyContext = createContext<
-  EditorJaclyContextValue | undefined
->(undefined);
+export const EditorJaclyContext = createContext<EditorJaclyContextValue | undefined>(undefined);
 
 export function useEditorJacly() {
   const ctx = useContext(EditorJaclyContext);
-  if (!ctx)
-    throw new Error('EditorJacly.* must be used within EditorJacly.Provider');
+  if (!ctx) throw new Error('EditorJacly.* must be used within EditorJacly.Provider');
   return ctx;
 }

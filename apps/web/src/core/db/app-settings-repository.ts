@@ -1,6 +1,6 @@
+import type { AppDB } from '@/core/db/db';
 import type { ISettings } from '@/core/types/settings';
 import { defaultSettings } from '@/core/types/settings';
-import type { AppDB } from '@/core/db/db';
 
 export class AppSettingsRepository {
   private db: AppDB;

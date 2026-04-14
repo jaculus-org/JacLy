@@ -11,23 +11,16 @@
 // Former goog.module ID: Blockly.JavaScript.procedures
 // Adapted from Blockly's built-in procedure generator with async/await support
 
-import { BlockExtended } from '@/blocks/types/custom-block';
-import { Block } from 'blockly/core';
-import {
-  JavascriptGenerator,
-  javascriptGenerator as jsg,
-  Order,
-} from 'blockly/javascript';
+import type { Block } from 'blockly/core';
+import { type JavascriptGenerator, javascriptGenerator as jsg, Order } from 'blockly/javascript';
+import type { BlockExtended } from '@/blocks/types/custom-block';
 
-jsg.forBlock['procedures_defreturn'] = procedures_defreturn;
-jsg.forBlock['procedures_defnoreturn'] = procedures_defreturn;
-jsg.forBlock['procedures_callreturn'] = procedures_callreturn;
-jsg.forBlock['procedures_callnoreturn'] = procedures_callnoreturn;
+jsg.forBlock.procedures_defreturn = procedures_defreturn;
+jsg.forBlock.procedures_defnoreturn = procedures_defreturn;
+jsg.forBlock.procedures_callreturn = procedures_callreturn;
+jsg.forBlock.procedures_callnoreturn = procedures_callnoreturn;
 
-function procedures_defreturn(
-  block: BlockExtended,
-  generator: JavascriptGenerator
-) {
+function procedures_defreturn(block: BlockExtended, generator: JavascriptGenerator) {
   // Define a procedure with a return value.
   const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
   let xfix1 = '';
@@ -44,7 +37,7 @@ function procedures_defreturn(
   if (generator.INFINITE_LOOP_TRAP) {
     loopTrap = generator.prefixLines(
       generator.injectId(generator.INFINITE_LOOP_TRAP, block),
-      generator.INDENT
+      generator.INDENT,
     );
   }
   let branch = '';
@@ -64,7 +57,7 @@ function procedures_defreturn(
     xfix2 = xfix1;
   }
   if (returnValue) {
-    returnValue = generator.INDENT + 'return ' + returnValue + ';\n';
+    returnValue = `${generator.INDENT}return ${returnValue};\n`;
   }
   const args = [];
   const variables = block.getVars();
@@ -90,35 +83,29 @@ function procedures_defreturn(
   const generatorWithDefinitions = generator as unknown as {
     definitions_: Record<string, string>;
   };
-  generatorWithDefinitions.definitions_['%' + funcName] = code;
+  generatorWithDefinitions.definitions_[`%${funcName}`] = code;
   return null;
 }
 
 export function procedures_callreturn(
   block: Block,
-  generator: JavascriptGenerator
+  generator: JavascriptGenerator,
 ): [string, Order] {
   // Call a procedure with a return value.
   const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
   const args = [];
   const variables = block.getVars();
   for (let i = 0; i < variables.length; i++) {
-    args[i] = generator.valueToCode(block, 'ARG' + i, Order.NONE) || 'null';
+    args[i] = generator.valueToCode(block, `ARG${i}`, Order.NONE) || 'null';
   }
-  const code = 'await ' + funcName + '(' + args.join(', ') + ')';
+  const code = `await ${funcName}(${args.join(', ')})`;
   return [code, Order.AWAIT];
 }
 
-export function procedures_callnoreturn(
-  block: Block,
-  generator: JavascriptGenerator
-) {
+export function procedures_callnoreturn(block: Block, generator: JavascriptGenerator) {
   // Call a procedure with no return value.
   // Generated code is for a function call as a statement is the same as a
   // function call as a value, with the addition of line ending.
-  const tuple = generator.forBlock['procedures_callreturn'](
-    block,
-    generator
-  ) as [string, Order];
-  return tuple[0] + ';\n';
+  const tuple = generator.forBlock.procedures_callreturn(block, generator) as [string, Order];
+  return `${tuple[0]};\n`;
 }

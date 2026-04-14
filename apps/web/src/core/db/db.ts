@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
-import type { ISettings } from '@/core/types/settings';
 import type { IDbProject } from '@/core/types/project';
+import type { ISettings } from '@/core/types/settings';
 
 export class AppDB extends Dexie {
   projects!: Table<IDbProject, string>;

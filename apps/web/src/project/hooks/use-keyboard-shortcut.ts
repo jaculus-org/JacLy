@@ -16,18 +16,8 @@ interface KeyboardShortcutOptions {
 //
 // Ctrl/Cmd + Shift + S
 // useKeyboardShortcut({ key: 's', ctrl: true, meta: true, shift: true }, handleSave);
-export function useKeyboardShortcut(
-  options: KeyboardShortcutOptions,
-  callback: () => void
-) {
-  const {
-    key,
-    ctrl = false,
-    meta = false,
-    shift = false,
-    alt = false,
-    enabled = true,
-  } = options;
+export function useKeyboardShortcut(options: KeyboardShortcutOptions, callback: () => void) {
+  const { key, ctrl = false, meta = false, shift = false, alt = false, enabled = true } = options;
 
   useEffect(() => {
     if (!enabled) {
@@ -39,9 +29,7 @@ export function useKeyboardShortcut(
 
       // check modifier keys
       const modifierMatches =
-        ((!ctrl && !meta) ||
-          (ctrl && event.ctrlKey) ||
-          (meta && event.metaKey)) &&
+        ((!ctrl && !meta) || (ctrl && event.ctrlKey) || (meta && event.metaKey)) &&
         shift === event.shiftKey &&
         alt === event.altKey;
 

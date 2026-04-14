@@ -1,19 +1,16 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type { JaclyBlocksData } from '@jaculus/project';
-import type {
-  ExtensionToWebviewMessage,
-  WebviewToExtensionMessage,
-} from './messages';
-import { findProjectRoot, loadJaclyData } from './project';
-import { logger } from './logger';
+import * as vscode from 'vscode';
 import type { JaclyDocument } from './document';
+import { logger } from './logger';
+import type { ExtensionToWebviewMessage, WebviewToExtensionMessage } from './messages';
+import { findProjectRoot, loadJaclyData } from './project';
 
 export function setupWebviewHandler(
   document: JaclyDocument,
   webviewPanel: vscode.WebviewPanel,
-  statusBarItem: vscode.StatusBarItem
+  statusBarItem: vscode.StatusBarItem,
 ): void {
   const webview = webviewPanel.webview;
 
@@ -29,25 +26,21 @@ export function setupWebviewHandler(
   if (projectRoot) {
     const nodeModulesPath = path.join(projectRoot, 'node_modules');
     if (fs.existsSync(nodeModulesPath)) {
-      nodeModulesWatcher = fs.watch(
-        nodeModulesPath,
-        { recursive: true },
-        () => {
-          if (reloadDebounce) {
-            clearTimeout(reloadDebounce);
-          }
-          reloadDebounce = setTimeout(async () => {
-            try {
-              const jaclyBlocksData = await loadJaclyData(document.uri);
-              post({ type: 'reloadBlocks', jaclyBlocksData });
-            } catch (error) {
-              const message = `Failed to reload Jacly blocks: ${error}`;
-              logger.error(message);
-              post({ type: 'error', message });
-            }
-          }, 1000);
+      nodeModulesWatcher = fs.watch(nodeModulesPath, { recursive: true }, () => {
+        if (reloadDebounce) {
+          clearTimeout(reloadDebounce);
         }
-      );
+        reloadDebounce = setTimeout(async () => {
+          try {
+            const jaclyBlocksData = await loadJaclyData(document.uri);
+            post({ type: 'reloadBlocks', jaclyBlocksData });
+          } catch (error) {
+            const message = `Failed to reload Jacly blocks: ${error}`;
+            logger.error(message);
+            post({ type: 'error', message });
+          }
+        }, 1000);
+      });
     }
   }
 
@@ -108,7 +101,7 @@ export function setupWebviewHandler(
         statusBarItem.text = '$(error) Jacly: Error';
         statusBarItem.tooltip = msg;
         vscode.window.showErrorMessage(
-          'Failed to save generated code. Check the Jacly output panel for details.'
+          'Failed to save generated code. Check the Jacly output panel for details.',
         );
       }
     }

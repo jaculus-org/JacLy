@@ -1,5 +1,5 @@
-import { ProjectLoadError } from '../project-load-error';
 import { useActiveProject } from '../../state/active-project-context';
+import { ProjectLoadError } from '../project-load-error';
 
 export function ErrorPanel() {
   const {

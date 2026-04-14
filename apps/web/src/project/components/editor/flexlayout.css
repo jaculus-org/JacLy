@@ -11,16 +11,8 @@
   --color-6: var(--color-card);
   --color-drag1: var(--color-primary);
   --color-drag2: var(--color-accent);
-  --color-drag1-background: color-mix(
-    in srgb,
-    var(--color-primary) 10%,
-    transparent
-  );
-  --color-drag2-background: color-mix(
-    in srgb,
-    var(--color-accent) 10%,
-    transparent
-  );
+  --color-drag1-background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  --color-drag2-background: color-mix(in srgb, var(--color-accent) 10%, transparent);
   --font-size: medium;
   --font-family: ui-sans-serif, system-ui, sans-serif;
   --color-overflow: var(--color-muted-foreground);
@@ -58,16 +50,8 @@
   --color-popup-selected-background: var(--color-accent);
   --color-edge-marker: var(--color-primary);
   --color-edge-icon: var(--color-muted-foreground);
-  --color-mini-scroll-indicator: color-mix(
-    in srgb,
-    var(--color-primary) 50%,
-    transparent
-  );
-  --color-mini-scroll-indicator-hovered: color-mix(
-    in srgb,
-    var(--color-primary) 70%,
-    transparent
-  );
+  --color-mini-scroll-indicator: color-mix(in srgb, var(--color-primary) 50%, transparent);
+  --color-mini-scroll-indicator-hovered: color-mix(in srgb, var(--color-primary) 70%, transparent);
   --size-mini-scroll-indicator: 4px;
   --color-toolbar-button-hover: var(--color-accent);
 }
@@ -406,7 +390,6 @@
   text-wrap: nowrap;
 }
 .flexlayout__tab_button_textbox {
-  border: none;
   font-family: var(--font-family);
   font-size: var(--font-size);
   color: var(--color-tab-textbox);
@@ -672,7 +655,7 @@
   overflow: auto;
   padding: 2px;
 }
-.flexlayout__floating_window _body {
+.flexlayout__floating_window body {
   height: 100%;
 }
 .flexlayout__floating_window_content {

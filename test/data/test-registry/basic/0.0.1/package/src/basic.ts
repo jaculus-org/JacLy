@@ -22,7 +22,7 @@ class Basic {
     try {
       await fn();
     } catch (err) {
-      console.error("Error in handler:\n" + err);
+      console.error(`Error in handler:\n${err}`);
       console.error(err);
     }
   }
@@ -32,7 +32,7 @@ class Basic {
       while (true) {
         await this.runHandler(fn);
         // Yield to event loop to prevent starving other tasks
-        await new Promise<void>(resolve => setTimeout(resolve, 0));
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
       }
     })();
   }

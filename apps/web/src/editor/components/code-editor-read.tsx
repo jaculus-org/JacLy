@@ -5,7 +5,5 @@ interface CodeEditorReadOnlyProps {
 }
 
 export function CodeEditorReadOnly({ filePath }: CodeEditorReadOnlyProps) {
-  return (
-    <CodeEditorBasic filePath={filePath} readOnly={true} ifNotExists="error" />
-  );
+  return <CodeEditorBasic filePath={filePath} readOnly={true} ifNotExists="error" />;
 }

@@ -1,11 +1,11 @@
-import { JaclyBlockKindBlock } from '@/schema';
+import type { JaclyBlockKindBlock } from '@/schema';
 
 export function processArgsForRegistration(block: JaclyBlockKindBlock) {
   if (block.args0 && block.args0.length > 0 && block.message0) {
     let argIndex = 1;
     let message = block.message0 ?? '';
 
-    block.args0.forEach(arg => {
+    block.args0.forEach((arg) => {
       const placeholder = `$[${arg.name}]`;
       if (message.includes(placeholder)) {
         message = message.replace(placeholder, `%${argIndex}`);

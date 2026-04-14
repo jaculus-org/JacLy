@@ -1,5 +1,5 @@
 import type { JaculusProjectType } from '@jaculus/project/package';
-import * as FlexLayout from 'flexlayout-react';
+import type * as FlexLayout from 'flexlayout-react';
 
 export interface IDbProject {
   id: string;

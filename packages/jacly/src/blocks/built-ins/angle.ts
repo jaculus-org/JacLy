@@ -1,13 +1,7 @@
+import { FieldAngle, type FieldAngleConfig, Mode, registerFieldAngle } from '@blockly/field-angle';
 import * as Blockly from 'blockly/core';
-import { BlockExtended } from '@/blocks/types/custom-block';
 import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
-
-import {
-  FieldAngle,
-  FieldAngleConfig,
-  registerFieldAngle,
-  Mode,
-} from '@blockly/field-angle';
+import type { BlockExtended } from '@/blocks/types/custom-block';
 
 registerFieldAngle();
 
@@ -22,7 +16,7 @@ const config: FieldAngleConfig = {
   offset: -90,
 };
 
-Blockly.Blocks['jacly_field_angle'] = {
+Blockly.Blocks.jacly_field_angle = {
   init(this: BlockExtended) {
     this.appendDummyInput()
       .appendField('angle: ')
@@ -32,7 +26,7 @@ Blockly.Blocks['jacly_field_angle'] = {
   },
 };
 
-jsg.forBlock['jacly_field_angle'] = function (codeBlock: BlockExtended) {
+jsg.forBlock.jacly_field_angle = (codeBlock: BlockExtended) => {
   const angle = codeBlock.getFieldValue('ANGLE');
   const code = angle.toString();
 

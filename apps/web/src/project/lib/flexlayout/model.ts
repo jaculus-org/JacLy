@@ -15,10 +15,10 @@ type JsonLayoutNode =
 
 export function processAllTabs(
   model: FlexLayout.IJsonModel,
-  callback: (tab: FlexLayoutAttributes) => void
+  callback: (tab: FlexLayoutAttributes) => void,
 ) {
-  model.borders?.forEach(border => {
-    border.children?.forEach(tabNode => {
+  model.borders?.forEach((border) => {
+    border.children?.forEach((tabNode) => {
       if (tabNode.type === 'tab') {
         callback(tabNode as FlexLayoutAttributes);
       }
@@ -26,10 +26,7 @@ export function processAllTabs(
   });
 
   function processNode(
-    node:
-      | FlexLayout.IJsonTabSetNode
-      | FlexLayout.IJsonRowNode
-      | FlexLayout.IJsonTabNode
+    node: FlexLayout.IJsonTabSetNode | FlexLayout.IJsonRowNode | FlexLayout.IJsonTabNode,
   ) {
     if (!node) return;
 
@@ -37,10 +34,10 @@ export function processAllTabs(
       callback(node as FlexLayoutAttributes);
     } else if (node.type === 'tabset') {
       const tabset = node as FlexLayout.IJsonTabSetNode;
-      tabset.children?.forEach(child => processNode(child));
+      tabset.children?.forEach((child) => processNode(child));
     } else if (node.type === 'row') {
       const row = node as FlexLayout.IJsonRowNode;
-      row.children?.forEach(child => processNode(child));
+      row.children?.forEach((child) => processNode(child));
     }
   }
 
@@ -49,10 +46,8 @@ export function processAllTabs(
   }
 }
 
-function normalizePanelTabs(
-  model: FlexLayout.IJsonModel
-): FlexLayout.IJsonModel {
-  processAllTabs(model, tab => {
+function normalizePanelTabs(model: FlexLayout.IJsonModel): FlexLayout.IJsonModel {
+  processAllTabs(model, (tab) => {
     Object.assign(tab, applyPanelDefinitionToTab(tab));
   });
 
@@ -61,7 +56,7 @@ function normalizePanelTabs(
 
 export function findAllTabIds(model: FlexLayout.IJsonModel): Set<string> {
   const tabIds = new Set<string>();
-  processAllTabs(model, tab => {
+  processAllTabs(model, (tab) => {
     if (tab.id) {
       tabIds.add(tab.id);
     }
@@ -77,9 +72,7 @@ function findDefaultTab(tabId: string): {
   // check borders
   for (let i = 0; i < (flexLayoutDefaultJson.borders?.length ?? 0); i++) {
     const border = flexLayoutDefaultJson.borders![i];
-    const tab = border.children?.find(
-      child => (child as FlexLayoutAttributes).id === tabId
-    );
+    const tab = border.children?.find((child) => (child as FlexLayoutAttributes).id === tabId);
     if (tab) {
       return {
         tab: tab as FlexLayoutAttributes,
@@ -89,9 +82,7 @@ function findDefaultTab(tabId: string): {
     }
   }
 
-  function findInNode(
-    node: JsonLayoutNode | undefined
-  ): FlexLayoutAttributes | null {
+  function findInNode(node: JsonLayoutNode | undefined): FlexLayoutAttributes | null {
     if (!node) return null;
 
     if (node.type === 'tab' && (node as FlexLayoutAttributes).id === tabId) {
@@ -121,7 +112,7 @@ function findDefaultTab(tabId: string): {
 }
 
 export function getUpdatedLayoutModel(
-  json: FlexLayout.IJsonModel | undefined
+  json: FlexLayout.IJsonModel | undefined,
 ): FlexLayout.IJsonModel {
   if (!json) {
     return structuredClone(flexLayoutDefaultJson);
@@ -131,7 +122,7 @@ export function getUpdatedLayoutModel(
   const currentTabIds = findAllTabIds(json);
 
   const tabsToAdd: string[] = [];
-  defaultTabIds.forEach(id => {
+  defaultTabIds.forEach((id) => {
     if (!currentTabIds.has(id)) {
       tabsToAdd.push(id);
     }
@@ -152,11 +143,8 @@ export function getUpdatedLayoutModel(
   }
 
   // validate borders and add missing ones
-  while (
-    updatedModel.borders.length < (flexLayoutDefaultJson.borders?.length ?? 0)
-  ) {
-    const defaultBorder =
-      flexLayoutDefaultJson.borders![updatedModel.borders.length];
+  while (updatedModel.borders.length < (flexLayoutDefaultJson.borders?.length ?? 0)) {
+    const defaultBorder = flexLayoutDefaultJson.borders![updatedModel.borders.length];
     updatedModel.borders.push({
       type: 'border',
       location: defaultBorder.location,
@@ -173,10 +161,7 @@ export function getUpdatedLayoutModel(
 
     const newTab = structuredClone(defaultTabInfo.tab);
 
-    if (
-      defaultTabInfo.location === 'border' &&
-      defaultTabInfo.borderIndex !== undefined
-    ) {
+    if (defaultTabInfo.location === 'border' && defaultTabInfo.borderIndex !== undefined) {
       // add to the appropriate border
       const border = updatedModel.borders[defaultTabInfo.borderIndex];
       if (!border.children) {
@@ -188,9 +173,7 @@ export function getUpdatedLayoutModel(
       if (!updatedModel.layout) {
         updatedModel.layout = structuredClone(flexLayoutDefaultJson.layout);
       } else {
-        function findTabset(
-          node: JsonLayoutNode | undefined
-        ): FlexLayout.IJsonTabSetNode | null {
+        function findTabset(node: JsonLayoutNode | undefined): FlexLayout.IJsonTabSetNode | null {
           if (!node) return null;
           if (node.type === 'tabset') {
             return node as FlexLayout.IJsonTabSetNode;
@@ -229,9 +212,7 @@ export function getUpdatedLayoutModel(
   return normalizePanelTabs(updatedModel);
 }
 
-function findTargetTabset(
-  model: FlexLayout.Model
-): FlexLayout.Node | undefined {
+function findTargetTabset(model: FlexLayout.Model): FlexLayout.Node | undefined {
   const mainTabset = model.getNodeById('main-tabset');
   if (mainTabset) return mainTabset;
 
@@ -251,10 +232,7 @@ function findTargetTabset(
 }
 
 // add a new tab to the center of the layout
-function addTabToModel(
-  model: FlexLayout.Model,
-  tabNode: FlexLayout.IJsonTabNode
-): void {
+function addTabToModel(model: FlexLayout.Model, tabNode: FlexLayout.IJsonTabNode): void {
   const tabset = findTargetTabset(model);
   const targetId = tabset ? tabset.getId() : model.getRoot().getId();
   model.doAction(
@@ -262,20 +240,13 @@ function addTabToModel(
       applyPanelDefinitionToTab(tabNode),
       targetId,
       FlexLayout.DockLocation.CENTER,
-      -1
-    )
+      -1,
+    ),
   );
 }
 
-export function controlPanel(
-  model: FlexLayout.Model,
-  type: PanelType,
-  action: PanelAction
-) {
-  const node =
-    type === 'error'
-      ? model.getNodeById('error-panel')
-      : model.getNodeById(type);
+export function controlPanel(model: FlexLayout.Model, type: PanelType, action: PanelAction) {
+  const node = type === 'error' ? model.getNodeById('error-panel') : model.getNodeById(type);
   if (!node) {
     if (type === 'error' && action === 'close') {
       return;
@@ -302,9 +273,7 @@ export function controlPanel(
         const tabNode = node as FlexLayout.TabNode;
         const currentSize = tabNode.getRect()?.height ?? 0;
         if (currentSize === 0) {
-          model.doAction(
-            FlexLayout.Actions.updateNodeAttributes(node.getId(), { size: 100 })
-          );
+          model.doAction(FlexLayout.Actions.updateNodeAttributes(node.getId(), { size: 100 }));
         }
         model.doAction(FlexLayout.Actions.selectTab(node.getId()));
       }
@@ -315,12 +284,10 @@ export function controlPanel(
         model.doAction(
           FlexLayout.Actions.updateNodeAttributes(border.getId(), {
             selected: -1,
-          })
+          }),
         );
       } else {
-        model.doAction(
-          FlexLayout.Actions.updateNodeAttributes(node.getId(), { size: 0 })
-        );
+        model.doAction(FlexLayout.Actions.updateNodeAttributes(node.getId(), { size: 0 }));
       }
       break;
     case 'toggle':
@@ -330,7 +297,7 @@ export function controlPanel(
         model.doAction(
           FlexLayout.Actions.updateNodeAttributes(border.getId(), {
             selected: isVisible ? -1 : border.getChildren().indexOf(node),
-          })
+          }),
         );
       } else {
         model.doAction(FlexLayout.Actions.selectTab(node.getId()));
@@ -342,18 +309,18 @@ export function controlPanel(
 export function openPanel(
   model: FlexLayout.Model,
   type: 'code',
-  props: NewPanelProps['code']
+  props: NewPanelProps['code'],
 ): void;
 export function openPanel(
   model: FlexLayout.Model,
   type: 'error',
-  props: NewPanelProps['error']
+  props: NewPanelProps['error'],
 ): void;
 
 export function openPanel(
   model: FlexLayout.Model,
   type: 'code' | 'error',
-  props: NewPanelProps['code'] | NewPanelProps['error']
+  props: NewPanelProps['code'] | NewPanelProps['error'],
 ): void {
   switch (type) {
     case 'code': {

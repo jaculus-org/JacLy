@@ -6,9 +6,7 @@ interface WokwiSimulatorProviderProps {
   children: ReactNode;
 }
 
-export function WokwiSimulatorProvider({
-  children,
-}: WokwiSimulatorProviderProps) {
+export function WokwiSimulatorProvider({ children }: WokwiSimulatorProviderProps) {
   const {
     state: { device, connectionType, connectionStatus },
   } = useJacDevice();
@@ -19,8 +17,7 @@ export function WokwiSimulatorProvider({
         state: {
           hasDevice: Boolean(device),
           isWokwiConnection: connectionType === 'wokwi',
-          isInitializing:
-            connectionStatus === 'connecting' && connectionType === 'wokwi',
+          isInitializing: connectionStatus === 'connecting' && connectionType === 'wokwi',
         },
       }}
     >

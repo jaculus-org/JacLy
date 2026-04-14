@@ -1,7 +1,7 @@
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Plugin } from 'vite';
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
 
 interface BuildInfo {
   version: string;
@@ -59,9 +59,7 @@ function generateBuildInfo(): BuildInfo {
     }).trim();
 
     // Extract owner/repo from git URL and create commit link
-    const repoMatch = repository.match(
-      /github\.com[:/]([^/]+)\/(.+?)(\.git)?$/
-    );
+    const repoMatch = repository.match(/github\.com[:/]([^/]+)\/(.+?)(\.git)?$/);
     if (repoMatch) {
       const owner = repoMatch[1];
       const repo = repoMatch[2];
@@ -70,7 +68,7 @@ function generateBuildInfo(): BuildInfo {
   } catch (error) {
     console.warn(
       'Could not get git information:',
-      error instanceof Error ? error.message : 'unknown error'
+      error instanceof Error ? error.message : 'unknown error',
     );
   }
 

@@ -1,6 +1,6 @@
 import type { ProjectRepository } from '@/core/db/project-repository';
-import { generateProjectId } from '@/ui/lib/nanoid';
 import type { IDbProject } from '@/core/types/project';
+import { generateProjectId } from '@/ui/lib/nanoid';
 
 export class ProjectManagementService {
   private repo: ProjectRepository;
@@ -9,10 +9,7 @@ export class ProjectManagementService {
     this.repo = repo;
   }
 
-  async createProject(
-    name: string,
-    type: IDbProject['type']
-  ): Promise<IDbProject> {
+  async createProject(name: string, type: IDbProject['type']): Promise<IDbProject> {
     const id = generateProjectId();
     // const id = 'demo'
     return await this.repo.create(id, name, type);
@@ -30,11 +27,7 @@ export class ProjectManagementService {
     await this.repo.rename(id, newName);
   }
 
-  async renameProjectWithId(
-    oldId: string,
-    newId: string,
-    newName: string
-  ): Promise<void> {
+  async renameProjectWithId(oldId: string, newId: string, newName: string): Promise<void> {
     await this.repo.renameWithId(oldId, newId, newName);
   }
 
@@ -53,7 +46,7 @@ export class ProjectManagementService {
   async updateProjectKey(
     id: string,
     key: keyof IDbProject,
-    value: IDbProject[typeof key]
+    value: IDbProject[typeof key],
   ): Promise<void> {
     await this.repo.updateKey(id, key, value);
   }

@@ -1,6 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { Card } from '@/ui/components/card';
 import { cn } from '@/ui/lib/cn';
-import { useEffect, useRef } from 'react';
 import type { ConsoleEntry, ConsoleType } from '../types/types';
 
 interface ConsoleOutputProps {
@@ -24,9 +24,8 @@ export function ConsoleOutput({
     if (!autoScroll || !scrollContainerRef.current) {
       return;
     }
-    scrollContainerRef.current.scrollTop =
-      scrollContainerRef.current.scrollHeight;
-  }, [autoScroll, entries.length]);
+    scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+  }, [autoScroll]);
 
   return (
     <Card className="flex-1 overflow-hidden">
@@ -43,10 +42,7 @@ export function ConsoleOutput({
             {entries.map((entry, index) => (
               <div
                 key={index}
-                className={cn(
-                  'flex gap-1.5 leading-tight',
-                  getEntryColor(entry.type)
-                )}
+                className={cn('flex gap-1.5 leading-tight', getEntryColor(entry.type))}
               >
                 {showTimestamp && (
                   <span className="shrink-0 text-[10px] text-muted-foreground">

@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { JacDevice } from '@jaculus/device';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   addWifiNetwork,
+  setWifiMode as applyWifiMode,
   getCurrentWifiIp,
   getWifiApSsid,
   getWifiMode,
   removeWifiNetwork,
   setWifiApPassword,
   setWifiApSsid,
-  setWifiMode as applyWifiMode,
 } from '../services/device-operations';
 import type { WifiModalMode } from '../state/device-control-context';
 import { useLoadingState } from './use-loading';
@@ -50,14 +50,14 @@ export function useWifiControl(device: JacDevice | null) {
     if (autoRefreshRef.current) clearInterval(autoRefreshRef.current);
 
     let attempts = 0;
-    setLoading(prev => ({ ...prev, getWifiInfo: true }));
+    setLoading((prev) => ({ ...prev, getWifiInfo: true }));
 
     autoRefreshRef.current = setInterval(async () => {
       attempts++;
       if (attempts >= 8) {
         clearInterval(autoRefreshRef.current!);
         autoRefreshRef.current = null;
-        setLoading(prev => ({ ...prev, getWifiInfo: false }));
+        setLoading((prev) => ({ ...prev, getWifiInfo: false }));
         return;
       }
       try {
@@ -70,7 +70,7 @@ export function useWifiControl(device: JacDevice | null) {
         if (ip?.trim()) {
           clearInterval(autoRefreshRef.current!);
           autoRefreshRef.current = null;
-          setLoading(prev => ({ ...prev, getWifiInfo: false }));
+          setLoading((prev) => ({ ...prev, getWifiInfo: false }));
         }
       } catch (error) {
         console.error('Auto-refresh error:', error);
@@ -86,13 +86,13 @@ export function useWifiControl(device: JacDevice | null) {
     (value: string) => {
       if (!device) return;
       void withLoading('setWifiMode', async () => {
-        await applyWifiMode(device, parseInt(value));
+        await applyWifiMode(device, parseInt(value, 10));
         setWifiModeState(value);
         setWifiIpState('');
         startAutoRefresh();
       });
     },
-    [device, withLoading, startAutoRefresh]
+    [device, withLoading, startAutoRefresh],
   );
 
   const openWifiModal = useCallback(
@@ -101,7 +101,7 @@ export function useWifiControl(device: JacDevice | null) {
       setWifiModalMode(mode);
       setWifiModalOpen(true);
     },
-    [wifiApSsid]
+    [wifiApSsid],
   );
 
   const closeWifiModal = useCallback(() => {
@@ -172,7 +172,7 @@ export function useWifiControl(device: JacDevice | null) {
       apSsid,
       apPassword,
       removeNetworkSsid,
-    ]
+    ],
   );
 
   const actions = useMemo(
@@ -198,7 +198,7 @@ export function useWifiControl(device: JacDevice | null) {
       addNetwork,
       removeNetwork,
       configureAp,
-    ]
+    ],
   );
 
   return { loading, state, actions };

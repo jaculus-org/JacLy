@@ -3,8 +3,8 @@ import 'mocha';
 import * as Blockly from 'blockly/core';
 import { registerPlaceholderBlock } from '../../src/blocks/registration/placeholder-block';
 import {
-  sanitizeWorkspaceState,
   type SanitizationResult,
+  sanitizeWorkspaceState,
 } from '../../src/workspace/validation/workspace-validation';
 
 const expect = chai.expect;
@@ -12,8 +12,8 @@ const expect = chai.expect;
 describe('registerPlaceholderBlock', () => {
   it('registers unsupported_block in Blockly.Blocks', () => {
     registerPlaceholderBlock();
-    expect(Blockly.Blocks['unsupported_block']).to.be.an('object');
-    expect(Blockly.Blocks['unsupported_block'].init).to.be.a('function');
+    expect(Blockly.Blocks.unsupported_block).to.be.an('object');
+    expect(Blockly.Blocks.unsupported_block.init).to.be.a('function');
   });
 
   it('is idempotent — calling twice does not throw', () => {
@@ -62,10 +62,7 @@ describe('sanitizeWorkspaceState', () => {
         blocks: [{ type: 'known_block', id: '1', x: 0, y: 0 }],
       },
     };
-    const result: SanitizationResult = await sanitizeWorkspaceState(
-      json,
-      async () => {}
-    );
+    const result: SanitizationResult = await sanitizeWorkspaceState(json, async () => {});
     expect(result).to.have.property('state');
     expect(result).to.have.property('restoredTypes').that.is.an('array');
     expect(result).to.have.property('replacedTypes').that.is.an('array');
@@ -165,9 +162,7 @@ describe('sanitizeWorkspaceState', () => {
     // Nested input is cleared
     expect(ws.blocks.blocks[0].inputs?.VALUE?.block).to.equal(undefined);
     // Hoisted placeholder added as top-level block
-    const placeholder = ws.blocks.blocks.find(
-      (b: any) => b.type === 'unsupported_block'
-    );
+    const placeholder = ws.blocks.blocks.find((b: any) => b.type === 'unsupported_block');
     expect(placeholder).to.not.equal(undefined);
     expect(placeholder.extraState.originalState.type).to.equal('ghost_block');
   });
@@ -250,7 +245,7 @@ describe('sanitizeWorkspaceState', () => {
         ],
       },
     };
-    await sanitizeWorkspaceState(json, async pkg => {
+    await sanitizeWorkspaceState(json, async (pkg) => {
       captured = pkg;
     });
     expect(Object.keys(captured)).to.have.lengthOf(2);
@@ -275,7 +270,7 @@ describe('sanitizeWorkspaceState', () => {
     };
     const result = await sanitizeWorkspaceState(json, async () => {
       // Simulate package install: register the block during the callback
-      (Blockly.Blocks as Record<string, object>)['late_registered_block'] = {
+      (Blockly.Blocks as Record<string, object>).late_registered_block = {
         init() {},
       };
     });
@@ -403,9 +398,7 @@ describe('sanitizeWorkspaceState — reverse pass (restore)', () => {
     };
     const result = await sanitizeWorkspaceState(json, async () => {});
     const ws = result.state as any;
-    expect(ws.blocks.blocks[0].inputs.VALUE.block.type).to.equal(
-      'revived_input_block'
-    );
+    expect(ws.blocks.blocks[0].inputs.VALUE.block.type).to.equal('revived_input_block');
     expect(result.restoredTypes).to.include('revived_input_block');
   });
 
@@ -465,10 +458,7 @@ describe('sanitizeWorkspaceState — reverse pass (restore)', () => {
     setupBlocks(['roundtrip_block']);
 
     // Phase 3: reverse — restore placeholder to original block
-    const restored = await sanitizeWorkspaceState(
-      forward.state,
-      async () => {}
-    );
+    const restored = await sanitizeWorkspaceState(forward.state, async () => {});
     const wsRestored = restored.state as any;
     expect(wsRestored.blocks.blocks[0].type).to.equal('roundtrip_block');
     expect(wsRestored.blocks.blocks[0].id).to.equal('rt1');

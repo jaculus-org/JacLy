@@ -10,7 +10,7 @@ export interface TypedVarConfig {
 
 export function buildTypedVariableFlyout(
   workspace: Blockly.WorkspaceSvg,
-  config: TypedVarConfig
+  config: TypedVarConfig,
 ): Blockly.utils.toolbox.FlyoutItemInfo[] {
   const vars = workspace.getVariableMap().getVariablesOfType(config.varType);
 
@@ -42,7 +42,7 @@ export function buildTypedVariableFlyout(
 
   // One GET block per variable
   const getBlocks: Blockly.utils.toolbox.FlyoutItemInfo[] = reversed.map(
-    variable =>
+    (variable) =>
       ({
         kind: 'block',
         type: config.blockGet,
@@ -53,7 +53,7 @@ export function buildTypedVariableFlyout(
             type: variable.getType(),
           },
         },
-      }) as Blockly.utils.toolbox.BlockInfo
+      }) as Blockly.utils.toolbox.BlockInfo,
   );
 
   return [createButton, setBlock, ...getBlocks];
@@ -62,17 +62,17 @@ export function buildTypedVariableFlyout(
 export function registerTypedVariableCategory(
   workspace: Blockly.WorkspaceSvg,
   config: TypedVarConfig,
-  categoryName: string
+  categoryName: string,
 ): void {
-  workspace.registerToolboxCategoryCallback(categoryName, ws =>
-    buildTypedVariableFlyout(ws, config)
+  workspace.registerToolboxCategoryCallback(categoryName, (ws) =>
+    buildTypedVariableFlyout(ws, config),
   );
 
-  workspace.registerButtonCallback(config.createCallbackKey, button => {
+  workspace.registerButtonCallback(config.createCallbackKey, (button) => {
     Blockly.Variables.createVariableButtonHandler(
       button.getTargetWorkspace(),
       undefined,
-      config.varType
+      config.varType,
     );
   });
 }

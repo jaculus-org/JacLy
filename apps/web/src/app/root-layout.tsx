@@ -1,13 +1,11 @@
+import { Outlet, useMatches } from '@tanstack/react-router';
 import { AppRouterProviders } from '@/app/app-router-provider';
 import { GeneralHeader } from '@/ui/components/custom/general-header';
-import { Outlet, useMatches } from '@tanstack/react-router';
 
 export function RootLayout() {
   const matches = useMatches();
   // Don't show GeneralHeader on /editor/:projectId routes
-  const isEditorProjectPage = matches.some(
-    match => match.routeId === '/project/$projectId'
-  );
+  const isEditorProjectPage = matches.some((match) => match.routeId === '/project/$projectId');
 
   return (
     <AppRouterProviders>
@@ -15,9 +13,7 @@ export function RootLayout() {
         {!isEditorProjectPage && <GeneralHeader />}
         <main
           className={
-            isEditorProjectPage
-              ? 'w-full'
-              : 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'
+            isEditorProjectPage ? 'w-full' : 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'
           }
         >
           <Outlet />

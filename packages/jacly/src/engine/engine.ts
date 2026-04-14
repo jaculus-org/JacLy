@@ -1,17 +1,17 @@
 import '@/blocks/built-ins';
 
+import type { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
 import { javascriptGenerator as jsg } from 'blockly/javascript';
-import { JaclyBlocksData } from '@jaculus/project';
-import { EngineState, createEngineState } from './engine-state';
-import { loadToolboxConfiguration } from '@/toolbox/loading/toolbox-loader';
-import { generateCodeFromWorkspace } from '@/codegen/workspace/generate-code-from-workspace';
 import { registerPlaceholderBlock } from '@/blocks/registration/placeholder-block';
-import {
-  sanitizeWorkspaceState,
-  type SanitizationResult,
-} from '@/workspace/validation/workspace-validation';
+import { generateCodeFromWorkspace } from '@/codegen/workspace/generate-code-from-workspace';
+import { loadToolboxConfiguration } from '@/toolbox/loading/toolbox-loader';
 import type { EngineMissingPackages } from '@/workspace/validation/types';
+import {
+  type SanitizationResult,
+  sanitizeWorkspaceState,
+} from '@/workspace/validation/workspace-validation';
+import { createEngineState, type EngineState } from './engine-state';
 import { attachEngineWorkspace } from './workspace-attachment';
 
 export class JaclyEngine {
@@ -60,7 +60,7 @@ export class JaclyEngine {
 
   async validateWorkspace(
     json: object,
-    onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>
+    onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>,
   ): Promise<SanitizationResult> {
     return sanitizeWorkspaceState(json, onMissingPackage);
   }

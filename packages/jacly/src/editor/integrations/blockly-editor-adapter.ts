@@ -1,4 +1,4 @@
-import * as Blockly from 'blockly/core';
+import type * as Blockly from 'blockly/core';
 import { registerJaclyCustomCategory } from '@/editor/lib/custom-category';
 import { registerCrossTabCopyPaste } from '@/editor/plugins/cross-tab-copy-paste';
 import {
@@ -15,15 +15,11 @@ export function registerBlocklyEditorIntegrations(): void {
   registerCrossTabCopyPaste();
 }
 
-export function attachBlocklyEditorWorkspace(
-  workspace: Blockly.WorkspaceSvg
-): void {
+export function attachBlocklyEditorWorkspace(workspace: Blockly.WorkspaceSvg): void {
   registerBlocklyEditorIntegrations();
   attachWorkspaceBackpack(workspace);
 }
 
-export function detachBlocklyEditorWorkspace(
-  workspace: Blockly.WorkspaceSvg
-): void {
+export function detachBlocklyEditorWorkspace(workspace: Blockly.WorkspaceSvg): void {
   disposeWorkspaceBackpack(workspace);
 }

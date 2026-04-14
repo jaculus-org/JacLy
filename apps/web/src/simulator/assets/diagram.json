@@ -10,10 +10,7 @@
       "left": 0
     }
   ],
-  "connections": [
-    ["esp:TX", "$serialMonitor:RX", "", []],
-    ["esp:RX", "$serialMonitor:TX", "", []]
-  ],
+  "connections": [["esp:TX", "$serialMonitor:RX", "", []], ["esp:RX", "$serialMonitor:TX", "", []]],
   "dependencies": {},
   "serialMonitor": {
     "collapse": true

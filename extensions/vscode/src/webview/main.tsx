@@ -1,12 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { createRoot } from 'react-dom/client';
 import { JaclyEditor } from '@jaculus/jacly/editor';
 import { JaclyEngine } from '@jaculus/jacly/engine';
 import type { JaclyBlocksData } from '@jaculus/project';
-import type {
-  ExtensionToWebviewMessage,
-  WebviewToExtensionMessage,
-} from '../messages';
+import React, { useCallback, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import type { ExtensionToWebviewMessage, WebviewToExtensionMessage } from '../messages';
 
 import './dev-index.css';
 
@@ -24,8 +21,7 @@ const App = () => {
   type LoadPhase = 'connecting' | 'loading-blocks' | 'ready';
 
   const [initialJson, setInitialJson] = useState<object | null>(null);
-  const [jaclyBlocksData, setJaclyBlocksData] =
-    useState<JaclyBlocksData | null>(null);
+  const [jaclyBlocksData, setJaclyBlocksData] = useState<JaclyBlocksData | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [engine] = useState(() => new JaclyEngine());
   const [error, setError] = useState<string | null>(null);
@@ -37,14 +33,10 @@ const App = () => {
       if (message?.type === 'load') {
         setLoadPhase('ready');
         setInitialJson(message.initialJson ?? {});
-        setJaclyBlocksData(
-          message.jaclyBlocksData ?? { blockFiles: {}, translations: {} }
-        );
+        setJaclyBlocksData(message.jaclyBlocksData ?? { blockFiles: {}, translations: {} });
         setError(null);
       } else if (message?.type === 'reloadBlocks') {
-        setJaclyBlocksData(
-          message.jaclyBlocksData ?? { blockFiles: {}, translations: {} }
-        );
+        setJaclyBlocksData(message.jaclyBlocksData ?? { blockFiles: {}, translations: {} });
         setError(null);
       } else if (message?.type === 'error') {
         setError(message.message);
@@ -77,26 +69,23 @@ const App = () => {
     (workspaceJson: object) => {
       vscode.postMessage({ type: 'saveJson', json: workspaceJson });
     },
-    [vscode]
+    [vscode],
   );
 
   const handleGeneratedCode = useCallback(
     (code: string) => {
       vscode.postMessage({ type: 'generatedCode', code });
     },
-    [vscode]
+    [vscode],
   );
 
-  const handleMissingPackage = useCallback(
-    async (missingPackages: MissingPackages) => {
-      for (const [packageName, blockTypes] of Object.entries(missingPackages)) {
-        console.error(
-          `Missing package: ${packageName}, required by blocks: ${[...blockTypes].join(', ')}`
-        );
-      }
-    },
-    []
-  );
+  const handleMissingPackage = useCallback(async (missingPackages: MissingPackages) => {
+    for (const [packageName, blockTypes] of Object.entries(missingPackages)) {
+      console.error(
+        `Missing package: ${packageName}, required by blocks: ${[...blockTypes].join(', ')}`,
+      );
+    }
+  }, []);
 
   if (error) {
     return (
@@ -113,7 +102,7 @@ const App = () => {
       { label: 'Loading block definitions', phase: 'loading-blocks' },
       { label: 'Initializing editor', phase: 'ready' },
     ];
-    const currentIndex = steps.findIndex(s => s.phase === loadPhase);
+    const currentIndex = steps.findIndex((s) => s.phase === loadPhase);
 
     return (
       <div className="jacly-loading">

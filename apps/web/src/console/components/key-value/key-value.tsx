@@ -1,17 +1,13 @@
+import { ChevronDown, ChevronUp, Trash2Icon } from 'lucide-react';
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
+import { ButtonGroup } from '@/ui/components/button-group';
 import { Card } from '@/ui/components/card';
 import { Separator } from '@/ui/components/separator';
-import { ButtonGroup } from '@/ui/components/button-group';
-import { ChevronDown, ChevronUp, Trash2Icon } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 import { useConsole } from '../../state/console-context';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
-import { m } from '@/core/paraglide/messages';
 
 type SortMode = 'alpha' | 'time';
 
@@ -38,7 +34,7 @@ export function KeyValueDisplay() {
           variant="ghost"
           size="sm"
           className="h-4 w-7 p-0"
-          onClick={() => setIsCollapsed(v => !v)}
+          onClick={() => setIsCollapsed((v) => !v)}
         >
           {isCollapsed ? (
             <ChevronDown className="h-3.5 w-3.5" />
@@ -47,14 +43,9 @@ export function KeyValueDisplay() {
           )}
         </Button>
 
-        <span
-          className="text-xs font-semibold "
-          onClick={() => setIsCollapsed(v => !v)}
-        >
+        <span className="text-xs font-semibold " onClick={() => setIsCollapsed((v) => !v)}>
           {m.keyvalue_component()}
-          <span className="ml-1.5 text-muted-foreground font-normal">
-            ({entries.length})
-          </span>
+          <span className="ml-1.5 text-muted-foreground font-normal">({entries.length})</span>
         </span>
 
         <div className="ml-auto flex items-center gap-1.5 h-0">
@@ -94,12 +85,7 @@ export function KeyValueDisplay() {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-5 w-7 p-0"
-                onClick={actions.clear}
-              >
+              <Button variant="ghost" size="sm" className="h-5 w-7 p-0" onClick={actions.clear}>
                 <Trash2Icon className="h-3.5 w-3.5" />
               </Button>
             </TooltipTrigger>
@@ -123,9 +109,7 @@ export function KeyValueDisplay() {
               <React.Fragment key={key}>
                 <div className="flex items-center justify-between py-0.5 text-xs">
                   <span className="truncate text-muted-foreground">{key}</span>
-                  <span className="ml-2 shrink-0 font-mono font-medium">
-                    {kv.value}
-                  </span>
+                  <span className="ml-2 shrink-0 font-mono font-medium">{kv.value}</span>
                 </div>
                 {i < entries.length - 1 && <Separator className="my-0.5" />}
               </React.Fragment>

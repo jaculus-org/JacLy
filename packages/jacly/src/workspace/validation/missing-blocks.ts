@@ -1,9 +1,7 @@
 import type { BlockState, EngineMissingPackages } from './types';
 import { isRegistered } from './unsupported-blocks';
 
-export function collectMissingBlockTypes(
-  blocks: BlockState[]
-): Map<string, BlockState[]> {
+export function collectMissingBlockTypes(blocks: BlockState[]): Map<string, BlockState[]> {
   const missingByType = new Map<string, BlockState[]>();
 
   function collectMissing(node: BlockState): void {
@@ -27,12 +25,11 @@ export function collectMissingBlockTypes(
 }
 
 export function groupMissingPackages(
-  missingByType: Map<string, BlockState[]>
+  missingByType: Map<string, BlockState[]>,
 ): EngineMissingPackages {
   const byPackage = new Map<string, Set<string>>();
   for (const [type, nodes] of missingByType) {
-    const pkg =
-      (nodes[0].extraState?.package as string | undefined) ?? 'unknown';
+    const pkg = (nodes[0].extraState?.package as string | undefined) ?? 'unknown';
     const types = byPackage.get(pkg) ?? new Set<string>();
     types.add(type);
     byPackage.set(pkg, types);

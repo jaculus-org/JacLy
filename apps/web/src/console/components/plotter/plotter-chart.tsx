@@ -1,30 +1,24 @@
-import { Card } from '@/ui/components/card';
-import { useJacDevice } from '@/device';
-import { cloneHistoryMap } from '../../services/key-value-history';
-import type {
-  KeyValueHistoryMap,
-  ParsedValue,
-} from '../../types/key-value-types';
 import { m } from '@/core/paraglide/messages';
+import { useJacDevice } from '@/device';
+import { Card } from '@/ui/components/card';
+import { cloneHistoryMap } from '../../services/key-value-history';
+import type { KeyValueHistoryMap, ParsedValue } from '../../types/key-value-types';
 import 'chartjs-adapter-luxon';
+import { RealTimeScale, StreamingPlugin } from '@aziham/chartjs-plugin-streaming';
 import {
   Chart,
   type ChartData,
   type ChartDataset,
   type ChartOptions,
-  type Point,
   Filler,
   Legend,
+  LinearScale,
   LineController,
   LineElement,
-  LinearScale,
+  type Point,
   PointElement,
   Tooltip,
 } from 'chart.js';
-import {
-  RealTimeScale,
-  StreamingPlugin,
-} from '@aziham/chartjs-plugin-streaming';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useConsolePlotter } from '../../state/plotter-context';
@@ -38,7 +32,7 @@ Chart.register(
   PointElement,
   RealTimeScale,
   StreamingPlugin,
-  Tooltip
+  Tooltip,
 );
 
 const DATASET_COLORS = [
@@ -64,14 +58,10 @@ function toFillColor(color: string): string {
   return `${color}22`;
 }
 
-function createDataset(
-  key: string,
-  color: string,
-  points: ParsedValue[]
-): PlotterDataset {
+function createDataset(key: string, color: string, points: ParsedValue[]): PlotterDataset {
   return {
     label: key,
-    data: points.map(point => ({
+    data: points.map((point) => ({
       x: point.timestamp,
       y: point.value,
     })),
@@ -85,13 +75,8 @@ function createDataset(
   };
 }
 
-function getChartWindow(
-  durationMs: number,
-  pausedAt: number | null,
-  isPaused: boolean
-) {
-  const end =
-    (isPaused ? (pausedAt ?? Date.now()) : Date.now()) - STREAMING_DELAY_MS;
+function getChartWindow(durationMs: number, pausedAt: number | null, isPaused: boolean) {
+  const end = (isPaused ? (pausedAt ?? Date.now()) : Date.now()) - STREAMING_DELAY_MS;
   return {
     end,
     start: end - durationMs,
@@ -103,12 +88,11 @@ function getVisiblePoints(
   key: string,
   durationMs: number,
   pausedAt: number | null,
-  isPaused: boolean
+  isPaused: boolean,
 ) {
   const chartWindow = getChartWindow(durationMs, pausedAt, isPaused);
   return (history[key] ?? []).filter(
-    point =>
-      point.timestamp >= chartWindow.start && point.timestamp <= chartWindow.end
+    (point) => point.timestamp >= chartWindow.start && point.timestamp <= chartWindow.end,
   );
 }
 
@@ -118,14 +102,14 @@ function syncDatasets(
   selectedKeys: string[],
   durationMs: number,
   pausedAt: number | null,
-  isPaused: boolean
+  isPaused: boolean,
 ) {
   chart.data.datasets = selectedKeys.map((key, index) =>
     createDataset(
       key,
       DATASET_COLORS[index % DATASET_COLORS.length],
-      getVisiblePoints(history, key, durationMs, pausedAt, isPaused)
-    )
+      getVisiblePoints(history, key, durationMs, pausedAt, isPaused),
+    ),
   );
 }
 
@@ -140,17 +124,15 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
   const lastRenderedTimestampsRef = useRef<Record<string, number>>({});
   const pausedSelectionSignatureRef = useRef<string | null>(null);
   const isChartPaused = state.paused || connectionStatus !== 'connected';
-  const [pausedSnapshot, setPausedSnapshot] = useState<PausedChartSnapshot>(
-    () => ({
-      history: cloneHistoryMap(state.history),
-      pausedAt: null as number | null,
-    })
-  );
+  const [pausedSnapshot, setPausedSnapshot] = useState<PausedChartSnapshot>(() => ({
+    history: cloneHistoryMap(state.history),
+    pausedAt: null as number | null,
+  }));
   const data = useMemo<ChartData<'line'>>(
     () => ({
       datasets: [],
     }),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -167,8 +149,8 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
       return;
     }
 
-    setPausedSnapshot(current =>
-      current.pausedAt === null ? current : { ...current, pausedAt: null }
+    setPausedSnapshot((current) =>
+      current.pausedAt === null ? current : { ...current, pausedAt: null },
     );
     pausedSelectionSignatureRef.current = null;
   }, [isChartPaused]);
@@ -186,9 +168,7 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
 
       const history = historyRef.current[key] ?? [];
       const lastRenderedTimestamp = lastRenderedTimestampsRef.current[key] ?? 0;
-      const pendingPoints = history.filter(
-        point => point.timestamp > lastRenderedTimestamp
-      );
+      const pendingPoints = history.filter((point) => point.timestamp > lastRenderedTimestamp);
 
       if (pendingPoints.length === 0) {
         continue;
@@ -203,19 +183,12 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
         });
       }
 
-      lastRenderedTimestampsRef.current[key] =
-        pendingPoints[pendingPoints.length - 1].timestamp;
+      lastRenderedTimestampsRef.current[key] = pendingPoints[pendingPoints.length - 1].timestamp;
     }
   }, []);
 
-  const availableKeySignature = useMemo(
-    () => state.availableKeys.join('|'),
-    [state.availableKeys]
-  );
-  const selectedKeySignature = useMemo(
-    () => state.selectedKeys.join('|'),
-    [state.selectedKeys]
-  );
+  const availableKeySignature = useMemo(() => state.availableKeys.join('|'), [state.availableKeys]);
+  const selectedKeySignature = useMemo(() => state.selectedKeys.join('|'), [state.selectedKeys]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -233,23 +206,21 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
       pausedSelectionSignatureRef.current = null;
     }
 
-    const sourceHistory = isChartPaused
-      ? pausedSnapshot.history
-      : historyRef.current;
+    const sourceHistory = isChartPaused ? pausedSnapshot.history : historyRef.current;
     syncDatasets(
       chart,
       sourceHistory,
       state.selectedKeys,
       meta.durationMs,
       pausedSnapshot.pausedAt,
-      isChartPaused
+      isChartPaused,
     );
 
     lastRenderedTimestampsRef.current = Object.fromEntries(
-      state.selectedKeys.map(key => [
+      state.selectedKeys.map((key) => [
         key,
         sourceHistory[key]?.[sourceHistory[key].length - 1]?.timestamp ?? 0,
-      ])
+      ]),
     );
 
     chart.update('none');
@@ -335,7 +306,7 @@ export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
         <Line
           data={data}
           options={options}
-          ref={chart => {
+          ref={(chart) => {
             chartRef.current = chart ?? undefined;
           }}
         />

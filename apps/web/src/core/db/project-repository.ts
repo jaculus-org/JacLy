@@ -1,5 +1,5 @@
-import type { IDbProject } from '@/core/types/project';
 import type { AppDB } from '@/core/db/db';
+import type { IDbProject } from '@/core/types/project';
 
 export class ProjectRepository {
   private db: AppDB;
@@ -14,16 +14,12 @@ export class ProjectRepository {
 
   async list(): Promise<IDbProject[]> {
     const projects = await this.db.projects
-      .filter(project => project.deletedAt === null)
+      .filter((project) => project.deletedAt === null)
       .sortBy('modifiedAt');
     return projects.reverse();
   }
 
-  async create(
-    id: string,
-    name: string,
-    type: IDbProject['type']
-  ): Promise<IDbProject> {
+  async create(id: string, name: string, type: IDbProject['type']): Promise<IDbProject> {
     const now = Date.now();
     const row: IDbProject = {
       id,
@@ -45,11 +41,7 @@ export class ProjectRepository {
     });
   }
 
-  async renameWithId(
-    oldId: string,
-    newId: string,
-    newName: string
-  ): Promise<void> {
+  async renameWithId(oldId: string, newId: string, newName: string): Promise<void> {
     if (oldId === newId) {
       await this.rename(oldId, newName);
       return;
@@ -81,11 +73,7 @@ export class ProjectRepository {
     await this.db.projects.update(id, { deletedAt: Date.now() });
   }
 
-  async updateKey(
-    id: string,
-    key: keyof IDbProject,
-    value: IDbProject[typeof key]
-  ): Promise<void> {
+  async updateKey(id: string, key: keyof IDbProject, value: IDbProject[typeof key]): Promise<void> {
     await this.db.projects.update(id, { [key]: value } as Partial<IDbProject>);
   }
 }

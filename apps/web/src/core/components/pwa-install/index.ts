@@ -1,5 +1,5 @@
-export { usePwaInstall } from './pwa-install-context';
 export { PwaInstallButton } from './pwa-install-button';
+export { usePwaInstall } from './pwa-install-context';
 export { PwaInstallProvider } from './pwa-install-provider';
 
 import { PwaInstallButton } from './pwa-install-button';

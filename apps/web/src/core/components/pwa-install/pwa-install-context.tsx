@@ -20,17 +20,13 @@ export interface PwaInstallContextValue {
   meta: PwaInstallMeta;
 }
 
-export const PwaInstallContext = createContext<
-  PwaInstallContextValue | undefined
->(undefined);
+export const PwaInstallContext = createContext<PwaInstallContextValue | undefined>(undefined);
 
 export function usePwaInstall() {
   const context = useContext(PwaInstallContext);
 
   if (!context) {
-    throw new Error(
-      'PwaInstall.* components must be within PwaInstall.Provider'
-    );
+    throw new Error('PwaInstall.* components must be within PwaInstall.Provider');
   }
 
   return context;

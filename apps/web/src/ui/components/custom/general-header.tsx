@@ -1,8 +1,8 @@
-import { m } from '@/core/paraglide/messages';
+import { Link } from '@tanstack/react-router';
 import { PwaInstall } from '@/core';
 import { LocaleSelector } from '@/core/components/locale';
 import { ThemeToggle } from '@/core/components/theme';
-import { Link } from '@tanstack/react-router';
+import { m } from '@/core/paraglide/messages';
 
 export function GeneralHeader() {
   const links = [{ name: m.nav_projects(), path: '/project/' }];

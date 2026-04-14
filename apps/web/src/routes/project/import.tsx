@@ -1,30 +1,24 @@
-import { m } from '@/core/paraglide/messages';
-import { Button } from '@/ui/components/button';
-import { Input } from '@/ui/components/input';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/ui/components/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/components/tabs';
-import { createFileRoute } from '@tanstack/react-router';
-import { UploadIcon, LinkIcon } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { enqueueSnackbar } from 'notistack';
+import { getRequest } from '@jaculus/jacly/project';
+import { createFromBundle } from '@jaculus/project/creation';
 import {
   loadPackageFromBytes,
   loadPackageFromUri,
   type PackageLoadResult,
 } from '@jaculus/project/import';
-import { loadPackageFromFile } from '@/project/services/load-package';
+import { createFileRoute } from '@tanstack/react-router';
 import { toUint8Array } from 'js-base64';
-import { createFromBundle } from '@jaculus/project/creation';
-import { logger } from '@/core/services/logger-service';
-import { generateNanoId } from '@/ui/lib/nanoid';
+import { LinkIcon, UploadIcon } from 'lucide-react';
+import { enqueueSnackbar } from 'notistack';
+import { useEffect, useRef, useState } from 'react';
 import { Logger } from '@/core/components/logger';
-import { getRequest } from '@jaculus/jacly/project';
+import { m } from '@/core/paraglide/messages';
+import { logger } from '@/core/services/logger-service';
+import { loadPackageFromFile } from '@/project/services/load-package';
+import { Button } from '@/ui/components/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { Input } from '@/ui/components/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
+import { generateNanoId } from '@/ui/lib/nanoid';
 
 interface ImportSearchParams {
   url?: string;
@@ -39,9 +33,7 @@ export const Route = createFileRoute('/project/import')({
       url: typeof search.url === 'string' ? search.url : undefined,
       data: typeof search.data === 'string' ? search.data : undefined,
       auto:
-        search.auto === 'true' || search.auto === '1' || search.auto === true
-          ? true
-          : undefined,
+        search.auto === 'true' || search.auto === '1' || search.auto === true ? true : undefined,
     };
   },
 });
@@ -52,17 +44,12 @@ function ImportProject() {
   const initialUrl = search.url ?? '';
   const inlineData = search.data;
   const auto = search.auto ?? false;
-  const { projectManService: runtimeService, projectFsService } =
-    Route.useRouteContext();
+  const { projectManService: runtimeService, projectFsService } = Route.useRouteContext();
 
-  const [projectName, setProjectName] = useState(
-    `imported-project-${generateNanoId(5)}`
-  );
+  const [projectName, setProjectName] = useState(`imported-project-${generateNanoId(5)}`);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [packageUrl, setPackageUrl] = useState(initialUrl);
-  const [activeTab, setActiveTab] = useState<'file' | 'url'>(
-    initialUrl ? 'url' : 'file'
-  );
+  const [activeTab, setActiveTab] = useState<'file' | 'url'>(initialUrl ? 'url' : 'file');
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const autoImportTriggered = useRef(false);
@@ -76,12 +63,12 @@ function ImportProject() {
     if (packageUrl === current) return;
     const timer = setTimeout(() => {
       navigate({
-        search: prev => ({ ...prev, url: packageUrl || undefined }),
+        search: (prev) => ({ ...prev, url: packageUrl || undefined }),
         replace: true,
       });
     }, 300);
     return () => clearTimeout(timer);
-  }, [packageUrl, activeTab, navigate, search.url]);
+  }, [packageUrl, navigate, search.url]);
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -122,26 +109,15 @@ function ImportProject() {
         importResult = await loadPackageFromUri(getRequest, packageUrl);
       }
 
-      const newProject = await runtimeService.createProject(
-        projectName,
-        importResult.projectType
-      );
+      const newProject = await runtimeService.createProject(projectName, importResult.projectType);
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
 
-      await createFromBundle(
-        fs,
-        projectPath,
-        importResult.package,
-        logger,
-        false,
-        false
-      );
+      await createFromBundle(fs, projectPath, importResult.package, logger, false, false);
 
-      enqueueSnackbar(
-        m.project_import_success({ fileCount: importResult.fileCount }),
-        { variant: 'success' }
-      );
+      enqueueSnackbar(m.project_import_success({ fileCount: importResult.fileCount }), {
+        variant: 'success',
+      });
 
       await navigate({
         to: '/project/$projectId',
@@ -161,7 +137,7 @@ function ImportProject() {
       void handleImport();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleImport, inlineData, packageUrl, auto]);
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
@@ -169,16 +145,13 @@ function ImportProject() {
 
       <div className="space-y-6">
         <div>
-          <label
-            htmlFor="projectName"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-1">
             {m.project_new_name_label()}
           </label>
           <Input
             id="projectName"
             value={projectName}
-            onChange={e => setProjectName(e.target.value)}
+            onChange={(e) => setProjectName(e.target.value)}
             placeholder={m.project_new_name_placeholder()}
             autoFocus
           />
@@ -186,7 +159,7 @@ function ImportProject() {
 
         <Tabs
           value={activeTab}
-          onValueChange={value => setActiveTab(value as 'file' | 'url')}
+          onValueChange={(value) => setActiveTab(value as 'file' | 'url')}
           className="flex flex-col"
         >
           <TabsList className="grid w-full grid-cols-2" variant={'default'}>
@@ -204,9 +177,7 @@ function ImportProject() {
             <Card>
               <CardHeader>
                 <CardTitle>{m.project_import_file_title()}</CardTitle>
-                <CardDescription>
-                  {m.project_import_file_description()}
-                </CardDescription>
+                <CardDescription>{m.project_import_file_description()}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div
@@ -225,9 +196,7 @@ function ImportProject() {
                     <p className="text-lg font-medium">{selectedFile.name}</p>
                   ) : (
                     <div>
-                      <p className="text-muted-foreground mb-1">
-                        {m.project_import_click_hint()}
-                      </p>
+                      <p className="text-muted-foreground mb-1">{m.project_import_click_hint()}</p>
                       <p className="text-xs text-muted-foreground">
                         {m.project_import_supported_formats()}
                       </p>
@@ -242,21 +211,17 @@ function ImportProject() {
             <Card>
               <CardHeader>
                 <CardTitle>{m.project_import_url_title()}</CardTitle>
-                <CardDescription>
-                  {m.project_import_url_description()}
-                </CardDescription>
+                <CardDescription>{m.project_import_url_description()}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <Input
                   type="url"
                   value={packageUrl}
-                  onChange={e => setPackageUrl(e.target.value)}
+                  onChange={(e) => setPackageUrl(e.target.value)}
                   placeholder={m.project_import_url_placeholder()}
                   className="w-full"
                 />
-                <p className="text-xs text-muted-foreground">
-                  {m.project_import_url_hint()}
-                </p>
+                <p className="text-xs text-muted-foreground">{m.project_import_url_hint()}</p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -271,16 +236,10 @@ function ImportProject() {
             isImporting
           }
         >
-          {isImporting
-            ? m.project_import_btn_importing()
-            : m.project_import_btn_import()}
+          {isImporting ? m.project_import_btn_importing() : m.project_import_btn_import()}
         </Button>
 
-        <Logger.Logs
-          defaultLevel="silly"
-          logLevelSelector={false}
-          hideIfEmpty
-        />
+        <Logger.Logs defaultLevel="silly" logLevelSelector={false} hideIfEmpty />
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
-import { m } from '@/core/paraglide/messages';
 import { useMemo, useState } from 'react';
+import { m } from '@/core/paraglide/messages';
 import { useLogger } from '../../../state/logger-context';
 import { LOG_LEVEL_ORDER, type LogLevel, type LogOrderType } from '../types';
-import { LoggerToolbar } from './logger-toolbar';
 import { LoggerOutput } from './logger-output';
+import { LoggerToolbar } from './logger-toolbar';
 
 interface LoggerLogsProps {
   logOrderType?: LogOrderType;
@@ -26,7 +26,7 @@ export function LoggerLogs({
 
   const filteredEntries = useMemo(
     () =>
-      state.entries.filter(entry => {
+      state.entries.filter((entry) => {
         const entryLevelOrder = LOG_LEVEL_ORDER[entry.level];
         const selectedLevelOrder = LOG_LEVEL_ORDER[selectedLevel];
 
@@ -36,15 +36,13 @@ export function LoggerLogs({
 
         return entryLevelOrder <= selectedLevelOrder;
       }),
-    [state.entries, selectedLevel, logOrderType]
+    [state.entries, selectedLevel, logOrderType],
   );
 
   const handleCopyToClipboard = async () => {
     const content = filteredEntries
-      .map(entry => {
-        const timestamp = showTimestamp
-          ? `[${entry.timestamp.toLocaleTimeString()}] `
-          : '';
+      .map((entry) => {
+        const timestamp = showTimestamp ? `[${entry.timestamp.toLocaleTimeString()}] ` : '';
         return `${timestamp}[${entry.level.toUpperCase()}] ${entry.content}`;
       })
       .join('\n');
@@ -72,8 +70,8 @@ export function LoggerLogs({
         copied={copied}
         logLevelSelector={logLevelSelector}
         onSelectLevel={setSelectedLevel}
-        onToggleTimestamp={() => setShowTimestamp(v => !v)}
-        onToggleAutoscroll={() => setAutoScroll(v => !v)}
+        onToggleTimestamp={() => setShowTimestamp((v) => !v)}
+        onToggleAutoscroll={() => setAutoScroll((v) => !v)}
         onCopy={handleCopyToClipboard}
         onClear={actions.clear}
       />

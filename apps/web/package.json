@@ -8,10 +8,6 @@
     "build": "pnpm run paraglide:compile && pnpm run generate:schema && tsc -b && vite build",
     "paraglide:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/core/paraglide",
     "generate:schema": "tsx scripts/generate-schema.ts",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
     "type-check": "pnpm run paraglide:compile && tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
     "test": "pnpm run test:mocha && pnpm run test:playwright",
@@ -80,7 +76,6 @@
   },
   "devDependencies": {
     "@codingame/esbuild-import-meta-url-plugin": "^1.0.3",
-    "@eslint/js": "^10.0.1",
     "@inlang/paraglide-js": "^2.14.0",
     "@playwright/test": "^1.58.2",
     "@tanstack/router-plugin": "^1.166.6",
@@ -91,13 +86,9 @@
     "@types/web-bluetooth": "^0.0.21",
     "@vitejs/plugin-react": "^5.1.4",
     "chai": "^6.2.2",
-    "eslint": "^10.0.3",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
     "mocha": "^11.7.5",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.57.0",
     "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-pwa": "^1.2.0"
   }

@@ -1,4 +1,4 @@
-import * as FlexLayout from 'flexlayout-react';
+import type * as FlexLayout from 'flexlayout-react';
 
 export interface ISettings {
   id: number;

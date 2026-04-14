@@ -1,9 +1,5 @@
+import type { BoardsIndex, BoardVariant, BoardVersion } from '@jaculus/firmware/boards';
 import { createContext, useContext } from 'react';
-import type {
-  BoardsIndex,
-  BoardVariant,
-  BoardVersion,
-} from '@jaculus/firmware/boards';
 import type { FlashProgress } from '../services/flasher';
 
 export type InstallerSourceTab = 'online' | 'url' | 'file';
@@ -51,13 +47,10 @@ export interface InstallerContextValue {
   meta: InstallerMeta;
 }
 
-export const InstallerContext = createContext<
-  InstallerContextValue | undefined
->(undefined);
+export const InstallerContext = createContext<InstallerContextValue | undefined>(undefined);
 
 export function useInstaller() {
   const ctx = useContext(InstallerContext);
-  if (!ctx)
-    throw new Error('Installer.* components must be within Installer.Provider');
+  if (!ctx) throw new Error('Installer.* components must be within Installer.Provider');
   return ctx;
 }

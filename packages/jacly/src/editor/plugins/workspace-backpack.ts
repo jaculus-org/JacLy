@@ -1,8 +1,5 @@
+import { Backpack, type BackpackOptions } from '@blockly/workspace-backpack/dist/index.js';
 import * as Blockly from 'blockly/core';
-import {
-  Backpack,
-  type BackpackOptions,
-} from '@blockly/workspace-backpack/dist/index.js';
 
 const BACKPACK_STORAGE_KEY = 'jacly:blockly-backpack:v1';
 
@@ -52,9 +49,7 @@ export function attachWorkspaceBackpack(workspace: Blockly.WorkspaceSvg) {
     }
 
     syncSnapshotFromStorage();
-    const nextSnapshot = createSnapshot(
-      mergeVisibleContentsIntoSnapshot(backpack.getContents())
-    );
+    const nextSnapshot = createSnapshot(mergeVisibleContentsIntoSnapshot(backpack.getContents()));
     currentSnapshot = nextSnapshot;
     persistSnapshot(nextSnapshot);
     syncBackpacks(nextSnapshot, workspace);
@@ -90,10 +85,7 @@ function syncSnapshotFromStorage() {
   }
 }
 
-function syncBackpacks(
-  snapshot: BackpackSnapshot,
-  sourceWorkspace?: Blockly.WorkspaceSvg
-) {
+function syncBackpacks(snapshot: BackpackSnapshot, sourceWorkspace?: Blockly.WorkspaceSvg) {
   syncingSharedContents = true;
 
   try {
@@ -202,22 +194,17 @@ function parseSnapshot(rawValue: string | null): BackpackSnapshot | null {
   }
 }
 
-function compareSnapshots(
-  left: BackpackSnapshot,
-  right: BackpackSnapshot
-): number {
+function compareSnapshots(left: BackpackSnapshot, right: BackpackSnapshot): number {
   return left.updatedAt - right.updatedAt;
 }
 
 function getVisibleContents(snapshot: BackpackSnapshot) {
-  return snapshot.contents.filter(content =>
-    isContentValidForWorkspace(content)
-  );
+  return snapshot.contents.filter((content) => isContentValidForWorkspace(content));
 }
 
 function mergeVisibleContentsIntoSnapshot(visibleContents: string[]) {
   const hiddenContents = currentSnapshot.contents.filter(
-    content => !isContentValidForWorkspace(content)
+    (content) => !isContentValidForWorkspace(content),
   );
 
   return dedupeContents([...visibleContents, ...hiddenContents]);
@@ -239,9 +226,7 @@ function isContentValidForWorkspace(content: string): boolean {
   return areBlockTypesRegistered(parsedContent);
 }
 
-function areBlockTypesRegistered(
-  state: Blockly.serialization.blocks.State | undefined
-): boolean {
+function areBlockTypesRegistered(state: Blockly.serialization.blocks.State | undefined): boolean {
   if (!state) {
     return true;
   }
@@ -262,8 +247,5 @@ function areBlockTypesRegistered(
     }
   }
 
-  return (
-    areBlockTypesRegistered(state.next?.block) &&
-    areBlockTypesRegistered(state.next?.shadow)
-  );
+  return areBlockTypesRegistered(state.next?.block) && areBlockTypesRegistered(state.next?.shadow);
 }

@@ -1,5 +1,5 @@
-import * as Blockly from 'blockly/core';
-import { JaclyConfig } from '@/schema';
+import type * as Blockly from 'blockly/core';
+import type { JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 
 type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
@@ -8,14 +8,9 @@ type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
   gap?: string;
 };
 
-const defaultGithubDocs =
-  'https://github.com/jaculus-org/Jaculus-libraries/tree/master/';
+const defaultGithubDocs = 'https://github.com/jaculus-org/Jaculus-libraries/tree/master/';
 
-function includeHeader(
-  config: JaclyConfig,
-  header: FlyoutItem[],
-  state: EngineState
-) {
+function includeHeader(config: JaclyConfig, header: FlyoutItem[], state: EngineState) {
   header.push({
     kind: 'label',
     text: config.name,
@@ -47,10 +42,7 @@ function includeHeader(
   header.push({ kind: 'sep', gap: '24' } as FlyoutItem);
 }
 
-export function buildCategoryHeader(
-  state: EngineState,
-  config: JaclyConfig
-): FlyoutItem[] {
+export function buildCategoryHeader(state: EngineState, config: JaclyConfig): FlyoutItem[] {
   const header: FlyoutItem[] = [];
 
   if (config.contents?.length) {
@@ -60,10 +52,7 @@ export function buildCategoryHeader(
   return header;
 }
 
-export function registerDocsCallbacks(
-  state: EngineState,
-  workspace: Blockly.WorkspaceSvg
-): void {
+export function registerDocsCallbacks(state: EngineState, workspace: Blockly.WorkspaceSvg): void {
   for (const [callbackKey, docsUrl] of state.docsCallbacks) {
     workspace.registerButtonCallback(callbackKey, () => {
       window.open(docsUrl, '_blank', 'noopener,noreferrer');

@@ -7,14 +7,10 @@ import pako from 'pako';
 // see @jaculus/tools. `fsp` is only needed for file:// URIs.
 export async function loadPackageUri(
   pkgUri: string,
-  fsp?: FSPromisesInterface
+  fsp?: FSPromisesInterface,
 ): Promise<ProjectBundle> {
   let gz: Uint8Array;
-  if (
-    pkgUri.startsWith('http://') ||
-    pkgUri.startsWith('https://') ||
-    pkgUri.startsWith('/')
-  ) {
+  if (pkgUri.startsWith('http://') || pkgUri.startsWith('https://') || pkgUri.startsWith('/')) {
     // not cached fetch
     const res = await fetch(pkgUri, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${pkgUri}`);

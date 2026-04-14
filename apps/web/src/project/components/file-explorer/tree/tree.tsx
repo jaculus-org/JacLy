@@ -1,8 +1,8 @@
 'use client';
 
 import { m } from '@/core/paraglide/messages';
-import { useJacFileExplorer } from '../state/context';
 import { FileExplorerNodeMenu } from '../node-menu';
+import { useJacFileExplorer } from '../state/context';
 import { FileExplorerTreeNode } from './node';
 
 export function FileExplorerTree() {
@@ -29,7 +29,7 @@ export function FileExplorerTree() {
 
   return (
     <div className="min-h-full">
-      {fileTree.map(item => (
+      {fileTree.map((item) => (
         <FileExplorerTreeNode
           key={item.path}
           item={item}

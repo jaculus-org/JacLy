@@ -1,7 +1,7 @@
-import { Logger } from '@/core';
-import { Installer } from '@/installer';
-import { m } from '@/core/paraglide/messages';
 import { createFileRoute } from '@tanstack/react-router';
+import { Logger } from '@/core';
+import { m } from '@/core/paraglide/messages';
+import { Installer } from '@/installer';
 
 export const Route = createFileRoute('/installer')({
   component: RouteComponent,
@@ -11,9 +11,7 @@ function RouteComponent() {
   return (
     <div className="flex flex-col gap-6 min-h-screen bg-linear-to-b from-background to-muted/30 p-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-foreground">
-          {m.installer_title()}
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground">{m.installer_title()}</h1>
         <p className="text-muted-foreground">{m.installer_subtitle()}</p>
       </div>
       <div className="flex justify-center">

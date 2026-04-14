@@ -1,10 +1,10 @@
-import { createContext, useContext } from 'react';
 import type { Writable } from 'node:stream';
 import type { JacDevice } from '@jaculus/device';
 import type { Project } from '@jaculus/project';
 import type { PackageJson } from '@jaculus/project/package';
-import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import type { Registry } from '@jaculus/project/registry';
+import { createContext, useContext } from 'react';
+import type { ConnectionStatus, ConnectionType } from '../types/connection';
 
 export interface JacDeviceState {
   jacProject: Project | null;
@@ -18,10 +18,7 @@ export interface JacDeviceState {
 }
 
 export interface JacDeviceActions {
-  setDevice: (
-    device: JacDevice | null,
-    connectionType?: ConnectionType
-  ) => Promise<void>;
+  setDevice: (device: JacDevice | null, connectionType?: ConnectionType) => Promise<void>;
   setConnectionStatus: (status: ConnectionStatus) => void;
 }
 
@@ -33,9 +30,7 @@ export interface JacDeviceContextValue {
   meta: JacDeviceMeta;
 }
 
-export const JacDeviceContext = createContext<
-  JacDeviceContextValue | undefined
->(undefined);
+export const JacDeviceContext = createContext<JacDeviceContextValue | undefined>(undefined);
 
 export function useJacDevice(): JacDeviceContextValue {
   const context = useContext(JacDeviceContext);

@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import { initLogger } from './logger';
 import { JaclyEditorProvider } from './provider';
 

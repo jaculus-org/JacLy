@@ -1,3 +1,12 @@
+import {
+  Check,
+  ChevronDown,
+  ChevronsDown,
+  Clock,
+  ClockFadingIcon,
+  Copy,
+  Trash2,
+} from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { Badge } from '@/ui/components/badge';
 import { Button } from '@/ui/components/button';
@@ -9,21 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
-import {
-  Trash2,
-  Clock,
-  ChevronDown,
-  ChevronsDown,
-  ClockFadingIcon,
-  Copy,
-  Check,
-} from 'lucide-react';
-import { LOG_LEVELS, type LogLevel, type LoggerEntry } from '../types';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
+import { LOG_LEVELS, type LoggerEntry, type LogLevel } from '../types';
 
 interface LoggerToolbarProps {
   filteredEntries: LoggerEntry[];
@@ -59,36 +55,24 @@ export function LoggerToolbar({
           <div className="flex items-center gap-1 shrink-0">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant={showTimestamp ? 'default' : 'outline'}
-                  onClick={onToggleTimestamp}
-                >
+                <Button variant={showTimestamp ? 'default' : 'outline'} onClick={onToggleTimestamp}>
                   {showTimestamp ? <Clock /> : <ClockFadingIcon />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>
-                  {showTimestamp
-                    ? m.terminal_timestamp_hide()
-                    : m.terminal_timestamp_show()}
-                </p>
+                <p>{showTimestamp ? m.terminal_timestamp_hide() : m.terminal_timestamp_show()}</p>
               </TooltipContent>
             </Tooltip>
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant={autoScroll ? 'default' : 'outline'}
-                  onClick={onToggleAutoscroll}
-                >
+                <Button variant={autoScroll ? 'default' : 'outline'} onClick={onToggleAutoscroll}>
                   {autoScroll ? <ChevronsDown /> : <ChevronDown />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>
-                  {autoScroll
-                    ? m.terminal_autoscroll_disable()
-                    : m.terminal_autoscroll_enable()}
+                  {autoScroll ? m.terminal_autoscroll_disable() : m.terminal_autoscroll_enable()}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -125,15 +109,12 @@ export function LoggerToolbar({
               {filteredEntries.length}
             </Badge>
             {logLevelSelector && (
-              <Select
-                value={selectedLevel}
-                onValueChange={v => onSelectLevel(v as LogLevel)}
-              >
+              <Select value={selectedLevel} onValueChange={(v) => onSelectLevel(v as LogLevel)}>
                 <SelectTrigger className="h-7 w-28 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {LOG_LEVELS.map(level => (
+                  {LOG_LEVELS.map((level) => (
                     <SelectItem key={level} value={level} className="text-xs">
                       <span className="uppercase">{level}</span>
                     </SelectItem>

@@ -1,13 +1,12 @@
-import { m } from '@/core/paraglide/messages';
-import { ButtonLoading } from '@/ui/components/custom/button-loading';
-import { ButtonGroup } from '@/ui/components/button-group';
 import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
-import { compileProject } from '../../services/compilation';
-import { useActiveProject } from '@/project';
-import { useJacDevice } from '../../state/device-context';
 import { useState } from 'react';
-import { useProjectEditor } from '@/project';
+import { m } from '@/core/paraglide/messages';
+import { useActiveProject, useProjectEditor } from '@/project';
+import { ButtonGroup } from '@/ui/components/button-group';
+import { ButtonLoading } from '@/ui/components/custom/button-loading';
+import { compileProject } from '../../services/compilation';
+import { useJacDevice } from '../../state/device-context';
 
 export function Build() {
   const {
@@ -19,7 +18,7 @@ export function Build() {
   const { jacProject, pkg, connectionStatus } = jacState;
   const [isBuilding, setIsBuilding] = useState(false);
 
-  if (jacProject == null || pkg?.jaculus?.projectType != 'code') {
+  if (jacProject == null || pkg?.jaculus?.projectType !== 'code') {
     return;
   }
 
@@ -38,10 +37,9 @@ export function Build() {
       enqueueSnackbar(m.device_build_success(), { variant: 'success' });
     } catch (error) {
       controlPanel('logs', 'expand');
-      enqueueSnackbar(
-        error instanceof Error ? error.message : m.device_build_flash_failed(),
-        { variant: 'error' }
-      );
+      enqueueSnackbar(error instanceof Error ? error.message : m.device_build_flash_failed(), {
+        variant: 'error',
+      });
     } finally {
       setIsBuilding(false);
     }

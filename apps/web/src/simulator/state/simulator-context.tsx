@@ -10,16 +10,14 @@ export interface WokwiSimulatorContextValue {
   state: WokwiSimulatorState;
 }
 
-export const WokwiSimulatorContext = createContext<
-  WokwiSimulatorContextValue | undefined
->(undefined);
+export const WokwiSimulatorContext = createContext<WokwiSimulatorContextValue | undefined>(
+  undefined,
+);
 
 export function useWokwiSimulator(): WokwiSimulatorContextValue {
   const context = useContext(WokwiSimulatorContext);
   if (!context) {
-    throw new Error(
-      'WokwiSimulator.* components must be within WokwiSimulator.Provider'
-    );
+    throw new Error('WokwiSimulator.* components must be within WokwiSimulator.Provider');
   }
   return context;
 }

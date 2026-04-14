@@ -16,7 +16,7 @@ export function InstallerDialog() {
   return (
     <AlertDialog
       open={!!state.showPopupText}
-      onOpenChange={open => !open && actions.closePopup()}
+      onOpenChange={(open) => !open && actions.closePopup()}
     >
       <AlertDialogContent>
         <AlertDialogHeader>

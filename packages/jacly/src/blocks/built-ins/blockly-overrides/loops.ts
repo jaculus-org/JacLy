@@ -11,12 +11,8 @@
 // Former goog.module ID: Blockly.JavaScript.loops
 // Adapted from Blockly's built-in loop generator with async/await support
 
-import {
-  JavascriptGenerator,
-  javascriptGenerator as jsg,
-  Order,
-} from 'blockly/javascript';
 import type { Block } from 'blockly/core';
+import { type JavascriptGenerator, javascriptGenerator as jsg, Order } from 'blockly/javascript';
 
 interface ControlFlowInLoopBlock extends Block {
   getSurroundLoop(): Block | null;
@@ -30,10 +26,7 @@ function isNumber(str: string): boolean {
 // Yield control back to the event loop after each iteration
 const YIELD_STATEMENT = '  await sleep(0);\n';
 
-jsg.forBlock['controls_repeat_ext'] = function (
-  block: Block,
-  generator: JavascriptGenerator
-) {
+jsg.forBlock.controls_repeat_ext = (block: Block, generator: JavascriptGenerator) => {
   // Repeat n times.
   let repeats;
   if (block.getField('TIMES')) {
@@ -50,7 +43,7 @@ jsg.forBlock['controls_repeat_ext'] = function (
   let endVar = repeats;
   if (!repeats.match(/^\w+$/) && !isNumber(repeats)) {
     endVar = generator.nameDB_!.getDistinctName('repeat_end', 'VARIABLE');
-    code += 'let ' + endVar + ' = ' + repeats + ';\n';
+    code += `let ${endVar} = ${repeats};\n`;
   }
   code +=
     'for (let ' +
@@ -68,33 +61,25 @@ jsg.forBlock['controls_repeat_ext'] = function (
   return code;
 };
 
-jsg.forBlock['controls_repeat'] = jsg.forBlock['controls_repeat_ext'];
+jsg.forBlock.controls_repeat = jsg.forBlock.controls_repeat_ext;
 
-jsg.forBlock['controls_whileUntil'] = function (
-  block: Block,
-  generator: JavascriptGenerator
-) {
+jsg.forBlock.controls_whileUntil = (block: Block, generator: JavascriptGenerator) => {
   // Do while/until loop.
   const until = block.getFieldValue('MODE') === 'UNTIL';
   let argument0 =
-    generator.valueToCode(
-      block,
-      'BOOL',
-      until ? Order.LOGICAL_NOT : Order.NONE
-    ) || 'false';
+    generator.valueToCode(block, 'BOOL', until ? Order.LOGICAL_NOT : Order.NONE) || 'false';
   let branch = generator.statementToCode(block, 'DO');
   branch = generator.addLoopTrap(branch, block);
   if (until) {
-    argument0 = '!' + argument0;
+    argument0 = `!${argument0}`;
   }
-  return 'while (' + argument0 + ') {\n' + branch + YIELD_STATEMENT + '}\n';
+  return `while (${argument0}) {\n${branch}${YIELD_STATEMENT}}\n`;
 };
 
 export function controls_for(block: Block, generator: JavascriptGenerator) {
   // For loop.
   const variable0 = generator.getVariableName(block.getFieldValue('VAR'));
-  const argument0 =
-    generator.valueToCode(block, 'FROM', Order.ASSIGNMENT) || '0';
+  const argument0 = generator.valueToCode(block, 'FROM', Order.ASSIGNMENT) || '0';
   const argument1 = generator.valueToCode(block, 'TO', Order.ASSIGNMENT) || '0';
   const increment = generator.valueToCode(block, 'BY', Order.ASSIGNMENT) || '1';
   let branch = generator.statementToCode(block, 'DO');
@@ -120,40 +105,31 @@ export function controls_for(block: Block, generator: JavascriptGenerator) {
     } else {
       code += (up ? ' += ' : ' -= ') + step;
     }
-    code += ') {\n' + branch + YIELD_STATEMENT + '}\n';
+    code += `) {\n${branch}${YIELD_STATEMENT}}\n`;
   } else {
     code = '';
     // Cache non-trivial values to variables to prevent repeated look-ups.
     let startVar = argument0;
     if (!argument0.match(/^\w+$/) && !isNumber(argument0)) {
-      startVar = generator.nameDB_!.getDistinctName(
-        variable0 + '_start',
-        'VARIABLE'
-      );
-      code += 'var ' + startVar + ' = ' + argument0 + ';\n';
+      startVar = generator.nameDB_!.getDistinctName(`${variable0}_start`, 'VARIABLE');
+      code += `var ${startVar} = ${argument0};\n`;
     }
     let endVar = argument1;
     if (!argument1.match(/^\w+$/) && !isNumber(argument1)) {
-      endVar = generator.nameDB_!.getDistinctName(
-        variable0 + '_end',
-        'VARIABLE'
-      );
-      code += 'var ' + endVar + ' = ' + argument1 + ';\n';
+      endVar = generator.nameDB_!.getDistinctName(`${variable0}_end`, 'VARIABLE');
+      code += `var ${endVar} = ${argument1};\n`;
     }
     // Determine loop direction at start, in case one of the bounds
     // changes during loop execution.
-    const incVar = generator.nameDB_!.getDistinctName(
-      variable0 + '_inc',
-      'VARIABLE'
-    );
-    code += 'var ' + incVar + ' = ';
+    const incVar = generator.nameDB_!.getDistinctName(`${variable0}_inc`, 'VARIABLE');
+    code += `var ${incVar} = `;
     if (isNumber(increment)) {
-      code += Math.abs(Number(increment)) + ';\n';
+      code += `${Math.abs(Number(increment))};\n`;
     } else {
-      code += 'Math.abs(' + increment + ');\n';
+      code += `Math.abs(${increment});\n`;
     }
-    code += 'if (' + startVar + ' > ' + endVar + ') {\n';
-    code += generator.INDENT + incVar + ' = -' + incVar + ';\n';
+    code += `if (${startVar} > ${endVar}) {\n`;
+    code += `${generator.INDENT + incVar} = -${incVar};\n`;
     code += '}\n';
     code +=
       'for (' +
@@ -185,49 +161,23 @@ export function controls_for(block: Block, generator: JavascriptGenerator) {
 export function controls_forEach(block: Block, generator: JavascriptGenerator) {
   // For each loop.
   const variable0 = generator.getVariableName(block.getFieldValue('VAR'));
-  const argument0 =
-    generator.valueToCode(block, 'LIST', Order.ASSIGNMENT) || '[]';
+  const argument0 = generator.valueToCode(block, 'LIST', Order.ASSIGNMENT) || '[]';
   let branch = generator.statementToCode(block, 'DO');
   branch = generator.addLoopTrap(branch, block);
   let code = '';
   // Cache non-trivial values to variables to prevent repeated look-ups.
   let listVar = argument0;
   if (!argument0.match(/^\w+$/)) {
-    listVar = generator.nameDB_!.getDistinctName(
-      variable0 + '_list',
-      'VARIABLE'
-    );
-    code += 'var ' + listVar + ' = ' + argument0 + ';\n';
+    listVar = generator.nameDB_!.getDistinctName(`${variable0}_list`, 'VARIABLE');
+    code += `var ${listVar} = ${argument0};\n`;
   }
-  const indexVar = generator.nameDB_!.getDistinctName(
-    variable0 + '_index',
-    'VARIABLE'
-  );
-  branch =
-    generator.INDENT +
-    variable0 +
-    ' = ' +
-    listVar +
-    '[' +
-    indexVar +
-    '];\n' +
-    branch;
-  code +=
-    'for (var ' +
-    indexVar +
-    ' in ' +
-    listVar +
-    ') {\n' +
-    branch +
-    YIELD_STATEMENT +
-    '}\n';
+  const indexVar = generator.nameDB_!.getDistinctName(`${variable0}_index`, 'VARIABLE');
+  branch = `${generator.INDENT + variable0} = ${listVar}[${indexVar}];\n${branch}`;
+  code += `for (var ${indexVar} in ${listVar}) {\n${branch}${YIELD_STATEMENT}}\n`;
   return code;
 }
 
-export function controls_flow_statements(
-  block: Block,
-  generator: JavascriptGenerator
-) {
+export function controls_flow_statements(block: Block, generator: JavascriptGenerator) {
   // Flow statements: continue, break.
   let xfix = '';
   if (generator.STATEMENT_PREFIX) {
@@ -250,9 +200,9 @@ export function controls_flow_statements(
   }
   switch (block.getFieldValue('FLOW')) {
     case 'BREAK':
-      return xfix + 'break;\n';
+      return `${xfix}break;\n`;
     case 'CONTINUE':
-      return xfix + 'continue;\n';
+      return `${xfix}continue;\n`;
   }
   throw Error('Unknown flow statement.');
 }

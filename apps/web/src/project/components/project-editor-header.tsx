@@ -1,18 +1,13 @@
-import { ConnectionSelector } from '@/device';
-import { LocaleSelector } from '@/core/components/locale';
-import { ThemeToggle } from '@/core/components/theme/components/theme-toggle';
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
-import { ConnectedDevice } from '@/device';
+import { LocaleSelector } from '@/core/components/locale';
+import { ThemeToggle } from '@/core/components/theme/components/theme-toggle';
+import { m } from '@/core/paraglide/messages';
+import { ConnectedDevice, ConnectionSelector } from '@/device';
 import { Badge } from '@/ui/components/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 import { useActiveProject } from '../state/active-project-context';
 import { ProjectNameEditor } from './project-name-editor';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
-import { m } from '@/core/paraglide/messages';
 
 export function ProjectEditorHeader() {
   const {
@@ -46,9 +41,7 @@ export function ProjectEditorHeader() {
 
             {dbProject?.name && <ProjectNameEditor />}
 
-            {import.meta.env.DEV && (
-              <Badge variant="destructive">Dev server</Badge>
-            )}
+            {import.meta.env.DEV && <Badge variant="destructive">Dev server</Badge>}
           </nav>
 
           {/* Controls */}

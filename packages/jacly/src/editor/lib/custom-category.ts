@@ -10,14 +10,6 @@ const lucideIconsMap = LucideIcons as Record<string, string>;
 export class JaclyCustomCategory extends Blockly.ToolboxCategory {
   protected iconDom_: HTMLElement | null = null;
 
-  constructor(
-    categoryDef: Blockly.utils.toolbox.CategoryInfo,
-    toolbox: Blockly.IToolbox,
-    opt_parent?: Blockly.ICollapsibleToolboxItem
-  ) {
-    super(categoryDef, toolbox, opt_parent);
-  }
-
   // Update category border color, also store it as CSS variable for styling
   protected addColourBorder_(colour: string): void {
     super.addColourBorder_(colour);
@@ -64,6 +56,6 @@ export function registerJaclyCustomCategory(): void {
     Blockly.registry.Type.TOOLBOX_ITEM,
     Blockly.ToolboxCategory.registrationName,
     JaclyCustomCategory,
-    true
+    true,
   );
 }

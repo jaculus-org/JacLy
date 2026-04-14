@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import {
   CollapsibleCardContext,
   type CollapsibleCardContextValue,
@@ -19,17 +19,15 @@ export function CollapsibleCardProvider({
     () => ({
       state: { isOpen },
       actions: {
-        toggle: () => setIsOpen(prev => !prev),
+        toggle: () => setIsOpen((prev) => !prev),
         setOpen: setIsOpen,
       },
       meta: { defaultOpen },
     }),
-    [isOpen, defaultOpen]
+    [isOpen, defaultOpen],
   );
 
   return (
-    <CollapsibleCardContext.Provider value={value}>
-      {children}
-    </CollapsibleCardContext.Provider>
+    <CollapsibleCardContext.Provider value={value}>{children}</CollapsibleCardContext.Provider>
   );
 }

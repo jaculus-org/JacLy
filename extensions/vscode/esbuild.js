@@ -1,6 +1,6 @@
 const esbuild = require('esbuild');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
@@ -9,9 +9,7 @@ const watch = process.argv.includes('--watch');
 // that every import should use. This avoids the "Invalid hook call"
 // error caused by pnpm linking separate copies for different peers.
 const reactDir = fs.realpathSync(path.resolve(__dirname, 'node_modules/react'));
-const reactDomDir = fs.realpathSync(
-  path.resolve(__dirname, 'node_modules/react-dom')
-);
+const reactDomDir = fs.realpathSync(path.resolve(__dirname, 'node_modules/react-dom'));
 
 /**
  * esbuild plugin that forces every `react` / `react-dom` import to resolve
@@ -23,7 +21,7 @@ const reactDedupePlugin = {
   name: 'react-dedupe',
   setup(build) {
     // Match bare `react`, `react/…`, `react-dom`, `react-dom/…`
-    build.onResolve({ filter: /^react(-dom)?(\/.*)?$/ }, args => {
+    build.onResolve({ filter: /^react(-dom)?(\/.*)?$/ }, (args) => {
       // Let the first resolution from our own code go through normally
       // so that the alias picks the correct copy. For everything else
       // (i.e. transitive deps living deep in the pnpm store) we
@@ -57,12 +55,10 @@ const esbuildProblemMatcherPlugin = {
     build.onStart(() => {
       console.log('[watch] build started');
     });
-    build.onEnd(result => {
+    build.onEnd((result) => {
       result.errors.forEach(({ text, location }) => {
         console.error(`✘ [ERROR] ${text}`);
-        console.error(
-          `    ${location.file}:${location.line}:${location.column}:`
-        );
+        console.error(`    ${location.file}:${location.line}:${location.column}:`);
       });
       console.log('[watch] build finished');
     });
@@ -113,7 +109,7 @@ async function main() {
   }
 }
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e);
   process.exit(1);
 });

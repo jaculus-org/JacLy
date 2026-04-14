@@ -1,4 +1,4 @@
-import { JaclyBlock } from '@/schema';
+import type { JaclyBlock } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 
 export function enrichBlockInputs(state: EngineState, block: JaclyBlock): void {
@@ -13,7 +13,7 @@ export function enrichBlockInputs(state: EngineState, block: JaclyBlock): void {
 
 function enrichInputNode(
   state: EngineState,
-  node: { type: string; inputs?: Record<string, unknown> }
+  node: { type: string; inputs?: Record<string, unknown> },
 ): void {
   const registered = state.blockInputs.get(node.type);
   if (!registered) return;

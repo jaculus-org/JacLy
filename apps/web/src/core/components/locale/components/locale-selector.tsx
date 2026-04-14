@@ -1,3 +1,5 @@
+import { m } from '@/core/paraglide/messages';
+import { getLocale, locales, setLocale } from '@/core/paraglide/runtime';
 import { Button } from '@/ui/components/button';
 import {
   DropdownMenu,
@@ -5,13 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/ui/components/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/ui/components/tooltip';
-import { m } from '@/core/paraglide/messages';
-import { getLocale, locales, setLocale } from '@/core/paraglide/runtime';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 
 export function LocaleSelector() {
   return (
@@ -27,11 +23,8 @@ export function LocaleSelector() {
         <TooltipContent>{m.locale_selector_label()}</TooltipContent>
       </Tooltip>
       <DropdownMenuContent align="end">
-        {locales.map(localeItem => (
-          <DropdownMenuItem
-            key={localeItem}
-            onClick={() => setLocale(localeItem)}
-          >
+        {locales.map((localeItem) => (
+          <DropdownMenuItem key={localeItem} onClick={() => setLocale(localeItem)}>
             {localeItem.toUpperCase()}
           </DropdownMenuItem>
         ))}

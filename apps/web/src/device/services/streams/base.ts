@@ -1,5 +1,5 @@
-import { type Duplex } from '@jaculus/link/stream';
-import { type Logger } from '@jaculus/common';
+import type { Logger } from '@jaculus/common';
+import type { Duplex } from '@jaculus/link/stream';
 
 export type StreamCallbacks = {
   data?: (data: Uint8Array) => void;

@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
-import * as monaco from 'monaco-editor';
 import {
+  getService,
   IConfigurationService,
   ITextModelService,
-  getService,
 } from '@codingame/monaco-vscode-api/services';
-import { m } from '@/core/paraglide/messages';
-import { useActiveProject } from '@/project';
+import * as monaco from 'monaco-editor';
+import { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/core/components/theme';
+import { m } from '@/core/paraglide/messages';
 import { inferLanguageFromPath } from '@/editor/services/language';
+import { useActiveProject } from '@/project';
 
 interface CodeEditorBasicProps {
   readonly filePath: string;
@@ -29,11 +29,9 @@ export function CodeEditorBasic({
   const { themeNormalized } = useTheme();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(
-    'loading'
-  );
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [retryNonce, setRetryNonce] = useState(0);
+  const [_retryNonce, setRetryNonce] = useState(0);
 
   const fullPath = `${projectPath}/${filePath}`;
   const readOnlyInternal = filePath.startsWith('build/') ? true : readOnly;
@@ -70,8 +68,7 @@ export function CodeEditorBasic({
         modelRef = await textModelService.createModelReference(uri);
         if (disposed) return;
 
-        const model = modelRef.object
-          .textEditorModel as monaco.editor.ITextModel | null;
+        const model = modelRef.object.textEditorModel as monaco.editor.ITextModel | null;
         if (!model) {
           throw new Error(`Could not resolve editor model for ${fullPath}`);
         }
@@ -107,10 +104,7 @@ export function CodeEditorBasic({
           };
           editor.onDidChangeModelContent(scheduleSave);
           editor.onDidBlurEditorWidget(saveNow);
-          editor.addCommand(
-            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-            saveNow
-          );
+          editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, saveNow);
         }
 
         // poll for external changes
@@ -123,7 +117,7 @@ export function CodeEditorBasic({
               model.pushEditOperations(
                 [],
                 [{ range: model.getFullModelRange(), text: diskContent }],
-                () => null
+                () => null,
               );
               if (pos) editor?.setPosition(pos);
             }
@@ -137,7 +131,7 @@ export function CodeEditorBasic({
         if (disposed) return;
 
         if (ifNotExists === 'loading') {
-          retryTimer = setTimeout(() => setRetryNonce(value => value + 1), 500);
+          retryTimer = setTimeout(() => setRetryNonce((value) => value + 1), 500);
           setStatus('loading');
           return;
         }
@@ -157,15 +151,14 @@ export function CodeEditorBasic({
       modelRef?.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fullPath, readOnlyInternal, ifNotExists, fsp, retryNonce]);
+  }, [fullPath, readOnlyInternal, ifNotExists, fsp, filePath]);
 
   useEffect(() => {
     const fallbackTheme = themeNormalized === 'dark' ? 'vs-dark' : 'vs';
-    const workbenchTheme =
-      themeNormalized === 'dark' ? 'Dark Modern' : 'Light Modern';
+    const workbenchTheme = themeNormalized === 'dark' ? 'Dark Modern' : 'Light Modern';
 
     monaco.editor.setTheme(fallbackTheme);
-    void getService(IConfigurationService).then(service => {
+    void getService(IConfigurationService).then((service) => {
       void service.updateValue('workbench.colorTheme', workbenchTheme);
     });
   }, [themeNormalized]);
@@ -183,12 +176,8 @@ export function CodeEditorBasic({
       {status === 'error' ? (
         <div className="absolute inset-0 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-red-600 dark:text-red-400 text-sm mb-2">
-              {m.editor_error_title()}
-            </p>
-            <p className="text-slate-600 dark:text-slate-400 text-xs">
-              {errorMsg}
-            </p>
+            <p className="text-red-600 dark:text-red-400 text-sm mb-2">{m.editor_error_title()}</p>
+            <p className="text-slate-600 dark:text-slate-400 text-xs">{errorMsg}</p>
           </div>
         </div>
       ) : null}

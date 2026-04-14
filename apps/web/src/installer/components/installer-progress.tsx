@@ -29,9 +29,7 @@ export function InstallerProgress() {
     <Field className="w-full">
       <FieldLabel htmlFor="flash-progress">
         <span>{progressLabel}</span>
-        <span className="ml-auto">
-          {state.flashProgress.percentage.toFixed(0)}%
-        </span>
+        <span className="ml-auto">{state.flashProgress.percentage.toFixed(0)}%</span>
       </FieldLabel>
       <Progress value={state.flashProgress.percentage} id="flash-progress" />
     </Field>
