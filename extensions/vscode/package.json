@@ -1,5 +1,5 @@
 {
-  "name": "@jaculus/jacly-vscode",
+  "name": "jacly-vscode",
   "displayName": "JacLy",
   "description": "JacLy = Jaculus + Blockly editor for VSCode",
   "version": "0.0.1",
@@ -68,14 +68,13 @@
     "test": "echo \"CI tests are disabled for now\"",
     "test-local": "vscode-test"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@jaculus/common": "workspace:*",
     "@jaculus/jacly": "workspace:*",
     "@jaculus/project": "workspace:*",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
+    "react-dom": "^18.2.0",
     "@types/vscode": "^1.109.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
