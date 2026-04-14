@@ -40,10 +40,8 @@ function isFullDefinition(
   );
 }
 
-/**
- * Pass 1 - register all full block definitions from this config into state.
- * Must be called for all configs before buildToolboxFromContents is called.
- */
+// Pass 1 - register all full block definitions from this config into state.
+// Must be called for all configs before buildToolboxFromContents is called.
 export function registerFullBlocks(
   state: EngineState,
   jaclyConfig: JaclyConfig
@@ -58,10 +56,7 @@ export function registerFullBlocks(
   }
 }
 
-/**
- * Pass 2 - resolve aliases, enrich nested inputs, filter hidden blocks, and
- * build the toolbox item.
- */
+// Pass 2 - resolve aliases, enrich nested inputs, filter hidden blocks, and build the toolbox item.
 export function buildToolboxFromContents(
   state: EngineState,
   fileKey: string,
