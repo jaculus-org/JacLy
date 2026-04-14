@@ -12,7 +12,6 @@ import { useActiveProject } from '@/project';
 import { useJacDevice } from '@/device';
 import { getLocale } from '@/core/paraglide/runtime';
 import { m } from '@/core/paraglide/messages';
-import { editorSyncService } from '../services/editor-sync-service';
 import { packageEventsService } from '@/packages/services/package-events-service';
 import { debounce } from '@jaculus/jacly/utils';
 import type { JaclyBlocksData } from '@jaculus/project';
@@ -107,18 +106,14 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
       debounce(async (json: object) => {
         const content = JSON.stringify(json, null, 2);
         const filePath = getFileName('JACLY_INDEX');
-        editorSyncService.markEditorSaveStart(filePath);
         try {
           await ensureDir(fsp, dirname(filePath));
           await fsp.writeFile(filePath, content, 'utf-8');
-          editorSyncService.notifyExternalChange(filePath, content);
         } catch (error) {
           console.error('Failed to save JSON:', error);
           enqueueSnackbar(m.editor_jacly_save_json_error(), {
             variant: 'error',
           });
-        } finally {
-          editorSyncService.markEditorSaveEnd(filePath);
         }
       }, 300),
     [fsp, getFileName]
@@ -130,7 +125,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
         const filePath = getFileName('GENERATED_CODE');
         await ensureDir(fsp, dirname(filePath));
         await fsp.writeFile(filePath, code, 'utf-8');
-        editorSyncService.notifyExternalChange(filePath, code);
       } catch (error) {
         console.error('Failed to save generated code:', error);
         enqueueSnackbar(m.editor_jacly_save_code_error(), { variant: 'error' });

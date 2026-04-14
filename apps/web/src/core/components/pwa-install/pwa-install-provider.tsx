@@ -1,7 +1,7 @@
 import { m } from '@/core/paraglide/messages';
 import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useEffect, useEffectEvent, useState } from 'react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
+// import { useRegisterSW } from 'virtual:pwa-register/react';
 import { PwaInstallContext } from './pwa-install-context';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -34,11 +34,11 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
   const [isInstalled, setIsInstalled] = useState(isStandaloneDisplayMode);
   const [isInstalling, setIsInstalling] = useState(false);
 
-  useRegisterSW({
-    onRegisterError(error: unknown) {
-      console.error('Failed to register the JacLy service worker.', error);
-    },
-  });
+  // useRegisterSW({
+  //   onRegisterError(error: unknown) {
+  //     console.error('Failed to register the JacLy service worker.', error);
+  //   },
+  // });
 
   const syncInstalledState = useEffectEvent(() => {
     const installed = isStandaloneDisplayMode();
@@ -50,11 +50,10 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const captureInstallPrompt = useEffectEvent(async (event: Event) => {
+  const captureInstallPrompt = useEffectEvent((event: Event) => {
     const deferredPrompt = event as BeforeInstallPromptEvent;
 
     deferredPrompt.preventDefault();
-    await deferredPrompt.prompt();
     setInstallPrompt(deferredPrompt);
   });
 

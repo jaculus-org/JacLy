@@ -12,6 +12,7 @@
         "clean": "rm -rf dist"
     },
     "jaculus": {
+        "packageFormat": 1,
         "blocks": "blocks"
     }
 }

@@ -1,12 +1,14 @@
+import { useEffect, useRef, useState } from 'react';
+import * as monaco from 'monaco-editor';
+import {
+  IConfigurationService,
+  ITextModelService,
+  getService,
+} from '@codingame/monaco-vscode-api/services';
 import { m } from '@/core/paraglide/messages';
 import { useActiveProject } from '@/project';
 import { useTheme } from '@/core/components/theme';
-import { editorSyncService } from '../services/editor-sync-service';
-import Editor from '@monaco-editor/react';
-import { useMemo, useCallback } from 'react';
-import { inferLanguageFromPath } from '../services/language';
-import { debounce } from '@jaculus/jacly/utils';
-import { useMonacoModel } from '../hooks/use-monaco-model';
+import { inferLanguageFromPath } from '@/editor/services/language';
 
 interface CodeEditorBasicProps {
   readonly filePath: string;
@@ -26,74 +28,169 @@ export function CodeEditorBasic({
   } = useActiveProject();
   const { themeNormalized } = useTheme();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(
+    'loading'
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
+
   const fullPath = `${projectPath}/${filePath}`;
   const readOnlyInternal = filePath.startsWith('build/') ? true : readOnly;
 
-  const { loading, fileExists, error, applyingExternalChangeRef } =
-    useMonacoModel({
-      fullPath,
-      filePath,
-      ifNotExists,
-      fsp,
-    });
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let disposed = false;
+    let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+    let modelRef: {
+      dispose(): void;
+      object: { textEditorModel: unknown };
+    } | null = null;
+    let saveTimer: ReturnType<typeof setTimeout> | undefined;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let pollTimer: ReturnType<typeof setInterval> | undefined;
 
-  const saveToFile = useMemo(
-    () =>
-      debounce(async (path: string, content: string) => {
-        editorSyncService.markEditorSaveStart(path);
-        try {
-          await fsp.writeFile(path, content, 'utf-8');
-        } catch (err) {
-          console.error('Error saving file:', err);
-        } finally {
-          editorSyncService.markEditorSaveEnd(path);
+    (async () => {
+      try {
+        setStatus('loading');
+        setErrorMsg(null);
+
+        if (ifNotExists === 'create') {
+          try {
+            await fsp.stat(fullPath);
+          } catch {
+            await fsp.writeFile(fullPath, '', 'utf-8');
+          }
         }
-      }, 300),
-    [fsp]
-  );
 
-  const handleEditorChange = useCallback(
-    (value: string | undefined) => {
-      if (
-        value !== undefined &&
-        !readOnlyInternal &&
-        !applyingExternalChangeRef.current
-      ) {
-        saveToFile(fullPath, value);
+        if (disposed) return;
+
+        const textModelService = await getService(ITextModelService);
+        const uri = monaco.Uri.file(fullPath);
+        modelRef = await textModelService.createModelReference(uri);
+        if (disposed) return;
+
+        const model = modelRef.object
+          .textEditorModel as monaco.editor.ITextModel | null;
+        if (!model) {
+          throw new Error(`Could not resolve editor model for ${fullPath}`);
+        }
+
+        const languageId = inferLanguageFromPath(filePath);
+        if (model.getLanguageId() !== languageId) {
+          monaco.editor.setModelLanguage(model, languageId);
+        }
+        editor = monaco.editor.create(containerRef.current!, {
+          model,
+          readOnly: readOnlyInternal,
+          minimap: { enabled: false },
+          automaticLayout: true,
+        });
+
+        // activateLanguageFeatures(languageId, uri, model);
+
+        let lastUserEditTime = 0;
+        if (!readOnlyInternal) {
+          const saveNow = async () => {
+            if (disposed) return;
+            try {
+              await fsp.writeFile(fullPath, model.getValue(), 'utf-8');
+            } catch (err) {
+              console.error('Error saving file:', err);
+            }
+          };
+          const scheduleSave = () => {
+            lastUserEditTime = Date.now();
+            if (saveTimer !== undefined) clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveNow, 300);
+          };
+          editor.onDidChangeModelContent(scheduleSave);
+          editor.onDidBlurEditorWidget(saveNow);
+          editor.addCommand(
+            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+            saveNow
+          );
+        }
+
+        // poll for external changes
+        pollTimer = setInterval(async () => {
+          if (disposed || Date.now() - lastUserEditTime < 2000) return;
+          try {
+            const diskContent = await fsp.readFile(fullPath, 'utf-8');
+            if (diskContent !== model.getValue()) {
+              const pos = editor?.getPosition();
+              model.pushEditOperations(
+                [],
+                [{ range: model.getFullModelRange(), text: diskContent }],
+                () => null
+              );
+              if (pos) editor?.setPosition(pos);
+            }
+          } catch {
+            // file temporarily unavailable
+          }
+        }, 1000);
+
+        setStatus('ready');
+      } catch (err) {
+        if (disposed) return;
+
+        if (ifNotExists === 'loading') {
+          retryTimer = setTimeout(() => setRetryNonce(value => value + 1), 500);
+          setStatus('loading');
+          return;
+        }
+
+        setErrorMsg(err instanceof Error ? err.message : 'Unknown error');
+        setStatus('error');
+        throw err;
       }
-    },
-    [fullPath, readOnlyInternal, saveToFile, applyingExternalChangeRef]
-  );
+    })();
 
-  if (loading) {
-    return <div>{loadingMessage ?? m.editor_loading()}</div>;
-  }
+    return () => {
+      disposed = true;
+      if (saveTimer !== undefined) clearTimeout(saveTimer);
+      if (retryTimer !== undefined) clearTimeout(retryTimer);
+      if (pollTimer !== undefined) clearInterval(pollTimer);
+      editor?.dispose();
+      modelRef?.dispose();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fullPath, readOnlyInternal, ifNotExists, fsp, retryNonce]);
 
-  if (!fileExists && ifNotExists === 'error') {
-    return (
-      <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 dark:text-red-400 text-sm mb-2">
-            {m.editor_error_title()}
-          </p>
-          <p className="text-slate-600 dark:text-slate-400 text-xs">{error}</p>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fallbackTheme = themeNormalized === 'dark' ? 'vs-dark' : 'vs';
+    const workbenchTheme =
+      themeNormalized === 'dark' ? 'Dark Modern' : 'Light Modern';
+
+    monaco.editor.setTheme(fallbackTheme);
+    void getService(IConfigurationService).then(service => {
+      void service.updateValue('workbench.colorTheme', workbenchTheme);
+    });
+  }, [themeNormalized]);
 
   return (
-    <Editor
-      height="100%"
-      path={fullPath}
-      language={inferLanguageFromPath(filePath)}
-      theme={themeNormalized === 'dark' ? 'vs-dark' : 'light'}
-      options={{
-        readOnly: readOnlyInternal,
-        minimap: { enabled: false },
-        automaticLayout: true,
-      }}
-      onChange={handleEditorChange}
-    />
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className="h-full w-full" />
+
+      {status === 'loading' ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm">
+          {loadingMessage ?? m.editor_loading()}
+        </div>
+      ) : null}
+
+      {status === 'error' ? (
+        <div className="absolute inset-0 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 text-sm mb-2">
+              {m.editor_error_title()}
+            </p>
+            <p className="text-slate-600 dark:text-slate-400 text-xs">
+              {errorMsg}
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }

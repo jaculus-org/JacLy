@@ -19,7 +19,7 @@ export interface ProjectFsInterface {
 // Initialize the shared base filesystem once.
 let initPromise: Promise<void> | null = null;
 
-async function ensureBaseFs(): Promise<void> {
+export async function ensureBaseFs(): Promise<void> {
   if (!initPromise) {
     initPromise = (async () => {
       const res = await fetch('/tsLibs.zip');
