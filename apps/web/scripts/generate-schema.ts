@@ -1,4 +1,4 @@
-import { jaclyJsonSchema } from '@jaculus/jacly/core';
+import { jaclyJsonSchema } from '@jaculus/jacly/schema';
 import { writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';

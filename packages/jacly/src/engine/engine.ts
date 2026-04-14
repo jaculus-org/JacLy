@@ -1,37 +1,24 @@
-import '../core/built-in-blocks';
+import '@/blocks/built-ins';
 
 import * as Blockly from 'blockly/core';
 import { javascriptGenerator as jsg } from 'blockly/javascript';
 import { JaclyBlocksData } from '@jaculus/project';
-import { registerJaclyCustomCategory } from '../editor/lib/custom-category';
 import { EngineState, createEngineState } from './engine-state';
-import { loadToolboxConfiguration } from '../core/toolbox/toolbox-builder';
-import { generateCodeFromWorkspace } from '../core/codegen/workspace-codegen';
-import { registerWorkspaceChangeListener } from '../core/workspace/rules';
-import { registerDocsCallbacks } from '../core/toolbox/category-header';
-import { registerCrossTabCopyPaste } from '../editor/plugins/cross-tab-copy-paste';
-import {
-  attachWorkspaceBackpack,
-  disposeWorkspaceBackpack,
-} from '../editor/plugins/workspace-backpack';
-import { registerFieldColour } from '@blockly/field-colour';
-import { WorkspaceSvgExtended } from '../core/types/custom-block';
-import { registerPlaceholderBlock } from '../core/registration/placeholder-block';
+import { loadToolboxConfiguration } from '@/toolbox/loading/toolbox-loader';
+import { generateCodeFromWorkspace } from '@/codegen/workspace/generate-code-from-workspace';
+import { registerPlaceholderBlock } from '@/blocks/registration/placeholder-block';
 import {
   sanitizeWorkspaceState,
   type SanitizationResult,
-} from '../core/workspace/workspace-validation';
-
-export interface EngineMissingPackages {
-  [packageName: string]: Set<string>;
-}
+} from '@/workspace/validation/workspace-validation';
+import type { EngineMissingPackages } from '@/workspace/validation/types';
+import { attachEngineWorkspace } from './workspace-attachment';
 
 export class JaclyEngine {
   private state: EngineState = createEngineState();
   private attachedWorkspace: Blockly.WorkspaceSvg | null = null;
 
   constructor() {
-    registerJaclyCustomCategory();
     registerPlaceholderBlock();
   }
 
@@ -58,19 +45,13 @@ export class JaclyEngine {
   attachToWorkspace(workspace: Blockly.WorkspaceSvg): void {
     if (this.attachedWorkspace === workspace) return;
     this.attachedWorkspace = workspace;
-    registerWorkspaceChangeListener(workspace as WorkspaceSvgExtended);
-    registerDocsCallbacks(this.state, workspace);
-    registerCrossTabCopyPaste();
-    attachWorkspaceBackpack(workspace);
-    registerFieldColour();
+    attachEngineWorkspace(this.state, workspace);
   }
 
   detachFromWorkspace(workspace: Blockly.WorkspaceSvg): void {
     if (this.attachedWorkspace === workspace) {
       this.attachedWorkspace = null;
     }
-
-    disposeWorkspaceBackpack(workspace);
   }
 
   generateCode(workspace: Blockly.WorkspaceSvg): string {

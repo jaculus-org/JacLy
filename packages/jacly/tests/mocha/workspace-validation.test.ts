@@ -1,11 +1,11 @@
 import * as chai from 'chai';
 import 'mocha';
 import * as Blockly from 'blockly/core';
-import { registerPlaceholderBlock } from '../../src/core/registration/placeholder-block';
+import { registerPlaceholderBlock } from '../../src/blocks/registration/placeholder-block';
 import {
   sanitizeWorkspaceState,
   type SanitizationResult,
-} from '../../src/core/workspace/workspace-validation';
+} from '../../src/workspace/validation/workspace-validation';
 
 const expect = chai.expect;
 

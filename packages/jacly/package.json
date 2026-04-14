@@ -15,20 +15,40 @@
       "import": "./dist/editor/index.js",
       "default": "./dist/editor/index.js"
     },
-    "./project": {
-      "types": "./dist/project/index.d.ts",
-      "import": "./dist/project/index.js",
-      "default": "./dist/project/index.js"
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "import": "./dist/schema/index.js",
+      "default": "./dist/schema/index.js"
     },
-    "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js",
-      "default": "./dist/core/index.js"
+    "./blocks": {
+      "types": "./dist/blocks/index.d.ts",
+      "import": "./dist/blocks/index.js",
+      "default": "./dist/blocks/index.js"
+    },
+    "./toolbox": {
+      "types": "./dist/toolbox/index.d.ts",
+      "import": "./dist/toolbox/index.js",
+      "default": "./dist/toolbox/index.js"
+    },
+    "./codegen": {
+      "types": "./dist/codegen/index.d.ts",
+      "import": "./dist/codegen/index.js",
+      "default": "./dist/codegen/index.js"
+    },
+    "./workspace": {
+      "types": "./dist/workspace/index.d.ts",
+      "import": "./dist/workspace/index.js",
+      "default": "./dist/workspace/index.js"
     },
     "./engine": {
       "types": "./dist/engine/index.d.ts",
       "import": "./dist/engine/index.js",
       "default": "./dist/engine/index.js"
+    },
+    "./project": {
+      "types": "./dist/project/index.d.ts",
+      "import": "./dist/project/index.js",
+      "default": "./dist/project/index.js"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",

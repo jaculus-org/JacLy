@@ -3,13 +3,19 @@ import 'blockly/blocks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Theme } from '@/editor/types/theme';
-import { WorkspaceSvgExtended } from '@/core/types/custom-block';
+import { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import { JaclyBlocksData } from '@jaculus/project';
-import { getBlocklyTheme } from '@/editor/lib/theme';
+import { getBlocklyTheme } from '@/editor/theme/theme';
 import { useBlocklyMessages } from '../hooks/use-blockly-messages';
-import { EngineMissingPackages, JaclyEngine } from '@/engine/engine';
+import { JaclyEngine } from '@/engine/engine';
+import type { EngineMissingPackages } from '@/workspace/validation/types';
 import { debounce } from '@/utils/debouncer';
 import { JaclyLoading } from './loading';
+import {
+  attachBlocklyEditorWorkspace,
+  detachBlocklyEditorWorkspace,
+  registerBlocklyEditorIntegrations,
+} from '@/editor/integrations/blockly-editor-adapter';
 import '../styles/toolbox.css';
 
 interface JaclyEditorProps {
@@ -33,6 +39,7 @@ export function JaclyEditor({
   onGeneratedCode,
   onMissingPackage,
 }: JaclyEditorProps) {
+  registerBlocklyEditorIntegrations();
   const messagesLoaded = useBlocklyMessages(locale);
 
   const toolboxConfiguration = useMemo(
@@ -79,6 +86,7 @@ export function JaclyEditor({
   const handleWorkspaceChange = useCallback(
     (workspace: WorkspaceSvgExtended) => {
       engine.attachToWorkspace(workspace);
+      attachBlocklyEditorWorkspace(workspace);
       debouncedGenerate(workspace);
     },
     [engine, debouncedGenerate]
@@ -86,6 +94,7 @@ export function JaclyEditor({
 
   const handleWorkspaceDispose = useCallback(
     (workspace: WorkspaceSvgExtended) => {
+      detachBlocklyEditorWorkspace(workspace);
       engine.detachFromWorkspace(workspace);
     },
     [engine]
