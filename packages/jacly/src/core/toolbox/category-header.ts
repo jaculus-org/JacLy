@@ -11,19 +11,16 @@ type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
 const defaultGithubDocs =
   'https://github.com/jaculus-org/Jaculus-libraries/tree/master/';
 
-export function buildCategoryHeader(
-  state: EngineState,
-  config: JaclyConfig
-): FlyoutItem[] {
-  const header: FlyoutItem[] = [];
-
-  if (config.name) {
-    header.push({
-      kind: 'label',
-      text: config.name,
-      'web-class': 'jacly-flyout-title',
-    });
-  }
+function includeHeader(
+  config: JaclyConfig,
+  header: FlyoutItem[],
+  state: EngineState
+) {
+  header.push({
+    kind: 'label',
+    text: config.name,
+    'web-class': 'jacly-flyout-title',
+  });
 
   if (config.description) {
     header.push({
@@ -47,8 +44,17 @@ export function buildCategoryHeader(
     });
   }
 
-  if (header.length > 0) {
-    header.push({ kind: 'sep', gap: '24' } as FlyoutItem);
+  header.push({ kind: 'sep', gap: '24' } as FlyoutItem);
+}
+
+export function buildCategoryHeader(
+  state: EngineState,
+  config: JaclyConfig
+): FlyoutItem[] {
+  const header: FlyoutItem[] = [];
+
+  if (config.contents?.length) {
+    includeHeader(config, header, state);
   }
 
   return header;

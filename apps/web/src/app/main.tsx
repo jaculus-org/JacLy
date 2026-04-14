@@ -24,6 +24,14 @@ import { ensureBaseFs } from '@/project/services/project-fs-service';
 import { ZenFSProvider } from '@/editor/services/zen-fs-provider';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 
+import * as Sentry from '@sentry/react';
+
+Sentry.init({
+  dsn: 'https://996565cac67dc734f86eb32e02a099fc@o4511220055670784.ingest.de.sentry.io/4511220058816592',
+  sendDefaultPii: true,
+  enabled: process.env.NODE_ENV === 'production',
+});
+
 async function bootstrap() {
   const appRoot = document.getElementById('root');
   if (!appRoot) {

@@ -94,6 +94,7 @@ export function CodeEditorBasic({
           const saveNow = async () => {
             if (disposed) return;
             try {
+              console.log('Saving now file:', fullPath);
               await fsp.writeFile(fullPath, model.getValue(), 'utf-8');
             } catch (err) {
               console.error('Error saving file:', err);
@@ -102,7 +103,7 @@ export function CodeEditorBasic({
           const scheduleSave = () => {
             lastUserEditTime = Date.now();
             if (saveTimer !== undefined) clearTimeout(saveTimer);
-            saveTimer = setTimeout(saveNow, 300);
+            saveTimer = setTimeout(saveNow, 50);
           };
           editor.onDidChangeModelContent(scheduleSave);
           editor.onDidBlurEditorWidget(saveNow);

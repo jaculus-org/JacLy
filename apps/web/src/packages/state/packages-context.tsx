@@ -11,6 +11,7 @@ export interface JacPackagesState {
   selectedLib: string | null;
   selectedLibVersion: string | null;
   isInstalling: boolean;
+  initialInstallDone: boolean;
   error: string | null;
 }
 

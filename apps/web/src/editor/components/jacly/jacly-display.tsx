@@ -18,7 +18,7 @@ export function EditorJaclyDisplay() {
   } = useEditorJacly();
 
   const {
-    state: { isInstalling },
+    state: { initialInstallDone },
   } = useJacPackages();
 
   const {
@@ -38,7 +38,7 @@ export function EditorJaclyDisplay() {
     [controlPanel]
   );
 
-  if (!initialJson || !jaclyBlocksData || isInstalling) {
+  if (!initialJson || !jaclyBlocksData || !initialInstallDone) {
     return <JaclyLoading />;
   }
 

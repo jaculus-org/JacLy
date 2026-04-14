@@ -42,6 +42,7 @@
     "@jaculus/jacly": "workspace:*",
     "@jaculus/link": "workspace:*",
     "@jaculus/project": "workspace:*",
+    "@sentry/react": "^10.48.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-router": "^1.166.6",
     "@tanstack/react-router-devtools": "^1.166.6",
