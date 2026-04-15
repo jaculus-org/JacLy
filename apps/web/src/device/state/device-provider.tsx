@@ -117,9 +117,9 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
         await initPackageJson(pkgJson);
-        setJacRegistry(new Registry(pkgJson.jaculus?.registry, getRequest, logger));
 
         if (!cancelled) {
+          setJacRegistry(new Registry(pkgJson.jaculus?.registry, getRequest, logger));
           setJacProject(new Project(fs, projectPath, logger));
           setPkg(pkgJson);
           setPackageJsonError(null);

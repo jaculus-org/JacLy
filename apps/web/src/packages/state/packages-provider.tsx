@@ -171,6 +171,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     if (loadStatus !== 'idle') return;
     if (jacProject == null || jacRegistry == null) return;
 
+    let cancelled = false;
     setLoadStatus('loading');
 
     (async () => {
@@ -179,15 +180,23 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
           jacRegistry.listPackages(),
           jacProject.listDependencies(),
         ]);
-        setAvailableLibs(libs);
-        setInstalledLibs(deps);
-        setLoadStatus('success');
+        if (!cancelled) {
+          setAvailableLibs(libs);
+          setInstalledLibs(deps);
+          setLoadStatus('success');
+        }
       } catch (err) {
-        setLoadError(classifyError(err, m.project_panel_pkg_load_error()));
-        setLoadStatus('error');
-        logger.error(`Error loading libraries: ${err}`);
+        if (!cancelled) {
+          setLoadError(classifyError(err, m.project_panel_pkg_load_error()));
+          setLoadStatus('error');
+          logger.error(`Error loading libraries: ${err}`);
+        }
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [loadStatus, jacProject, jacRegistry, classifyError]);
 
   useEffect(() => {
