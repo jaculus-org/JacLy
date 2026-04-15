@@ -30,6 +30,7 @@ export interface JacPackagesActions {
 
 export interface JacPackagesMeta {
   hasProject: boolean;
+  packageJsonError: string | null;
 }
 
 export interface JacPackagesContextValue {

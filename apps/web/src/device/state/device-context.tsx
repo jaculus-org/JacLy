@@ -15,6 +15,7 @@ export interface JacDeviceState {
   errStream?: Writable;
   pkg: PackageJson | null;
   connectionStatus: ConnectionStatus;
+  packageJsonError: string | null;
 }
 
 export interface JacDeviceActions {

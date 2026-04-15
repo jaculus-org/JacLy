@@ -41,6 +41,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const [jacProject, setJacProject] = useState<Project | null>(null);
   const [jacRegistry, setJacRegistry] = useState<Registry | null>(null);
   const [pkg, setPkg] = useState<PackageJson | null>(null);
+  const [packageJsonError, setPackageJsonError] = useState<string | null>(null);
 
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
 
@@ -105,6 +106,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
           if (!cancelled) {
             setJacProject(null);
             setPkg(null);
+            setPackageJsonError(null);
             setError({
               reason: 'missing-package-json',
               seriousness: 'recoverable',
@@ -120,22 +122,24 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
         if (!cancelled) {
           setJacProject(new Project(fs, projectPath, logger));
           setPkg(pkgJson);
+          setPackageJsonError(null);
         }
       } catch (error) {
-        console.error('Error loading project:', error);
         if (error instanceof InvalidPackageJsonFormatError) {
-          setError({
-            reason: 'invalid-package-json',
-            seriousness: 'recoverable',
-            details: error.message,
-            fixCallback: () => fixMissingPackageJson(packageJsonPath),
-          });
-        } else {
-          console.error(`Failed to load Jacly project at ${packageJsonPath}:`, error);
+          console.error('Invalid package.json format:', error.message);
           if (!cancelled) {
             setJacProject(null);
             setJacRegistry(null);
             setPkg(null);
+            setPackageJsonError(error.message);
+          }
+        } else {
+          console.error('Error loading project:', error);
+          if (!cancelled) {
+            setJacProject(null);
+            setJacRegistry(null);
+            setPkg(null);
+            setPackageJsonError(null);
             setError({ reason: 'load-failed', seriousness: 'recoverable' });
           }
         }
@@ -180,8 +184,9 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
       connectionStatus,
       outStream: undefined,
       errStream: undefined,
+      packageJsonError,
     }),
-    [jacProject, jacRegistry, device, connectionType, pkg, connectionStatus],
+    [jacProject, jacRegistry, device, connectionType, pkg, connectionStatus, packageJsonError],
   );
 
   const actions = useMemo<JacDeviceActions>(

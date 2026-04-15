@@ -9,20 +9,32 @@ interface EditorLoadErrorProps {
 
 export function ProjectLoadError({ error }: EditorLoadErrorProps) {
   function getErrorDetails(error: ProjectError): string {
+    let baseMessage: string;
     switch (error.reason) {
       case 'fs-mount-failed':
-        return m.project_error_fs_mount_failed();
+        baseMessage = m.project_error_fs_mount_failed();
+        break;
       case 'missing-package-json':
-        return m.project_error_missing_package_json();
+        baseMessage = m.project_error_missing_package_json();
+        break;
       case 'invalid-package-json':
-        return m.project_error_invalid_package_json();
+        baseMessage = m.project_error_invalid_package_json();
+        break;
       case 'load-failed':
-        return m.project_error_load_failed();
+        baseMessage = m.project_error_load_failed();
+        break;
       case 'unknown-error':
-        return m.project_error_unknown();
+        baseMessage = m.project_error_unknown();
+        break;
       default:
-        return m.project_error_unknown();
+        baseMessage = m.project_error_unknown();
     }
+
+    if (error.details) {
+      return `${baseMessage}\n\n${error.details}`;
+    }
+
+    return baseMessage;
   }
 
   return (

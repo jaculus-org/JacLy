@@ -21,7 +21,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   const {
     actions: { controlPanel },
   } = useProjectEditor();
-  const { jacProject, jacRegistry } = jacState;
+  const { jacProject, jacRegistry, packageJsonError } = jacState;
   const {
     state: { projectPath, fs },
   } = useActiveProject();
@@ -258,7 +258,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
           removeLibrary,
           retryLoad,
         },
-        meta: { hasProject },
+        meta: { hasProject, packageJsonError },
       }}
     >
       {children}
