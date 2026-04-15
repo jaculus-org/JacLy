@@ -64,7 +64,7 @@
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "format": "prettier --write .",
+    "format": "biome format --write",
     "test": "echo \"CI tests are disabled for now\"",
     "test-local": "vscode-test"
   },

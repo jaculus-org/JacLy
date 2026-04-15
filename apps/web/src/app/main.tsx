@@ -20,10 +20,16 @@ import getLanguagesServiceOverride from '@codingame/monaco-vscode-languages-serv
 import getModelServiceOverride from '@codingame/monaco-vscode-model-service-override';
 import getTextMateServiceOverride from '@codingame/monaco-vscode-textmate-service-override';
 import getThemeServiceOverride from '@codingame/monaco-vscode-theme-service-override';
+import Hotjar from '@hotjar/browser';
 import * as Sentry from '@sentry/react';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import { ZenFSProvider } from '@/editor/services/zen-fs-provider';
 import { ensureBaseFs } from '@/project/services/project-fs-service';
+
+const siteId = 6691272;
+const hotjarVersion = 6;
+
+Hotjar.init(siteId, hotjarVersion);
 
 Sentry.init({
   dsn: 'https://996565cac67dc734f86eb32e02a099fc@o4511220055670784.ingest.de.sentry.io/4511220058816592',
