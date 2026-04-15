@@ -4,6 +4,8 @@ import type { Dependencies } from '@jaculus/project/package';
 import type { RegistryListProject } from '@jaculus/project/registry';
 import { createContext, useContext } from 'react';
 
+export type LoadStatus = 'idle' | 'loading' | 'success' | 'error';
+
 export interface JacPackagesState {
   installedLibs: Dependencies;
   availableLibChoices: RegistryListProject[];
@@ -13,6 +15,8 @@ export interface JacPackagesState {
   isInstalling: boolean;
   initialInstallDone: boolean;
   error: string | null;
+  loadStatus: LoadStatus;
+  loadError: string | null;
 }
 
 export interface JacPackagesActions {
@@ -21,6 +25,7 @@ export interface JacPackagesActions {
   installAll: () => void;
   addLibrary: () => void;
   removeLibrary: (name: string) => void;
+  retryLoad: () => void;
 }
 
 export interface JacPackagesMeta {

@@ -113,6 +113,7 @@
   "project_panel_pkg_remove": "Odebrat",
   "project_panel_pkg_added": "Knihovna '{name}@{version}' byla úspěšně přidána",
   "project_panel_pkg_removed": "Knihovna '{name}' byla úspěšně odebrána",
+  "project_panel_pkg_retry": "Zkusit znovu",
   "project_loading": "Načítání projektu",
   "project_loading_back": "Zpět na moje projekty",
   "project_error_title": "Nepodařilo se načíst souborový systém projektu",

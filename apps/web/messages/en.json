@@ -115,6 +115,7 @@
   "project_panel_pkg_remove": "Remove",
   "project_panel_pkg_added": "Library '{name}@{version}' added successfully",
   "project_panel_pkg_removed": "Library '{name}' removed successfully",
+  "project_panel_pkg_retry": "Retry",
   "project_loading": "Loading Project",
   "project_loading_back": "Back to My Projects",
   "project_error_title": "Failed to Load Project Filesystem",

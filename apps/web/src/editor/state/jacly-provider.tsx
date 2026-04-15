@@ -102,7 +102,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     try {
       await ensureDir(fsp, dirname(filePath));
       await fsp.writeFile(filePath, content, 'utf-8');
-      console.log('Saved JSON to', filePath);
     } catch (error) {
       console.error('Failed to save JSON:', error);
       enqueueSnackbar(m.editor_jacly_save_json_error(), { variant: 'error' });
@@ -151,7 +150,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
           const filePath = getFileName('GENERATED_CODE');
           await ensureDir(fsp, dirname(filePath));
           await fsp.writeFile(filePath, pendingCode, 'utf-8');
-          console.log('Saved generated code to', filePath);
         } catch (error) {
           console.error('Failed to save generated code:', error);
           enqueueSnackbar(m.editor_jacly_save_code_error(), {

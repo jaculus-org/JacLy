@@ -13,6 +13,7 @@ import { useJacDevice } from '@/device';
 import { flushSaveService } from '@/editor/services/flush-save-service';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { packageEventsService } from '../services/package-events-service';
+import type { LoadStatus } from './packages-context';
 import { JacPackagesContext } from './packages-context';
 
 export function JacPackagesProvider({ children }: { children: ReactNode }) {
@@ -25,7 +26,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     state: { projectPath, fs },
   } = useActiveProject();
 
-  function classifyError(err: unknown, fallback: string): string {
+  const classifyError = useCallback((err: unknown, fallback: string): string => {
     if (err instanceof ProjectDependencyError) {
       if (err.conflictingLib && err.requested && err.resolved) {
         return (
@@ -44,7 +45,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
       return `${m.project_panel_pkg_fetch_error()} (${err.message})`;
     if (err instanceof InvalidPackageJsonFormatError) return err.message;
     return err instanceof Error ? err.message : fallback;
-  }
+  }, []);
 
   const [installedLibs, setInstalledLibs] = useState<Dependencies>({});
   const [availableLibs, setAvailableLibs] = useState<RegistryListProject[]>([]);
@@ -58,6 +59,9 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     fs.existsSync(path.join(projectPath, 'node_modules')),
   );
   const [error, setError] = useState<string | null>(null);
+
+  const [loadStatus, setLoadStatus] = useState<LoadStatus>('idle');
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const setErrorAndLogPanel = useCallback(
     (message: string) => {
@@ -78,6 +82,11 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
 
   const selectLibVersion = useCallback((value: string | null) => {
     setSelectedLibVersion(value);
+  }, []);
+
+  const retryLoad = useCallback(() => {
+    setLoadStatus('idle');
+    setLoadError(null);
   }, []);
 
   const installAll = useCallback(async () => {
@@ -159,18 +168,27 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    if (loadStatus !== 'idle') return;
+    if (jacProject == null || jacRegistry == null) return;
+
+    setLoadStatus('loading');
+
     (async () => {
       try {
-        setError(null);
-        if (jacProject == null || jacRegistry == null) return;
-        setAvailableLibs(await jacRegistry.listPackages());
-        setInstalledLibs(await jacProject.listDependencies());
+        const [libs, deps] = await Promise.all([
+          jacRegistry.listPackages(),
+          jacProject.listDependencies(),
+        ]);
+        setAvailableLibs(libs);
+        setInstalledLibs(deps);
+        setLoadStatus('success');
       } catch (err) {
-        setErrorAndLogPanel(classifyError(err, m.project_panel_pkg_load_error()));
-        logger.error(`Error loading libraries:${err}`);
+        setLoadError(classifyError(err, m.project_panel_pkg_load_error()));
+        setLoadStatus('error');
+        logger.error(`Error loading libraries: ${err}`);
       }
     })();
-  }, [jacProject, jacRegistry, setErrorAndLogPanel, classifyError]);
+  }, [loadStatus, jacProject, jacRegistry, classifyError]);
 
   useEffect(() => {
     (async () => {
@@ -229,6 +247,8 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
           isInstalling,
           initialInstallDone,
           error,
+          loadStatus,
+          loadError,
         },
         actions: {
           selectLib,
@@ -236,6 +256,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
           installAll,
           addLibrary,
           removeLibrary,
+          retryLoad,
         },
         meta: { hasProject },
       }}
