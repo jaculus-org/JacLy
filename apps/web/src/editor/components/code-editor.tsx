@@ -91,7 +91,6 @@ export function CodeEditorBasic({
           const saveNow = async () => {
             if (disposed) return;
             try {
-              console.log('Saving now file:', fullPath);
               await fsp.writeFile(fullPath, model.getValue(), 'utf-8');
             } catch (err) {
               console.error('Error saving file:', err);

@@ -6,7 +6,7 @@ import type { Dependencies } from '@jaculus/project/package';
 import { InvalidPackageJsonFormatError } from '@jaculus/project/package';
 import { RegistryFetchError, type RegistryListProject } from '@jaculus/project/registry';
 import { enqueueSnackbar } from 'notistack';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { logger } from '@/core';
 import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
@@ -62,6 +62,10 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
 
   const [loadStatus, setLoadStatus] = useState<LoadStatus>('idle');
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadRequestId, setLoadRequestId] = useState(0);
+  const autoInstallPromise = useRef<{ projectPath: string; promise: Promise<Dependencies> } | null>(
+    null,
+  );
 
   const setErrorAndLogPanel = useCallback(
     (message: string) => {
@@ -85,8 +89,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const retryLoad = useCallback(() => {
-    setLoadStatus('idle');
-    setLoadError(null);
+    setLoadRequestId((requestId) => requestId + 1);
   }, []);
 
   const installAll = useCallback(async () => {
@@ -168,11 +171,17 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (loadStatus !== 'idle') return;
-    if (jacProject == null || jacRegistry == null) return;
+    if (jacProject == null || jacRegistry == null) {
+      setAvailableLibs([]);
+      setInstalledLibs({});
+      setLoadStatus('idle');
+      setLoadError(null);
+      return;
+    }
 
     let cancelled = false;
     setLoadStatus('loading');
+    setLoadError(null);
 
     (async () => {
       try {
@@ -197,26 +206,47 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [loadStatus, jacProject, jacRegistry, classifyError]);
+  }, [loadRequestId, jacProject, jacRegistry, classifyError]);
 
   useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       if (jacProject == null || jacRegistry == null) return;
-      if (!fs.existsSync(path.join(projectPath, 'node_modules'))) {
-        try {
-          setIsInstalling(true);
-          setError(null);
-          setInstalledLibs(await jacProject.install(jacRegistry));
+      if (fs.existsSync(path.join(projectPath, 'node_modules'))) {
+        if (!cancelled) setInitialInstallDone(true);
+        return;
+      }
+      try {
+        setInitialInstallDone(false);
+        setIsInstalling(true);
+        setError(null);
+        const installPromise =
+          autoInstallPromise.current?.projectPath === projectPath
+            ? autoInstallPromise.current.promise
+            : jacProject.install(jacRegistry);
+        autoInstallPromise.current = { projectPath, promise: installPromise };
+        const dependencies = await installPromise;
+        if (!cancelled) {
+          setInstalledLibs(dependencies);
           packageEventsService.notifyPackagesChanged();
-        } catch (err) {
+        }
+      } catch (err) {
+        if (!cancelled) {
           setErrorAndLogPanel(classifyError(err, m.project_panel_pkg_install_error()));
           logger.error(`Error installing library:${err}`);
-        } finally {
+        }
+      } finally {
+        if (!cancelled) {
           setIsInstalling(false);
           setTimeout(() => setInitialInstallDone(true), 100);
         }
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [fs, jacProject, jacRegistry, projectPath, setErrorAndLogPanel, classifyError]);
 
   useEffect(() => {

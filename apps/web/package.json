@@ -84,6 +84,7 @@
     "@codingame/esbuild-import-meta-url-plugin": "^1.0.3",
     "@inlang/paraglide-js": "^2.14.0",
     "@playwright/test": "^1.58.2",
+    "@sentry/vite-plugin": "^5.2.0",
     "@tanstack/router-plugin": "^1.166.6",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

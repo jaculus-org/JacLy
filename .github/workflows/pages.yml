@@ -66,6 +66,8 @@ jobs:
       - name: Build everything
         env:
           CI: true
+          NODE_OPTIONS: --max-old-space-size=8192
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: pnpm -r build
 
       - name: Upload artifact
