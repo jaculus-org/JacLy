@@ -10,11 +10,11 @@ import { buildInfoPlugin } from './src/app/vite/vite-plugin-build-info';
 // import { VitePWA } from 'vite-plugin-pwa';
 import { githubPagesSetup } from './src/app/vite/vite-plugin-github-pages-setup';
 
+const routePrefix = process.env.VITE_ROUTE_PREFIX || '';
 // const lightBackgroundColor = 'oklch(0.97 0.01 250)';
 // const darkBackgroundColor = 'oklch(0.15 0.05 260)';
-
-// https://vite.dev/config/
 export default defineConfig({
+  base: routePrefix ? `/${routePrefix}/` : '/',
   worker: {
     format: 'es',
   },
