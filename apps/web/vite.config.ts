@@ -1,7 +1,6 @@
 import path from 'node:path';
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
@@ -13,11 +12,9 @@ import { githubPagesSetup } from './src/app/vite/vite-plugin-github-pages-setup'
 const routePrefix = process.env.VITE_ROUTE_PREFIX || '';
 // const lightBackgroundColor = 'oklch(0.97 0.01 250)';
 // const darkBackgroundColor = 'oklch(0.15 0.05 260)';
+
 export default defineConfig({
   base: routePrefix ? `/${routePrefix}/` : '/',
-  build: {
-    sourcemap: 'hidden',
-  },
   worker: {
     format: 'es',
   },
@@ -93,14 +90,6 @@ export default defineConfig({
     githubPagesSetup(),
     buildInfoPlugin(),
     nodePolyfills(),
-    sentryVitePlugin({
-      org: 'jaculus',
-      project: 'jacly-web',
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      sourcemaps: {
-        filesToDeleteAfterUpload: ['./dist/**/*.map'],
-      },
-    }),
   ],
   resolve: {
     alias: {

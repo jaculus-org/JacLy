@@ -48,10 +48,10 @@ export async function stop(device: JacDevice) {
   }
 }
 
-export async function start(device: JacDevice, entryFile: string = 'index.js') {
+export async function start(device: JacDevice) {
   try {
     await withLockedDevice(device, async (dev) => {
-      await dev.controller.start(entryFile);
+      await dev.controller.start();
     });
   } catch (err) {
     enqueueSnackbar(m.device_start_failed(), { variant: 'error' });
@@ -60,11 +60,11 @@ export async function start(device: JacDevice, entryFile: string = 'index.js') {
   }
 }
 
-export async function restart(device: JacDevice, entryFile: string = 'index.js') {
+export async function restart(device: JacDevice) {
   try {
     await withLockedDevice(device, async (dev) => {
       await dev.controller.stop();
-      await dev.controller.start(entryFile);
+      await dev.controller.start();
     });
   } catch (err) {
     enqueueSnackbar(m.device_restart_failed(), { variant: 'error' });
