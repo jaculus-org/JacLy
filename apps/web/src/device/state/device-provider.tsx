@@ -9,7 +9,7 @@ import {
 } from '@jaculus/project/package';
 import { Registry } from '@jaculus/project/registry';
 import { enqueueSnackbar } from 'notistack';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
@@ -57,48 +57,35 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     });
   });
 
-  const fixMissingPackageJson = useCallback(
-    async (packageJsonPath: string) => {
-      const defaultPackageJson: PackageJson = {
-        name: 'jacly-project',
-        version: '1.0.0',
-        dependencies: {},
-      };
-      try {
-        await fs.promises.writeFile(
-          packageJsonPath,
-          JSON.stringify(defaultPackageJson, null, 2),
-          'utf-8',
-        );
-        setError(null);
-        enqueueSnackbar(m.project_error_fix(), { variant: 'success' });
-        setInterval(() => {
-          window.location.reload();
-        }, 1000);
-      } catch (error) {
-        console.error('Failed to create default package.json:', error);
-        enqueueSnackbar(m.project_error_unknown(), { variant: 'error' });
-      }
-    },
-    [fs, setError],
-  );
-
-  const initPackageJson = useCallback(
-    async (pkg: PackageJson) => {
-      if (pkg.jaculus?.jaclyVersion && pkg.jaculus.jaclyVersion !== buildInfo.version) {
-        enqueueSnackbar(m.jac_device_provider_outdated_package_json(), {
-          variant: 'warning',
-        });
-      }
-    },
-    [buildInfo],
-  );
-
   useEffect(() => {
     let cancelled = false;
 
     async function loadProject() {
       const packageJsonPath = path.join(projectPath, 'package.json');
+
+      async function fixMissingPackageJson() {
+        const defaultPackageJson: PackageJson = {
+          name: 'jacly-project',
+          version: '1.0.0',
+          dependencies: {},
+        };
+        try {
+          await fs.promises.writeFile(
+            packageJsonPath,
+            JSON.stringify(defaultPackageJson, null, 2),
+            'utf-8',
+          );
+          setError(null);
+          enqueueSnackbar(m.project_error_fix(), { variant: 'success' });
+          setInterval(() => {
+            window.location.reload();
+          }, 1000);
+        } catch (error) {
+          console.error('Failed to create default package.json:', error);
+          enqueueSnackbar(m.project_error_unknown(), { variant: 'error' });
+        }
+      }
+
       try {
         if (!fs.existsSync(packageJsonPath)) {
           if (!cancelled) {
@@ -108,13 +95,17 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
             setError({
               reason: 'missing-package-json',
               seriousness: 'recoverable',
-              fixCallback: () => fixMissingPackageJson(packageJsonPath),
+              fixCallback: fixMissingPackageJson,
             });
           }
           return;
         }
         const pkgJson = await loadPackageJson(fs, packageJsonPath);
-        await initPackageJson(pkgJson);
+        if (pkgJson.jaculus?.jaclyVersion && pkgJson.jaculus.jaclyVersion !== buildInfo.version) {
+          enqueueSnackbar(m.jac_device_provider_outdated_package_json(), {
+            variant: 'warning',
+          });
+        }
 
         if (!cancelled) {
           setJacRegistry(new Registry(pkgJson.jaculus?.registry, getRequest, logger));
@@ -149,7 +140,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, [fs, projectPath, fixMissingPackageJson, setError, initPackageJson]);
+  }, [buildInfo.version, fs, projectPath, setError]);
 
   useEffect(() => {
     return () => {
@@ -159,50 +150,38 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
     };
   }, [device]);
 
-  const handleSetDevice = useCallback<JacDeviceActions['setDevice']>(
-    async (newDevice, newConnectionType) => {
-      setDevice((prev) => {
-        if (prev) {
-          prev.destroy().catch((err) => console.error('Failed to destroy previous device:', err));
-        }
-        return newDevice;
-      });
-      setConnectionType(newConnectionType || null);
-    },
-    [],
-  );
+  const handleSetDevice: JacDeviceActions['setDevice'] = async (newDevice, newConnectionType) => {
+    setDevice((prev) => {
+      if (prev) {
+        prev.destroy().catch((err) => console.error('Failed to destroy previous device:', err));
+      }
+      return newDevice;
+    });
+    setConnectionType(newConnectionType || null);
+  };
 
-  const state = useMemo<JacDeviceState>(
-    () => ({
-      jacProject,
-      jacRegistry,
-      device,
-      connectionType,
-      pkg,
-      connectionStatus,
-      outStream: undefined,
-      errStream: undefined,
-      packageJsonError,
-    }),
-    [jacProject, jacRegistry, device, connectionType, pkg, connectionStatus, packageJsonError],
-  );
+  const state: JacDeviceState = {
+    jacProject,
+    jacRegistry,
+    device,
+    connectionType,
+    pkg,
+    connectionStatus,
+    outStream: undefined,
+    errStream: undefined,
+    packageJsonError,
+  };
 
-  const actions = useMemo<JacDeviceActions>(
-    () => ({
-      setDevice: handleSetDevice,
-      setConnectionStatus,
-    }),
-    [handleSetDevice],
-  );
+  const actions: JacDeviceActions = {
+    setDevice: handleSetDevice,
+    setConnectionStatus,
+  };
 
-  const contextValue = useMemo<JacDeviceContextValue>(
-    () => ({
-      state,
-      actions,
-      meta: {},
-    }),
-    [state, actions],
-  );
+  const contextValue: JacDeviceContextValue = {
+    state,
+    actions,
+    meta: {},
+  };
 
   return <JacDeviceContext.Provider value={contextValue}>{children}</JacDeviceContext.Provider>;
 }

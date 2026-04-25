@@ -1,5 +1,5 @@
 import type { JacDevice } from '@jaculus/device';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { restart, start, status, stop, version } from '../services/device-operations';
 import type { DeviceStatusInfo } from '../state/device-control-context';
 import { useLoadingState } from './use-loading';
@@ -45,12 +45,9 @@ export function useProgramControl(device: JacDevice | null) {
     });
   }, [device, withLoading, refreshDevice]);
 
-  const state = useMemo(() => ({ deviceStatus, deviceVersion }), [deviceStatus, deviceVersion]);
+  const state = { deviceStatus, deviceVersion };
 
-  const actions = useMemo(
-    () => ({ refreshDevice, startProgram, stopProgram, restartProgram }),
-    [refreshDevice, startProgram, stopProgram, restartProgram],
-  );
+  const actions = { refreshDevice, startProgram, stopProgram, restartProgram };
 
   return { loading, state, actions };
 }

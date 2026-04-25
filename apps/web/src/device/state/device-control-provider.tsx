@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useMemo } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { useProgramControl } from '../hooks/use-program-control';
 import { useWifiControl } from '../hooks/use-wifi-control';
 import { useJacDevice } from './device-context';
@@ -27,29 +27,17 @@ export function JacDeviceControlProvider({ children }: { children: ReactNode }) 
     return () => clearTimeout(timer);
   }, [device, connectionStatus, refreshDevice, refreshWifi]);
 
-  const value = useMemo<JacDeviceControlContextValue>(
-    () => ({
-      state: {
-        device,
-        connectionStatus,
-        loading: { ...wifi.loading, ...program.loading },
-        ...wifi.state,
-        ...program.state,
-      },
-      actions: { ...wifi.actions, ...program.actions },
-      meta: { isConnected: !!device && connectionStatus === 'connected' },
-    }),
-    [
+  const value: JacDeviceControlContextValue = {
+    state: {
       device,
       connectionStatus,
-      wifi.loading,
-      wifi.state,
-      wifi.actions,
-      program.loading,
-      program.state,
-      program.actions,
-    ],
-  );
+      loading: { ...wifi.loading, ...program.loading },
+      ...wifi.state,
+      ...program.state,
+    },
+    actions: { ...wifi.actions, ...program.actions },
+    meta: { isConnected: !!device && connectionStatus === 'connected' },
+  };
 
   return (
     <JacDeviceControlContext.Provider value={value}>{children}</JacDeviceControlContext.Provider>

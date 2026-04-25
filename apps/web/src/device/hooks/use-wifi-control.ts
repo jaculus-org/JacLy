@@ -1,5 +1,5 @@
 import type { JacDevice } from '@jaculus/device';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   addWifiNetwork,
   setWifiMode as applyWifiMode,
@@ -148,58 +148,33 @@ export function useWifiControl(device: JacDevice | null) {
     });
   }, [device, apSsid, apPassword, withLoading, fetchWifiState]);
 
-  const state = useMemo(
-    () => ({
-      wifiMode,
-      wifiApSsid,
-      wifiIp,
-      wifiModalOpen,
-      wifiModalMode,
-      newNetworkSsid,
-      newNetworkPassword,
-      apSsid,
-      apPassword,
-      removeNetworkSsid,
-    }),
-    [
-      wifiMode,
-      wifiApSsid,
-      wifiIp,
-      wifiModalOpen,
-      wifiModalMode,
-      newNetworkSsid,
-      newNetworkPassword,
-      apSsid,
-      apPassword,
-      removeNetworkSsid,
-    ],
-  );
+  const state = {
+    wifiMode,
+    wifiApSsid,
+    wifiIp,
+    wifiModalOpen,
+    wifiModalMode,
+    newNetworkSsid,
+    newNetworkPassword,
+    apSsid,
+    apPassword,
+    removeNetworkSsid,
+  };
 
-  const actions = useMemo(
-    () => ({
-      refreshWifi,
-      setWifiMode,
-      openWifiModal,
-      closeWifiModal,
-      addNetwork,
-      removeNetwork,
-      configureAp,
-      setNewNetworkSsid,
-      setNewNetworkPassword,
-      setApSsid: setApSsidState,
-      setApPassword: setApPasswordState,
-      setRemoveNetworkSsid,
-    }),
-    [
-      refreshWifi,
-      setWifiMode,
-      openWifiModal,
-      closeWifiModal,
-      addNetwork,
-      removeNetwork,
-      configureAp,
-    ],
-  );
+  const actions = {
+    refreshWifi,
+    setWifiMode,
+    openWifiModal,
+    closeWifiModal,
+    addNetwork,
+    removeNetwork,
+    configureAp,
+    setNewNetworkSsid,
+    setNewNetworkPassword,
+    setApSsid: setApSsidState,
+    setApPassword: setApPasswordState,
+    setRemoveNetworkSsid,
+  };
 
   return { loading, state, actions };
 }

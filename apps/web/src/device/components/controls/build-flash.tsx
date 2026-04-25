@@ -1,6 +1,6 @@
 import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
@@ -19,7 +19,7 @@ export function BuildFlash() {
   const { device, jacProject, pkg, connectionStatus } = jacState;
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleBuildAndFlash = useCallback(async () => {
+  async function handleBuildAndFlash() {
     setIsProcessing(true);
     if (!device) {
       enqueueSnackbar(m.device_error_no_device(), { variant: 'error' });
@@ -51,7 +51,7 @@ export function BuildFlash() {
     } finally {
       setIsProcessing(false);
     }
-  }, [device, pkg, projectPath, fs, jacProject, controlPanel, monacoService]);
+  }
 
   if (!device || !jacProject) {
     return;

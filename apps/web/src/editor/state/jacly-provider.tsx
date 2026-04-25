@@ -1,185 +1,127 @@
-import { dirname } from 'node:path';
 import { JaclyEngine } from '@jaculus/jacly/engine';
-import type { JaclyBlocksData } from '@jaculus/project';
 import { enqueueSnackbar } from 'notistack';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
-import { getLocale } from '@/core/paraglide/runtime';
 import { useJacDevice } from '@/device';
-import { packageEventsService } from '@/packages/services/package-events-service';
 import { useActiveProject } from '@/project';
 import { EditorJaclyContext } from './jacly-context';
-
-async function ensureDir(fsp: ReturnType<typeof useActiveProject>['state']['fsp'], path: string) {
-  try {
-    await fsp.mkdir(path, { recursive: true });
-  } catch (e: unknown) {
-    if ((e as { code?: string })?.code !== 'EEXIST') throw e;
-  }
-}
+import { useJaclyPackageReload } from './use-jacly-package-reload';
+import { useJaclyProjectData } from './use-jacly-project-data';
+import { usePendingEditorFile } from './use-pending-editor-file';
 
 export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   const {
     state: { fs, fsp, monacoService },
-    actions,
+    actions: { getFileName },
   } = useActiveProject();
-  const { getFileName } = actions;
-  const { state: jacState } = useJacDevice();
-  const { jacProject } = jacState;
+  const {
+    state: { jacProject },
+  } = useJacDevice();
 
   const [engine] = useState(() => new JaclyEngine());
-  const [initialJson, setInitialJson] = useState<object | null>(null);
-  const [jaclyBlocksData, setJaclyBlocksData] = useState<JaclyBlocksData | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const { initialJson, jaclyBlocksData, setJaclyBlocksData } = useJaclyProjectData({
+    fs,
+    fsp,
+    getFileName,
+    jacProject,
+  });
 
-    (async () => {
-      try {
-        if (!jacProject) return;
+  useJaclyPackageReload({
+    engine,
+    jacProject,
+    setJaclyBlocksData,
+  });
 
-        const jaclyFile = getFileName('JACLY_INDEX');
-        await ensureDir(fsp, dirname(jaclyFile));
+  const handleJsonSaveError = useCallback((error: unknown) => {
+    console.error('Failed to save JSON:', error);
+    enqueueSnackbar(m.editor_jacly_save_json_error(), { variant: 'error' });
+  }, []);
 
-        let jsonData: object;
-        if (fs.existsSync(jaclyFile)) {
-          jsonData = JSON.parse(fs.readFileSync(jaclyFile, 'utf-8'));
-        } else {
-          await fsp.writeFile(jaclyFile, '{}', 'utf-8');
-          jsonData = {};
-        }
+  const handleGeneratedCodeSaveError = useCallback((error: unknown) => {
+    console.error('Failed to save generated code:', error);
+    enqueueSnackbar(m.editor_jacly_save_code_error(), { variant: 'error' });
+  }, []);
 
-        const jaclyData = await jacProject.getJaclyData(getLocale());
+  const {
+    flush: flushJsonFile,
+    hasPendingChanges: hasPendingJsonChanges,
+    schedule: scheduleJsonSave,
+  } = usePendingEditorFile<object>({
+    delayMs: 300,
+    filePath: getFileName('JACLY_INDEX'),
+    fsp,
+    monacoService,
+    onError: handleJsonSaveError,
+    serialize: (json) => JSON.stringify(json, null, 2),
+  });
 
-        if (cancelled) return;
-        setInitialJson(jsonData);
-        setJaclyBlocksData(jaclyData);
-      } catch (error) {
-        console.error('Failed to load editor data:', error);
-        enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
-        if (!cancelled) {
-          setInitialJson({});
-          setJaclyBlocksData(null);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fs, fsp, getFileName, jacProject]);
-
-  useEffect(() => {
-    return packageEventsService.onPackagesChanged(() => {
-      if (!jacProject) return;
-      (async () => {
-        try {
-          const jaclyData = await jacProject.getJaclyData(getLocale());
-          engine.reloadBlockData(jaclyData);
-          setJaclyBlocksData(jaclyData);
-        } catch (error) {
-          console.error('Failed to reload block data after package change:', error);
-          enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
-        }
-      })();
-    });
-  }, [jacProject, engine]);
-
-  const pendingJsonRef = useRef<object | null>(null);
-  const jsonSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const pendingCodeRef = useRef<string | null>(null);
-  const codeSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  const flushSave = useCallback(async () => {
-    if (jsonSaveTimerRef.current !== undefined) {
-      clearTimeout(jsonSaveTimerRef.current);
-      jsonSaveTimerRef.current = undefined;
-    }
-    if (pendingJsonRef.current === null) return;
-    const json = pendingJsonRef.current;
-    pendingJsonRef.current = null;
-    const content = JSON.stringify(json, null, 2);
-    const filePath = getFileName('JACLY_INDEX');
-    try {
-      await ensureDir(fsp, dirname(filePath));
-      await fsp.writeFile(filePath, content, 'utf-8');
-    } catch (error) {
-      console.error('Failed to save JSON:', error);
-      enqueueSnackbar(m.editor_jacly_save_json_error(), { variant: 'error' });
-    }
-  }, [fsp, getFileName]);
-
-  const flushPendingChanges = useCallback(async () => {
-    await flushSave();
-
-    if (codeSaveTimerRef.current !== undefined) {
-      clearTimeout(codeSaveTimerRef.current);
-      codeSaveTimerRef.current = undefined;
-    }
-    if (pendingCodeRef.current === null) return;
-
-    const pendingCode = pendingCodeRef.current;
-    pendingCodeRef.current = null;
-
-    try {
-      const filePath = getFileName('GENERATED_CODE');
-      await ensureDir(fsp, dirname(filePath));
-      await fsp.writeFile(filePath, pendingCode, 'utf-8');
-    } catch (error) {
-      console.error('Failed to save generated code:', error);
-      enqueueSnackbar(m.editor_jacly_save_code_error(), {
-        variant: 'error',
-      });
-    }
-  }, [flushSave, fsp, getFileName]);
+  const {
+    flush: flushGeneratedCodeFile,
+    hasPendingChanges: hasPendingGeneratedCodeChanges,
+    schedule: scheduleGeneratedCodeSave,
+  } = usePendingEditorFile<string>({
+    delayMs: 150,
+    filePath: getFileName('GENERATED_CODE'),
+    fsp,
+    monacoService,
+    onError: handleGeneratedCodeSaveError,
+    serialize: (code) => code,
+  });
 
   const handleJsonChange = useCallback(
     (json: object) => {
-      pendingJsonRef.current = json;
-      if (jsonSaveTimerRef.current !== undefined) clearTimeout(jsonSaveTimerRef.current);
-      jsonSaveTimerRef.current = setTimeout(() => {
-        void flushSave();
-      }, 300);
+      scheduleJsonSave(json);
     },
-    [flushSave],
+    [scheduleJsonSave],
   );
-
-  useEffect(() => {
-    if (!monacoService) return;
-
-    return monacoService.registerFlushHandler(flushPendingChanges);
-  }, [monacoService, flushPendingChanges]);
-
-  useEffect(() => {
-    const handler = (event: BeforeUnloadEvent) => {
-      if (pendingJsonRef.current !== null || pendingCodeRef.current !== null) {
-        event.preventDefault();
-      }
-      void flushPendingChanges();
-    };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
-  }, [flushPendingChanges]);
 
   const handleGeneratedCode = useCallback(
     (code: string) => {
-      pendingCodeRef.current = code;
-      if (codeSaveTimerRef.current !== undefined) clearTimeout(codeSaveTimerRef.current);
-      codeSaveTimerRef.current = setTimeout(async () => {
-        await flushPendingChanges();
-      }, 150);
+      scheduleGeneratedCodeSave(code);
     },
-    [flushPendingChanges],
+    [scheduleGeneratedCodeSave],
   );
 
-  return (
-    <EditorJaclyContext.Provider
-      value={{
-        state: { initialJson, jaclyBlocksData, engine },
-        actions: { handleJsonChange, handleGeneratedCode, flushSave: flushPendingChanges },
-      }}
-    >
-      {children}
-    </EditorJaclyContext.Provider>
+  const flushPendingChanges = useCallback(async () => {
+    await Promise.all([flushJsonFile(), flushGeneratedCodeFile()]);
+  }, [flushGeneratedCodeFile, flushJsonFile]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (hasPendingJsonChanges() || hasPendingGeneratedCodeChanges()) {
+        event.preventDefault();
+      }
+
+      void flushPendingChanges();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [flushPendingChanges, hasPendingGeneratedCodeChanges, hasPendingJsonChanges]);
+
+  const contextValue = useMemo(
+    () => ({
+      state: {
+        initialJson,
+        jaclyBlocksData,
+        engine,
+      },
+      actions: {
+        handleJsonChange,
+        handleGeneratedCode,
+        flushPendingChanges,
+      },
+    }),
+    [
+      engine,
+      flushPendingChanges,
+      handleGeneratedCode,
+      handleJsonChange,
+      initialJson,
+      jaclyBlocksData,
+    ],
   );
+
+  return <EditorJaclyContext.Provider value={contextValue}>{children}</EditorJaclyContext.Provider>;
 }
