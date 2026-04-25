@@ -22,11 +22,33 @@ export class TypeScriptIntelliSenseService {
     this.initPromise = this.init().catch(console.error);
   }
 
+  private configureCompilerOptions(): void {
+    const ts = this.monaco.typescript;
+    ts.typescriptDefaults.setCompilerOptions({
+      target: ts.ScriptTarget.ES2020,
+      module: ts.ModuleKind.ES2015,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      lib: ['es2023'],
+      allowNonTsExtensions: true,
+    });
+    ts.typescriptDefaults.setEagerModelSync(true);
+  }
+
+  private async loadTsLibs(): Promise<void> {
+    const files = await this.fs.promises.readdir('/tsLibs');
+    const entries: { content: string; filePath: string }[] = [];
+    for (const file of files) {
+      if (!file.endsWith('.d.ts')) continue;
+      const content = await this.fs.promises.readFile(`/tsLibs/${file}`, 'utf-8');
+      entries.push({ content, filePath: `file:///tsLibs/${file}` });
+    }
+    this.tsLibEntries = entries;
+    this.monaco.typescript.typescriptDefaults.setExtraLibs(entries);
+  }
+
   private async init(): Promise<void> {
-    // Fields used in Tasks 3–5: this.fs, this.projectPath, this.tsLibEntries
-    void this.fs;
-    void this.projectPath;
-    void this.tsLibEntries;
+    this.configureCompilerOptions();
+    await this.loadTsLibs();
   }
 
   dispose(): void {
