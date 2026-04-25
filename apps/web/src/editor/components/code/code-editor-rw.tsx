@@ -3,22 +3,16 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/core/components/theme';
 import { m } from '@/core/paraglide/messages';
 import { useActiveProject } from '@/project';
-import { inferLanguageFromPath } from '../services/language';
+import { inferLanguageFromPath } from '../../services/language';
 
-// import { debounce } from '@jaculus/jacly/utils';
-
-interface CodeEditorBasicProps {
+interface CodeEditorRWProps {
   readonly filePath: string;
   readonly readOnly?: boolean;
-  readonly ifNotExists: 'create' | 'loading' | 'error';
-  readonly loadingMessage?: string;
+  // readonly ifNotExists: 'create' | 'loading' | 'error';
+  // readonly loadingMessage?: string;
 }
 
-export function CodeEditorBasic({
-  filePath,
-  readOnly = false,
-  loadingMessage,
-}: CodeEditorBasicProps) {
+export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
   const {
     state: { projectPath, monacoService },
   } = useActiveProject();
@@ -26,7 +20,6 @@ export function CodeEditorBasic({
   const [loading, setLoading] = useState(true);
 
   const fullPath = `${projectPath}/${filePath}`;
-  const readOnlyInternal = filePath.startsWith('build/') ? true : readOnly;
 
   useEffect(() => {
     async function loadFile() {
@@ -44,12 +37,12 @@ export function CodeEditorBasic({
 
   function handleEditorChange(value: string | undefined) {
     if (value === undefined) return;
-    if (monacoService?.isExternalUpdate(filePath)) return;
     monacoService?.updateFile(filePath, value);
   }
 
   if (loading) {
-    return <div>{loadingMessage ?? m.editor_loading()}</div>;
+    return <div>{m.editor_loading()}</div>;
+    // return <div>{loadingMessage ?? m.editor_loading()}</div>;
   }
 
   // if (!fileExists && ifNotExists === 'error') {
@@ -72,7 +65,6 @@ export function CodeEditorBasic({
       language={inferLanguageFromPath(filePath)}
       theme={themeNormalized === 'dark' ? 'vs-dark' : 'light'}
       options={{
-        readOnly: readOnlyInternal,
         minimap: { enabled: false },
         automaticLayout: true,
       }}

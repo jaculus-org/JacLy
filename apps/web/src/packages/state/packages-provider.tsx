@@ -221,6 +221,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         setInitialInstallDone(false);
         setIsInstalling(true);
         setError(null);
+        await monacoService?.flush();
         const installPromise =
           autoInstallPromise.current?.projectPath === projectPath
             ? autoInstallPromise.current.promise
@@ -247,7 +248,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [fs, jacProject, jacRegistry, projectPath, setErrorAndLogPanel, classifyError]);
+  }, [fs, jacProject, jacRegistry, monacoService, projectPath, setErrorAndLogPanel, classifyError]);
 
   useEffect(() => {
     (async () => {

@@ -38,14 +38,15 @@ export function usePendingEditorFile<TValue>({
 
     const pendingValue = pendingValueRef.current;
     pendingValueRef.current = null;
+    const serialized = serialize(pendingValue);
 
     try {
       await ensureParentDir(fsp, filePath);
-      await fsp.writeFile(filePath, serialize(pendingValue), 'utf-8');
+      await fsp.writeFile(filePath, serialized, 'utf-8');
     } catch (error) {
       onError(error);
     }
-  }, [filePath, fsp, onError, serialize]);
+  }, [filePath, fsp, monacoService, onError, serialize]);
 
   const schedule = useCallback(
     (value: TValue) => {
@@ -65,12 +66,6 @@ export function usePendingEditorFile<TValue>({
   const hasPendingChanges = useCallback(() => {
     return pendingValueRef.current !== null;
   }, []);
-
-  useEffect(() => {
-    if (!monacoService) return;
-
-    return monacoService.registerFlushHandler(flush);
-  }, [monacoService, flush]);
 
   useEffect(() => {
     return () => {

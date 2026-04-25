@@ -1,4 +1,4 @@
-import type * as fs from 'node:fs';
+import type { FSInterface, FSPromisesInterface } from '@jaculus/project/fs';
 import { createContext, useContext } from 'react';
 import type { IDbProject } from '@/core/types/project';
 import type { MonacoService } from '../services/monaco-service';
@@ -19,8 +19,8 @@ export interface ProjectError {
 }
 
 export interface ActiveProjectState {
-  fs: typeof fs;
-  fsp: typeof fs.promises;
+  fs: FSInterface;
+  fsp: FSPromisesInterface;
   dbProject: IDbProject;
   projectPath: string;
   error: ProjectError | null;

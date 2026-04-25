@@ -1,5 +1,4 @@
-export { CodeEditorBasic } from './components/code-editor';
-export { CodeEditorReadOnly } from './components/code-editor-read';
+export { CodeEditor } from './components/code/code-editor';
 export { JaclyEditorComponent } from './components/jacly';
 export { EditorJaclyDisplay } from './components/jacly/jacly-display';
 export { CodePanel } from './components/panels/code-panel';

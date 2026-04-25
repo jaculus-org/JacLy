@@ -1,6 +1,6 @@
-import { CodeEditorReadOnly } from '../code-editor-read';
+import { CodeEditorRead } from '../code/code-editor-read';
 
 export function GeneratedCode() {
   const filePath = 'build/index.js';
-  return <CodeEditorReadOnly filePath={filePath} />;
+  return <CodeEditorRead filePath={filePath} />;
 }
