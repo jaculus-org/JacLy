@@ -1,4 +1,5 @@
 import type { FSInterface } from '@jaculus/project/fs';
+import { packageEventsService } from '../../packages/services/package-events-service';
 import type { Monaco } from './monaco-service';
 
 export class TypeScriptIntelliSenseService {
@@ -86,10 +87,74 @@ export class TypeScriptIntelliSenseService {
     }
   }
 
+  private async scanForDtsFiles(dir: string): Promise<string[]> {
+    const results: string[] = [];
+    let entries: string[];
+    try {
+      entries = await this.fs.promises.readdir(dir);
+    } catch {
+      return results;
+    }
+    for (const entry of entries) {
+      const fullPath = `${dir}/${entry}`;
+      try {
+        const stat = await this.fs.promises.stat(fullPath);
+        if (stat.isDirectory()) {
+          results.push(...(await this.scanForDtsFiles(fullPath)));
+        } else if (entry.endsWith('.d.ts')) {
+          results.push(fullPath);
+        }
+      } catch {
+        // entry deleted between readdir and stat — skip
+      }
+    }
+    return results;
+  }
+
+  private async loadNodeModulesTypes(): Promise<void> {
+    const nmPath = `${this.projectPath}/node_modules`;
+    const dtsFiles = await this.scanForDtsFiles(nmPath);
+    const nodeModulesEntries: { content: string; filePath: string }[] = [];
+    for (const fullPath of dtsFiles) {
+      try {
+        const content = await this.fs.promises.readFile(fullPath, 'utf-8');
+        nodeModulesEntries.push({ content, filePath: `file://${fullPath}` });
+      } catch {
+        // file deleted since scan — skip
+      }
+    }
+    this.monaco.typescript.typescriptDefaults.setExtraLibs([
+      ...this.tsLibEntries,
+      ...nodeModulesEntries,
+    ]);
+  }
+
+  private watchNodeModules(): void {
+    const nmPath = `${this.projectPath}/node_modules`;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const reload = () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        this.loadNodeModulesTypes().catch(console.error);
+      }, 1500);
+    };
+
+    try {
+      this.nodeModulesWatcher = this.fs.watch(nmPath, reload);
+    } catch {
+      // node_modules doesn't exist yet — packageEventsService handles first install
+    }
+
+    this.unsubscribePackages = packageEventsService.onPackagesChanged(reload);
+  }
+
   private async init(): Promise<void> {
     this.configureCompilerOptions();
     await this.loadTsLibs();
     await this.loadProjectFiles();
+    await this.loadNodeModulesTypes();
+    this.watchNodeModules();
   }
 
   dispose(): void {
