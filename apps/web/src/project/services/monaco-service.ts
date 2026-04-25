@@ -1,6 +1,7 @@
 import type { FSInterface } from '@jaculus/project/fs';
 import type { useMonaco } from '@monaco-editor/react';
 import { inferLanguageFromPath } from '@/editor';
+import type { TypeScriptIntelliSenseService } from './ts-intellisense-service';
 
 export type Monaco = NonNullable<ReturnType<typeof useMonaco>>;
 export class MonacoService {
@@ -9,11 +10,16 @@ export class MonacoService {
   private projectPath: string;
   private openedFiles: Set<string> = new Set();
   private watchers: Map<string, ReturnType<FSInterface['watch']>> = new Map();
+  private tsService: TypeScriptIntelliSenseService | null = null;
 
   constructor(fs: FSInterface, monaco: Monaco, projectPath: string) {
     this.fs = fs;
     this.monaco = monaco;
     this.projectPath = projectPath;
+  }
+
+  setTsService(service: TypeScriptIntelliSenseService): void {
+    this.tsService = service;
   }
 
   private getFullPath(filePath: string): string {
@@ -73,6 +79,7 @@ export class MonacoService {
         }
       });
       this.watchers.set(filePath, watcher);
+      this.tsService?.trigger();
     } catch (error) {
       console.error(`Failed to load file ${filePath}:`, error);
     }
