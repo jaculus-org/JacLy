@@ -101,7 +101,7 @@ export class TypeScriptIntelliSenseService {
         const stat = await this.fs.promises.stat(fullPath);
         if (stat.isDirectory()) {
           results.push(...(await this.scanForDtsFiles(fullPath)));
-        } else if (entry.endsWith('.d.ts')) {
+        } else if (entry.endsWith('.d.ts') || entry === 'package.json') {
           results.push(fullPath);
         }
       } catch {
