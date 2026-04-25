@@ -10,7 +10,6 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { logger } from '@/core';
 import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
-import { flushSaveService } from '@/editor/services/flush-save-service';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { packageEventsService } from '../services/package-events-service';
 import type { LoadStatus } from './packages-context';
@@ -23,7 +22,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   } = useProjectEditor();
   const { jacProject, jacRegistry, packageJsonError } = jacState;
   const {
-    state: { projectPath, fs },
+    state: { projectPath, fs, monacoService },
   } = useActiveProject();
 
   const classifyError = useCallback((err: unknown, fallback: string): string => {
@@ -97,7 +96,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     try {
       setIsInstalling(true);
       setError(null);
-      await flushSaveService.flush();
+      await monacoService?.flush();
       setInstalledLibs(await jacProject.install(jacRegistry));
       packageEventsService.notifyPackagesChanged();
     } catch (err) {
@@ -106,14 +105,14 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsInstalling(false);
     }
-  }, [jacProject, jacRegistry, setErrorAndLogPanel, classifyError]);
+  }, [jacProject, jacRegistry, monacoService, setErrorAndLogPanel, classifyError]);
 
   const addLibrary = useCallback(async () => {
     if (!jacProject || !jacRegistry) return;
     try {
       setIsInstalling(true);
       setError(null);
-      await flushSaveService.flush();
+      await monacoService?.flush();
       if (selectedLib == null || availableLibVersions.length === 0) {
         setErrorAndLogPanel(m.project_panel_pkg_select_error());
         return;
@@ -141,6 +140,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
   }, [
     jacProject,
     jacRegistry,
+    monacoService,
     selectedLib,
     selectedLibVersion,
     availableLibVersions,
@@ -154,7 +154,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
       try {
         setIsInstalling(true);
         setError(null);
-        await flushSaveService.flush();
+        await monacoService?.flush();
         setInstalledLibs(await jacProject.removeLibrary(jacRegistry, library));
         packageEventsService.notifyPackagesChanged();
         enqueueSnackbar(m.project_panel_pkg_removed({ name: library }), {
@@ -167,7 +167,7 @@ export function JacPackagesProvider({ children }: { children: ReactNode }) {
         setIsInstalling(false);
       }
     },
-    [jacProject, jacRegistry, setErrorAndLogPanel, classifyError],
+    [jacProject, jacRegistry, monacoService, setErrorAndLogPanel, classifyError],
   );
 
   useEffect(() => {

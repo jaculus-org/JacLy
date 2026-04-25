@@ -15,7 +15,6 @@ import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
 import { useActiveProject } from '@/project';
 import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
-import { Route } from '@/routes/__root';
 import { restart, uploadCode } from '../services/device-operations';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import {
@@ -30,7 +29,6 @@ interface JacDeviceProviderProps {
 }
 
 export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
-  const { streamBusService: _streamBusService } = Route.useRouteContext();
   const buildInfo = useBuildInfo();
   const { state: projectState, actions: projectActions } = useActiveProject();
   const { fs, projectPath } = projectState;

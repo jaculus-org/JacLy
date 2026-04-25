@@ -8,7 +8,6 @@ import { getLocale } from '@/core/paraglide/runtime';
 import { useJacDevice } from '@/device';
 import { packageEventsService } from '@/packages/services/package-events-service';
 import { useActiveProject } from '@/project';
-import { flushSaveService } from '../services/flush-save-service';
 import { EditorJaclyContext } from './jacly-context';
 
 async function ensureDir(fsp: ReturnType<typeof useActiveProject>['state']['fsp'], path: string) {
@@ -21,7 +20,7 @@ async function ensureDir(fsp: ReturnType<typeof useActiveProject>['state']['fsp'
 
 export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   const {
-    state: { fs, fsp },
+    state: { fs, fsp, monacoService },
     actions,
   } = useActiveProject();
   const { getFileName } = actions;
@@ -88,6 +87,8 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
 
   const pendingJsonRef = useRef<object | null>(null);
   const jsonSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const pendingCodeRef = useRef<string | null>(null);
+  const codeSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const flushSave = useCallback(async () => {
     if (jsonSaveTimerRef.current !== undefined) {
@@ -108,6 +109,30 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     }
   }, [fsp, getFileName]);
 
+  const flushPendingChanges = useCallback(async () => {
+    await flushSave();
+
+    if (codeSaveTimerRef.current !== undefined) {
+      clearTimeout(codeSaveTimerRef.current);
+      codeSaveTimerRef.current = undefined;
+    }
+    if (pendingCodeRef.current === null) return;
+
+    const pendingCode = pendingCodeRef.current;
+    pendingCodeRef.current = null;
+
+    try {
+      const filePath = getFileName('GENERATED_CODE');
+      await ensureDir(fsp, dirname(filePath));
+      await fsp.writeFile(filePath, pendingCode, 'utf-8');
+    } catch (error) {
+      console.error('Failed to save generated code:', error);
+      enqueueSnackbar(m.editor_jacly_save_code_error(), {
+        variant: 'error',
+      });
+    }
+  }, [flushSave, fsp, getFileName]);
+
   const handleJsonChange = useCallback(
     (json: object) => {
       pendingJsonRef.current = json;
@@ -120,52 +145,38 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    const unregister = flushSaveService.register(flushSave);
-    return unregister;
-  }, [flushSave]);
+    if (!monacoService) return;
+
+    return monacoService.registerFlushHandler(flushPendingChanges);
+  }, [monacoService, flushPendingChanges]);
 
   useEffect(() => {
     const handler = (event: BeforeUnloadEvent) => {
-      if (pendingJsonRef.current !== null) {
+      if (pendingJsonRef.current !== null || pendingCodeRef.current !== null) {
         event.preventDefault();
       }
-      void flushSave();
+      void flushPendingChanges();
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
-  }, [flushSave]);
-
-  const pendingCodeRef = useRef<string | null>(null);
-  const codeSaveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  }, [flushPendingChanges]);
 
   const handleGeneratedCode = useCallback(
     (code: string) => {
       pendingCodeRef.current = code;
       if (codeSaveTimerRef.current !== undefined) clearTimeout(codeSaveTimerRef.current);
       codeSaveTimerRef.current = setTimeout(async () => {
-        if (pendingCodeRef.current === null) return;
-        const pendingCode = pendingCodeRef.current;
-        pendingCodeRef.current = null;
-        try {
-          const filePath = getFileName('GENERATED_CODE');
-          await ensureDir(fsp, dirname(filePath));
-          await fsp.writeFile(filePath, pendingCode, 'utf-8');
-        } catch (error) {
-          console.error('Failed to save generated code:', error);
-          enqueueSnackbar(m.editor_jacly_save_code_error(), {
-            variant: 'error',
-          });
-        }
+        await flushPendingChanges();
       }, 150);
     },
-    [fsp, getFileName],
+    [flushPendingChanges],
   );
 
   return (
     <EditorJaclyContext.Provider
       value={{
         state: { initialJson, jaclyBlocksData, engine },
-        actions: { handleJsonChange, handleGeneratedCode, flushSave },
+        actions: { handleJsonChange, handleGeneratedCode, flushSave: flushPendingChanges },
       }}
     >
       {children}

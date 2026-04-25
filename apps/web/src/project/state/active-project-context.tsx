@@ -1,6 +1,7 @@
 import type * as fs from 'node:fs';
 import { createContext, useContext } from 'react';
 import type { IDbProject } from '@/core/types/project';
+import type { MonacoService } from '../services/monaco-service';
 import type { JaclyFiles } from '../types/jacly-files';
 
 export type ProjectErrorReason =
@@ -23,6 +24,7 @@ export interface ActiveProjectState {
   dbProject: IDbProject;
   projectPath: string;
   error: ProjectError | null;
+  monacoService: MonacoService | null;
 }
 
 export interface ActiveProjectActions {

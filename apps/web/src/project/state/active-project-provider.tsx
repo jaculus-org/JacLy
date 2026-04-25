@@ -1,10 +1,12 @@
 import type * as fs from 'node:fs';
 import path from 'node:path';
 import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
+import { useMonaco } from '@monaco-editor/react';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import type { IDbProject } from '@/core/types/project';
 import { ProjectLoadError } from '../components/project-load-error';
 import { ProjectLoadingIndicator } from '../components/project-loading';
+import { MonacoService } from '../services/monaco-service';
 import type { ProjectFsInterface, ProjectFsService } from '../services/project-fs-service';
 import type { ProjectManagementService } from '../services/project-runtime-service';
 import { JaclyFiles } from '../types/jacly-files';
@@ -32,18 +34,24 @@ export function ActiveProjectProvider({
   projectManService,
   children,
 }: ActiveProjectProviderProps) {
+  const monaco = useMonaco();
   const [currentProject, setCurrentProject] = useState<IDbProject>(project);
   const [fsInterface, setFsInterface] = useState<ProjectFsInterface | null>(null);
   const [error, setError] = useState<ActiveProjectState['error']>(null);
+  const [monacoService, setMonacoService] = useState<MonacoService | null>(null);
 
   useEffect(() => {
     let mounted = true;
+    let service: MonacoService | null = null;
 
     async function mountFs() {
       try {
         const interfce = await projectFsService.mount(project.id);
-        if (mounted) {
+
+        if (mounted && monaco) {
           setFsInterface(interfce);
+          service = new MonacoService(interfce.fs, monaco, `/${project.id}`);
+          setMonacoService(service);
         }
       } catch {
         if (mounted) {
@@ -58,9 +66,11 @@ export function ActiveProjectProvider({
       projectManService.touchProject(project.id);
       mounted = false;
       projectFsService.unmount(project.id);
+      service?.dispose();
+      setMonacoService(null);
       setError(null);
     };
-  }, [project.id, projectFsService, projectManService]);
+  }, [project.id, projectFsService, projectManService, monaco]);
 
   const getFileName = useCallback(
     (fileType: keyof typeof JaclyFiles) => {
@@ -101,6 +111,7 @@ export function ActiveProjectProvider({
       dbProject: currentProject,
       projectPath: fsInterface.projectPath,
       error,
+      monacoService,
     };
   }, [fsInterface, currentProject, error]);
 

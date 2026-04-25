@@ -10,7 +10,7 @@ import { useJacDevice } from '../../state/device-context';
 
 export function Build() {
   const {
-    state: { projectPath, fs },
+    state: { projectPath, fs, monacoService },
   } = useActiveProject();
   const { actions } = useProjectEditor();
   const { controlPanel } = actions;
@@ -30,6 +30,7 @@ export function Build() {
       for (const [filePath, content] of Object.entries(bundle.files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
+      await monacoService?.flush();
       if (!(await compileProject(projectPath, fs))) {
         enqueueSnackbar(m.device_build_compile_failed(), { variant: 'error' });
         return;

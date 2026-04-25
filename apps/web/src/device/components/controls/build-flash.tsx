@@ -10,7 +10,7 @@ import { useJacDevice } from '../../state/device-context';
 
 export function BuildFlash() {
   const {
-    state: { projectPath, fs },
+    state: { projectPath, fs, monacoService },
   } = useActiveProject();
   const {
     actions: { controlPanel },
@@ -28,6 +28,7 @@ export function BuildFlash() {
 
     try {
       if (pkg?.jaculus?.projectType === 'code') {
+        await monacoService?.flush();
         if (!(await compileProject(projectPath, fs))) {
           enqueueSnackbar(m.device_build_compile_failed(), {
             variant: 'error',
@@ -50,7 +51,7 @@ export function BuildFlash() {
     } finally {
       setIsProcessing(false);
     }
-  }, [device, pkg, projectPath, fs, jacProject, controlPanel]);
+  }, [device, pkg, projectPath, fs, jacProject, controlPanel, monacoService]);
 
   if (!device || !jacProject) {
     return;

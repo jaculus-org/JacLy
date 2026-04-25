@@ -1,5 +1,4 @@
 import path from 'node:path';
-import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
@@ -15,29 +14,7 @@ const routePrefix = process.env.VITE_ROUTE_PREFIX || '';
 
 export default defineConfig({
   base: routePrefix ? `/${routePrefix}/` : '/',
-  worker: {
-    format: 'es',
-  },
-  optimizeDeps: {
-    include: ['vscode-textmate', 'vscode-oniguruma'],
-    esbuildOptions: {
-      plugins: [importMetaUrlPlugin],
-    },
-  },
   plugins: [
-    {
-      name: 'vscode-css-inline',
-      enforce: 'pre' as const,
-      async resolveId(source: string, importer: string | undefined, options: object) {
-        const resolved = await this.resolve(source, importer, {
-          ...(options as object),
-          skipSelf: true,
-        });
-        if (resolved?.id.match(/node_modules\/@codingame\/monaco-vscode.*\.css$/)) {
-          return { ...resolved, id: `${resolved.id}?inline` };
-        }
-      },
-    },
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
