@@ -46,9 +46,50 @@ export class TypeScriptIntelliSenseService {
     this.monaco.typescript.typescriptDefaults.setExtraLibs(entries);
   }
 
+  private async scanForTsFiles(dir: string, excludeNodeModules: boolean): Promise<string[]> {
+    const results: string[] = [];
+    let entries: string[];
+    try {
+      entries = await this.fs.promises.readdir(dir);
+    } catch {
+      return results;
+    }
+    for (const entry of entries) {
+      if (excludeNodeModules && entry === 'node_modules') continue;
+      const fullPath = `${dir}/${entry}`;
+      try {
+        const stat = await this.fs.promises.stat(fullPath);
+        if (stat.isDirectory()) {
+          results.push(...(await this.scanForTsFiles(fullPath, excludeNodeModules)));
+        } else if (entry.endsWith('.ts')) {
+          results.push(fullPath);
+        }
+      } catch {
+        // entry deleted between readdir and stat — skip
+      }
+    }
+    return results;
+  }
+
+  private async loadProjectFiles(): Promise<void> {
+    const tsPaths = await this.scanForTsFiles(this.projectPath, true);
+    for (const fullPath of tsPaths) {
+      const uri = this.monaco.Uri.file(fullPath);
+      if (this.monaco.editor.getModel(uri)) continue;
+      try {
+        const content = await this.fs.promises.readFile(fullPath, 'utf-8');
+        this.monaco.editor.createModel(content, 'typescript', uri);
+        this.backgroundModels.add(fullPath);
+      } catch {
+        // file deleted since scan — skip
+      }
+    }
+  }
+
   private async init(): Promise<void> {
     this.configureCompilerOptions();
     await this.loadTsLibs();
+    await this.loadProjectFiles();
   }
 
   dispose(): void {
