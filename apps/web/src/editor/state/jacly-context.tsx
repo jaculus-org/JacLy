@@ -11,7 +11,6 @@ export interface EditorJaclyState {
 export interface EditorJaclyActions {
   handleJsonChange: (json: object) => void;
   handleGeneratedCode: (code: string) => void;
-  flushPendingChanges: () => Promise<void>;
 }
 
 export interface EditorJaclyContextValue {
