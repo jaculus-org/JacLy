@@ -204,6 +204,14 @@ export function InstallerProvider({
     setState((prev) => ({ ...prev, selectedVersion: version }));
   }, []);
 
+  const psramVariantMap: Record<number, { sizeMb: number; variantId: string }> = {
+    0: { sizeMb: 0, variantId: 'ESP32-S3-Generic-NoPSRAM' },
+    1: { sizeMb: 8, variantId: 'ESP32-S3-Generic-OctalPSRAM' },
+    2: { sizeMb: 2, variantId: 'ESP32-S3-Generic-QuadPSRAM' },
+    3: { sizeMb: 16, variantId: 'ESP32-S3-Generic-16MB-PSRAM' },
+    4: { sizeMb: 4, variantId: 'ESP32-S3-Generic-4MB-PSRAM' },
+  };
+
   const connect = useCallback(async () => {
     logger.clearLevel('installer');
     setState((prev) => ({ ...prev, autoLoading: true }));
@@ -268,37 +276,22 @@ export function InstallerProvider({
         const chipWithPsram = newEsploader.chip as ChipWithPsram;
         if (typeof chipWithPsram.getPsramCap === 'function') {
           const size = await chipWithPsram.getPsramCap(newEsploader);
+          const psramInfo = psramVariantMap[size];
+          const psramInfoText = `Detected PSRAM size: ${psramInfo ? `${psramInfo.sizeMb}MB` : 'Unknown'}`;
+          console.log(psramInfoText);
+          terminal.writeLine(psramInfoText);
 
-          // (binary) 00 = 0 -> No PSRAM, 01 = 1 -> 2MB PSRAM, 10 = 2 -> 8MB PSRAM, 11 = 3 -> 16MB PSRAM
-          const options = {
-            0: null,
-            1: '2',
-            2: '8',
-            3: '16',
-          } as const;
-
-          // terminal.writeLine("PSRAM detected: " + (options[size as keyof typeof options] ?? size + 'MB'));
-
-          switch (size) {
-            case 0:
-              await changeVariant('ESP32-S3-Generic-NoPSRAM', chipName);
-              break;
-            case 2:
-              await changeVariant('ESP32-S3-Generic-QuadPSRAM', chipName);
-              break;
-            case 3:
-              await changeVariant('ESP32-S3-Generic-OctalPSRAM', chipName);
-              break;
-            default:
-              enqueueSnackbar(
-                m.installer_msg_unsupported_psram({
-                  size: options[size as keyof typeof options] ?? size,
-                }),
-                {
-                  variant: 'error',
-                },
-              );
-              break;
+          if (psramInfo) {
+            await changeVariant(psramInfo.variantId, chipName);
+          } else {
+            enqueueSnackbar(
+              m.installer_msg_unsupported_psram({
+                size: size,
+              }),
+              {
+                variant: 'error',
+              },
+            );
           }
         }
       }
