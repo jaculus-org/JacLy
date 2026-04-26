@@ -67,6 +67,7 @@ export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
       options={{
         minimap: { enabled: false },
         automaticLayout: true,
+        fixedOverflowWidgets: true,
       }}
       onChange={handleEditorChange}
     />
