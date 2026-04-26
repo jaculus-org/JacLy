@@ -23,16 +23,44 @@ export class TypeScriptIntelliSenseService {
     this.initPromise = this.init().catch(console.error);
   }
 
-  private configureCompilerOptions(): void {
+  private configureCompilerOptions(paths?: Record<string, string[]>): void {
     const ts = this.monaco.typescript;
     ts.typescriptDefaults.setCompilerOptions({
-      target: ts.ScriptTarget.ES2020,
-      module: ts.ModuleKind.ES2015,
+      target: ts.ScriptTarget.ESNext,
+      module: ts.ModuleKind.ESNext,
       moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      lib: ['es2023'],
       allowNonTsExtensions: true,
+      baseUrl: `file://${this.projectPath}`,
+      ...(paths ? { paths } : {}),
     });
     ts.typescriptDefaults.setEagerModelSync(true);
+  }
+
+  private async buildNodeModulesPaths(): Promise<Record<string, string[]>> {
+    const nmPath = `${this.projectPath}/node_modules`;
+    const paths: Record<string, string[]> = {};
+    let packages: string[];
+    try {
+      packages = await this.fs.promises.readdir(nmPath);
+    } catch {
+      return paths;
+    }
+    for (const pkg of packages) {
+      if (pkg.startsWith('.')) continue;
+      const pkgJsonPath = `${nmPath}/${pkg}/package.json`;
+      try {
+        const raw = await this.fs.promises.readFile(pkgJsonPath, 'utf-8');
+        const json = JSON.parse(raw) as { types?: string; typings?: string };
+        const typesEntry = json.types ?? json.typings;
+        if (typesEntry) {
+          paths[pkg] = [`file://${nmPath}/${pkg}/${typesEntry}`];
+          paths[`${pkg}/*`] = [`file://${nmPath}/${pkg}/*`];
+        }
+      } catch {
+        // no package.json or no types field — skip
+      }
+    }
+    return paths;
   }
 
   private async loadTsLibs(): Promise<void> {
@@ -113,9 +141,12 @@ export class TypeScriptIntelliSenseService {
 
   private async loadNodeModulesTypes(): Promise<void> {
     const nmPath = `${this.projectPath}/node_modules`;
-    const dtsFiles = await this.scanForDtsFiles(nmPath);
+    const [files, paths] = await Promise.all([
+      this.scanForDtsFiles(nmPath),
+      this.buildNodeModulesPaths(),
+    ]);
     const nodeModulesEntries: { content: string; filePath: string }[] = [];
-    for (const fullPath of dtsFiles) {
+    for (const fullPath of files) {
       try {
         const content = await this.fs.promises.readFile(fullPath, 'utf-8');
         nodeModulesEntries.push({ content, filePath: `file://${fullPath}` });
@@ -127,6 +158,7 @@ export class TypeScriptIntelliSenseService {
       ...this.tsLibEntries,
       ...nodeModulesEntries,
     ]);
+    this.configureCompilerOptions(paths);
   }
 
   private watchNodeModules(): void {
