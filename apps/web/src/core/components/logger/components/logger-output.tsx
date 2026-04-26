@@ -24,7 +24,7 @@ export function LoggerOutput({
     if (autoScroll && bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [autoScroll]);
+  }, [autoScroll, entries]);
 
   return (
     <Card className="flex-1 overflow-hidden">
