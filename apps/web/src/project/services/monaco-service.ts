@@ -1,6 +1,7 @@
 import type { FSInterface } from '@jaculus/project/fs';
 import type { useMonaco } from '@monaco-editor/react';
 import { inferLanguageFromPath } from '@/editor';
+import type { TypeScriptIntelliSenseService } from './ts-intellisense-service';
 
 export type Monaco = NonNullable<ReturnType<typeof useMonaco>>;
 export class MonacoService {
@@ -9,11 +10,16 @@ export class MonacoService {
   private projectPath: string;
   private openedFiles: Set<string> = new Set();
   private watchers: Map<string, ReturnType<FSInterface['watch']>> = new Map();
+  private tsService: TypeScriptIntelliSenseService | null = null;
 
   constructor(fs: FSInterface, monaco: Monaco, projectPath: string) {
     this.fs = fs;
     this.monaco = monaco;
     this.projectPath = projectPath;
+  }
+
+  setTsService(service: TypeScriptIntelliSenseService): void {
+    this.tsService = service;
   }
 
   private getFullPath(filePath: string): string {
@@ -34,19 +40,23 @@ export class MonacoService {
     try {
       const fullPath = this.getFullPath(filePath);
       const uri = this.monaco.Uri.file(fullPath);
-      const model = this.monaco.editor.getModel(uri);
+      let model = this.monaco.editor.getModel(uri);
 
-      if (model) {
+      if (!model) {
+        const content = await this.fs.promises.readFile(fullPath, 'utf-8');
+        model = this.monaco.editor.createModel(content, inferLanguageFromPath(fullPath), uri);
+      }
+
+      // Guard: don't re-attach handlers if already tracking this file
+      if (this.openedFiles.has(filePath)) {
         return;
       }
 
-      const content = await this.fs.promises.readFile(fullPath, 'utf-8');
-      const m = this.monaco.editor.createModel(content, inferLanguageFromPath(fullPath), uri);
       this.openedFiles.add(filePath);
 
-      m.onDidChangeContent(() => {
-        if (m.isDisposed()) return;
-        const value = m.getValue();
+      model.onDidChangeContent(() => {
+        if (model!.isDisposed()) return;
+        const value = model!.getValue();
         this.updateFile(filePath, value);
       });
 
@@ -55,15 +65,13 @@ export class MonacoService {
           await this.closeFile(filePath);
         } else if (eventType === 'change') {
           setTimeout(async () => {
-            const model = this.monaco.editor.getModel(uri);
-            if (!model) return;
-
+            const m = this.monaco.editor.getModel(uri);
+            if (!m) return;
             try {
               const newContent = await this.fs.promises.readFile(fullPath, 'utf-8');
-              if (newContent === model.getValue()) return;
-
-              const fullRange = model.getFullModelRange();
-              model.pushEditOperations([], [{ range: fullRange, text: newContent }], () => null);
+              if (newContent === m.getValue()) return;
+              const fullRange = m.getFullModelRange();
+              m.pushEditOperations([], [{ range: fullRange, text: newContent }], () => null);
             } catch (err) {
               console.error(`Failed to reload file ${filePath}:`, err);
             }
@@ -71,6 +79,7 @@ export class MonacoService {
         }
       });
       this.watchers.set(filePath, watcher);
+      this.tsService?.trigger();
     } catch (error) {
       console.error(`Failed to load file ${filePath}:`, error);
     }

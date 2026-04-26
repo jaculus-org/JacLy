@@ -9,6 +9,7 @@ import { ProjectLoadingIndicator } from '../components/project-loading';
 import { MonacoService } from '../services/monaco-service';
 import type { ProjectFsInterface, ProjectFsService } from '../services/project-fs-service';
 import type { ProjectManagementService } from '../services/project-runtime-service';
+import { TypeScriptIntelliSenseService } from '../services/ts-intellisense-service';
 import { JaclyFiles } from '../types/jacly-files';
 import {
   type ActiveProjectActions,
@@ -43,6 +44,7 @@ export function ActiveProjectProvider({
   useEffect(() => {
     let mounted = true;
     let service: MonacoService | null = null;
+    let tsService: TypeScriptIntelliSenseService | null = null;
 
     async function mountFs() {
       try {
@@ -51,6 +53,8 @@ export function ActiveProjectProvider({
         if (mounted && monaco) {
           setFsInterface(interfce);
           service = new MonacoService(interfce.fs, monaco, `/${project.id}`);
+          tsService = new TypeScriptIntelliSenseService(interfce.fs, monaco, `/${project.id}`);
+          service.setTsService(tsService);
           setMonacoService(service);
         }
       } catch {
@@ -66,6 +70,7 @@ export function ActiveProjectProvider({
       projectManService.touchProject(project.id);
       mounted = false;
       projectFsService.unmount(project.id);
+      tsService?.dispose();
       service?.dispose();
       setMonacoService(null);
       setError(null);
