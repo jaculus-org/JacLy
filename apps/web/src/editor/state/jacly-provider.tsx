@@ -1,5 +1,4 @@
 import { JaclyEngine } from '@jaculus/jacly/engine';
-import type { JaclyBlocksData } from '@jaculus/project';
 import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
@@ -20,7 +19,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
 
   const [engine] = useState(() => new JaclyEngine());
 
-  const { initialJson, jaclyBlocksData, setJaclyBlocksData } = useJaclyProjectData({
+  const { initialJson, jaclyBlocksData } = useJaclyProjectData({
     engine,
     fs,
     fsp,
@@ -39,7 +38,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function handleJsonChange(json: object) {
-    setJaclyBlocksData(json as JaclyBlocksData);
     clearTimeout(jsonTimerRef.current);
     jsonTimerRef.current = setTimeout(async () => {
       try {
