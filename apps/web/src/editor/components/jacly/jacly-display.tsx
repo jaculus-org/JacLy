@@ -1,4 +1,4 @@
-import { JaclyEditor, JaclyLoading } from '@jaculus/jacly/editor';
+import { JaclyEditor } from '@jaculus/jacly/editor';
 import type { EngineMissingPackages } from '@jaculus/jacly/engine';
 import { enqueueSnackbar } from 'notistack';
 import { useCallback } from 'react';
@@ -9,6 +9,7 @@ import { getLocale } from '@/core/paraglide/runtime';
 import { useJacPackages } from '@/packages/state/packages-context';
 import { useProjectEditor } from '@/project/state/project-editor-context';
 import { useEditorJacly } from '../../state/jacly-context';
+import { JaclyEditorLoading } from './jacly-editor-loading';
 
 export function EditorJaclyDisplay() {
   const { themeNormalized } = useTheme();
@@ -38,8 +39,12 @@ export function EditorJaclyDisplay() {
     [controlPanel],
   );
 
-  if (!initialJson || !jaclyBlocksData || !initialInstallDone) {
-    return <JaclyLoading />;
+  if (!initialInstallDone) {
+    return <JaclyEditorLoading phase="installing-packages" />;
+  }
+
+  if (!initialJson || !jaclyBlocksData) {
+    return <JaclyEditorLoading phase="loading-editor" />;
   }
 
   return (
