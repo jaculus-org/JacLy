@@ -24,12 +24,12 @@
     "clean-node": "pnpm clean && rm -rf node_modules"
   },
   "peerDependencies": {
+    "@wokwi/client": "^0.26.0",
     "react": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
     "@jaculus/common": "workspace:*",
-    "@jaculus/link": "workspace:*",
-    "@wokwi/client": "^0.26.0"
+    "@jaculus/link": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

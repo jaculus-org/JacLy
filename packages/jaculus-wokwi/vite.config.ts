@@ -28,6 +28,7 @@ export default defineConfig({
         /^react-dom($|\/)/,
         /^@jaculus\/link($|\/)/,
         /^@jaculus\/common($|\/)/,
+        /^@wokwi\/client($|\/)/,
       ],
       output: {
         entryFileNames: '[name].js',
