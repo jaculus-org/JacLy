@@ -2,6 +2,7 @@ import { Blocks } from 'blockly/core';
 import type { BlockExtended } from '@/blocks/types/custom-block';
 import type { JaclyBlock, JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
+import { cloneAndMergeInputs } from './input-merging';
 
 export function editInternalBlocks(
   state: EngineState,
@@ -14,13 +15,7 @@ export function editInternalBlocks(
   // an independent copy of canonical inputs. Alias-specific inputs win.
   const registeredInputs = state.blockInputs.get(block.type);
   if (registeredInputs) {
-    if (!block.inputs) {
-      block.inputs = JSON.parse(JSON.stringify(registeredInputs));
-    } else {
-      const merged = JSON.parse(JSON.stringify(registeredInputs));
-      Object.assign(merged, block.inputs);
-      block.inputs = merged;
-    }
+    block.inputs = cloneAndMergeInputs(registeredInputs, block.inputs);
   }
 
   // Color patch is a global Blockly mutation and only needs to run once.

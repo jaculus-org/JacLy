@@ -1,3 +1,5 @@
+import type * as Blockly from 'blockly/core';
+import type { InstanceTracker } from '@/blocks/instances/instance-tracker';
 import type { JaclyBlockKindBlock } from '@/schema';
 
 export interface VirtualInstanceDef {
@@ -11,10 +13,21 @@ export interface EngineState {
   editedInternalBlockTypes: Set<string>;
   blockInputs: Map<string, JaclyBlockKindBlock['inputs']>;
   blockImports: Map<string, Set<string>>;
-  constructorTypes: Map<string, Set<string>>;
-  virtualInstances: Map<string, VirtualInstanceDef[]>;
-  virtualInstancesByType: Map<string, string[]>;
+  constructorBlockTypesBySystem: Map<string, Set<string>>;
+  virtualDefsByProviderBlockType: Map<string, VirtualInstanceDef[]>;
+  instanceTrackers: WeakMap<Blockly.Workspace, InstanceTracker>;
   docsCallbacks: Map<string, string>;
+}
+
+function resetEngineStateCollections(state: EngineState): void {
+  state.registeredBlockTypes.clear();
+  state.editedInternalBlockTypes.clear();
+  state.blockInputs.clear();
+  state.blockImports.clear();
+  state.constructorBlockTypesBySystem.clear();
+  state.virtualDefsByProviderBlockType.clear();
+  state.instanceTrackers = new WeakMap();
+  state.docsCallbacks.clear();
 }
 
 export function createEngineState(): EngineState {
@@ -23,9 +36,13 @@ export function createEngineState(): EngineState {
     editedInternalBlockTypes: new Set(),
     blockInputs: new Map(),
     blockImports: new Map(),
-    constructorTypes: new Map(),
-    virtualInstances: new Map(),
-    virtualInstancesByType: new Map(),
+    constructorBlockTypesBySystem: new Map(),
+    virtualDefsByProviderBlockType: new Map(),
+    instanceTrackers: new WeakMap(),
     docsCallbacks: new Map(),
   };
+}
+
+export function resetEngineState(state: EngineState): void {
+  resetEngineStateCollections(state);
 }

@@ -1,6 +1,7 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
 import type { JaclyBlocksData } from '@jaculus/project';
+import type * as Blockly from 'blockly/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import {
@@ -28,6 +29,10 @@ interface JaclyEditorProps {
   onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>;
 }
 
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
 export function JaclyEditor({
   engine,
   jaclyBlocksData,
@@ -40,13 +45,23 @@ export function JaclyEditor({
 }: JaclyEditorProps) {
   registerBlocklyEditorIntegrations();
   const messagesLoaded = useBlocklyMessages(locale);
-
-  const toolboxConfiguration = useMemo(
-    () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
-    [jaclyBlocksData, messagesLoaded, engine],
-  );
-
+  const [toolboxConfiguration, setToolboxConfiguration] =
+    useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
   const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
+  const [editorError, setEditorError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (!messagesLoaded) return;
+    setEditorError(null);
+    setSanitizedJson(null);
+
+    try {
+      setToolboxConfiguration(engine.reloadBlockData(jaclyBlocksData));
+    } catch (error) {
+      setToolboxConfiguration(null);
+      setEditorError(toError(error));
+    }
+  }, [jaclyBlocksData, messagesLoaded, engine]);
 
   useEffect(() => {
     if (!toolboxConfiguration) return;
@@ -58,9 +73,13 @@ export function JaclyEditor({
           restoredTypes: [] as string[],
           replacedTypes: [] as string[],
         });
-    task.then((result) => {
-      if (!cancelled) setSanitizedJson(result.state);
-    });
+    task
+      .then((result) => {
+        if (!cancelled) setSanitizedJson(result.state);
+      })
+      .catch((error) => {
+        if (!cancelled) setEditorError(toError(error));
+      });
     return () => {
       cancelled = true;
     };
@@ -99,6 +118,7 @@ export function JaclyEditor({
     [engine],
   );
 
+  if (editorError) throw editorError;
   if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
     return <JaclyLoading />;
   }

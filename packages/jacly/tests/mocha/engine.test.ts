@@ -9,11 +9,12 @@ describe('createEngineState', () => {
   it('returns a fresh state with empty collections', () => {
     const state = createEngineState();
     expect(state.registeredBlockTypes.size).to.equal(0);
+    expect(state.editedInternalBlockTypes.size).to.equal(0);
     expect(state.blockInputs.size).to.equal(0);
     expect(state.blockImports.size).to.equal(0);
-    expect(state.constructorTypes.size).to.equal(0);
-    expect(state.virtualInstances.size).to.equal(0);
-    expect(state.virtualInstancesByType.size).to.equal(0);
+    expect(state.constructorBlockTypesBySystem.size).to.equal(0);
+    expect(state.virtualDefsByProviderBlockType.size).to.equal(0);
+    expect(state.instanceTrackers).to.be.instanceOf(WeakMap);
     expect(state.docsCallbacks.size).to.equal(0);
   });
 
