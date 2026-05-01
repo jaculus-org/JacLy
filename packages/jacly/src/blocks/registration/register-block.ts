@@ -35,6 +35,7 @@ export function registerBlocklyBlock(
   registerCallbackVarSlots(block, inputs);
 
   processArgsForRegistration(block);
+
   processInputsForRegistration(block, inputs);
   block.inputs = { ...block.inputs, ...inputs };
   state.blockInputs.set(block.type, block.inputs);
@@ -64,7 +65,7 @@ export function registerBlocklyBlock(
       };
 
       if (block.constructs) {
-        this.mixin(getConstructorMixin(block.constructs));
+        this.mixin(getConstructorMixin(state, block.constructs));
       }
 
       if (block.virtualInstances && block.virtualInstances.length > 0) {

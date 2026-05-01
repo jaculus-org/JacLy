@@ -1,48 +1,47 @@
-import * as Blockly from 'blockly/core';
+import type * as Blockly from 'blockly/core';
 import type { BlockExtended } from '@/blocks/types/custom-block';
+import type { EngineState } from '@/engine/engine-state';
+import {
+  getConstructedName,
+  getNextConstructedName,
+  hasDuplicateConstructedName,
+  isPlaceholderConstructedName,
+  isValidConstructedName,
+} from './constructor-name-utils';
+import { getInstanceTracker } from './instance-tracker';
 
-export function getConstructorMixin(systemId: string) {
-  const prefix = `${systemId}_`;
-
+export function getConstructorMixin(state: EngineState, constructType: string) {
   return {
-    onchange(this: BlockExtended, e: Blockly.Events.BlockChange) {
-      if (!this.workspace || this.isInFlyout) return;
+    onchange(this: BlockExtended, _e: Blockly.Events.Abstract) {
+      if (!this.workspace || this.isInFlyout || !this.isEnabled()) return;
 
-      const fieldName = 'CONSTRUCTED_VAR_NAME';
-      const currentName = this.getFieldValue(fieldName);
+      const field = this.getField('CONSTRUCTED_VAR_NAME');
+      if (!field) return;
 
-      if (
-        e &&
-        e.type === Blockly.Events.BLOCK_CHANGE &&
-        e.element === 'field' &&
-        e.name === fieldName
-      ) {
-        const newValue = currentName;
-        const oldValue = e.oldValue;
-        const constructorBlockType = this.type;
-        const blocks = this.workspace.getBlocksByType(constructorBlockType);
-        const duplicate = blocks.some(
-          (block) => block.id !== this.id && block.getFieldValue(fieldName) === newValue,
-        );
-        if (duplicate) {
-          this.setFieldValue(oldValue ?? `${prefix}?`, fieldName);
+      const currentName = getConstructedName(this);
+
+      if (isPlaceholderConstructedName(currentName)) {
+        const nextName = getNextConstructedName(state, this.workspace, constructType);
+        if (nextName !== currentName) {
+          field.setValue(nextName);
+          return;
         }
       }
 
-      if (currentName === `${prefix}?`) {
-        const constructorBlockType = this.type;
-        const blocks = this.workspace.getBlocksByType(constructorBlockType);
-        let maxIndex = -1;
-        blocks.forEach((block) => {
-          const name = block.getFieldValue(fieldName);
-          if (name?.startsWith(prefix)) {
-            const suffix = name.slice(prefix.length);
-            const index = parseInt(suffix, 10);
-            if (!Number.isNaN(index) && index > maxIndex) maxIndex = index;
-          }
-        });
-        this.setFieldValue(prefix + (maxIndex + 1), fieldName);
+      const name = getConstructedName(this);
+      const issues: string[] = [];
+
+      if (!name) {
+        issues.push('Constructor name is required.');
+      } else if (!isValidConstructedName(name)) {
+        issues.push('Constructor name must be a valid identifier.');
+      } else if (hasDuplicateConstructedName(state, this.workspace, name, this.id)) {
+        issues.push(`Constructor name "${name}" is already used by another constructor block.`);
       }
+
+      const tracker = getInstanceTracker(state, this.workspace);
+      tracker?.rebuild();
+      this.setWarningText(issues.length > 0 ? issues.join(' ') : null);
     },
   };
 }

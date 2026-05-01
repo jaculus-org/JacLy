@@ -1,48 +1,20 @@
 import * as Blockly from 'blockly/core';
 import type { FieldDropdownExtended } from '@/blocks/types/custom-block';
 import type { EngineState } from '../../engine/engine-state';
+import { getInstanceTracker } from './instance-tracker';
 
 export function getInstanceDropdownGenerator(
   state: EngineState,
   systemId: string,
 ): () => Blockly.MenuGenerator {
   return function (this: FieldDropdownExtended) {
-    const options: [string, string][] = [];
-    const constructorBlockTypes = state.constructorTypes.get(systemId);
-
     const sourceBlock = this.getSourceBlock();
     const workspace = sourceBlock ? sourceBlock.workspace : Blockly.getMainWorkspace();
-
-    if (workspace && constructorBlockTypes) {
-      for (const constructorBlockType of constructorBlockTypes) {
-        const blocks = workspace.getBlocksByType(constructorBlockType);
-        blocks.forEach((block) => {
-          const instanceName = block.getFieldValue('CONSTRUCTED_VAR_NAME');
-          if (instanceName && instanceName !== `${systemId}_?`) {
-            options.push([instanceName, instanceName]);
-          }
-        });
-      }
-    }
-
-    if (workspace) {
-      const providerBlockTypes = state.virtualInstancesByType.get(systemId) || [];
-      for (const providerType of providerBlockTypes) {
-        const viDefs = state.virtualInstances.get(providerType) || [];
-        const providerBlocks = workspace.getBlocksByType(providerType);
-        for (const block of providerBlocks) {
-          const constructorVarName = block.getFieldValue('CONSTRUCTED_VAR_NAME');
-          if (!constructorVarName || constructorVarName.endsWith('_?')) continue;
-          for (const vi of viDefs) {
-            if (vi.instanceof === systemId) {
-              const label = `${constructorVarName}.${vi.name}`;
-              const value = `__vi__${providerType}__${block.id}__${vi.name}`;
-              options.push([label, value]);
-            }
-          }
-        }
-      }
-    }
+    const tracker = getInstanceTracker(state, workspace);
+    const options = (tracker?.getOptions(systemId) || []).map((value): [string, string] => [
+      value,
+      value,
+    ]);
 
     const currentValue = this.getValue();
     if (currentValue && currentValue !== 'INVALID') {

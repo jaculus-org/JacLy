@@ -53,6 +53,13 @@ export function registerCodeGenerator(state: EngineState, block: JaclyBlock): vo
 
     let code = replacePlaceholders(state, codeTemplate, block.args0, codeBlock, generator);
 
+    // Constructor blocks assign into a globally predeclared instance variable.
+    // Strip any leading declaration keyword so the emitted code is an assignment,
+    // but keep the assignment at the block's original position in the stack.
+    if (block.constructs) {
+      code = code.replace(/^\s*(?:const|let|var)\s+/, '');
+    }
+
     if (block.output) {
       return [code, Order.NONE];
     } else {

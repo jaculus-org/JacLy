@@ -7,11 +7,11 @@ export function registerConstructorType(
   systemId: string,
   blockType: string,
 ): void {
-  const existing = state.constructorTypes.get(systemId);
+  const existing = state.constructorBlockTypesBySystem.get(systemId);
   if (existing) {
     existing.add(blockType);
   } else {
-    state.constructorTypes.set(systemId, new Set([blockType]));
+    state.constructorBlockTypesBySystem.set(systemId, new Set([blockType]));
   }
 }
 
@@ -20,12 +20,5 @@ export function registerVirtualInstances(
   constructorBlockType: string,
   virtualInstances: VirtualInstanceDef[],
 ): void {
-  state.virtualInstances.set(constructorBlockType, virtualInstances);
-  for (const vi of virtualInstances) {
-    const existing = state.virtualInstancesByType.get(vi.instanceof) || [];
-    if (!existing.includes(constructorBlockType)) {
-      existing.push(constructorBlockType);
-    }
-    state.virtualInstancesByType.set(vi.instanceof, existing);
-  }
+  state.virtualDefsByProviderBlockType.set(constructorBlockType, virtualInstances);
 }

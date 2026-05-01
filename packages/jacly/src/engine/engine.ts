@@ -3,6 +3,7 @@ import '@/blocks/built-ins';
 import type { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
 import { javascriptGenerator as jsg } from 'blockly/javascript';
+import { createInstanceTracker } from '@/blocks/instances';
 import { registerPlaceholderBlock } from '@/blocks/registration/placeholder-block';
 import { generateCodeFromWorkspace } from '@/codegen/workspace/generate-code-from-workspace';
 import { loadToolboxConfiguration } from '@/toolbox/loading/toolbox-loader';
@@ -11,7 +12,7 @@ import {
   type SanitizationResult,
   sanitizeWorkspaceState,
 } from '@/workspace/validation/workspace-validation';
-import { createEngineState, type EngineState } from './engine-state';
+import { createEngineState, type EngineState, resetEngineState } from './engine-state';
 import { attachEngineWorkspace } from './workspace-attachment';
 
 export class JaclyEngine {
@@ -29,7 +30,7 @@ export class JaclyEngine {
   reloadBlockData(data: JaclyBlocksData): void {
     const oldTypes = new Set(this.state.registeredBlockTypes);
 
-    this.state = createEngineState();
+    resetEngineState(this.state);
     const newConfig = loadToolboxConfiguration(this.state, data);
 
     for (const type of oldTypes) {
@@ -37,6 +38,12 @@ export class JaclyEngine {
         delete Blockly.Blocks[type];
         delete jsg.forBlock[type];
       }
+    }
+
+    if (this.attachedWorkspace) {
+      const tracker = createInstanceTracker(this.state, this.attachedWorkspace);
+      this.state.instanceTrackers.set(this.attachedWorkspace, tracker);
+      tracker.rebuild();
     }
 
     this.attachedWorkspace?.updateToolbox(newConfig);
