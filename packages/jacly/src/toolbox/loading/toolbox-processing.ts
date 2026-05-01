@@ -1,17 +1,22 @@
 import type { JaclyBlocksData } from '@jaculus/project';
+import type * as Blockly from 'blockly/core';
 import { z } from 'zod';
 import { enrichBlockInputs } from '@/blocks/aliases/enrich-block-inputs';
 import { registerAllBlockImports } from '@/blocks/imports/block-imports';
 import { type JaclyConfig, JaclyConfigSchema } from '@/schema';
+import { buildCategoryHierarchy } from '@/toolbox/categories/category-hierarchy';
 import {
   JaclyBlockLoadError,
   JaclyBlockParseError,
   JaclyInvalidConfigError,
 } from '@/toolbox/errors';
 import { localizeJaclyConfig, registerTranslations } from '@/toolbox/translations/translations';
+import type { ToolboxItemInfoSort } from '@/toolbox/types';
+import { clonePlainData } from '@/utils/clone-plain-data';
 import type { EngineState } from '../../engine/engine-state';
 import { resolveAliases } from './alias-resolution';
 import { registerFullBlocks } from './block-registration-pass';
+import { buildToolboxItem, parseToolboxCustomBlock } from './toolbox-item-builder';
 
 export interface ParsedToolboxConfig {
   fileKey: string;
@@ -53,11 +58,25 @@ export function registerParsedToolboxBlocks(
   }
 }
 
+export function collectParsedBlockTypes(parsedConfigs: ParsedToolboxConfig[]): Set<string> {
+  const blockTypes = new Set<string>();
+
+  for (const { config } of parsedConfigs) {
+    if (!config.contents) continue;
+    for (const item of config.contents) {
+      if (item.kind === 'block') blockTypes.add(item.type);
+    }
+  }
+
+  return blockTypes;
+}
+
 export function prepareToolboxConfig(
   state: EngineState,
   parsedConfig: ParsedToolboxConfig,
 ): JaclyConfig {
-  const { fileKey, config } = parsedConfig;
+  const { fileKey, config: originalConfig } = parsedConfig;
+  const config = clonePlainData(originalConfig);
 
   if (!config.contents) {
     if (config.custom) return config;
@@ -83,4 +102,25 @@ export function prepareToolboxConfig(
     }
     throw new JaclyBlockLoadError(`Failed to load toolbox library '${fileKey}': ${error}`);
   }
+}
+
+export function buildToolboxFromParsedConfigs(
+  state: EngineState,
+  parsedConfigs: ParsedToolboxConfig[],
+): Blockly.utils.toolbox.ToolboxDefinition {
+  registerParsedToolboxBlocks(state, parsedConfigs);
+
+  const toolboxContent: ToolboxItemInfoSort[] = [];
+  for (const parsedConfig of parsedConfigs) {
+    const config = prepareToolboxConfig(state, parsedConfig);
+    const toolboxItem = config.contents
+      ? buildToolboxItem(state, config)
+      : parseToolboxCustomBlock(config);
+    toolboxContent.push(toolboxItem);
+  }
+
+  return {
+    kind: 'categoryToolbox',
+    contents: buildCategoryHierarchy(toolboxContent),
+  };
 }

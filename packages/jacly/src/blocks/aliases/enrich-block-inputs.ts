@@ -1,5 +1,6 @@
 import type { JaclyBlock } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
+import { cloneAndMergeInputs } from './input-merging';
 
 export function enrichBlockInputs(state: EngineState, block: JaclyBlock): void {
   if (block.kind !== 'block' || !block.inputs) return;
@@ -18,13 +19,7 @@ function enrichInputNode(
   const registered = state.blockInputs.get(node.type);
   if (!registered) return;
 
-  if (!node.inputs) {
-    node.inputs = JSON.parse(JSON.stringify(registered));
-  } else {
-    const merged = JSON.parse(JSON.stringify(registered));
-    Object.assign(merged, node.inputs);
-    node.inputs = merged;
-  }
+  node.inputs = cloneAndMergeInputs(registered, node.inputs);
 
   if (node.inputs) {
     for (const key of Object.keys(node.inputs)) {

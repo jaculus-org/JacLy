@@ -4,7 +4,12 @@ import { editInternalBlocks } from '../../src/blocks/aliases/edit-internal-block
 import { createEngineState } from '../../src/engine/engine-state';
 import { JaclyBlockLoadError } from '../../src/toolbox/errors';
 import { registerFullBlocks } from '../../src/toolbox/loading/block-registration-pass';
+import { buildToolboxItem } from '../../src/toolbox/loading/toolbox-item-builder';
 import { loadToolboxConfiguration } from '../../src/toolbox/loading/toolbox-loader';
+import {
+  prepareToolboxConfig,
+  registerParsedToolboxBlocks,
+} from '../../src/toolbox/loading/toolbox-processing';
 
 const expect = chai.expect;
 
@@ -168,5 +173,79 @@ describe('loadToolboxConfiguration - two-pass alias resolution', () => {
         },
       } as any),
     ).to.throw(JaclyBlockLoadError);
+  });
+});
+
+describe('toolbox processing purity', () => {
+  it('prepareToolboxConfig does not mutate the parsed config object', () => {
+    const state = createEngineState();
+    const parsedConfig: any = {
+      fileKey: 'motor-shortcuts.jacly.json',
+      config: {
+        category: 'motor_shortcuts',
+        name: 'Motor Shortcuts',
+        colour: '#0088cc',
+        contents: [
+          {
+            kind: 'block',
+            type: 'motor_helper',
+            message0: 'helper $[REG]',
+            args0: [
+              {
+                type: 'input_value',
+                name: 'REG',
+                shadow: { type: 'math_number', fields: { NUM: 3 } },
+              },
+            ],
+            code: '$[REG]',
+            output: 'RegParams',
+            hideInToolbox: true,
+          },
+          {
+            kind: 'block',
+            type: 'motor_helper',
+          },
+        ],
+      },
+    };
+
+    registerParsedToolboxBlocks(state, [parsedConfig]);
+    const snapshot = JSON.parse(JSON.stringify(parsedConfig));
+
+    prepareToolboxConfig(state, parsedConfig);
+
+    expect(parsedConfig).to.deep.equal(snapshot);
+  });
+
+  it('buildToolboxItem does not mutate category contents', () => {
+    const state = createEngineState();
+    const config: any = {
+      category: 'demo',
+      name: 'Demo',
+      colour: '#123123',
+      contents: [
+        { kind: 'label', text: 'Line 1\nLine 2' },
+        {
+          kind: 'block',
+          type: 'hidden_block',
+          hideInToolbox: true,
+        },
+        {
+          kind: 'block',
+          type: 'visible_block',
+        },
+      ],
+    };
+    const snapshot = JSON.parse(JSON.stringify(config));
+
+    const toolboxItem = buildToolboxItem(state, config);
+
+    expect(config).to.deep.equal(snapshot);
+    const contents = toolboxItem.contents as any[];
+    expect(contents.some((item) => item.type === 'hidden_block')).to.equal(false);
+    expect(
+      contents.filter((item) => item.kind === 'label' && item.text.startsWith('Line ')),
+    ).to.have.length(2);
+    expect(contents.filter((item) => item.type === 'visible_block')).to.have.length(1);
   });
 });

@@ -29,6 +29,10 @@ interface JaclyEditorProps {
   onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>;
 }
 
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
 export function JaclyEditor({
   engine,
   jaclyBlocksData,
@@ -44,10 +48,19 @@ export function JaclyEditor({
   const [toolboxConfiguration, setToolboxConfiguration] =
     useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
   const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
+  const [editorError, setEditorError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!messagesLoaded) return;
-    setToolboxConfiguration(engine.reloadBlockData(jaclyBlocksData));
+    setEditorError(null);
+    setSanitizedJson(null);
+
+    try {
+      setToolboxConfiguration(engine.reloadBlockData(jaclyBlocksData));
+    } catch (error) {
+      setToolboxConfiguration(null);
+      setEditorError(toError(error));
+    }
   }, [jaclyBlocksData, messagesLoaded, engine]);
 
   useEffect(() => {
@@ -60,9 +73,13 @@ export function JaclyEditor({
           restoredTypes: [] as string[],
           replacedTypes: [] as string[],
         });
-    task.then((result) => {
-      if (!cancelled) setSanitizedJson(result.state);
-    });
+    task
+      .then((result) => {
+        if (!cancelled) setSanitizedJson(result.state);
+      })
+      .catch((error) => {
+        if (!cancelled) setEditorError(toError(error));
+      });
     return () => {
       cancelled = true;
     };
@@ -101,6 +118,7 @@ export function JaclyEditor({
     [engine],
   );
 
+  if (editorError) throw editorError;
   if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
     return <JaclyLoading />;
   }

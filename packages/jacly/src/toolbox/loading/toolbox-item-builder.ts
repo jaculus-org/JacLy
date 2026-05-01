@@ -27,16 +27,18 @@ export function buildToolboxItem(
   state: EngineState,
   jaclyConfig: JaclyConfig,
 ): ToolboxItemInfoSort {
-  jaclyConfig.contents = jaclyConfig.contents!.filter((item) => {
-    if (item.kind === 'block') return item.hideInToolbox !== true;
-    return true;
-  });
-  jaclyConfig.contents = expandLabels(jaclyConfig.contents);
+  const contents = expandLabels(
+    jaclyConfig.contents!.filter((item) => {
+      if (item.kind === 'block') return item.hideInToolbox !== true;
+      return true;
+    }),
+  );
 
   const categoryHeader = buildCategoryHeader(state, jaclyConfig);
   const toolboxItem: ToolboxItemInfoSort = {
     kind: 'category',
     ...jaclyConfig,
+    contents,
   };
 
   if (categoryHeader.length > 0 && toolboxItem.contents) {

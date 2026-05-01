@@ -226,4 +226,62 @@ describe('JaclyEngine.reloadBlockData', () => {
     expect(Blockly.Blocks.temporary_reload_block).to.equal(undefined);
     expect(jsg.forBlock.temporary_reload_block).to.equal(undefined);
   });
+
+  it('restores previous Blockly registrations when reload fails mid-build', () => {
+    const engine = new JaclyEngine();
+
+    engine.buildToolbox({
+      blockFiles: {
+        'stable.jacly.json': {
+          category: 'stable',
+          name: 'Stable',
+          colour: '#444444',
+          contents: [
+            {
+              kind: 'block',
+              type: 'shared_reload_block',
+              message0: 'old stable block',
+              code: 'oldStable();',
+              previousStatement: null,
+              nextStatement: null,
+            },
+          ],
+        },
+      },
+    } as any);
+
+    const previousBlockRegistration = Blockly.Blocks.shared_reload_block;
+    const previousGeneratorRegistration = jsg.forBlock.shared_reload_block;
+
+    expect(() =>
+      engine.reloadBlockData({
+        blockFiles: {
+          'stable.jacly.json': {
+            category: 'stable',
+            name: 'Stable',
+            colour: '#555555',
+            contents: [
+              {
+                kind: 'block',
+                type: 'shared_reload_block',
+                message0: 'new unstable block',
+                code: 'newStable();',
+                previousStatement: null,
+                nextStatement: null,
+              },
+            ],
+          },
+          'bad-alias.jacly.json': {
+            category: 'bad_alias',
+            name: 'Bad Alias',
+            colour: '#cc0000',
+            contents: [{ kind: 'block', type: 'missing_reload_dependency' }],
+          },
+        },
+      } as any),
+    ).to.throw();
+
+    expect(Blockly.Blocks.shared_reload_block).to.equal(previousBlockRegistration);
+    expect(jsg.forBlock.shared_reload_block).to.equal(previousGeneratorRegistration);
+  });
 });

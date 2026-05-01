@@ -6,7 +6,11 @@ import { javascriptGenerator as jsg } from 'blockly/javascript';
 import { createInstanceTracker } from '@/blocks/instances';
 import { registerPlaceholderBlock } from '@/blocks/registration/placeholder-block';
 import { generateCodeFromWorkspace } from '@/codegen/workspace/generate-code-from-workspace';
-import { loadToolboxConfiguration } from '@/toolbox/loading/toolbox-loader';
+import {
+  buildToolboxFromParsedConfigs,
+  collectParsedBlockTypes,
+  parseToolboxConfigs,
+} from '@/toolbox/loading/toolbox-processing';
 import type { EngineMissingPackages } from '@/workspace/validation/types';
 import {
   type SanitizationResult,
@@ -23,21 +27,67 @@ export class JaclyEngine {
     registerPlaceholderBlock();
   }
 
+  private snapshotBlocklyRegistrations(
+    blockTypes: Iterable<string>,
+  ): Map<string, { block?: unknown; generator?: unknown }> {
+    const snapshot = new Map<string, { block?: unknown; generator?: unknown }>();
+
+    for (const blockType of blockTypes) {
+      snapshot.set(blockType, {
+        block: Blockly.Blocks[blockType],
+        generator: jsg.forBlock[blockType],
+      });
+    }
+
+    return snapshot;
+  }
+
+  private restoreBlocklyRegistrations(
+    snapshot: Map<string, { block?: unknown; generator?: unknown }>,
+  ): void {
+    for (const [blockType, entry] of snapshot) {
+      if (entry.block === undefined) {
+        delete Blockly.Blocks[blockType];
+      } else {
+        Blockly.Blocks[blockType] = entry.block as (typeof Blockly.Blocks)[string];
+      }
+
+      if (entry.generator === undefined) {
+        delete jsg.forBlock[blockType];
+      } else {
+        jsg.forBlock[blockType] = entry.generator as (typeof jsg.forBlock)[string];
+      }
+    }
+  }
+
   private rebuildBlockData(
     data: JaclyBlocksData,
     updateAttachedWorkspace: boolean,
   ): Blockly.utils.toolbox.ToolboxDefinition {
-    const oldTypes = new Set(this.state.registeredBlockTypes);
+    const previousState = this.state;
+    const oldTypes = new Set(previousState.registeredBlockTypes);
+    const parsedConfigs = parseToolboxConfigs(data);
+    const affectedTypes = collectParsedBlockTypes(parsedConfigs);
+    const registrationSnapshot = this.snapshotBlocklyRegistrations(affectedTypes);
+    const nextState = createEngineState();
 
-    resetEngineState(this.state);
-    const newConfig = loadToolboxConfiguration(this.state, data);
+    let newConfig: Blockly.utils.toolbox.ToolboxDefinition;
+    try {
+      newConfig = buildToolboxFromParsedConfigs(nextState, parsedConfigs);
+    } catch (error) {
+      this.restoreBlocklyRegistrations(registrationSnapshot);
+      throw error;
+    }
 
     for (const type of oldTypes) {
-      if (!this.state.registeredBlockTypes.has(type)) {
+      if (!nextState.registeredBlockTypes.has(type)) {
         delete Blockly.Blocks[type];
         delete jsg.forBlock[type];
       }
     }
+
+    resetEngineState(previousState);
+    this.state = nextState;
 
     if (updateAttachedWorkspace && this.attachedWorkspace) {
       const tracker = createInstanceTracker(this.state, this.attachedWorkspace);
