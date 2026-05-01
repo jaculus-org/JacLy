@@ -23,11 +23,10 @@ export class JaclyEngine {
     registerPlaceholderBlock();
   }
 
-  buildToolbox(data: JaclyBlocksData): Blockly.utils.toolbox.ToolboxDefinition {
-    return loadToolboxConfiguration(this.state, data);
-  }
-
-  reloadBlockData(data: JaclyBlocksData): void {
+  private rebuildBlockData(
+    data: JaclyBlocksData,
+    updateAttachedWorkspace: boolean,
+  ): Blockly.utils.toolbox.ToolboxDefinition {
     const oldTypes = new Set(this.state.registeredBlockTypes);
 
     resetEngineState(this.state);
@@ -40,13 +39,22 @@ export class JaclyEngine {
       }
     }
 
-    if (this.attachedWorkspace) {
+    if (updateAttachedWorkspace && this.attachedWorkspace) {
       const tracker = createInstanceTracker(this.state, this.attachedWorkspace);
       this.state.instanceTrackers.set(this.attachedWorkspace, tracker);
       tracker.rebuild();
+      this.attachedWorkspace.updateToolbox(newConfig);
     }
 
-    this.attachedWorkspace?.updateToolbox(newConfig);
+    return newConfig;
+  }
+
+  buildToolbox(data: JaclyBlocksData): Blockly.utils.toolbox.ToolboxDefinition {
+    return this.rebuildBlockData(data, false);
+  }
+
+  reloadBlockData(data: JaclyBlocksData): Blockly.utils.toolbox.ToolboxDefinition {
+    return this.rebuildBlockData(data, true);
   }
 
   attachToWorkspace(workspace: Blockly.WorkspaceSvg): void {

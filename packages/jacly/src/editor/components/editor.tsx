@@ -1,6 +1,7 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
 import type { JaclyBlocksData } from '@jaculus/project';
+import type * as Blockly from 'blockly/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import {
@@ -40,13 +41,14 @@ export function JaclyEditor({
 }: JaclyEditorProps) {
   registerBlocklyEditorIntegrations();
   const messagesLoaded = useBlocklyMessages(locale);
-
-  const toolboxConfiguration = useMemo(
-    () => (messagesLoaded ? engine.buildToolbox(jaclyBlocksData) : null),
-    [jaclyBlocksData, messagesLoaded, engine],
-  );
-
+  const [toolboxConfiguration, setToolboxConfiguration] =
+    useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
   const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
+
+  useEffect(() => {
+    if (!messagesLoaded) return;
+    setToolboxConfiguration(engine.reloadBlockData(jaclyBlocksData));
+  }, [jaclyBlocksData, messagesLoaded, engine]);
 
   useEffect(() => {
     if (!toolboxConfiguration) return;

@@ -1,4 +1,3 @@
-import { enrichBlockInputs } from '@/blocks/aliases/enrich-block-inputs';
 import type { JaclyBlock, JaclyConfig } from '@/schema';
 import { buildCategoryHeader } from '@/toolbox/categories/category-header';
 import type { ToolboxItemInfoSort } from '@/toolbox/types';
@@ -28,12 +27,6 @@ export function buildToolboxItem(
   state: EngineState,
   jaclyConfig: JaclyConfig,
 ): ToolboxItemInfoSort {
-  for (const item of jaclyConfig.contents!) {
-    if (item.kind === 'block') {
-      enrichBlockInputs(state, item);
-    }
-  }
-
   jaclyConfig.contents = jaclyConfig.contents!.filter((item) => {
     if (item.kind === 'block') return item.hideInToolbox !== true;
     return true;
