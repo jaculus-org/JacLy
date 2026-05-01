@@ -3,7 +3,6 @@ import '@/blocks/built-ins';
 import type { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
 import { javascriptGenerator as jsg } from 'blockly/javascript';
-import { createInstanceTracker } from '@/blocks/instances';
 import { registerPlaceholderBlock } from '@/blocks/registration/placeholder-block';
 import { generateCodeFromWorkspace } from '@/codegen/workspace/generate-code-from-workspace';
 import {
@@ -22,6 +21,7 @@ import { attachEngineWorkspace } from './workspace-attachment';
 export class JaclyEngine {
   private state: EngineState = createEngineState();
   private attachedWorkspace: Blockly.WorkspaceSvg | null = null;
+  private detachAttachedWorkspace: (() => void) | null = null;
 
   constructor() {
     registerPlaceholderBlock();
@@ -90,9 +90,8 @@ export class JaclyEngine {
     this.state = nextState;
 
     if (updateAttachedWorkspace && this.attachedWorkspace) {
-      const tracker = createInstanceTracker(this.state, this.attachedWorkspace);
-      this.state.instanceTrackers.set(this.attachedWorkspace, tracker);
-      tracker.rebuild();
+      this.detachAttachedWorkspace?.();
+      this.detachAttachedWorkspace = attachEngineWorkspace(this.state, this.attachedWorkspace);
       this.attachedWorkspace.updateToolbox(newConfig);
     }
 
@@ -109,12 +108,17 @@ export class JaclyEngine {
 
   attachToWorkspace(workspace: Blockly.WorkspaceSvg): void {
     if (this.attachedWorkspace === workspace) return;
+    if (this.attachedWorkspace) {
+      this.detachFromWorkspace(this.attachedWorkspace);
+    }
     this.attachedWorkspace = workspace;
-    attachEngineWorkspace(this.state, workspace);
+    this.detachAttachedWorkspace = attachEngineWorkspace(this.state, workspace);
   }
 
   detachFromWorkspace(workspace: Blockly.WorkspaceSvg): void {
     if (this.attachedWorkspace === workspace) {
+      this.detachAttachedWorkspace?.();
+      this.detachAttachedWorkspace = null;
       this.attachedWorkspace = null;
     }
   }

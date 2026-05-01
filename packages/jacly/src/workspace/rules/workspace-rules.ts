@@ -12,13 +12,23 @@ const codeChangeEvents = [
 ];
 
 export function registerWorkspaceChangeListener(workspace: WorkspaceSvgExtended) {
+  const listeners: Array<(event: Blockly.Events.Abstract) => void> = [];
+
   listenersFunctionsMap.forEach((eventTypes, listenerFunction) => {
-    workspace.addChangeListener((event: Blockly.Events.Abstract) => {
+    const listener = (event: Blockly.Events.Abstract) => {
       if (eventTypes === undefined || eventTypes.includes(event.type)) {
         listenerFunction(workspace, event);
       }
-    });
+    };
+    workspace.addChangeListener(listener);
+    listeners.push(listener);
   });
+
+  return () => {
+    for (const listener of listeners) {
+      workspace.removeChangeListener(listener);
+    }
+  };
 }
 
 // map of listener functions to their associated event types (or undefined for all events)

@@ -174,6 +174,145 @@ describe('loadToolboxConfiguration - two-pass alias resolution', () => {
       } as any),
     ).to.throw(JaclyBlockLoadError);
   });
+
+  it('throws when nested helper block defaults are cyclic', () => {
+    const state = createEngineState();
+    expect(() => {
+      loadToolboxConfiguration(state, {
+        blockFiles: {
+          'cyclic.jacly.json': {
+            category: 'cyclic',
+            name: 'Cyclic',
+            colour: '#ff0000',
+            contents: [
+              {
+                kind: 'block',
+                type: 'cycle_a',
+                message0: 'A $[NEXT]',
+                args0: [
+                  {
+                    type: 'input_value',
+                    name: 'NEXT',
+                    block: {
+                      type: 'cycle_b',
+                    },
+                  },
+                ],
+                code: 'A($[NEXT])',
+                output: 'CycleA',
+                hideInToolbox: true,
+              },
+              {
+                kind: 'block',
+                type: 'cycle_b',
+                message0: 'B $[NEXT]',
+                args0: [
+                  {
+                    type: 'input_value',
+                    name: 'NEXT',
+                    block: {
+                      type: 'cycle_a',
+                    },
+                  },
+                ],
+                code: 'B($[NEXT])',
+                output: 'CycleB',
+                hideInToolbox: true,
+              },
+              {
+                kind: 'block',
+                type: 'cycle_entry',
+                message0: 'entry $[VALUE]',
+                args0: [
+                  {
+                    type: 'input_value',
+                    name: 'VALUE',
+                    block: {
+                      type: 'cycle_a',
+                    },
+                  },
+                ],
+                code: 'entry($[VALUE]);',
+                previousStatement: null,
+                nextStatement: null,
+              },
+            ],
+          },
+        },
+      } as any);
+    }).to.throw(JaclyBlockLoadError);
+
+    try {
+      loadToolboxConfiguration(createEngineState(), {
+        blockFiles: {
+          'cyclic.jacly.json': {
+            category: 'cyclic',
+            name: 'Cyclic',
+            colour: '#ff0000',
+            contents: [
+              {
+                kind: 'block',
+                type: 'cycle_a',
+                message0: 'A $[NEXT]',
+                args0: [
+                  {
+                    type: 'input_value',
+                    name: 'NEXT',
+                    block: {
+                      type: 'cycle_b',
+                    },
+                  },
+                ],
+                code: 'A($[NEXT])',
+                output: 'CycleA',
+                hideInToolbox: true,
+              },
+              {
+                kind: 'block',
+                type: 'cycle_b',
+                message0: 'B $[NEXT]',
+                args0: [
+                  {
+                    type: 'input_value',
+                    name: 'NEXT',
+                    block: {
+                      type: 'cycle_a',
+                    },
+                  },
+                ],
+                code: 'B($[NEXT])',
+                output: 'CycleB',
+                hideInToolbox: true,
+              },
+              {
+                kind: 'block',
+                type: 'cycle_entry',
+                message0: 'entry $[VALUE]',
+                args0: [
+                  {
+                    type: 'input_value',
+                    name: 'VALUE',
+                    block: {
+                      type: 'cycle_a',
+                    },
+                  },
+                ],
+                code: 'entry($[VALUE]);',
+                previousStatement: null,
+                nextStatement: null,
+              },
+            ],
+          },
+        },
+      } as any);
+      expect.fail('Expected cyclic nested block defaults to throw');
+    } catch (error) {
+      const message = (error as Error).message;
+      expect(message).to.include('Cyclic nested block defaults detected');
+      expect(message).to.include('cycle_a');
+      expect(message).to.include('cycle_b');
+    }
+  });
 });
 
 describe('toolbox processing purity', () => {

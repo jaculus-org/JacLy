@@ -17,8 +17,8 @@ function isTrackedInstanceBlockType(state: EngineState, blockType: string): bool
 function registerInstanceTrackerListener(
   state: EngineState,
   workspace: Blockly.WorkspaceSvg,
-): void {
-  workspace.addChangeListener((event: Blockly.Events.Abstract) => {
+): () => void {
+  const listener = (event: Blockly.Events.Abstract) => {
     const tracker = getInstanceTracker(state, workspace);
     if (!tracker) return;
 
@@ -53,15 +53,28 @@ function registerInstanceTrackerListener(
       default:
         return;
     }
-  });
+  };
+
+  workspace.addChangeListener(listener);
+  return () => {
+    workspace.removeChangeListener(listener);
+  };
 }
 
-export function attachEngineWorkspace(state: EngineState, workspace: Blockly.WorkspaceSvg): void {
-  registerWorkspaceChangeListener(workspace as WorkspaceSvgExtended);
+export function attachEngineWorkspace(
+  state: EngineState,
+  workspace: Blockly.WorkspaceSvg,
+): () => void {
+  const disposeWorkspaceRules = registerWorkspaceChangeListener(workspace as WorkspaceSvgExtended);
   registerDocsCallbacks(state, workspace);
   registerFieldColour();
   const tracker = createInstanceTracker(state, workspace);
   state.instanceTrackers.set(workspace, tracker);
   tracker.rebuild();
-  registerInstanceTrackerListener(state, workspace);
+  const disposeInstanceTracker = registerInstanceTrackerListener(state, workspace);
+
+  return () => {
+    disposeInstanceTracker();
+    disposeWorkspaceRules();
+  };
 }
