@@ -1,5 +1,4 @@
-import { WOKWI_EMBED_URL } from '../constants';
-import { useWokwiSimulator } from '../state/simulator-context';
+import { useWokwiSimulator, WokwiEmbed } from '@jaculus/wokwi';
 import { WokwiSimulatorLoading } from './wokwi-simulator-loading';
 
 export function WokwiSimulatorEmbed() {
@@ -7,11 +6,9 @@ export function WokwiSimulatorEmbed() {
 
   return (
     <div className="relative h-full">
-      <iframe
+      <WokwiEmbed
         id="wokwi-embed"
-        src={WOKWI_EMBED_URL}
-        width="100%"
-        height="100%"
+        isInitializing={state.isInitializing}
         className={state.isInitializing ? 'blur-[1px]' : undefined}
       />
       {state.isInitializing && <WokwiSimulatorLoading />}

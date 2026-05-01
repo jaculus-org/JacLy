@@ -1,7 +1,7 @@
+import { useWokwiSimulator } from '@jaculus/wokwi';
 import { AlertCircle, Unplug } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { StatusCard } from '@/ui/components/custom/status-card';
-import { useWokwiSimulator } from '../state/simulator-context';
 import { WokwiSimulatorEmbed } from './wokwi-simulator-embed';
 
 export function WokwiSimulatorView() {

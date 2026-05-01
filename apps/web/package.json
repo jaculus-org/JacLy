@@ -33,6 +33,7 @@
     "@jaculus/jacly": "workspace:*",
     "@jaculus/link": "workspace:*",
     "@jaculus/project": "workspace:*",
+    "@jaculus/wokwi": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "@sentry/react": "^10.48.0",
     "@tailwindcss/vite": "^4.2.1",

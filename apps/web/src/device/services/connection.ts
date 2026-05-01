@@ -1,13 +1,12 @@
 import { JacDevice } from '@jaculus/device';
 import type { Duplex } from '@jaculus/link/stream';
+import { defaultDiagram, JacStreamWokwi } from '@jaculus/wokwi';
 import { BluetoothIcon, MonitorIcon, UsbIcon } from 'lucide-react';
 import type { AddToConsole } from '@/console';
 import { logger } from '@/core/services/logger-service';
-import defaultDiagram from '@/simulator/assets/diagram.json';
 import type { ConnectionInfo, ConnectionType } from '../types/connection';
 import { JacStreamBle } from './streams/ble';
 import { JacStreamSerial } from './streams/serial';
-import { JacStreamWokwi } from './streams/wokwi';
 
 export async function getAvailableConnectionTypes(): Promise<ConnectionInfo[]> {
   const types: ConnectionInfo[] = [];

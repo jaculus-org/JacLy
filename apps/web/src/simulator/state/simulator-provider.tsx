@@ -1,6 +1,6 @@
+import { WokwiSimulatorProvider as WokwiSimulatorProviderBase } from '@jaculus/wokwi';
 import type { ReactNode } from 'react';
 import { useJacDevice } from '@/device';
-import { WokwiSimulatorContext } from './simulator-context';
 
 interface WokwiSimulatorProviderProps {
   children: ReactNode;
@@ -12,16 +12,12 @@ export function WokwiSimulatorProvider({ children }: WokwiSimulatorProviderProps
   } = useJacDevice();
 
   return (
-    <WokwiSimulatorContext.Provider
-      value={{
-        state: {
-          hasDevice: Boolean(device),
-          isWokwiConnection: connectionType === 'wokwi',
-          isInitializing: connectionStatus === 'connecting' && connectionType === 'wokwi',
-        },
-      }}
+    <WokwiSimulatorProviderBase
+      hasDevice={Boolean(device)}
+      isWokwiConnection={connectionType === 'wokwi'}
+      isInitializing={connectionStatus === 'connecting' && connectionType === 'wokwi'}
     >
       {children}
-    </WokwiSimulatorContext.Provider>
+    </WokwiSimulatorProviderBase>
   );
 }

@@ -6,7 +6,6 @@ import {
   MessagePortTransport,
   type SerialMonitorDataPayload,
 } from '@wokwi/client';
-import { JacStreamBase, JacStreamError } from './base';
 
 export interface JacStreamWokwiHandlers {
   handleReadDiagram: () => Promise<Uint8Array | string>;
@@ -14,17 +13,57 @@ export interface JacStreamWokwiHandlers {
   handleReadFirmware: () => Promise<Uint8Array>;
 }
 
-export class JacStreamWokwi extends JacStreamBase implements Duplex {
+export class WokwiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'WokwiError';
+  }
+}
+
+export class JacStreamWokwi implements Duplex {
   public client: APIClient | null = null;
   private handlers: JacStreamWokwiHandlers;
-
+  private logger: Logger;
+  private isDestroyed = false;
   private boundHandleMessage: (event: MessageEvent) => Promise<void>;
 
+  private dataCallback?: (data: Uint8Array) => void;
+  private endCallback?: () => void;
+  private errorCallback?: (err: Error) => void;
+
   constructor(logger: Logger, handlers: JacStreamWokwiHandlers) {
-    super(logger);
+    this.logger = logger;
     this.handlers = handlers;
     this.boundHandleMessage = this.handleMessage.bind(this);
     window.addEventListener('message', this.boundHandleMessage);
+  }
+
+  public onData(callback?: (data: Uint8Array) => void): void {
+    this.dataCallback = callback;
+  }
+
+  public onEnd(callback?: () => void): void {
+    this.endCallback = callback;
+  }
+
+  public onError(callback?: (err: Error) => void): void {
+    this.errorCallback = callback;
+  }
+
+  private emitData(data: Uint8Array): void {
+    this.dataCallback?.(data);
+  }
+
+  private emitEnd(): void {
+    this.endCallback?.();
+  }
+
+  private emitError(error: Error): void {
+    if (this.errorCallback) {
+      this.errorCallback(error);
+    } else {
+      this.logger.error(`JacStreamWokwi error: ${error.message}`);
+    }
   }
 
   private async handleMessage(event: MessageEvent): Promise<void> {
@@ -40,15 +79,13 @@ export class JacStreamWokwi extends JacStreamBase implements Duplex {
 
       this.client.onConnected = async () => {
         if (!this.client) {
-          throw new JacStreamError('Client is not connected', 'WokwiError');
+          throw new WokwiError('Client is not connected');
         }
         this.logger.info('Wokwi client connected');
 
         try {
           await this.client.fileUpload('diagram.json', await this.handlers.handleReadDiagram());
-
           await this.client.fileUpload('jaculus.uf2', await this.handlers.handleReadFirmware());
-
           await this.client.serialMonitorListen();
 
           this.client.listen('diagram:change', async (event) => {
@@ -60,33 +97,32 @@ export class JacStreamWokwi extends JacStreamBase implements Duplex {
           await this.client.sendCommand('diagram:listen');
           await this.handleStart();
         } catch (error) {
-          this.handleError(
-            new JacStreamError(
+          this.emitError(
+            new WokwiError(
               `Failed to upload files: ${error instanceof Error ? error.message : 'unknown error'}`,
-              'WokwiError',
             ),
           );
         }
       };
 
       this.client.listen('serial-monitor:data', (event: APIEvent<SerialMonitorDataPayload>) => {
-        this.handleData(new Uint8Array(event.payload.bytes));
+        this.emitData(new Uint8Array(event.payload.bytes));
       });
 
       this.client.onError = (error) => {
-        this.handleError(new JacStreamError(`Wokwi API error: ${error.message}`, 'WokwiError'));
+        this.emitError(new WokwiError(`Wokwi API error: ${error.message}`));
         this.cleanupConnection();
       };
 
       this.client.listen('ui:clickStart', async () => {
-        this.handleStart();
+        await this.handleStart();
       });
     }
   }
 
   private async handleStart(): Promise<void> {
     if (!this.client) {
-      throw new JacStreamError('Client is not connected', 'WokwiError');
+      throw new WokwiError('Client is not connected');
     }
 
     this.logger.info('Starting Wokwi simulation');
@@ -107,31 +143,31 @@ export class JacStreamWokwi extends JacStreamBase implements Duplex {
       this.client = null;
     }
 
-    this.handleEnd();
+    this.emitEnd();
   }
 
   public async put(c: number): Promise<void> {
     if (this.isDestroyed || !this.client) {
-      throw new JacStreamError('Stream is not initialized or destroyed', 'WokwiError');
+      throw new WokwiError('Stream is not initialized or destroyed');
     }
 
     try {
       await this.client.serialMonitorWrite([c]);
     } catch (error) {
-      this.handleError(error as Error);
+      this.emitError(error as Error);
       throw error;
     }
   }
 
   public async write(buf: Uint8Array): Promise<void> {
     if (this.isDestroyed || !this.client) {
-      throw new JacStreamError('Stream is not initialized or destroyed', 'WokwiError');
+      throw new WokwiError('Stream is not initialized or destroyed');
     }
 
     try {
       await this.client.serialMonitorWrite(buf);
     } catch (error) {
-      this.handleError(error as Error);
+      this.emitError(error as Error);
       throw error;
     }
   }
