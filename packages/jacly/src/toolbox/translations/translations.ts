@@ -63,7 +63,7 @@ function localizeBlock(prefix: string, block: Extract<JaclyBlock, { kind: 'block
   }
   if (block.callbackVars) {
     for (const callbackVar of block.callbackVars) {
-      callbackVar.name = tRegex(callbackVar.name, `${prefix}_callback`);
+      callbackVar.message = tRegex(callbackVar.message, `${prefix}_callback`);
     }
   }
 }

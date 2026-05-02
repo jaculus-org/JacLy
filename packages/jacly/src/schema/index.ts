@@ -199,8 +199,9 @@ export const ToolboxInputsSchema = z.record(
 
 // Schema for callback variables (scoped variables available inside callback blocks)
 const CallbackVarSchema = z.object({
-  name: z.string().nonempty('callback variable name is required'),
-  type: z.string().optional(), // Blockly output type (e.g., "Number", "String")
+  identifier: Identifier.nonempty('callback variable identifier is required'),
+  message: z.string().nonempty('callback variable message is required'),
+  type: z.string().optional(),
   codeName: z.string().nonempty('codeName is required for code generation'),
 });
 

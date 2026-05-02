@@ -40,12 +40,14 @@ const simpleradioJsonBlocksData = {
           ],
           callbackVars: [
             {
-              name: 'received JSON',
+              identifier: 'RECEIVED_JSON',
+              message: 'received JSON',
               type: 'JsonObject',
               codeName: 'obj',
             },
             {
-              name: 'sender address',
+              identifier: 'SENDER_ADDRESS',
+              message: 'sender address',
               type: 'String',
               codeName: 'info.address',
             },

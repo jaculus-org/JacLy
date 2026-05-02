@@ -11,7 +11,7 @@ export function registerCallbackVarSlots(
   if (block.callbackVars && block.callbackVars.length > 0 && block.args0 && block.message0) {
     const varInputArgs = block.callbackVars.map((cbVar) => ({
       type: 'input_value' as const,
-      name: `CALLBACK_VAR_${cbVar.name}`,
+      name: `CALLBACK_VAR_${cbVar.identifier}`,
       check: cbVar.type,
     }));
 
@@ -22,7 +22,7 @@ export function registerCallbackVarSlots(
 
       const stmtPlaceholder = `$[${block.args0[stmtIndex + varInputArgs.length].name}]`;
       const inputPlaceholders = block.callbackVars
-        .map((cbVar) => `$[CALLBACK_VAR_${cbVar.name}]`)
+        .map((cbVar) => `$[CALLBACK_VAR_${cbVar.identifier}]`)
         .join(' ');
       block.message0 = block.message0.replace(
         stmtPlaceholder,
@@ -30,8 +30,8 @@ export function registerCallbackVarSlots(
       );
 
       for (const cbVar of block.callbackVars) {
-        const getterType = `${block.type}_${cbVar.name}`;
-        inputsEdit[`CALLBACK_VAR_${cbVar.name}`] = {
+        const getterType = `${block.type}_${cbVar.identifier}`;
+        inputsEdit[`CALLBACK_VAR_${cbVar.identifier}`] = {
           block: {
             type: getterType,
           },
@@ -49,17 +49,17 @@ export function registerCallbackVarGetters(
   if (!parentBlock.callbackVars) return;
 
   for (const cbVar of parentBlock.callbackVars) {
-    const getterType = `${parentBlock.type}_${cbVar.name}`;
+    const getterType = `${parentBlock.type}_${cbVar.identifier}`;
 
     Blocks[getterType] = {
       init(this: BlockSvgExtended) {
-        this.appendDummyInput().appendField(cbVar.name);
+        this.appendDummyInput().appendField(cbVar.message);
         this.setOutput(true, cbVar.type || null);
         this.setColour('#dc143c');
-        this.setTooltip(`${cbVar.name} - callback variable (drag to copy)`);
+        this.setTooltip(`${cbVar.message} - callback variable (drag to copy)`);
         this.setInputsInline(true);
 
-        this.callbackVarInputName = `CALLBACK_VAR_${cbVar.name}`;
+        this.callbackVarInputName = `CALLBACK_VAR_${cbVar.identifier}`;
 
         this.setOnChange((event: Blockly.Events.Abstract) => {
           if (event.type !== Blockly.Events.BLOCK_MOVE) return;
