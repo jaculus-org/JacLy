@@ -1,7 +1,7 @@
 import { JaclyEngine } from '@jaculus/jacly/engine';
 import type { JaclyBlocksData } from '@jaculus/project';
 import { enqueueSnackbar } from 'notistack';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { getLocale } from '@/core/paraglide/runtime';
 import { useJacDevice } from '@/device';
@@ -160,7 +160,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
     });
   }, [jacProject]);
 
-  function handleJsonChange(json: object) {
+  const handleJsonChange = useCallback((json: object) => {
     try {
       const serialized = JSON.stringify(json, null, 2);
       latestJsonContentRef.current = serialized;
@@ -169,16 +169,16 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
       console.error('Failed to queue JSON save:', error);
       enqueueSnackbar(m.editor_jacly_save_json_error(), { variant: 'error' });
     }
-  }
+  }, []);
 
-  function handleGeneratedCode(code: string) {
+  const handleGeneratedCode = useCallback((code: string) => {
     try {
       codeWriterRef.current?.schedule(code);
     } catch (error) {
       console.error('Failed to queue generated code save:', error);
       enqueueSnackbar(m.editor_jacly_save_code_error(), { variant: 'error' });
     }
-  }
+  }, []);
 
   return (
     <EditorJaclyContext.Provider
