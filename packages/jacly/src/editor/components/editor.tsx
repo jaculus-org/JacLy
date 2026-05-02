@@ -55,7 +55,6 @@ export function JaclyEditor({
   useEffect(() => {
     if (!messagesLoaded) return;
     setEditorError(null);
-    setSanitizedJson(null);
 
     try {
       setToolboxConfiguration(engine.reloadBlockData(jaclyBlocksData));
