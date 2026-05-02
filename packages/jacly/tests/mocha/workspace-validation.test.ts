@@ -465,6 +465,69 @@ describe('sanitizeWorkspaceState — reverse pass (restore)', () => {
     expect(restored.restoredTypes).to.include('roundtrip_block');
     expect(restored.replacedTypes).to.not.include('roundtrip_block');
   });
+
+  it('rehydrates canonical nested defaults for restored registered blocks', async () => {
+    setupBlocks(['motor_constructor', 'motor_constructor_regparams', 'math_number']);
+
+    const json = {
+      blocks: {
+        languageVersion: 0,
+        blocks: [
+          {
+            type: 'unsupported_block',
+            fields: { ORIGINAL_TYPE: 'motor_constructor' },
+            extraState: {
+              originalState: {
+                type: 'motor_constructor',
+                id: 'motor-root',
+                x: 80,
+                y: 60,
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await sanitizeWorkspaceState(
+      json,
+      async () => {},
+      (type) => {
+        if (type === 'motor_constructor') {
+          return {
+            REG_PARAMS: {
+              block: {
+                type: 'motor_constructor_regparams',
+              },
+            },
+          };
+        }
+        if (type === 'motor_constructor_regparams') {
+          return {
+            REG: {
+              shadow: {
+                type: 'math_number',
+                fields: {
+                  NUM: 0,
+                },
+              },
+            },
+          };
+        }
+        return undefined;
+      },
+    );
+
+    const ws = result.state as any;
+    expect(ws.blocks.blocks[0].type).to.equal('motor_constructor');
+    expect(ws.blocks.blocks[0].inputs.REG_PARAMS.block.type).to.equal(
+      'motor_constructor_regparams',
+    );
+    expect(ws.blocks.blocks[0].inputs.REG_PARAMS.block.inputs.REG.shadow.type).to.equal(
+      'math_number',
+    );
+    expect(ws.blocks.blocks[0].inputs.REG_PARAMS.block.inputs.REG.shadow.fields.NUM).to.equal(0);
+  });
 });
 
 import { JaclyEngine } from '../../src/engine/engine';

@@ -145,3 +145,6 @@ vite.config.ts.timestamp-*
 .turbo/
 **/.turbo/
 node_modules/.turbo/
+playwright-report/
+test-results/
+

@@ -1,8 +1,8 @@
 import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
 import type { JaclyBlocksData } from '@jaculus/project';
-import type * as Blockly from 'blockly/core';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import * as Blockly from 'blockly/core';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import {
   attachBlocklyEditorWorkspace,
@@ -49,6 +49,8 @@ export function JaclyEditor({
     useState<Blockly.utils.toolbox.ToolboxDefinition | null>(null);
   const [sanitizedJson, setSanitizedJson] = useState<object | null>(null);
   const [editorError, setEditorError] = useState<Error | null>(null);
+  const workspaceRef = useRef<WorkspaceSvgExtended | null>(null);
+  const hasImportedWorkspaceStateRef = useRef(false);
 
   useEffect(() => {
     if (!messagesLoaded) return;
@@ -103,6 +105,10 @@ export function JaclyEditor({
 
   const handleWorkspaceChange = useCallback(
     (workspace: WorkspaceSvgExtended) => {
+      workspaceRef.current = workspace;
+      if (workspace.getAllBlocks(false).length > 0 || workspace.getTopComments().length > 0) {
+        hasImportedWorkspaceStateRef.current = true;
+      }
       engine.attachToWorkspace(workspace);
       attachBlocklyEditorWorkspace(workspace);
       debouncedGenerate(workspace);
@@ -112,11 +118,38 @@ export function JaclyEditor({
 
   const handleWorkspaceDispose = useCallback(
     (workspace: WorkspaceSvgExtended) => {
+      if (workspaceRef.current === workspace) {
+        workspaceRef.current = null;
+        hasImportedWorkspaceStateRef.current = false;
+      }
       detachBlocklyEditorWorkspace(workspace);
       engine.detachFromWorkspace(workspace);
     },
     [engine],
   );
+
+  useEffect(() => {
+    const workspace = workspaceRef.current;
+    if (!workspace || !sanitizedJson || !hasImportedWorkspaceStateRef.current) {
+      return;
+    }
+
+    const currentState = Blockly.serialization.workspaces.save(workspace);
+    if (JSON.stringify(currentState) === JSON.stringify(sanitizedJson)) {
+      return;
+    }
+
+    Blockly.Events.disable();
+    try {
+      workspace.clear();
+      Blockly.serialization.workspaces.load(sanitizedJson, workspace);
+    } finally {
+      Blockly.Events.enable();
+    }
+
+    onJsonChange(sanitizedJson);
+    onGeneratedCode(engine.generateCode(workspace));
+  }, [engine, onGeneratedCode, onJsonChange, sanitizedJson]);
 
   if (editorError) throw editorError;
   if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
