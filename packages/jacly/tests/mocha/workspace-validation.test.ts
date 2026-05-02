@@ -215,6 +215,36 @@ describe('sanitizeWorkspaceState', () => {
     expect(ws.blocks.blocks[0].inputs?.VALUE?.shadow).to.equal(undefined);
   });
 
+  it('reports unsupported placeholders as missing original library blocks on each validation', async () => {
+    const json = {
+      blocks: {
+        languageVersion: 0,
+        blocks: [
+          {
+            type: 'unsupported_block',
+            id: '1',
+            fields: { ORIGINAL_TYPE: 'missing_motor_block' },
+            extraState: {
+              originalState: {
+                type: 'missing_motor_block',
+                id: 'orig-1',
+                extraState: { package: 'motor' },
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    let captured: Record<string, Set<string>> = {};
+    await sanitizeWorkspaceState(json, async (pkg) => {
+      captured = pkg;
+    });
+
+    expect(captured).to.have.property('motor');
+    expect(captured.motor.has('missing_motor_block')).to.equal(true);
+  });
+
   it('calls onMissingPackage with all missing packages', async () => {
     let captured: Record<string, Set<string>> = {};
     const json = {
