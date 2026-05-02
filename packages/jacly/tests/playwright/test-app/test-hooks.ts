@@ -29,12 +29,14 @@ type JaclyTestApi = {
   getAllBlockIds: () => string[];
   getTopBlockTypes: () => string[];
   getToolboxBlockTypes: () => string[];
+  getBlockIdsByType: (blockType: string) => string[];
   getBlockCount: () => number;
   getWorkspaceJson: () => object;
   getLatestJsonChange: () => object | null;
   getLatestGeneratedCode: () => string;
   getCurrentGeneratedCode: () => string;
   getBlockGeometry: (query: BlockQuery) => BlockGeometry;
+  getFieldCenter: (blockId: string, fieldName: string) => Point;
   getEmptyWorkspacePoint: () => Point;
   getWorkspacePoint: (x: number, y: number) => Point;
   getConnectionPoint: (blockId: string, connection: ConnectionKind) => Point;
@@ -200,6 +202,23 @@ function getInputConnectionPoint(blockId: string, inputName: string): Point {
   return [point.x, point.y];
 }
 
+function getFieldCenter(blockId: string, fieldName: string): Point {
+  const workspace = getMainWorkspace();
+  const block = workspace.getBlockById(blockId);
+  if (!block) {
+    throw new Error(`Block "${blockId}" not found in main workspace`);
+  }
+
+  const field = block.getField(fieldName);
+  const svgRoot = field?.getSvgRoot();
+  if (!svgRoot) {
+    throw new Error(`Block "${blockId}" has no field SVG for "${fieldName}"`);
+  }
+
+  const rect = svgRoot.getBoundingClientRect();
+  return [(rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2];
+}
+
 export function installJaclyTestHooks(testStateAccess: TestStateAccess): () => void {
   window.Blockly = Blockly;
   window.__jaclyTest = {
@@ -222,12 +241,19 @@ export function installJaclyTestHooks(testStateAccess: TestStateAccess): () => v
         .getTopBlocks(false)
         .map((block) => block.type)
         .sort(),
+    getBlockIdsByType: (blockType: string) =>
+      getMainWorkspace()
+        .getAllBlocks(false)
+        .filter((block) => block.type === blockType)
+        .map((block) => block.id)
+        .sort(),
     getBlockCount: () => getMainWorkspace().getAllBlocks(false).length,
     getWorkspaceJson: () => Blockly.serialization.workspaces.save(getMainWorkspace()),
     getLatestJsonChange: () => testStateAccess.getLatestJson(),
     getLatestGeneratedCode: () => testStateAccess.getLatestGeneratedCode(),
     getCurrentGeneratedCode: () => testStateAccess.getCurrentGeneratedCode(),
     getBlockGeometry,
+    getFieldCenter,
     getEmptyWorkspacePoint,
     getWorkspacePoint,
     getConnectionPoint,

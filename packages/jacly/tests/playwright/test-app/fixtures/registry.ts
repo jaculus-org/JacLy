@@ -1,5 +1,9 @@
 import type { JaclyBlocksData } from '@jaculus/project';
 import { basicBlocksData, emptyWorkspace } from './basic-blocks';
+import {
+  jsonCodegenBlocksData,
+  jsonProgramInitialJson,
+} from '../../../shared/json-blocks-fixture';
 
 export type TestFixture = {
   jaclyBlocksData: JaclyBlocksData;
@@ -131,6 +135,10 @@ const fixtures: Record<string, TestFixture> = {
         ],
       },
     },
+  },
+  'json-codegen': {
+    jaclyBlocksData: jsonCodegenBlocksData,
+    initialJson: jsonProgramInitialJson,
   },
 };
 
