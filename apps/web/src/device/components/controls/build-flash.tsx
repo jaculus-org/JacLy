@@ -11,7 +11,7 @@ import { useJacDevice } from '../../state/device-context';
 
 export function BuildFlash() {
   const {
-    state: { projectPath, fs, monacoService },
+    state: { projectPath, fs },
   } = useActiveProject();
   const {
     actions: { controlPanel },
@@ -28,7 +28,6 @@ export function BuildFlash() {
     }
 
     try {
-      await monacoService?.flush();
       await jaclySaveCoordinator.flushPendingWrites();
       if (pkg?.jaculus?.projectType === 'code') {
         if (!(await compileProject(projectPath, fs))) {

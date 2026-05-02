@@ -32,7 +32,7 @@ interface JacDeviceProviderProps {
 export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
   const buildInfo = useBuildInfo();
   const { state: projectState, actions: projectActions } = useActiveProject();
-  const { fs, projectPath, monacoService } = projectState;
+  const { fs, projectPath } = projectState;
   const { setError } = projectActions;
   const [device, setDevice] = useState<JacDevice | null>(null);
   const [connectionType, setConnectionType] = useState<ConnectionType | null>(null);
@@ -52,7 +52,6 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
 
   useKeyboardShortcut({ key: 'u', ctrl: true, meta: true }, async () => {
     if (!device) return;
-    await monacoService?.flush();
     await jaclySaveCoordinator.flushPendingWrites();
     await uploadCode(await jacProject!.getFlashFiles(), device);
     enqueueSnackbar(m.jac_device_provider_upload_code(), {

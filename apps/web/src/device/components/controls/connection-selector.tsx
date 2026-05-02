@@ -32,7 +32,7 @@ export function ConnectionSelector() {
   const { connectionStatus, jacProject } = jacState;
   const { setDevice, setConnectionStatus } = jacActions;
   const {
-    state: { projectPath, fs, monacoService },
+    state: { projectPath, fs },
   } = useActiveProject();
   const { actions } = useProjectEditor();
   const { controlPanel } = actions;
@@ -76,7 +76,6 @@ export function ConnectionSelector() {
         controlPanel('wokwi', 'expand');
 
         setTimeout(async () => {
-          await monacoService?.flush();
           await jaclySaveCoordinator.flushPendingWrites();
           await uploadCode(await jacProject!.getFlashFiles(), dev);
         }, 10_000);

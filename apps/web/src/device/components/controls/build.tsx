@@ -11,7 +11,7 @@ import { useJacDevice } from '../../state/device-context';
 
 export function Build() {
   const {
-    state: { projectPath, fs, monacoService },
+    state: { projectPath, fs },
   } = useActiveProject();
   const { actions } = useProjectEditor();
   const { controlPanel } = actions;
@@ -26,7 +26,6 @@ export function Build() {
   async function handleBuild() {
     setIsBuilding(true);
     try {
-      await monacoService?.flush();
       await jaclySaveCoordinator.flushPendingWrites();
       const bundle = await jacProject!.getFlashFiles();
       console.log(`Files to flash: ${Object.keys(bundle.files).length}`);
