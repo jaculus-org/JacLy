@@ -50,6 +50,7 @@ export function JaclyEditor({
   const [editorError, setEditorError] = useState<Error | null>(null);
   const workspaceRef = useRef<WorkspaceSvgExtended | null>(null);
   const hasImportedWorkspaceStateRef = useRef(false);
+  const prevInitialJsonRef = useRef(initialJson);
 
   useEffect(() => {
     if (!messagesLoaded) return;
@@ -66,11 +67,20 @@ export function JaclyEditor({
 
   useEffect(() => {
     if (!toolboxConfiguration) return;
+
+    const initialJsonChanged = prevInitialJsonRef.current !== initialJson;
+    prevInitialJsonRef.current = initialJson;
+
+    const inputJson =
+      !initialJsonChanged && hasImportedWorkspaceStateRef.current && workspaceRef.current
+        ? Blockly.serialization.workspaces.save(workspaceRef.current)
+        : initialJson;
+
     let cancelled = false;
     const task = onMissingPackage
-      ? engine.validateWorkspace(initialJson, onMissingPackage)
+      ? engine.validateWorkspace(inputJson, onMissingPackage)
       : Promise.resolve({
-          state: initialJson,
+          state: inputJson,
           restoredTypes: [] as string[],
           replacedTypes: [] as string[],
         });

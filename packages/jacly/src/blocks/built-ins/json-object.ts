@@ -1,7 +1,11 @@
 import * as Blockly from 'blockly/core';
 import { Blocks } from 'blockly/core';
-import { javascriptGenerator as jsg, Order, type JavascriptGenerator } from 'blockly/javascript';
-import type { BlockExtended, BlockSvgExtended, WorkspaceSvgExtended } from '@/blocks/types/custom-block';
+import { type JavascriptGenerator, javascriptGenerator as jsg, Order } from 'blockly/javascript';
+import type {
+  BlockExtended,
+  BlockSvgExtended,
+  WorkspaceSvgExtended,
+} from '@/blocks/types/custom-block';
 import { t } from '@/toolbox/translations/translations';
 import { addShadowText } from '@/workspace/shadows/shadow-blocks';
 
@@ -65,10 +69,7 @@ Blocks.json_object_create = {
   },
 };
 
-jsg.forBlock.json_object_create = (
-  codeBlock: BlockExtended,
-  generator: JavascriptGenerator,
-) => {
+jsg.forBlock.json_object_create = (codeBlock: BlockExtended, generator: JavascriptGenerator) => {
   const entries = generator.statementToCode(codeBlock, 'PAIRS') || '';
   const code = entries.trim() ? `({\n${entries}})` : '({})';
   return [code, Order.ATOMIC];

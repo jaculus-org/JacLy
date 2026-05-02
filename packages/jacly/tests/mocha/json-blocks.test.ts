@@ -1,4 +1,4 @@
-import * as Blockly from 'blockly/core';
+import type * as Blockly from 'blockly/core';
 import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
 import * as chai from 'chai';
 import 'mocha';
