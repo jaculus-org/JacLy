@@ -215,6 +215,36 @@ describe('sanitizeWorkspaceState', () => {
     expect(ws.blocks.blocks[0].inputs?.VALUE?.shadow).to.equal(undefined);
   });
 
+  it('reports unsupported placeholders as missing original library blocks on each validation', async () => {
+    const json = {
+      blocks: {
+        languageVersion: 0,
+        blocks: [
+          {
+            type: 'unsupported_block',
+            id: '1',
+            fields: { ORIGINAL_TYPE: 'missing_motor_block' },
+            extraState: {
+              originalState: {
+                type: 'missing_motor_block',
+                id: 'orig-1',
+                extraState: { package: 'motor' },
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    let captured: Record<string, Set<string>> = {};
+    await sanitizeWorkspaceState(json, async (pkg) => {
+      captured = pkg;
+    });
+
+    expect(captured).to.have.property('motor');
+    expect(captured.motor.has('missing_motor_block')).to.equal(true);
+  });
+
   it('calls onMissingPackage with all missing packages', async () => {
     let captured: Record<string, Set<string>> = {};
     const json = {
@@ -464,6 +494,69 @@ describe('sanitizeWorkspaceState — reverse pass (restore)', () => {
     expect(wsRestored.blocks.blocks[0].id).to.equal('rt1');
     expect(restored.restoredTypes).to.include('roundtrip_block');
     expect(restored.replacedTypes).to.not.include('roundtrip_block');
+  });
+
+  it('rehydrates canonical nested defaults for restored registered blocks', async () => {
+    setupBlocks(['motor_constructor', 'motor_constructor_regparams', 'math_number']);
+
+    const json = {
+      blocks: {
+        languageVersion: 0,
+        blocks: [
+          {
+            type: 'unsupported_block',
+            fields: { ORIGINAL_TYPE: 'motor_constructor' },
+            extraState: {
+              originalState: {
+                type: 'motor_constructor',
+                id: 'motor-root',
+                x: 80,
+                y: 60,
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await sanitizeWorkspaceState(
+      json,
+      async () => {},
+      (type) => {
+        if (type === 'motor_constructor') {
+          return {
+            REG_PARAMS: {
+              block: {
+                type: 'motor_constructor_regparams',
+              },
+            },
+          };
+        }
+        if (type === 'motor_constructor_regparams') {
+          return {
+            REG: {
+              shadow: {
+                type: 'math_number',
+                fields: {
+                  NUM: 0,
+                },
+              },
+            },
+          };
+        }
+        return undefined;
+      },
+    );
+
+    const ws = result.state as any;
+    expect(ws.blocks.blocks[0].type).to.equal('motor_constructor');
+    expect(ws.blocks.blocks[0].inputs.REG_PARAMS.block.type).to.equal(
+      'motor_constructor_regparams',
+    );
+    expect(ws.blocks.blocks[0].inputs.REG_PARAMS.block.inputs.REG.shadow.type).to.equal(
+      'math_number',
+    );
+    expect(ws.blocks.blocks[0].inputs.REG_PARAMS.block.inputs.REG.shadow.fields.NUM).to.equal(0);
   });
 });
 

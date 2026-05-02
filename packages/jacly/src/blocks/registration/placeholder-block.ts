@@ -19,7 +19,7 @@ export function registerPlaceholderBlock(): void {
     init(this: PlaceholderBlock) {
       this.jsonInit({
         type: 'unsupported_block',
-        message0: 'This block is not supported anymore. Original type: %1',
+        message0: 'Unsupported block: %1',
         args0: [
           {
             type: 'field_label_serializable',
@@ -30,7 +30,7 @@ export function registerPlaceholderBlock(): void {
         previousStatement: null,
         nextStatement: null,
         colour: '#FF6B6B',
-        tooltip: 'This block came from a library that is not available.',
+        tooltip: 'Library is not installed or the block type is not supported anymore.',
       });
       this.setDisabledReason(true, 'placeholder');
     },

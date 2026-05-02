@@ -10,7 +10,7 @@ import {
   collectParsedBlockTypes,
   parseToolboxConfigs,
 } from '@/toolbox/loading/toolbox-processing';
-import type { EngineMissingPackages } from '@/workspace/validation/types';
+import type { EngineMissingPackages, InputState } from '@/workspace/validation/types';
 import {
   type SanitizationResult,
   sanitizeWorkspaceState,
@@ -131,6 +131,11 @@ export class JaclyEngine {
     json: object,
     onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>,
   ): Promise<SanitizationResult> {
-    return sanitizeWorkspaceState(json, onMissingPackage);
+    return sanitizeWorkspaceState(
+      json,
+      onMissingPackage,
+      (type) =>
+        this.state.blockInputs.get(type) as unknown as Record<string, InputState> | undefined,
+    );
   }
 }
