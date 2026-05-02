@@ -47,8 +47,9 @@ export function registerCodeGenerator(state: EngineState, block: JaclyBlock): vo
 
   jsg.forBlock[block.type] = (codeBlock: BlockExtended, generator: JavascriptGenerator) => {
     const codeTemplate = selectConditionalCode(state, block, codeBlock, generator);
+    const isOutputBlock = block.output !== undefined;
     if (!codeTemplate) {
-      return block.output ? ['', Order.NONE] : '';
+      return isOutputBlock ? ['', Order.NONE] : '';
     }
 
     let code = replacePlaceholders(state, codeTemplate, block.args0, codeBlock, generator);
@@ -60,7 +61,7 @@ export function registerCodeGenerator(state: EngineState, block: JaclyBlock): vo
       code = code.replace(/^\s*(?:const|let|var)\s+/, '');
     }
 
-    if (block.output) {
+    if (isOutputBlock) {
       return [code, Order.NONE];
     } else {
       if (!block.previousStatement) code += '\n';

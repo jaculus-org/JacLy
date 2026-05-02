@@ -68,9 +68,10 @@ describe('JSON blocks', () => {
       'Object.prototype.hasOwnProperty.call(store, "name")',
       Order.NONE,
     ]);
-    expect(jsg.forBlock.json_object_get_key({} as any, fakeGenerator as any)).to.equal(
-      '(store["name"])\n',
-    );
+    expect(jsg.forBlock.json_object_get_key({} as any, fakeGenerator as any)).to.deep.equal([
+      '(store["name"])',
+      Order.NONE,
+    ]);
     expect(jsg.forBlock.json_object_set_key({} as any, fakeGenerator as any)).to.equal(
       'store["name"] = payload;\n',
     );

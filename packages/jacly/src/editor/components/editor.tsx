@@ -2,7 +2,7 @@ import BlocklyWorkspace from '@kuband/react-blockly/dist/BlocklyWorkspace';
 import 'blockly/blocks';
 import type { JaclyBlocksData } from '@jaculus/project';
 import * as Blockly from 'blockly/core';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import {
   attachBlocklyEditorWorkspace,
@@ -12,7 +12,6 @@ import {
 import { getBlocklyTheme } from '@/editor/theme/theme';
 import type { Theme } from '@/editor/types/theme';
 import type { JaclyEngine } from '@/engine/engine';
-import { debounce } from '@/utils/debouncer';
 import type { EngineMissingPackages } from '@/workspace/validation/types';
 import { useBlocklyMessages } from '../hooks/use-blockly-messages';
 import { JaclyLoading } from './loading';
@@ -87,22 +86,6 @@ export function JaclyEditor({
     };
   }, [initialJson, engine, onMissingPackage, toolboxConfiguration]);
 
-  const debouncedGenerate = useMemo(
-    () =>
-      debounce((workspace: WorkspaceSvgExtended) => {
-        onGeneratedCode(engine.generateCode(workspace));
-      }, 300),
-    [engine, onGeneratedCode],
-  );
-
-  const debouncedJsonChange = useMemo(
-    () =>
-      debounce((json: object) => {
-        onJsonChange(json);
-      }, 300),
-    [onJsonChange],
-  );
-
   const handleWorkspaceChange = useCallback(
     (workspace: WorkspaceSvgExtended) => {
       workspaceRef.current = workspace;
@@ -111,9 +94,9 @@ export function JaclyEditor({
       }
       engine.attachToWorkspace(workspace);
       attachBlocklyEditorWorkspace(workspace);
-      debouncedGenerate(workspace);
+      onGeneratedCode(engine.generateCode(workspace));
     },
-    [engine, debouncedGenerate],
+    [engine, onGeneratedCode],
   );
 
   const handleWorkspaceDispose = useCallback(
@@ -184,7 +167,7 @@ export function JaclyEditor({
       initialJson={sanitizedJson}
       className="h-full w-full"
       onWorkspaceChange={handleWorkspaceChange}
-      onJsonChange={debouncedJsonChange}
+      onJsonChange={onJsonChange}
       onDispose={handleWorkspaceDispose}
     />
   );
