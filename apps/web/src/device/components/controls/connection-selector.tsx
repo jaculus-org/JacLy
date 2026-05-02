@@ -2,6 +2,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { useConsole } from '@/console';
 import { m } from '@/core/paraglide/messages';
+import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
@@ -75,6 +76,7 @@ export function ConnectionSelector() {
         controlPanel('wokwi', 'expand');
 
         setTimeout(async () => {
+          await jaclySaveCoordinator.flushPendingWrites();
           await uploadCode(await jacProject!.getFlashFiles(), dev);
         }, 10_000);
       } else {

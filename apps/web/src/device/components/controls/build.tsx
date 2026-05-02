@@ -2,6 +2,7 @@ import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 import { m } from '@/core/paraglide/messages';
+import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
@@ -10,7 +11,7 @@ import { useJacDevice } from '../../state/device-context';
 
 export function Build() {
   const {
-    state: { projectPath, fs, monacoService },
+    state: { projectPath, fs },
   } = useActiveProject();
   const { actions } = useProjectEditor();
   const { controlPanel } = actions;
@@ -25,12 +26,12 @@ export function Build() {
   async function handleBuild() {
     setIsBuilding(true);
     try {
+      await jaclySaveCoordinator.flushPendingWrites();
       const bundle = await jacProject!.getFlashFiles();
       console.log(`Files to flash: ${Object.keys(bundle.files).length}`);
       for (const [filePath, content] of Object.entries(bundle.files)) {
         console.log(`File: ${filePath}, Content: ${content.toString()}`);
       }
-      await monacoService?.flush();
       if (!(await compileProject(projectPath, fs))) {
         enqueueSnackbar(m.device_build_compile_failed(), { variant: 'error' });
         return;

@@ -13,6 +13,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
+import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
 import { useActiveProject } from '@/project';
 import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
 import { restart, uploadCode } from '../services/device-operations';
@@ -51,6 +52,7 @@ export function JacDeviceProvider({ children }: JacDeviceProviderProps) {
 
   useKeyboardShortcut({ key: 'u', ctrl: true, meta: true }, async () => {
     if (!device) return;
+    await jaclySaveCoordinator.flushPendingWrites();
     await uploadCode(await jacProject!.getFlashFiles(), device);
     enqueueSnackbar(m.jac_device_provider_upload_code(), {
       variant: 'success',

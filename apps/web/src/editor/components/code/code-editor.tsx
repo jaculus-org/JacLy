@@ -1,3 +1,4 @@
+import { JaclyFiles } from '@/project/types/jacly-files';
 import { CodeEditorRead } from './code-editor-read';
 import { CodeEditorRW } from './code-editor-rw';
 
@@ -9,11 +10,9 @@ interface CodeEditorProps {
 }
 
 export function CodeEditor({ filePath, readOnly = false }: CodeEditorProps) {
-  // const readonlyPrefixes = ['build/', 'node_modules/'];
-  // const readonlySuffixes = ['.jacly'];
-  const isReadOnly = readOnly; // ||
-  // readonlyPrefixes.some((prefix) => filePath.startsWith(prefix)) ||
-  // readonlySuffixes.some((suffix) => filePath.endsWith(suffix));
+  const isManagedJaclyFile =
+    filePath === JaclyFiles.JACLY_INDEX || filePath === JaclyFiles.GENERATED_CODE;
+  const isReadOnly = readOnly || isManagedJaclyFile;
 
   if (isReadOnly) {
     return <CodeEditorRead filePath={filePath} />;

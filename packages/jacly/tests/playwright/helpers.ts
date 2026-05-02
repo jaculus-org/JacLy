@@ -206,6 +206,36 @@ export async function dragToolboxBlockToInput(
   );
 }
 
+export async function dragWorkspaceBlockToInput(
+  page: Page,
+  act: Act,
+  blockId: string,
+  targetBlockId: string,
+  inputName: string,
+) {
+  const source = await getBlockGeometry(page, { workspace: 'main', id: blockId });
+  const target = await getBlockGeometry(page, { workspace: 'main', id: targetBlockId });
+  const sourceAnchor = source.connections.output;
+  const targetAnchor = target.connections.inputs[inputName];
+  if (!sourceAnchor) {
+    throw new Error(`Workspace block "${blockId}" has no output connection`);
+  }
+  if (!targetAnchor) {
+    throw new Error(
+      `Workspace block "${targetBlockId}" has no input connection named "${inputName}"`,
+    );
+  }
+
+  const delta = offsetPoint(source.center, sourceAnchor);
+  await dragViaMouse(
+    page,
+    act,
+    source.center,
+    getDragLiftPoint(source),
+    addPoints(targetAnchor, delta),
+  );
+}
+
 export async function expectBlockCount(page: Page, count: number) {
   await expect
     .poll(async () => {
@@ -219,6 +249,32 @@ export async function expectBlockCount(page: Page, count: number) {
       });
     })
     .toBe(count);
+}
+
+export async function getBlockIdsByType(page: Page, blockType: string): Promise<string[]> {
+  return await page.evaluate((type) => {
+    const testApi = (
+      window as typeof window & {
+        __jaclyTest: { getBlockIdsByType: (blockType: string) => string[] };
+      }
+    ).__jaclyTest;
+    return testApi.getBlockIdsByType(type);
+  }, blockType);
+}
+
+export async function clickBlockField(page: Page, act: Act, blockId: string, fieldName: string) {
+  const [x, y] = await page.evaluate(
+    ({ id, field }) => {
+      const testApi = (
+        window as typeof window & {
+          __jaclyTest: { getFieldCenter: (blockId: string, fieldName: string) => [number, number] };
+        }
+      ).__jaclyTest;
+      return testApi.getFieldCenter(id, field);
+    },
+    { id: blockId, field: fieldName },
+  );
+  await act(page.mouse.click(x, y));
 }
 
 export async function getTopBlockTypes(page: Page) {

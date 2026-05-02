@@ -4,3 +4,4 @@ import './blockly-overrides/loops';
 import './angle';
 import './slider';
 import './blockly-overrides/procedures';
+import './json-object';

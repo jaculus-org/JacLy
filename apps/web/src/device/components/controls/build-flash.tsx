@@ -2,6 +2,7 @@ import { SquareArrowRightIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 import { m } from '@/core/paraglide/messages';
+import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { compileProject } from '../../services/compilation';
@@ -10,7 +11,7 @@ import { useJacDevice } from '../../state/device-context';
 
 export function BuildFlash() {
   const {
-    state: { projectPath, fs, monacoService },
+    state: { projectPath, fs },
   } = useActiveProject();
   const {
     actions: { controlPanel },
@@ -27,8 +28,8 @@ export function BuildFlash() {
     }
 
     try {
+      await jaclySaveCoordinator.flushPendingWrites();
       if (pkg?.jaculus?.projectType === 'code') {
-        await monacoService?.flush();
         if (!(await compileProject(projectPath, fs))) {
           enqueueSnackbar(m.device_build_compile_failed(), {
             variant: 'error',
