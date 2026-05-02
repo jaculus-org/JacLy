@@ -249,6 +249,138 @@ Labels support the `%KEY%` syntax for translations (see [Translating Labels](#tr
 }
 ```
 
+## Examples Section (`examples`)
+
+You can define example block chains that appear in the category panel under a collapsible **▶ Examples (N)** button. The section is collapsed by default; clicking it expands to show the example blocks.
+
+```json
+{
+  "category": "gpio",
+  "name": "%T%",
+  "examples": [
+    { "kind": "label", "text": "%EXAMPLE_WRITE%" },
+    {
+      "kind": "block",
+      "type": "gpio_pinMode",
+      "next": {
+        "block": { "type": "gpio_write" }
+      }
+    },
+    { "kind": "label", "text": "%EXAMPLE_READ%" },
+    {
+      "kind": "block",
+      "type": "gpio_pinMode",
+      "fields": { "MODE": "gpio.PinMode.INPUT" },
+      "next": {
+        "block": {
+          "type": "basic_console_log",
+          "inputs": {
+            "TEXT": { "block": { "type": "gpio_read" } }
+          }
+        }
+      }
+    }
+  ],
+  "contents": [ ... ]
+}
+```
+
+- `examples` accepts the same item types as `contents`: `block`, `label`, `separator`
+- Each block in `examples` gets its registered shadow inputs merged in automatically (same as toolbox blocks)
+- Use `fields` to override dropdown/text field defaults; use `inputs` to pre-connect value blocks
+- Block types referenced in `examples` must be defined in `contents` of the same or any other loaded file
+- The toggle button shows the count of example chains: `▶ Examples (2)`
+
+---
+
+## Pre-Chained Toolbox Blocks (`next`)
+
+When dragging a block from the toolbox, you can have it arrive with one or more blocks already attached below it. Use the `next` property on a toolbox block item:
+
+```json
+{
+  "kind": "block",
+  "type": "i2c_constructor",
+  "next": {
+    "block": {
+      "type": "vl53l0x_constructor"
+    }
+  }
+}
+```
+
+When the user drags `i2c_constructor` from the toolbox, a `vl53l0x_constructor` will be pre-attached below it.
+
+Chains can be arbitrarily deep:
+
+```json
+{
+  "kind": "block",
+  "type": "ledc_configureTimer",
+  "next": {
+    "block": {
+      "type": "motor_constructor",
+      "next": {
+        "block": {
+          "type": "motor_setSpeed"
+        }
+      }
+    }
+  }
+}
+```
+
+You can also pre-fill field values on the chained block:
+
+```json
+{
+  "kind": "block",
+  "type": "i2c_constructor",
+  "next": {
+    "block": {
+      "type": "vl53l0x_constructor",
+      "fields": {
+        "CONSTRUCTED_VAR_NAME": "vl53l0x_?"
+      }
+    }
+  }
+}
+```
+
+> **Important:** The block types referenced in `next.block` **must be defined** as top-level entries in the same or another `contents` array. `next.block` is a reference — it only accepts `type`, `fields`, `inputs`, and nested `next`. Full block definitions (with `message0`, `args0`, `code`, etc.) must be at the top level where `registerFullBlocks` can find and register them. Blocks that are only ever used as chained items should be marked `"hideInToolbox": true`.
+
+Example — full pattern (vl53l0x requires an I2C bus):
+
+```json
+{
+  "contents": [
+    {
+      "kind": "block",
+      "type": "i2c_constructor",
+      "next": {
+        "block": { "type": "vl53l0x_constructor" }
+      }
+    },
+    {
+      "kind": "block",
+      "type": "vl53l0x_constructor",
+      "message0": "%T%",
+      "args0": [
+        { "type": "field_input", "name": "CONSTRUCTED_VAR_NAME", "text": "vl53l0x_?" },
+        { "type": "field_dropdown", "name": "I2C_INSTANCE", "instanceof": "i2c_inst" }
+      ],
+      "constructs": "vl53l0x",
+      "hideInToolbox": true,
+      "code": "let $[CONSTRUCTED_VAR_NAME] = new VL53L0X($[I2C_INSTANCE]);",
+      "previousStatement": null,
+      "nextStatement": null
+    }
+  ]
+}
+```
+
+---
+
 ## Usage-Only Block References
 
 You can include blocks from other categories in your toolbox without redefining them. Just reference them by type:

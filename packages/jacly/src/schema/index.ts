@@ -11,7 +11,6 @@ const BlocklyColour = z.union([
   z.string().regex(/^(?:[0-9]|[1-9]\d|[12]\d{2}|3[0-5]\d|360)$/, 'must be 0–360 hue string'),
 ]);
 
-// const DefaultType = z.enum(['Number', 'String', 'Boolean', 'Array', 'Object']);
 const ArgsCheck = z.union([z.string().optional(), z.array(z.string())]);
 
 const ArgOptions = z.array(z.tuple([z.string(), z.string()])).optional();
@@ -20,6 +19,7 @@ export interface InputNode {
   type: string;
   fields?: Record<string, unknown>;
   inputs?: Record<string, { shadow?: InputNode; block?: InputNode }>;
+  next?: { shadow?: InputNode; block?: InputNode };
 }
 
 // Forward declaration for recursive shadow/block definitions
@@ -36,6 +36,12 @@ const InputShadowSchema: z.ZodType<InputNode> = z.lazy(() =>
         }),
       )
       .optional(),
+    next: z
+      .object({
+        shadow: InputShadowSchema.optional(),
+        block: InputBlockSchema.optional(),
+      })
+      .optional(),
   }),
 );
 
@@ -51,6 +57,12 @@ const InputBlockSchema: z.ZodType<InputNode> = z.lazy(() =>
           block: InputBlockSchema.optional(),
         }),
       )
+      .optional(),
+    next: z
+      .object({
+        shadow: InputShadowSchema.optional(),
+        block: InputBlockSchema.optional(),
+      })
       .optional(),
   }),
 );
@@ -205,6 +217,7 @@ const JaclyBlockKindBlock = z
   .object({
     kind: z.literal('block'),
     type: Identifier.nonempty('type is required'),
+    fields: z.record(Variable, z.unknown()).optional(),
     message0: z.string().optional(),
     args0: z.array(JaclyArgs).optional(),
     tooltip: z.string().optional(),
@@ -215,6 +228,12 @@ const JaclyBlockKindBlock = z
     output: z.union([z.string(), z.null()]).optional(),
     previousStatement: z.union([z.string(), z.null()]).optional(),
     nextStatement: z.union([z.string(), z.null()]).optional(),
+    next: z
+      .object({
+        block: InputBlockSchema.optional(),
+        shadow: InputShadowSchema.optional(),
+      })
+      .optional(),
     inputs: ToolboxInputsSchema.optional(),
     inputsInline: z.boolean().optional(),
     mutator: z.string().optional(),
@@ -297,6 +316,7 @@ export const JaclyConfigSchema = z.object({
   priorityCategory: z.number().optional(),
 
   contents: z.array(JaclyBlockSchema).optional(),
+  examples: z.array(JaclyBlockSchema).optional(),
 });
 
 export type JaclyConfig = z.infer<typeof JaclyConfigSchema>;

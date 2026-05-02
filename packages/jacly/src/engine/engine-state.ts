@@ -1,6 +1,7 @@
 import type * as Blockly from 'blockly/core';
 import type { InstanceTracker } from '@/blocks/instances/instance-tracker';
 import type { JaclyBlockKindBlock } from '@/schema';
+import type { ToolboxItemInfoSort } from '@/toolbox/types';
 
 export interface VirtualInstanceDef {
   instanceof: string;
@@ -17,6 +18,9 @@ export interface EngineState {
   virtualDefsByProviderBlockType: Map<string, VirtualInstanceDef[]>;
   instanceTrackers: WeakMap<Blockly.Workspace, InstanceTracker>;
   docsCallbacks: Map<string, string>;
+  expandedExamples: Set<string>;
+  categoryExamplesItems: Map<string, ToolboxItemInfoSort[]>;
+  flatCategoryItems: ToolboxItemInfoSort[];
 }
 
 function resetEngineStateCollections(state: EngineState): void {
@@ -28,6 +32,9 @@ function resetEngineStateCollections(state: EngineState): void {
   state.virtualDefsByProviderBlockType.clear();
   state.instanceTrackers = new WeakMap();
   state.docsCallbacks.clear();
+  state.expandedExamples.clear();
+  state.categoryExamplesItems.clear();
+  state.flatCategoryItems.length = 0;
 }
 
 export function createEngineState(): EngineState {
@@ -40,6 +47,9 @@ export function createEngineState(): EngineState {
     virtualDefsByProviderBlockType: new Map(),
     instanceTrackers: new WeakMap(),
     docsCallbacks: new Map(),
+    expandedExamples: new Set(),
+    categoryExamplesItems: new Map(),
+    flatCategoryItems: [],
   };
 }
 

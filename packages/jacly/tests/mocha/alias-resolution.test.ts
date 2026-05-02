@@ -388,3 +388,202 @@ describe('toolbox processing purity', () => {
     expect(contents.filter((item) => item.type === 'visible_block')).to.have.length(1);
   });
 });
+
+describe('next chain enrichment', () => {
+  it('merges registered inputs into a block referenced in next.block', () => {
+    const state = createEngineState();
+    state.blockInputs.set('chain_step_a', {
+      VAL: { shadow: { type: 'math_number', fields: { NUM: 7 } } },
+    });
+
+    const config: any = {
+      fileKey: 'chain.jacly.json',
+      config: {
+        category: 'chain_cat',
+        name: 'Chain',
+        colour: '#aabbcc',
+        contents: [
+          {
+            kind: 'block',
+            type: 'chain_step_a',
+            message0: 'step a $[VAL]',
+            args0: [
+              {
+                type: 'input_value',
+                name: 'VAL',
+                shadow: { type: 'math_number', fields: { NUM: 7 } },
+              },
+            ],
+            code: '$[VAL]',
+            previousStatement: null,
+            nextStatement: null,
+          },
+          {
+            kind: 'block',
+            type: 'chain_start',
+            message0: 'start',
+            args0: [],
+            code: 'start();',
+            previousStatement: null,
+            nextStatement: null,
+            next: { block: { type: 'chain_step_a' } },
+          },
+        ],
+      },
+    };
+
+    registerParsedToolboxBlocks(state, [config]);
+    const prepared = prepareToolboxConfig(state, config);
+    const chainStart = (prepared.contents as any[]).find((b) => b.type === 'chain_start');
+    expect(chainStart.next?.block?.inputs?.VAL?.shadow?.fields?.NUM).to.equal(7);
+  });
+
+  it('merges deep next chain enrichment with user overrides respected', () => {
+    const state = createEngineState();
+    state.blockInputs.set('deep_b', {
+      X: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
+    });
+    state.blockInputs.set('deep_c', {
+      Y: { shadow: { type: 'math_number', fields: { NUM: 20 } } },
+      Z: { shadow: { type: 'math_number', fields: { NUM: 30 } } },
+    });
+
+    const config: any = {
+      fileKey: 'deep.jacly.json',
+      config: {
+        category: 'deep_cat',
+        name: 'Deep',
+        colour: '#112233',
+        contents: [
+          {
+            kind: 'block',
+            type: 'deep_b',
+            message0: 'b $[X]',
+            args0: [
+              {
+                type: 'input_value',
+                name: 'X',
+                shadow: { type: 'math_number', fields: { NUM: 10 } },
+              },
+            ],
+            code: 'b($[X])',
+            previousStatement: null,
+            nextStatement: null,
+          },
+          {
+            kind: 'block',
+            type: 'deep_c',
+            message0: 'c $[Y] $[Z]',
+            args0: [
+              {
+                type: 'input_value',
+                name: 'Y',
+                shadow: { type: 'math_number', fields: { NUM: 20 } },
+              },
+              {
+                type: 'input_value',
+                name: 'Z',
+                shadow: { type: 'math_number', fields: { NUM: 30 } },
+              },
+            ],
+            code: 'c($[Y], $[Z])',
+            previousStatement: null,
+            nextStatement: null,
+          },
+          {
+            kind: 'block',
+            type: 'deep_start',
+            message0: 'start',
+            args0: [],
+            code: 'start();',
+            previousStatement: null,
+            nextStatement: null,
+            next: {
+              block: {
+                type: 'deep_b',
+                next: {
+                  block: {
+                    type: 'deep_c',
+                    inputs: {
+                      Z: { shadow: { type: 'math_number', fields: { NUM: 99 } } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    registerParsedToolboxBlocks(state, [config]);
+    const prepared = prepareToolboxConfig(state, config);
+    const start = (prepared.contents as any[]).find((b) => b.type === 'deep_start');
+
+    // deep_b gets its default X
+    expect(start.next?.block?.inputs?.X?.shadow?.fields?.NUM).to.equal(10);
+    // deep_c gets default Y
+    expect(start.next?.block?.next?.block?.inputs?.Y?.shadow?.fields?.NUM).to.equal(20);
+    // deep_c's Z is overridden by user
+    expect(start.next?.block?.next?.block?.inputs?.Z?.shadow?.fields?.NUM).to.equal(99);
+  });
+
+  it('enriches next.block from a usage-only alias block', () => {
+    const state = createEngineState();
+
+    const result = loadToolboxConfiguration(state, {
+      blockFiles: {
+        'definer.jacly.json': {
+          category: 'definer',
+          name: 'Definer',
+          colour: '#aaaaaa',
+          contents: [
+            {
+              kind: 'block',
+              type: 'step_block_nx',
+              message0: 'step $[VAL]',
+              args0: [
+                {
+                  type: 'input_value',
+                  name: 'VAL',
+                  shadow: { type: 'math_number', fields: { NUM: 5 } },
+                },
+              ],
+              code: 'step($[VAL])',
+              previousStatement: null,
+              nextStatement: null,
+            },
+          ],
+        },
+        'user.jacly.json': {
+          category: 'user_cat',
+          name: 'User',
+          colour: '#bbbbbb',
+          contents: [
+            {
+              kind: 'block',
+              type: 'entry_block_nx',
+              message0: 'entry',
+              args0: [],
+              code: 'entry();',
+              previousStatement: null,
+              nextStatement: null,
+            },
+            {
+              kind: 'block',
+              type: 'entry_block_nx',
+              next: { block: { type: 'step_block_nx' } },
+            },
+          ],
+        },
+      },
+    } as any);
+
+    const userCat = (result.contents as any[]).find((c: any) => c.category === 'user_cat');
+    const entryWithNext = (userCat?.contents as any[])?.find(
+      (b: any) => b.kind === 'block' && b.type === 'entry_block_nx' && b.next,
+    );
+    expect(entryWithNext).to.not.equal(undefined, 'alias block with next not found');
+    expect(entryWithNext.next?.block?.inputs?.VAL?.shadow?.fields?.NUM).to.equal(5);
+  });
+});

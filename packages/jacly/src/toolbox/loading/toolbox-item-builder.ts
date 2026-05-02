@@ -11,7 +11,7 @@ function expandLabel(
   return lines.map((line) => ({ ...item, text: line }));
 }
 
-function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
+export function expandLabels(contents: JaclyBlock[]): JaclyBlock[] {
   const result: JaclyBlock[] = [];
   for (const item of contents) {
     if (item.kind === 'label') {

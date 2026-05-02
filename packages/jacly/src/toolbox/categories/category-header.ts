@@ -1,6 +1,7 @@
 import type * as Blockly from 'blockly/core';
 import type { JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
+import { examplesCallbackKey, registerExamplesCallbacks } from './examples-toggle';
 
 type FlyoutItem = Blockly.utils.toolbox.ToolboxItemInfo & {
   'web-class'?: string;
@@ -39,6 +40,18 @@ function includeHeader(config: JaclyConfig, header: FlyoutItem[], state: EngineS
     });
   }
 
+  const examplesItems = state.categoryExamplesItems.get(config.category);
+  if (examplesItems && examplesItems.length > 0) {
+    const blockCount = examplesItems.filter((e) => (e as any).kind === 'block').length;
+    const isExpanded = state.expandedExamples.has(config.category);
+    header.push({
+      kind: 'button',
+      text: isExpanded ? '▼ Examples' : `▶ Examples (${blockCount})`,
+      callbackkey: examplesCallbackKey(config.category),
+      'web-class': 'jacly-flyout-examples-btn',
+    });
+  }
+
   header.push({ kind: 'sep', gap: '24' } as FlyoutItem);
 }
 
@@ -58,4 +71,5 @@ export function registerDocsCallbacks(state: EngineState, workspace: Blockly.Wor
       window.open(docsUrl, '_blank', 'noopener,noreferrer');
     });
   }
+  registerExamplesCallbacks(state, workspace);
 }

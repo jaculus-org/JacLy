@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { enrichBlockInputs } from '@/blocks/aliases/enrich-block-inputs';
 import { registerAllBlockImports } from '@/blocks/imports/block-imports';
 import { type JaclyConfig, JaclyConfigSchema } from '@/schema';
-import { buildCategoryHierarchy } from '@/toolbox/categories/category-hierarchy';
 import {
   JaclyBlockLoadError,
   JaclyBlockParseError,
@@ -14,9 +13,10 @@ import { localizeJaclyConfig, registerTranslations } from '@/toolbox/translation
 import type { ToolboxItemInfoSort } from '@/toolbox/types';
 import { clonePlainData } from '@/utils/clone-plain-data';
 import type { EngineState } from '../../engine/engine-state';
-import { resolveAliases } from './alias-resolution';
+import { rebuildToolboxWithExamples } from '../categories/examples-toggle';
+import { resolveAliases, resolveExamplesAliases } from './alias-resolution';
 import { registerFullBlocks } from './block-registration-pass';
-import { buildToolboxItem, parseToolboxCustomBlock } from './toolbox-item-builder';
+import { buildToolboxItem, expandLabels, parseToolboxCustomBlock } from './toolbox-item-builder';
 
 export interface ParsedToolboxConfig {
   fileKey: string;
@@ -55,6 +55,9 @@ export function registerParsedToolboxBlocks(
     if (config.contents) {
       registerFullBlocks(state, config);
     }
+    if (config.examples) {
+      registerFullBlocks(state, { ...config, contents: config.examples });
+    }
   }
 }
 
@@ -62,9 +65,11 @@ export function collectParsedBlockTypes(parsedConfigs: ParsedToolboxConfig[]): S
   const blockTypes = new Set<string>();
 
   for (const { config } of parsedConfigs) {
-    if (!config.contents) continue;
-    for (const item of config.contents) {
-      if (item.kind === 'block') blockTypes.add(item.type);
+    for (const items of [config.contents, config.examples]) {
+      if (!items) continue;
+      for (const item of items) {
+        if (item.kind === 'block') blockTypes.add(item.type);
+      }
     }
   }
 
@@ -95,6 +100,17 @@ export function prepareToolboxConfig(
       }
     }
 
+    if (config.examples) {
+      resolveExamplesAliases(state, fileKey, config);
+      for (const item of config.examples) {
+        if (item.kind === 'block') enrichBlockInputs(state, item);
+      }
+      state.categoryExamplesItems.set(
+        config.category,
+        expandLabels(config.examples) as ToolboxItemInfoSort[],
+      );
+    }
+
     return config;
   } catch (error) {
     if (error instanceof JaclyBlockLoadError || error instanceof JaclyInvalidConfigError) {
@@ -119,8 +135,8 @@ export function buildToolboxFromParsedConfigs(
     toolboxContent.push(toolboxItem);
   }
 
-  return {
-    kind: 'categoryToolbox',
-    contents: buildCategoryHierarchy(toolboxContent),
-  };
+  // Store shallow copies before rebuildToolboxWithExamples mutates them via hierarchy
+  state.flatCategoryItems = toolboxContent.map((item) => ({ ...item }));
+
+  return rebuildToolboxWithExamples(state, toolboxContent);
 }
