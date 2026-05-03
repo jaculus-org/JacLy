@@ -18,6 +18,11 @@ const typeIcons = {
   code: Code2Icon,
 };
 
+const typeIconClassNames = {
+  jacly: 'text-project-jacly',
+  code: 'text-project-code',
+};
+
 export function HomeTemplateGroup({
   type,
   title,
@@ -26,6 +31,7 @@ export function HomeTemplateGroup({
   templatesAvailable,
 }: HomeTemplateGroupProps) {
   const Icon = typeIcons[type];
+  const iconClassName = typeIconClassNames[type];
 
   return (
     <Card className="border border-border bg-card shadow-[0_20px_48px_-36px_rgba(15,23,42,0.1)] ring-0 backdrop-blur dark:shadow-[0_22px_50px_-38px_rgba(0,0,0,0.5)]">
@@ -33,7 +39,7 @@ export function HomeTemplateGroup({
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
             <Badge variant="outline" className="border-border bg-card text-muted-foreground">
-              <Icon className="size-3.5" />
+              <Icon className={`size-3.5 ${iconClassName}`} />
               {type === 'jacly' ? m.index_template_group_blocks() : m.index_template_group_code()}
             </Badge>
             <div>

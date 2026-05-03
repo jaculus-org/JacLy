@@ -39,6 +39,10 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-project-jacly: var(--project-jacly);
+  --color-project-jacly-background: var(--project-jacly-background);
+  --color-project-code: var(--project-code);
+  --color-project-code-background: var(--project-code-background);
 }
 
 :root {
@@ -86,6 +90,11 @@
   --sidebar-accent-foreground: oklch(0.22 0.04 252);
   --sidebar-border: oklch(0.8 0.035 245);
   --sidebar-ring: oklch(0.64 0.16 245);
+
+  --project-jacly: var(--primary);
+  --project-jacly-background: color-mix(in oklab, var(--primary) 10%, transparent);
+  --project-code: color-mix(in oklab, var(--chart-2) 70%, var(--foreground) 30%);
+  --project-code-background: color-mix(in oklab, var(--chart-2) 18%, transparent);
 }
 
 [data-theme="dark"] {
@@ -131,6 +140,11 @@
   --sidebar-accent-foreground: oklch(0.93 0.02 250);
   --sidebar-border: oklch(0.4 0.072 257);
   --sidebar-ring: oklch(0.65 0.16 245);
+
+  --project-jacly: var(--primary);
+  --project-jacly-background: color-mix(in oklab, var(--primary) 10%, transparent);
+  --project-code: color-mix(in oklab, var(--chart-2) 78%, white 22%);
+  --project-code-background: color-mix(in oklab, var(--chart-2) 18%, transparent);
 }
 
 @layer base {

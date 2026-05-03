@@ -17,8 +17,14 @@ const projectTypeIcons = {
   code: Code,
 };
 
+const projectTypeIconClassNames = {
+  jacly: 'text-project-jacly',
+  code: 'text-project-code',
+};
+
 export function ProjectBlock({ project, action, className }: ProjectBlockProps) {
   const Icon = projectTypeIcons[project.type];
+  const iconClassName = projectTypeIconClassNames[project.type];
 
   return (
     <Card
@@ -38,7 +44,7 @@ export function ProjectBlock({ project, action, className }: ProjectBlockProps) 
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <CardTitle className="flex items-center gap-3 truncate text-lg text-foreground">
-              <Icon className="size-5 shrink-0" />
+              <Icon className={`size-5 shrink-0 ${iconClassName}`} />
               <span className="truncate">{project.name}</span>
             </CardTitle>
           </div>
@@ -58,7 +64,7 @@ export function ProjectBlock({ project, action, className }: ProjectBlockProps) 
             variant="outline"
             className="h-8 gap-1.5 rounded-full border-border bg-card px-3 text-sm font-medium text-muted-foreground"
           >
-            <Icon className="size-4" />
+            <Icon className={`size-4 ${iconClassName}`} />
             {project.type === 'jacly'
               ? m.index_template_group_blocks()
               : m.index_template_group_code()}

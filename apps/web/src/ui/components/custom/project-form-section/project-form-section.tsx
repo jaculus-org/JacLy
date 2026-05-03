@@ -27,7 +27,7 @@ export function ProjectFormSection({
         className,
       )}
     >
-      <CardHeader className="gap-1.5 pb-4">
+      <CardHeader className="gap-1.5 pb-0.5">
         <CardTitle className="text-lg font-semibold tracking-tight text-foreground">
           {title}
         </CardTitle>

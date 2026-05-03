@@ -54,14 +54,14 @@ function NewProject() {
         title: m.project_new_blocks_title(),
         description: m.project_new_blocks_desc(),
         icon: BlocksIcon,
-        color: 'sky',
+        iconClassName: 'bg-project-jacly-background text-project-jacly',
       },
       {
         type: 'code' as JaculusProjectType,
         title: m.project_new_code_title(),
         description: m.project_new_code_desc(),
         icon: Code2Icon,
-        color: 'emerald',
+        iconClassName: 'bg-project-code-background text-project-code',
       },
     ],
     [],
@@ -203,13 +203,7 @@ function NewProject() {
                   </span>
                 )}
                 <div className="flex items-start gap-3 pr-8">
-                  <div
-                    className={`shrink-0 rounded-xl p-2.5 ${
-                      option.color === 'sky'
-                        ? 'bg-primary/10 text-primary'
-                        : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                    }`}
-                  >
+                  <div className={`shrink-0 rounded-xl p-2.5 ${option.iconClassName}`}>
                     <Icon className="size-5" />
                   </div>
                   <div className="min-w-0">

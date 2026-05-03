@@ -1,9 +1,19 @@
 'use client';
 
 import type fs from 'node:fs';
-import { Blocks, File, FileAudio, FileCode, FileImage, FileText, FileVideo } from 'lucide-react';
+import { File, FileAudio, FileCode, FileImage, FileText, FileVideo } from 'lucide-react';
 import { createElement } from 'react';
 import type { FileSystemItem } from '../types';
+
+function createJaclyIcon() {
+  return createElement('img', {
+    src: '/favicon/favicon.svg',
+    alt: '',
+    width: 16,
+    height: 16,
+    className: 'size-4 shrink-0',
+  });
+}
 
 export async function buildFileTree(
   fsp: typeof fs.promises,
@@ -51,7 +61,6 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
   if (isDirectory) return null;
 
   const ext = fileName.split('.').pop()?.toLowerCase();
-  const doubleExts = fileName.toLowerCase().split('.').slice(-2).join('.');
   const iconProps = { size: 16, className: 'text-blue-400' };
 
   switch (ext) {
@@ -67,7 +76,7 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
     case 'c':
       return createElement(FileCode, {
         ...iconProps,
-        className: 'text-yellow-400',
+        className: 'text-project-code',
       });
     case 'txt':
     case 'md':
@@ -75,12 +84,6 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
     case 'xml':
     case 'html':
     case 'css':
-      if (doubleExts === 'jacly.json') {
-        return createElement(Blocks, {
-          ...iconProps,
-          className: 'text-orange-400',
-        });
-      }
       return createElement(FileText, {
         ...iconProps,
         className: 'text-green-400',
@@ -109,10 +112,7 @@ export function getFileIcon(fileName: string, isDirectory: boolean) {
         className: 'text-pink-400',
       });
     case 'jacly':
-      return createElement(Blocks, {
-        ...iconProps,
-        className: 'text-orange-400',
-      });
+      return createJaclyIcon();
     default:
       return createElement(File, iconProps);
   }
