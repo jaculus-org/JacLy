@@ -142,7 +142,7 @@
   background-color: var(--color-splitter-drag);
 }
 .flexlayout__splitter_handle {
-  background-color: #ccc;
+  background-color: var(--color-border);
   border-radius: 3px;
 }
 .flexlayout__splitter_handle_horz {

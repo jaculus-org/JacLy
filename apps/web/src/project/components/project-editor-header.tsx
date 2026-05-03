@@ -14,7 +14,7 @@ export function ProjectEditorHeader() {
     state: { dbProject },
   } = useActiveProject();
   return (
-    <header className="relative backdrop-blur-sm bg-white border-b border-blue-100 dark:bg-slate-800 dark:border-slate-700">
+    <header className="relative backdrop-blur-sm bg-card border-b border-border">
       <div className="max-w-full">
         <div className="flex justify-between items-center py-1 px-1 pl-3">
           {/* Navigation */}
@@ -23,7 +23,7 @@ export function ProjectEditorHeader() {
               <TooltipTrigger asChild>
                 <Link
                   to={'/project'}
-                  className="group font-medium text-blue-900 no-underline transition-colors duration-300 ease-in-out hover:text-blue-500 dark:text-slate-100 dark:hover:text-blue-500"
+                  className="group font-medium text-foreground no-underline transition-colors duration-300 ease-in-out hover:text-primary"
                 >
                   <img
                     src="/favicon/favicon.svg"
