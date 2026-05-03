@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { buildInfoPlugin } from './src/app/vite/vite-plugin-build-info';
+import { docsPlugin } from './src/app/vite/vite-plugin-docs';
 import { githubPagesSetup } from './src/app/vite/vite-plugin-github-pages-setup';
 
 const routePrefix = process.env.VITE_ROUTE_PREFIX || '';
@@ -66,6 +67,7 @@ export default defineConfig({
     // }),
     githubPagesSetup(),
     buildInfoPlugin(),
+    docsPlugin(),
     nodePolyfills(),
   ],
   resolve: {

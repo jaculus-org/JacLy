@@ -5,7 +5,10 @@ import { ThemeToggle } from '@/core/components/theme';
 import { m } from '@/core/paraglide/messages';
 
 export function GeneralHeader() {
-  const links = [{ name: m.nav_projects(), path: '/project/' }];
+  const links = [
+    { name: m.nav_projects(), path: '/project/' },
+    { name: m.nav_docs(), path: '/docs/' },
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur-md">
