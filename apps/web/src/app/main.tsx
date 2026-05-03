@@ -9,6 +9,15 @@ import '@/app/index.css';
 import Hotjar from '@hotjar/browser';
 import * as Sentry from '@sentry/react';
 
+function openLinksInNewTab() {
+  Array.from(document.getElementsByTagName('a')).forEach((link) => {
+    if (link.getAttribute('href') && link.hostname !== location.hostname) {
+      link.target = '_blank';
+      link.rel = 'noopener';
+    }
+  });
+}
+
 const siteId = 6691272;
 const hotjarVersion = 6;
 
@@ -31,6 +40,12 @@ async function bootstrap() {
       </AppProviders>
     </StrictMode>,
   );
+
+  openLinksInNewTab();
+  const observer = new MutationObserver(() => {
+    openLinksInNewTab();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 bootstrap();

@@ -74,7 +74,7 @@ export function HomeTemplateGroup({
               key={template.id}
               to="/project/new"
               search={{ type, template: template.id }}
-              className="block rounded-xl border border-border bg-card px-4 py-4 transition-colors hover:border-primary/40 hover:bg-accent/30"
+              className="block rounded-xl border border-border px-4 py-4 transition-colors hover:border-primary/40 hover:bg-accent/30 bg-muted"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">

@@ -14,9 +14,11 @@ import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as InstallerRouteImport } from './routes/installer'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectIndexRouteImport } from './routes/project/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as ProjectNewRouteImport } from './routes/project/new'
 import { Route as ProjectImportRouteImport } from './routes/project/import'
 import { Route as ProjectProjectIdRouteImport } from './routes/project/$projectId'
+import { Route as DocsPageRouteImport } from './routes/docs/$page'
 
 const VersionRoute = VersionRouteImport.update({
   id: '/version',
@@ -43,6 +45,11 @@ const ProjectIndexRoute = ProjectIndexRouteImport.update({
   path: '/project/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectNewRoute = ProjectNewRouteImport.update({
   id: '/project/new',
   path: '/project/new',
@@ -58,15 +65,22 @@ const ProjectProjectIdRoute = ProjectProjectIdRouteImport.update({
   path: '/project/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsPageRoute = DocsPageRouteImport.update({
+  id: '/docs/$page',
+  path: '/docs/$page',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
   '/version': typeof VersionRoute
+  '/docs/$page': typeof DocsPageRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
+  '/docs/': typeof DocsIndexRoute
   '/project/': typeof ProjectIndexRoute
 }
 export interface FileRoutesByTo {
@@ -74,9 +88,11 @@ export interface FileRoutesByTo {
   '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
   '/version': typeof VersionRoute
+  '/docs/$page': typeof DocsPageRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
+  '/docs': typeof DocsIndexRoute
   '/project': typeof ProjectIndexRoute
 }
 export interface FileRoutesById {
@@ -85,9 +101,11 @@ export interface FileRoutesById {
   '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
   '/version': typeof VersionRoute
+  '/docs/$page': typeof DocsPageRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
   '/project/new': typeof ProjectNewRoute
+  '/docs/': typeof DocsIndexRoute
   '/project/': typeof ProjectIndexRoute
 }
 export interface FileRouteTypes {
@@ -97,9 +115,11 @@ export interface FileRouteTypes {
     | '/installer'
     | '/not-found'
     | '/version'
+    | '/docs/$page'
     | '/project/$projectId'
     | '/project/import'
     | '/project/new'
+    | '/docs/'
     | '/project/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -107,9 +127,11 @@ export interface FileRouteTypes {
     | '/installer'
     | '/not-found'
     | '/version'
+    | '/docs/$page'
     | '/project/$projectId'
     | '/project/import'
     | '/project/new'
+    | '/docs'
     | '/project'
   id:
     | '__root__'
@@ -117,9 +139,11 @@ export interface FileRouteTypes {
     | '/installer'
     | '/not-found'
     | '/version'
+    | '/docs/$page'
     | '/project/$projectId'
     | '/project/import'
     | '/project/new'
+    | '/docs/'
     | '/project/'
   fileRoutesById: FileRoutesById
 }
@@ -128,9 +152,11 @@ export interface RootRouteChildren {
   InstallerRoute: typeof InstallerRoute
   NotFoundRoute: typeof NotFoundRoute
   VersionRoute: typeof VersionRoute
+  DocsPageRoute: typeof DocsPageRoute
   ProjectProjectIdRoute: typeof ProjectProjectIdRoute
   ProjectImportRoute: typeof ProjectImportRoute
   ProjectNewRoute: typeof ProjectNewRoute
+  DocsIndexRoute: typeof DocsIndexRoute
   ProjectIndexRoute: typeof ProjectIndexRoute
 }
 
@@ -171,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/project/new': {
       id: '/project/new'
       path: '/project/new'
@@ -192,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/$page': {
+      id: '/docs/$page'
+      path: '/docs/$page'
+      fullPath: '/docs/$page'
+      preLoaderRoute: typeof DocsPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -200,9 +240,11 @@ const rootRouteChildren: RootRouteChildren = {
   InstallerRoute: InstallerRoute,
   NotFoundRoute: NotFoundRoute,
   VersionRoute: VersionRoute,
+  DocsPageRoute: DocsPageRoute,
   ProjectProjectIdRoute: ProjectProjectIdRoute,
   ProjectImportRoute: ProjectImportRoute,
   ProjectNewRoute: ProjectNewRoute,
+  DocsIndexRoute: DocsIndexRoute,
   ProjectIndexRoute: ProjectIndexRoute,
 }
 export const routeTree = rootRouteImport
