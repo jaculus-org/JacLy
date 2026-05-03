@@ -169,7 +169,7 @@ function ProjectIndexContent({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-slate-500 hover:bg-sky-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-sky-950/35 dark:hover:text-slate-50"
+                  className="text-muted-foreground hover:bg-accent hover:text-foreground"
                 >
                   <Share2 className="size-4" />
                 </Button>
@@ -228,7 +228,7 @@ function ProjectIndexContent({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-slate-500 hover:bg-sky-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-sky-950/35 dark:hover:text-slate-50"
+                  className="text-muted-foreground hover:bg-accent hover:text-foreground"
                 >
                   <MoreVertical className="size-4" />
                 </Button>
@@ -243,7 +243,7 @@ function ProjectIndexContent({
                     setProjectToDelete(project.id);
                     setDeleteDialogOpen(true);
                   }}
-                  className="text-red-600 focus:text-red-700 dark:text-red-400 dark:focus:text-red-300"
+                  className="text-destructive focus:text-destructive"
                 >
                   <Trash className="mr-2 size-4" />
                   {m.project_delete()}
