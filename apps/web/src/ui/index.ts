@@ -25,7 +25,9 @@ export {
   ProjectBlockSkeleton,
 } from './components/custom/project-block';
 export { ProjectCard } from './components/custom/project-card';
+export { ProjectFormSection } from './components/custom/project-form-section';
 export { StatusCard } from './components/custom/status-card';
+export { TemplateOptionCard } from './components/custom/template-option-card';
 export * from './components/dialog';
 export * from './components/dropdown-menu';
 export * from './components/field';

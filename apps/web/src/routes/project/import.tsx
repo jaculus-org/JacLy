@@ -7,15 +7,15 @@ import {
 } from '@jaculus/project/import';
 import { createFileRoute } from '@tanstack/react-router';
 import { toUint8Array } from 'js-base64';
-import { LinkIcon, UploadIcon } from 'lucide-react';
+import { FileArchiveIcon, LinkIcon, Trash2Icon, UploadIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Logger } from '@/core/components/logger';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
 import { loadPackageFromFile } from '@/project/services/load-package';
+import { ProjectFormSection } from '@/ui';
 import { Button } from '@/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
 import { Input } from '@/ui/components/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
 import { generateNanoId } from '@/ui/lib/nanoid';
@@ -38,6 +38,21 @@ export const Route = createFileRoute('/project/import')({
   },
 });
 
+const ACCEPTED_EXTENSIONS = ['.zip', '.tar', '.tar.gz', '.tgz'];
+const inputTextClass =
+  'text-slate-950 dark:text-slate-50 placeholder:text-slate-400 dark:placeholder:text-slate-500';
+
+function isAcceptedFile(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return ACCEPTED_EXTENSIONS.some((ext) => name.endsWith(ext));
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 function ImportProject() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
@@ -51,8 +66,10 @@ function ImportProject() {
   const [packageUrl, setPackageUrl] = useState(initialUrl);
   const [activeTab, setActiveTab] = useState<'file' | 'url'>(initialUrl ? 'url' : 'file');
   const [isImporting, setIsImporting] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const autoImportTriggered = useRef(false);
+  const dragCounter = useRef(0);
 
   useEffect(() => {
     logger.clear();
@@ -70,17 +87,57 @@ function ImportProject() {
     return () => clearTimeout(timer);
   }, [packageUrl, navigate, search.url]);
 
-  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const nameWithoutExt = file.name
-        .replace(/\.zip$/i, '')
-        .replace(/\.tar\.gz$/i, '')
-        .replace(/\.tgz$/i, '');
-      setProjectName(nameWithoutExt);
+  const applyFile = useCallback((file: File) => {
+    if (!isAcceptedFile(file)) {
+      enqueueSnackbar(m.project_import_invalid_file(), { variant: 'error' });
+      return;
     }
-  }
+    setSelectedFile(file);
+    const nameWithoutExt = file.name
+      .replace(/\.zip$/i, '')
+      .replace(/\.tar\.gz$/i, '')
+      .replace(/\.tgz$/i, '');
+    setProjectName(nameWithoutExt);
+  }, []);
+
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) applyFile(file);
+    },
+    [applyFile],
+  );
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current += 1;
+    if (dragCounter.current === 1) setDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current -= 1;
+    if (dragCounter.current === 0) setDragOver(false);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter.current = 0;
+      setDragOver(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file) applyFile(file);
+    },
+    [applyFile],
+  );
 
   async function handleImport() {
     setIsImporting(true);
@@ -130,7 +187,6 @@ function ImportProject() {
     }
   }
 
-  // Auto-import when `auto=true` is present in the URL alongside a `url` param
   useEffect(() => {
     if (auto && (packageUrl || inlineData) && !autoImportTriggered.current) {
       autoImportTriggered.current = true;
@@ -140,104 +196,140 @@ function ImportProject() {
   }, [handleImport, inlineData, packageUrl, auto]);
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">{m.project_import_title()}</h1>
+    <div className="space-y-6 py-8">
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+        {m.project_import_title()}
+      </h1>
 
-      <div className="space-y-6">
-        <div>
-          <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-1">
-            {m.project_new_name_label()}
-          </label>
+      <div className="mx-auto max-w-3xl space-y-6">
+        <ProjectFormSection title={m.project_new_name_label()}>
           <Input
-            id="projectName"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             placeholder={m.project_new_name_placeholder()}
             autoFocus
+            className={`h-11 text-base ${inputTextClass}`}
           />
-        </div>
+        </ProjectFormSection>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as 'file' | 'url')}
-          className="flex flex-col"
-        >
-          <TabsList className="grid w-full grid-cols-2" variant={'default'}>
-            <TabsTrigger value="file">
-              <UploadIcon className="w-4 h-4 mr-2" />
-              {m.project_import_tab_file()}
-            </TabsTrigger>
-            <TabsTrigger value="url">
-              <LinkIcon className="w-4 h-4 mr-2" />
-              {m.project_import_tab_url()}
-            </TabsTrigger>
-          </TabsList>
+        <ProjectFormSection title={m.project_import_title()}>
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as 'file' | 'url')}
+            className="flex flex-col"
+          >
+            <TabsList className="grid w-full grid-cols-2" variant="default">
+              <TabsTrigger value="file">
+                <UploadIcon className="mr-2 size-4" />
+                {m.project_import_tab_file()}
+              </TabsTrigger>
+              <TabsTrigger value="url">
+                <LinkIcon className="mr-2 size-4" />
+                {m.project_import_tab_url()}
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="file" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{m.project_import_file_title()}</CardTitle>
-                <CardDescription>{m.project_import_file_description()}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept=".zip,.tar,.tar.gz,.tgz"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                  <UploadIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  {selectedFile ? (
-                    <p className="text-lg font-medium">{selectedFile.name}</p>
-                  ) : (
-                    <div>
-                      <p className="text-muted-foreground mb-1">{m.project_import_click_hint()}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {m.project_import_supported_formats()}
-                      </p>
+            <TabsContent value="file" className="mt-4">
+              <div
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`group cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200 ${
+                  dragOver
+                    ? 'border-sky-500 bg-sky-50/60 dark:border-sky-400 dark:bg-sky-950/30'
+                    : 'border-sky-200/70 bg-sky-50/30 hover:border-sky-300/90 hover:bg-sky-50/50 dark:border-sky-900/40 dark:bg-sky-950/15 dark:hover:border-sky-800/60 dark:hover:bg-sky-950/25'
+                }`}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".zip,.tar,.tar.gz,.tgz"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+
+                {dragOver ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="rounded-xl bg-sky-100 p-3 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                      <UploadIcon className="size-6" />
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    <p className="font-medium text-sky-700 dark:text-sky-300">Drop file here</p>
+                  </div>
+                ) : selectedFile ? (
+                  <div className="flex items-center justify-between gap-4 rounded-lg border border-sky-200/60 bg-white/70 p-4 text-left dark:border-sky-900/40 dark:bg-slate-950/50">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="shrink-0 rounded-xl bg-sky-100 p-2.5 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                        <FileArchiveIcon className="size-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-slate-950 dark:text-slate-50">
+                          {selectedFile.name}
+                        </p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          {formatFileSize(selectedFile.size)}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                      }}
+                      className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                    >
+                      <Trash2Icon className="size-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="rounded-xl bg-sky-100 p-3 text-sky-700 transition-colors group-hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:group-hover:bg-sky-900">
+                      <UploadIcon className="size-6" />
+                    </div>
+                    <p className="font-medium text-slate-700 dark:text-slate-200">
+                      {m.project_import_click_hint()}
+                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {m.project_import_supported_formats()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
 
-          <TabsContent value="url" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{m.project_import_url_title()}</CardTitle>
-                <CardDescription>{m.project_import_url_description()}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
+            <TabsContent value="url" className="mt-4">
+              <div className="space-y-3">
                 <Input
                   type="url"
                   value={packageUrl}
                   onChange={(e) => setPackageUrl(e.target.value)}
                   placeholder={m.project_import_url_placeholder()}
-                  className="w-full"
+                  className={`h-11 text-base ${inputTextClass}`}
                 />
-                <p className="text-xs text-muted-foreground">{m.project_import_url_hint()}</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {m.project_import_url_hint()}
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </ProjectFormSection>
 
-        <Button
-          onClick={handleImport}
-          className="w-full"
-          disabled={
-            (activeTab === 'file' && !selectedFile) ||
-            (activeTab === 'url' && !packageUrl) ||
-            isImporting
-          }
-        >
-          {isImporting ? m.project_import_btn_importing() : m.project_import_btn_import()}
-        </Button>
+        <div className="pt-2">
+          <Button
+            onClick={handleImport}
+            size="lg"
+            className="w-full bg-slate-950 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-[0_14px_32px_-18px_rgba(15,23,42,0.45)] dark:bg-slate-50 dark:text-slate-950 dark:hover:bg-slate-200 dark:hover:shadow-[0_14px_30px_-18px_rgba(226,232,240,0.18)]"
+            disabled={
+              (activeTab === 'file' && !selectedFile) ||
+              (activeTab === 'url' && !packageUrl) ||
+              isImporting
+            }
+          >
+            {isImporting ? m.project_import_btn_importing() : m.project_import_btn_import()}
+          </Button>
+        </div>
 
         <Logger.Logs defaultLevel="silly" logLevelSelector={false} hideIfEmpty />
       </div>

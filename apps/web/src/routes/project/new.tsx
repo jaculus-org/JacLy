@@ -2,7 +2,7 @@ import { createFromBundle } from '@jaculus/project/creation';
 import type { JaculusProjectType } from '@jaculus/project/package';
 import type { RegistryListTemplate } from '@jaculus/project/registry';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { BlocksIcon, Code2Icon } from 'lucide-react';
+import { BlocksIcon, CheckCircle, Code2Icon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect, useMemo, useState } from 'react';
 import { Logger } from '@/core/components/logger';
@@ -10,15 +10,17 @@ import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
 import { loadPackageFromFile } from '@/project/services/load-package';
 import { createProjectRegistry, defaultRegisters } from '@/project/services/registry';
+import { ProjectFormSection, TemplateOptionCard } from '@/ui';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/ui/components/accordion';
+import { Badge } from '@/ui/components/badge';
 import { Button } from '@/ui/components/button';
-import { ProjectCard } from '@/ui/components/custom/project-card';
 import { Input } from '@/ui/components/input';
+import { Skeleton } from '@/ui/components/skeleton';
 
 interface NewProjectSearchParams {
   type?: JaculusProjectType;
@@ -40,40 +42,42 @@ export const Route = createFileRoute('/project/new')({
   },
 });
 
-interface JaculusProjectOptions {
-  type: JaculusProjectType;
-  title: string;
-  description: string;
-  icon?: React.ReactNode;
-}
+const inputTextClass =
+  'text-slate-950 dark:text-slate-50 placeholder:text-slate-400 dark:placeholder:text-slate-500';
 
 function NewProject() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const { projectManService: runtimeService, projectFsService } = Route.useRouteContext();
-  const projectOptions = useMemo<JaculusProjectOptions[]>(
+
+  const projectOptions = useMemo(
     () => [
       {
-        type: 'jacly',
+        type: 'jacly' as JaculusProjectType,
         title: m.project_new_blocks_title(),
         description: m.project_new_blocks_desc(),
-        icon: <BlocksIcon />,
+        icon: BlocksIcon,
+        color: 'sky',
       },
       {
-        type: 'code',
+        type: 'code' as JaculusProjectType,
         title: m.project_new_code_title(),
         description: m.project_new_code_desc(),
-        icon: <Code2Icon />,
+        icon: Code2Icon,
+        color: 'emerald',
       },
     ],
     [],
   );
+
   const [projectName, setProjectName] = useState('');
   const [projectType, setProjectType] = useState<JaculusProjectType>(search.type ?? 'jacly');
 
   const [templates, setTemplates] = useState<RegistryListTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<RegistryListTemplate | null>(null);
   const [registers, setRegisters] = useState<string[]>(defaultRegisters);
+  const [templatesLoading, setTemplatesLoading] = useState(true);
+  const [templatesError, setTemplatesError] = useState(false);
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -90,10 +94,15 @@ function NewProject() {
   }, [projectType, search.type]);
 
   useEffect(() => {
+    let cancelled = false;
+    setTemplatesLoading(true);
+    setTemplatesError(false);
+
     (async () => {
       try {
         const registry = createProjectRegistry(registers);
         const loadedTemplates = await registry.listTemplates(projectType);
+        if (cancelled) return;
         setTemplates(loadedTemplates);
         const preferredTemplate =
           (search.template
@@ -103,15 +112,23 @@ function NewProject() {
           null;
 
         setSelectedTemplate(preferredTemplate);
+        setTemplatesLoading(false);
       } catch (error) {
+        if (cancelled) return;
         console.error('Failed to load templates from registry:', error);
         setTemplates([]);
         setSelectedTemplate(null);
+        setTemplatesLoading(false);
+        setTemplatesError(true);
         enqueueSnackbar(m.project_new_template_load_error(), {
           variant: 'error',
         });
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [projectType, registers, search.template]);
 
   async function handleProjectCreation() {
@@ -119,7 +136,6 @@ function NewProject() {
       return;
     }
 
-    // not allow empty project name
     if (projectName.trim() === '') {
       enqueueSnackbar(m.project_new_name_required(), { variant: 'warning' });
       return;
@@ -131,7 +147,6 @@ function NewProject() {
       const versions = await registry.listVersions(selectedTemplate.id);
       const tgz = await registry.getPackageTgz(selectedTemplate.id, versions[0]);
 
-      // Load package using unified utility - convert Uint8Array to File
       const file = new File([new Uint8Array(tgz)], 'package.tar.gz', {
         type: 'application/gzip',
       });
@@ -139,7 +154,6 @@ function NewProject() {
       const importResult = await loadPackageFromFile(file);
       const pkg = importResult.package;
 
-      // Create the project in the database
       const newProject = await runtimeService.createProject(projectName, projectType);
 
       const { fs, projectPath } = await projectFsService.mount(newProject.id);
@@ -158,74 +172,131 @@ function NewProject() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">{m.project_new_title()}</h1>
+    <div className="space-y-6 py-8">
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+        {m.project_new_title()}
+      </h1>
 
-      <div className="space-y-6">
-        <div>
-          <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-1">
-            {m.project_new_name_label()}
-          </label>
+      <div className="mx-auto max-w-3xl space-y-6">
+        <ProjectFormSection title={m.project_new_name_label()}>
           <Input
-            id="projectName"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
             placeholder={m.project_new_name_placeholder()}
             autoFocus
+            className={`h-11 text-base ${inputTextClass}`}
           />
-        </div>
+        </ProjectFormSection>
 
-        <div>
-          <h2 className="text-lg font-semibold mb-2">{m.project_new_type_title()}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projectOptions.map((type) => (
-              <ProjectCard
-                key={type.type}
-                title={type.title}
-                description={type.description}
-                isSelected={projectType === type.type}
-                onSelect={() => setProjectType(type.type)}
-                icon={type.icon}
-              />
-            ))}
-          </div>
-        </div>
+        <ProjectFormSection title={m.project_new_type_title()}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {projectOptions.map((option) => {
+              const Icon = option.icon;
+              const isSelected = projectType === option.type;
 
-        <div>
-          <h2 className="text-lg font-semibold mb-2">{m.project_new_template_title()}</h2>
-          <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-2">
-            {templates.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">
-                {m.project_new_template_loading()}
-              </p>
-            ) : (
-              templates.map((template) => (
-                <div
-                  key={template.id}
-                  onClick={() => setSelectedTemplate(template)}
-                  className={`p-3 rounded-md cursor-pointer border transition-colors ${
-                    selectedTemplate === template
-                      ? 'border-primary bg-primary/10'
-                      : 'border-transparent hover:bg-gray-100 dark:hover:bg-gray-800'
+              return (
+                <button
+                  key={option.type}
+                  type="button"
+                  onClick={() => setProjectType(option.type)}
+                  className={`group relative rounded-xl border p-5 text-left transition-all duration-200 ${
+                    isSelected
+                      ? 'border-sky-400/90 bg-sky-50/80 shadow-[0_8px_28px_-16px_rgba(14,165,233,0.25)] dark:border-sky-600/70 dark:bg-sky-950/40 dark:shadow-[0_10px_30px_-18px_rgba(14,165,233,0.35)]'
+                      : 'border-sky-200/60 bg-white/60 hover:-translate-y-0.5 hover:border-sky-300/80 hover:shadow-[0_12px_32px_-24px_rgba(15,23,42,0.2)] dark:border-sky-900/40 dark:bg-slate-950/50 dark:hover:border-sky-800/60 dark:hover:shadow-[0_14px_34px_-26px_rgba(2,6,23,0.7)]'
                   }`}
                 >
-                  <span className="font-medium">{template.id}</span>
-                  <p className="text-sm text-gray-500">{template.description}</p>
-                </div>
-              ))
-            )}
+                  {isSelected && (
+                    <span className="absolute right-3 top-3">
+                      <CheckCircle className="size-5 text-sky-600 dark:text-sky-400" />
+                    </span>
+                  )}
+                  <div className="flex items-start gap-3 pr-8">
+                    <div
+                      className={`shrink-0 rounded-xl p-2.5 ${
+                        option.color === 'sky'
+                          ? 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300'
+                          : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                      }`}
+                    >
+                      <Icon className="size-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-slate-950 dark:text-slate-50">
+                        {option.title}
+                      </div>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                        {option.description}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </ProjectFormSection>
+
+        <ProjectFormSection title={m.project_new_template_title()}>
+          {templatesLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-sky-200/40 bg-white/30 p-4 dark:border-sky-900/30 dark:bg-slate-950/30"
+                >
+                  <Skeleton className="mb-2 h-5 w-36" />
+                  <Skeleton className="h-4 w-56" />
+                </div>
+              ))}
+            </div>
+          ) : templatesError ? (
+            <div className="rounded-xl border border-dashed border-red-200/70 bg-red-50/50 p-6 text-center dark:border-red-900/40 dark:bg-red-950/20">
+              <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                {m.project_new_template_load_error()}
+              </p>
+            </div>
+          ) : templates.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-sky-200/60 bg-sky-50/40 p-6 text-center dark:border-sky-950/40 dark:bg-sky-950/18">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {m.project_new_template_loading()}
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {templates.map((template) => (
+                <TemplateOptionCard
+                  key={template.id}
+                  title={template.id}
+                  description={template.description}
+                  isSelected={selectedTemplate === template}
+                  onSelect={() => setSelectedTemplate(template)}
+                  badge={
+                    <Badge
+                      variant="outline"
+                      className="h-5 rounded-full border-sky-200/85 bg-white/84 px-2 text-xs font-medium text-slate-700 dark:border-sky-900/70 dark:bg-sky-950/25 dark:text-slate-300"
+                    >
+                      {projectType}
+                    </Badge>
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </ProjectFormSection>
 
         <Accordion type="single" collapsible>
-          <AccordionItem value="advanced">
-            <AccordionTrigger>{m.project_new_advanced()}</AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4">
+          <AccordionItem
+            value="advanced"
+            className="rounded-2xl border border-dashed border-sky-200/60 bg-sky-50/40 dark:border-sky-950/40 dark:bg-sky-950/18"
+          >
+            <AccordionTrigger className="px-4 py-3 text-sm font-medium text-slate-700 hover:no-underline dark:text-slate-300">
+              {m.project_new_advanced()}
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <div className="space-y-3">
                 <div>
                   <label
                     htmlFor="defaultRegisters"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
                   >
                     {m.project_new_default_registers()}
                   </label>
@@ -235,9 +306,9 @@ function NewProject() {
                     onChange={(e) => {
                       setRegisters(e.target.value.split(';').map((s) => s.trim()));
                     }}
-                    className="text-sm"
+                    className={`text-sm ${inputTextClass}`}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
                     {m.project_new_default_registers_hint()}
                   </p>
                 </div>
@@ -246,13 +317,16 @@ function NewProject() {
           </AccordionItem>
         </Accordion>
 
-        <Button
-          onClick={handleProjectCreation}
-          className="w-full"
-          disabled={!selectedTemplate || isCreating}
-        >
-          {isCreating ? m.project_new_btn_creating() : m.project_new_btn_create()}
-        </Button>
+        <div className="pt-2">
+          <Button
+            onClick={handleProjectCreation}
+            size="lg"
+            className="w-full bg-slate-950 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-[0_14px_32px_-18px_rgba(15,23,42,0.45)] dark:bg-slate-50 dark:text-slate-950 dark:hover:bg-slate-200 dark:hover:shadow-[0_14px_30px_-18px_rgba(226,232,240,0.18)]"
+            disabled={!selectedTemplate || isCreating}
+          >
+            {isCreating ? m.project_new_btn_creating() : m.project_new_btn_create()}
+          </Button>
+        </div>
 
         <Logger.Logs defaultLevel="silly" logLevelSelector={false} hideIfEmpty />
       </div>
