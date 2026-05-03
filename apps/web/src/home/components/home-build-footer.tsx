@@ -11,7 +11,7 @@ export function HomeBuildFooter() {
   return (
     <footer className="border-t border-border pt-6 text-sm text-muted-foreground">
       <Link
-        to="/version"
+        to="/about"
         className="inline-flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:text-foreground"
       >
         {m.index_build_version_meta({

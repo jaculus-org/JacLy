@@ -9,9 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VersionRouteImport } from './routes/version'
 import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as InstallerRouteImport } from './routes/installer'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectIndexRouteImport } from './routes/project/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
@@ -20,11 +20,6 @@ import { Route as ProjectImportRouteImport } from './routes/project/import'
 import { Route as ProjectProjectIdRouteImport } from './routes/project/$projectId'
 import { Route as DocsPageRouteImport } from './routes/docs/$page'
 
-const VersionRoute = VersionRouteImport.update({
-  id: '/version',
-  path: '/version',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const NotFoundRoute = NotFoundRouteImport.update({
   id: '/not-found',
   path: '/not-found',
@@ -33,6 +28,11 @@ const NotFoundRoute = NotFoundRouteImport.update({
 const InstallerRoute = InstallerRouteImport.update({
   id: '/installer',
   path: '/installer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -73,9 +73,9 @@ const DocsPageRoute = DocsPageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
-  '/version': typeof VersionRoute
   '/docs/$page': typeof DocsPageRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
@@ -85,9 +85,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
-  '/version': typeof VersionRoute
   '/docs/$page': typeof DocsPageRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
@@ -98,9 +98,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/installer': typeof InstallerRoute
   '/not-found': typeof NotFoundRoute
-  '/version': typeof VersionRoute
   '/docs/$page': typeof DocsPageRoute
   '/project/$projectId': typeof ProjectProjectIdRoute
   '/project/import': typeof ProjectImportRoute
@@ -112,9 +112,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/installer'
     | '/not-found'
-    | '/version'
     | '/docs/$page'
     | '/project/$projectId'
     | '/project/import'
@@ -124,9 +124,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/installer'
     | '/not-found'
-    | '/version'
     | '/docs/$page'
     | '/project/$projectId'
     | '/project/import'
@@ -136,9 +136,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/installer'
     | '/not-found'
-    | '/version'
     | '/docs/$page'
     | '/project/$projectId'
     | '/project/import'
@@ -149,9 +149,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   InstallerRoute: typeof InstallerRoute
   NotFoundRoute: typeof NotFoundRoute
-  VersionRoute: typeof VersionRoute
   DocsPageRoute: typeof DocsPageRoute
   ProjectProjectIdRoute: typeof ProjectProjectIdRoute
   ProjectImportRoute: typeof ProjectImportRoute
@@ -162,13 +162,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/version': {
-      id: '/version'
-      path: '/version'
-      fullPath: '/version'
-      preLoaderRoute: typeof VersionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/not-found': {
       id: '/not-found'
       path: '/not-found'
@@ -181,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/installer'
       fullPath: '/installer'
       preLoaderRoute: typeof InstallerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -237,9 +237,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   InstallerRoute: InstallerRoute,
   NotFoundRoute: NotFoundRoute,
-  VersionRoute: VersionRoute,
   DocsPageRoute: DocsPageRoute,
   ProjectProjectIdRoute: ProjectProjectIdRoute,
   ProjectImportRoute: ProjectImportRoute,

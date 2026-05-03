@@ -25,7 +25,7 @@ export function ConsoleOutput({
       return;
     }
     scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-  }, [autoScroll]);
+  }, [autoScroll, entries]);
 
   return (
     <Card className="flex-1 overflow-hidden">

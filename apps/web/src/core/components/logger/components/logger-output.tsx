@@ -18,11 +18,10 @@ export function LoggerOutput({
   autoScroll,
 }: LoggerOutputProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (autoScroll && bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (autoScroll && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
   }, [autoScroll, entries]);
 
@@ -54,7 +53,6 @@ export function LoggerOutput({
                 <span className="break-all">{entry.content}</span>
               </div>
             ))}
-            <div ref={bottomRef} />
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 import type { JaculusProjectType } from '@jaculus/project/package';
 import type { RegistryListTemplate } from '@jaculus/project/registry';
-import { getLocale } from '@/core/paraglide/runtime';
+import { buildInfo } from 'virtual-build-info';
+import { fetchReleaseSummary } from '@/core/services/release-summary';
 import type { IDbProject } from '@/core/types/project';
 import { createProjectRegistry } from '@/project/services/registry';
 import type { HomeReleaseSummary } from './home-context';
@@ -11,11 +12,6 @@ interface HomeDataDeps {
   projectManService: {
     listProjects(): Promise<IDbProject[]>;
   };
-}
-
-interface ReleaseSummaryFile {
-  en?: HomeReleaseSummary;
-  cs?: HomeReleaseSummary;
 }
 
 export interface HomeDataResult {
@@ -76,26 +72,14 @@ function takeTemplates(templates: RegistryListTemplate[], type: JaculusProjectTy
 
 async function loadReleaseSummary(): Promise<HomeReleaseSummary | null> {
   try {
-    const response = await fetch(
-      `${import.meta.env.BASE_URL}release-summary.json?ts=${Date.now()}`,
-      {
-        cache: 'no-store',
-      },
-    );
+    const entries = await fetchReleaseSummary();
+    if (entries.length === 0) return null;
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = (await response.json()) as ReleaseSummaryFile;
-    const summary = data[getLocale()];
-
-    if (!summary || !Array.isArray(summary.items) || summary.items.length === 0) {
-      return null;
-    }
+    const entry = entries.find((e) => e.version === buildInfo.version) ?? entries[0];
+    if (!entry || !Array.isArray(entry.items) || entry.items.length === 0) return null;
 
     return {
-      items: summary.items.filter((item): item is string => typeof item === 'string').slice(0, 4),
+      items: entry.items.filter((item): item is string => typeof item === 'string').slice(0, 4),
     };
   } catch (error) {
     console.error('Failed to load release summary:', error);
