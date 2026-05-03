@@ -9,10 +9,10 @@ export function HomeBuildFooter() {
   }).format(new Date(meta.buildInfo.buildTime));
 
   return (
-    <footer className="border-t border-slate-200/80 pt-6 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-300">
+    <footer className="border-t border-border pt-6 text-sm text-muted-foreground">
       <Link
         to="/version"
-        className="inline-flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:text-slate-950 dark:hover:text-slate-50"
+        className="inline-flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:text-foreground"
       >
         {m.index_build_version_meta({
           version: meta.buildInfo.version,

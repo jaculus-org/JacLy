@@ -16,12 +16,10 @@ export function HomePage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.7fr)]">
         <section className="space-y-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
               {m.index_template_section_title()}
             </h2>
-            <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
-              {m.index_template_section_desc()}
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{m.index_template_section_desc()}</p>
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
