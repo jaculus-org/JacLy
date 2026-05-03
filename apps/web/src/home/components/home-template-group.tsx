@@ -3,12 +3,11 @@ import type { RegistryListTemplate } from '@jaculus/project/registry';
 import { Link } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon, SquareArrowRightIcon } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/ui';
 
 interface HomeTemplateGroupProps {
   type: JaculusProjectType;
   title: string;
-  description: string;
   templates: RegistryListTemplate[];
   templatesAvailable: boolean;
 }
@@ -26,7 +25,6 @@ const typeIconClassNames = {
 export function HomeTemplateGroup({
   type,
   title,
-  description,
   templates,
   templatesAvailable,
 }: HomeTemplateGroupProps) {
@@ -44,9 +42,6 @@ export function HomeTemplateGroup({
             </Badge>
             <div>
               <CardTitle className="text-lg text-foreground">{title}</CardTitle>
-              <CardDescription className="mt-1 text-sm text-muted-foreground">
-                {description}
-              </CardDescription>
             </div>
           </div>
 

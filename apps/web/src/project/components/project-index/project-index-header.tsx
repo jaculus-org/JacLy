@@ -7,7 +7,6 @@ export function ProjectIndexHeader() {
   return (
     <PageHero
       title={m.project_title()}
-      description={m.project_subtitle()}
       titleClassName="lg:text-5xl"
       actions={
         <>

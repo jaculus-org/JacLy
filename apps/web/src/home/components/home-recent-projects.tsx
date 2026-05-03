@@ -14,7 +14,6 @@ export function HomeRecentProjects() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             {m.index_recent_title()}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{m.index_recent_desc()}</p>
         </div>
 
         <Button asChild variant="ghost" className="hidden sm:inline-flex">

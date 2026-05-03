@@ -26,14 +26,12 @@ export function HomePage() {
             <HomeTemplateGroup
               type="jacly"
               title={m.index_template_blocks_title()}
-              description={m.index_template_blocks_desc()}
               templates={state.jaclyTemplates}
               templatesAvailable={meta.templatesAvailable}
             />
             <HomeTemplateGroup
               type="code"
               title={m.index_template_code_title()}
-              description={m.index_template_code_desc()}
               templates={state.codeTemplates}
               templatesAvailable={meta.templatesAvailable}
             />

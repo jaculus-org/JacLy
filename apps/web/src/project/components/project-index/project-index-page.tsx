@@ -26,7 +26,6 @@ export function ProjectIndexPage({ projects, renderAction }: ProjectIndexPagePro
             <h2 className="text-2xl font-semibold tracking-tight text-foreground">
               {m.index_recent_title()}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">{m.index_recent_desc()}</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
