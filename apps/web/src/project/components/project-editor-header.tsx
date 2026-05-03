@@ -14,7 +14,7 @@ export function ProjectEditorHeader() {
     state: { dbProject },
   } = useActiveProject();
   return (
-    <header className="relative backdrop-blur-sm bg-card border-b border-border">
+    <header className="relative backdrop-blur-sm bg-secondary border-b border-border">
       <div className="max-w-full">
         <div className="flex justify-between items-center py-1 px-1 pl-3">
           {/* Navigation */}

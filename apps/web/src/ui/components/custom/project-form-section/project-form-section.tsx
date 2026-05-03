@@ -23,8 +23,7 @@ export function ProjectFormSection({
         'overflow-hidden border rounded-2xl transition-all',
         variant === 'default' &&
           'border-border bg-card shadow-[0_20px_48px_-36px_rgba(15,23,42,0.12)] dark:shadow-[0_22px_50px_-38px_rgba(0,0,0,0.5)]',
-        variant === 'subdued' &&
-          'border-dashed border-border bg-muted/40',
+        variant === 'subdued' && 'border-dashed border-border bg-muted/40',
         className,
       )}
     >
@@ -33,9 +32,7 @@ export function ProjectFormSection({
           {title}
         </CardTitle>
         {description ? (
-          <CardDescription className="text-sm text-muted-foreground">
-            {description}
-          </CardDescription>
+          <CardDescription className="text-sm text-muted-foreground">{description}</CardDescription>
         ) : null}
       </CardHeader>
       <CardContent>{children}</CardContent>

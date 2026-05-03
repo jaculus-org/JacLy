@@ -9,12 +9,6 @@ export function HomeHero() {
       className="lg:px-10"
       title={m.index_hero_title()}
       description={m.index_hero_description()}
-      topSlot={
-        <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card/80 px-3 py-2 text-sm text-foreground shadow-sm backdrop-blur">
-          <img src="/favicon/favicon.svg" alt="JacLy" className="h-5 w-5 shrink-0" />
-          <span className="font-medium tracking-tight">JacLy</span>
-        </div>
-      }
       actions={
         <>
           <Button asChild size="lg" variant="cta">

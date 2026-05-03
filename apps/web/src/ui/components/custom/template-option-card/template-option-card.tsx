@@ -44,9 +44,7 @@ export function TemplateOptionCard({
             {badge}
           </div>
           {description ? (
-            <p className="mt-1 text-sm leading-snug text-muted-foreground">
-              {description}
-            </p>
+            <p className="mt-1 text-sm leading-snug text-muted-foreground">{description}</p>
           ) : null}
         </div>
       </div>
