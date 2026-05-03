@@ -10,13 +10,13 @@ interface PanelWrapperProps {
 export function PanelWrapper({ children, name, highlight = false, onPopout }: PanelWrapperProps) {
   return (
     <div
-      className={`h-full w-full flex flex-col rounded border bg-card shadow-sm transition-all duration-300 ${
+      className={`h-full w-full flex flex-col rounded border bg-secondary shadow-sm transition-all duration-300 ${
         highlight ? 'border-red-500 border-2' : 'border-border'
       }`}
     >
       {name && (
         <div
-          className={`flex items-center gap-2 p-2 border-b bg-card ${
+          className={`flex items-center gap-2 p-2 border-b bg-secondary ${
             highlight ? 'border-red-500' : 'border-border'
           }`}
         >
