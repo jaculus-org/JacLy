@@ -41,7 +41,7 @@ export function CollapsibleCardHeader({
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-current hover:bg-slate-800 dark:hover:bg-slate-700"
+            className="h-7 w-7 text-current hover:bg-accent"
             onClick={(event) => {
               event.stopPropagation();
               action();
@@ -55,7 +55,7 @@ export function CollapsibleCardHeader({
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 text-current hover:bg-slate-800 dark:hover:bg-slate-700"
+          className="h-7 w-7 text-current hover:bg-accent"
           onClick={actions.toggle}
         >
           {state.isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
