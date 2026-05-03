@@ -73,7 +73,7 @@ export function ProjectNameEditor() {
     <>
       <button
         onClick={openDialog}
-        className="group flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-300 pl-4 border-l border-blue-200 dark:border-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
+        className="group flex items-center gap-1 text-sm font-semibold text-muted-foreground pl-4 border-l border-border hover:text-primary transition-colors duration-200"
         title={m.project_rename()}
       >
         <span>{dbProject.name}</span>

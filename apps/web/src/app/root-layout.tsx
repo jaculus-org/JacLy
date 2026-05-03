@@ -9,7 +9,7 @@ export function RootLayout() {
 
   return (
     <AppRouterProviders>
-      <div className="min-h-screen bg-blue-50 text-blue-900 transition-colors duration-300 ease-in-out dark:bg-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background text-foreground transition-colors duration-300 ease-in-out">
         {!isEditorProjectPage && <GeneralHeader />}
         <main
           className={

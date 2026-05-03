@@ -28,9 +28,7 @@ export const FileExplorerTreeNode = memo(
             <div
               className={cn(
                 'flex items-center gap-1 px-2 py-1 text-sm cursor-pointer rounded transition-colors select-none',
-                isSelected
-                  ? 'bg-slate-200 dark:bg-slate-700'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-800',
+                isSelected ? 'bg-accent text-accent-foreground' : 'hover:bg-muted',
               )}
               style={{ paddingLeft: `${depth * 15 + 8}px` }}
               onClick={() => {
@@ -45,9 +43,7 @@ export const FileExplorerTreeNode = memo(
               <div
                 className={cn(
                   'flex items-center justify-center w-4 h-4 shrink-0',
-                  item.isDirectory
-                    ? 'cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded'
-                    : 'invisible',
+                  item.isDirectory ? 'cursor-pointer hover:bg-accent/20 rounded' : 'invisible',
                 )}
                 onClick={(e) => {
                   e.stopPropagation();

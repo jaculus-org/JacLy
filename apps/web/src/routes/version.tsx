@@ -3,7 +3,7 @@ import { LinkIcon } from 'lucide-react';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { m } from '@/core/paraglide/messages';
 
-export const Route = createFileRoute('/about')({
+export const Route = createFileRoute('/version')({
   component: RouteComponent,
 });
 

@@ -39,39 +39,42 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-project-jacly: var(--project-jacly);
+  --color-project-jacly-background: var(--project-jacly-background);
+  --color-project-code: var(--project-code);
+  --color-project-code-background: var(--project-code-background);
 }
 
 :root {
   --radius: 0.625rem;
 
-  /* Light theme: neutral cool grey with subtle blue tint */
-  --background: oklch(0.97 0.01 250); /* soft off-white, slightly cool */
-  --foreground: oklch(0.2 0.03 252); /* dark neutral text */
+  /* Light: Soft Blue A */
+  --background: oklch(0.94 0.02 245);
+  --foreground: oklch(0.18 0.04 252);
 
-  --card: oklch(0.995 0.005 250); /* almost white card */
-  --card-foreground: oklch(0.2 0.03 252);
+  --card: oklch(0.99 0.008 248);
+  --card-foreground: oklch(0.18 0.04 252);
 
-  --popover: oklch(0.99 0.008 250);
-  --popover-foreground: oklch(0.2 0.03 252);
+  --popover: oklch(0.99 0.008 248);
+  --popover-foreground: oklch(0.18 0.04 252);
 
-  /* Keep blue only for actions, not whole UI */
-  --primary: oklch(0.67 0.15 245); /* matches dark theme’s blue */
+  --primary: oklch(0.64 0.16 245);
   --primary-foreground: oklch(0.99 0.01 252);
 
-  --secondary: oklch(0.94 0.02 250);
-  --secondary-foreground: oklch(0.25 0.03 252);
+  --secondary: oklch(0.91 0.025 248);
+  --secondary-foreground: oklch(0.25 0.04 252);
 
-  --muted: oklch(0.95 0.015 250);
-  --muted-foreground: oklch(0.5 0.02 252);
+  --muted: oklch(0.935 0.022 248);
+  --muted-foreground: oklch(0.52 0.04 250);
 
-  --accent: oklch(0.95 0.025 245); /* subtle highlight, not full blue panel */
-  --accent-foreground: oklch(0.22 0.03 252);
+  --accent: oklch(0.93 0.028 248);
+  --accent-foreground: oklch(0.22 0.04 252);
 
   --destructive: oklch(0.577 0.245 27.325);
 
-  --border: oklch(0.78 0.03 250); /* more visible grey border */
-  --input: oklch(0.67 0.15 245); /* white input background for contrast */
-  --ring: oklch(0.67 0.15 245); /* match primary for consistency */
+  --border: oklch(0.8 0.035 245);
+  --input: oklch(0.68 0.1 248.03);
+  --ring: oklch(0.64 0.16 245);
 
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -79,52 +82,69 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
 
-  /* Sidebar: same neutral base, blue only for active / primary */
-  --sidebar: oklch(0.96 0.015 250);
-  --sidebar-foreground: oklch(0.2 0.03 252);
-
-  --sidebar-primary: oklch(0.67 0.15 245);
+  --sidebar: oklch(0.95 0.018 248);
+  --sidebar-foreground: oklch(0.18 0.04 252);
+  --sidebar-primary: oklch(0.64 0.16 245);
   --sidebar-primary-foreground: oklch(0.99 0.01 252);
+  --sidebar-accent: oklch(0.93 0.028 248);
+  --sidebar-accent-foreground: oklch(0.22 0.04 252);
+  --sidebar-border: oklch(0.8 0.035 245);
+  --sidebar-ring: oklch(0.64 0.16 245);
 
-  --sidebar-accent: oklch(0.95 0.025 245);
-  --sidebar-accent-foreground: oklch(0.22 0.03 252);
-
-  --sidebar-border: oklch(0.78 0.03 250);
-  --sidebar-ring: oklch(0.67 0.15 245);
+  --project-jacly: var(--primary);
+  --project-jacly-background: color-mix(in oklab, var(--primary) 10%, transparent);
+  --project-code: color-mix(in oklab, var(--chart-2) 70%, var(--foreground) 30%);
+  --project-code-background: color-mix(in oklab, var(--chart-2) 18%, transparent);
 }
 
 [data-theme="dark"] {
-  --background: oklch(0.15 0.05 260); /* Dark blue background */
-  --foreground: oklch(0.95 0.01 260); /* Light text */
-  --card: oklch(0.2 0.06 260); /* Slightly lighter dark blue for cards */
-  --card-foreground: oklch(0.95 0.01 260); /* Light text on cards */
-  --popover: oklch(0.2 0.06 260); /* Consistent with cards */
-  --popover-foreground: oklch(0.95 0.01 260); /* Light text on popovers */
-  --primary: oklch(0.65 0.15 245); /* Bright blue for primary actions */
-  --primary-foreground: oklch(0.98 0.005 260); /* Very light text on primary */
-  --secondary: oklch(0.25 0.07 260); /* Darker blue for secondary elements */
-  --secondary-foreground: oklch(0.85 0.02 260); /* Light text on secondary */
-  --muted: oklch(0.22 0.06 260); /* Muted blue */
-  --muted-foreground: oklch(0.7 0.03 260); /* Muted text */
-  --accent: oklch(0.35 0.1 260); /* Accent blue */
-  --accent-foreground: oklch(0.95 0.01 260); /* Light text on accent */
-  --destructive: oklch(0.65 0.2 20); /* Red for destructive actions */
-  --border: oklch(0.4 0.06 260); /* Lighter border for better visibility */
-  --input: oklch(0.35 0.05 260); /* Lighter input background for better contrast */
-  --ring: oklch(0.65 0.15 245); /* Focus ring matching primary */
+  /* Dark: Enhanced Navy — lightened for readability */
+  --background: oklch(0.24 0.07 257.45);
+  --foreground: oklch(0.93 0.02 250);
+
+  --card: #051531; /*oklch(0.22 0.062 256);*/
+  --card-foreground: oklch(0.93 0.02 250);
+
+  --popover: oklch(0.22 0.062 256);
+  --popover-foreground: oklch(0.93 0.02 250);
+
+  --primary: oklch(0.65 0.16 245);
+  --primary-foreground: oklch(0.99 0.005 250);
+
+  --secondary: #1d293d; /**oklch(0.27 0.068 257); */
+  --secondary-foreground: oklch(0.88 0.02 255);
+
+  --muted: oklch(0.245 0.06 256);
+  --muted-foreground: oklch(0.89 0.03 255.1);
+
+  --accent: oklch(0.285 0.07 257);
+  --accent-foreground: oklch(0.93 0.02 250);
+
+  --destructive: oklch(0.65 0.2 20);
+
+  --border: oklch(0.4 0.072 257);
+  --input: oklch(0.42 0.11 257.3);
+  --ring: oklch(0.65 0.16 245);
+
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.18 0.055 260); /* Sidebar dark blue */
-  --sidebar-foreground: oklch(0.9 0.015 260); /* Light sidebar text */
-  --sidebar-primary: oklch(0.65 0.15 245); /* Bright blue for sidebar primary */
-  --sidebar-primary-foreground: oklch(0.98 0.005 260); /* Light text on sidebar primary */
-  --sidebar-accent: oklch(0.35 0.1 260); /* Sidebar accent */
-  --sidebar-accent-foreground: oklch(0.95 0.01 260); /* Light text on sidebar accent */
-  --sidebar-border: oklch(0.3 0.08 260); /* Sidebar border */
-  --sidebar-ring: oklch(0.65 0.15 245); /* Sidebar focus ring */
+
+  --sidebar: oklch(0.155 0.046 254);
+  --sidebar-foreground: oklch(0.93 0.02 250);
+  --sidebar-primary: oklch(0.65 0.16 245);
+  --sidebar-primary-foreground: oklch(0.99 0.005 250);
+  --sidebar-accent: oklch(0.285 0.07 257);
+  --sidebar-accent-foreground: oklch(0.93 0.02 250);
+  --sidebar-border: oklch(0.4 0.072 257);
+  --sidebar-ring: oklch(0.65 0.16 245);
+
+  --project-jacly: var(--primary);
+  --project-jacly-background: color-mix(in oklab, var(--primary) 10%, transparent);
+  --project-code: color-mix(in oklab, var(--chart-2) 78%, white 22%);
+  --project-code-background: color-mix(in oklab, var(--chart-2) 18%, transparent);
 }
 
 @layer base {
@@ -133,5 +153,32 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(
+        circle at top left,
+        color-mix(in oklab, var(--primary) 10%, transparent),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at top right,
+        color-mix(in oklab, #7dd3fc 8%, transparent),
+        transparent 24%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--background) 94%, white) 0%,
+        var(--background) 100%
+      );
+    background-attachment: fixed;
+  }
+
+  [data-theme="dark"] body {
+    background-image:
+      radial-gradient(
+        circle at top left,
+        color-mix(in oklab, var(--primary) 8%, transparent),
+        transparent 28%
+      ),
+      linear-gradient(180deg, oklch(0.185 0.052 255) 0%, oklch(0.17 0.05 255) 100%);
   }
 }
