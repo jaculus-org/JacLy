@@ -11,10 +11,9 @@ export interface ReleaseSummaryFile {
 }
 
 export async function fetchReleaseSummary(): Promise<ReleaseSummaryEntry[]> {
-  const response = await fetch(
-    `${import.meta.env.BASE_URL}release-summary.json?ts=${Date.now()}`,
-    { cache: 'no-store' },
-  );
+  const response = await fetch(`${import.meta.env.BASE_URL}release-summary.json?ts=${Date.now()}`, {
+    cache: 'no-store',
+  });
   if (!response.ok) return [];
   const data = (await response.json()) as ReleaseSummaryFile;
   const entries = data[getLocale()];

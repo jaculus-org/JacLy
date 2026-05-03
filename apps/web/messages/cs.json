@@ -229,6 +229,7 @@
   "wokwi_initializing": "Inicializace Wokwi simulátoru...",
   "wokwi_initializing_hint": "Může to trvat až 15 sekund (instaluji závislosti a připravuji prostředí).",
   "editor_jacly_load_error": "Nepodařilo se načíst data editoru",
+  "editor_jacly_autosave_error": "Nepodařilo se uložit automatickou zálohu projektu",
   "editor_jacly_save_json_error": "Nepodařilo se uložit JSON",
   "editor_jacly_save_code_error": "Nepodařilo se uložit generovaný kód",
   "editor_jacly_missing_packages": "Některé bloky ve vašem workspace vyžadují balíčky, které nejsou aktuálně nainstalovány. Zkontrolujte chybějící balíčky a nainstalujte je.",

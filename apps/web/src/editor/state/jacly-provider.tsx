@@ -7,6 +7,7 @@ import { getLocale } from '@/core/paraglide/runtime';
 import { useJacDevice } from '@/device';
 import { packageEventsService } from '@/packages/services/package-events-service';
 import { useActiveProject } from '@/project';
+import { AUTOSAVE_INTERVAL_MS, writeAutosaveBackup, writeStartupBackup } from './jacly-backup';
 import { EditorJaclyContext } from './jacly-context';
 import { ensureParentDir, readOrCreateJsonFile } from './jacly-files';
 import { jaclySaveCoordinator } from './jacly-save-coordinator';
@@ -16,7 +17,7 @@ const FILE_RELOAD_DELAY_MS = 50;
 
 export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   const {
-    state: { fs, fsp },
+    state: { fs, fsp, projectPath },
     actions: { getFileName },
   } = useActiveProject();
   const {
@@ -118,10 +119,14 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
           readOrCreateJsonFile(fs, fsp, jsonPath),
           jacProject.getJaclyData(getLocale()),
         ]);
-        latestJsonContentRef.current = JSON.stringify(jsonData, null, 2);
+        const serialized = JSON.stringify(jsonData, null, 2);
+        latestJsonContentRef.current = serialized;
         if (cancelled) return;
         setInitialJson(jsonData);
         setJaclyBlocksData(blockData);
+        void writeStartupBackup(fsp, projectPath, jsonPath, serialized).catch((err) =>
+          console.error('Failed to create startup backup:', err),
+        );
         watcher = fs.watch(jsonPath, (eventType) => {
           if (cancelled) return;
           if (eventType === 'rename' || eventType === 'change') {
@@ -145,7 +150,22 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
       clearReloadTimer();
       watcher?.close();
     };
-  }, [fs, fsp, getFileName, jacProject]);
+  }, [fs, fsp, projectPath, getFileName, jacProject]);
+
+  useEffect(() => {
+    const jsonPath = getFileName('JACLY_INDEX');
+
+    const intervalId = setInterval(() => {
+      const content = latestJsonContentRef.current;
+      if (!content) return;
+      void writeAutosaveBackup(fsp, projectPath, jsonPath, content).catch((err) => {
+        enqueueSnackbar(m.editor_jacly_autosave_error(), { variant: 'error' });
+        console.error('Failed to create autosave backup:', err);
+      });
+    }, AUTOSAVE_INTERVAL_MS);
+
+    return () => clearInterval(intervalId);
+  }, [fsp, projectPath, getFileName]);
 
   useEffect(() => {
     return packageEventsService.onPackagesChanged(async () => {

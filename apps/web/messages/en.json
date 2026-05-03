@@ -228,6 +228,7 @@
   "wokwi_initializing": "Initializing Wokwi Simulator...",
   "wokwi_initializing_hint": "This may take up to 15 seconds (installing dependencies and starting the simulator).",
   "editor_jacly_load_error": "Failed to load editor data",
+  "editor_jacly_autosave_error": "Failed to save project autosave backup",
   "editor_jacly_save_json_error": "Failed to save JSON",
   "editor_jacly_save_code_error": "Failed to save generated code",
   "editor_jacly_missing_packages": "Some blocks in your workspace require packages that are not currently installed. Please review the missing packages and install them.",
