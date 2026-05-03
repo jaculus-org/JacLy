@@ -1,0 +1,16 @@
+{
+  "en": {
+    "items": [
+      "Featured project templates now open directly from the home page.",
+      "New project links can preselect both the project type and the template.",
+      "The home page now shows recent projects and the current build version."
+    ]
+  },
+  "cs": {
+    "items": [
+      "Doporučené šablony projektů lze nově otevřít přímo z domovské stránky.",
+      "Odkazy pro nový projekt nyní umí předvybrat typ projektu i šablonu.",
+      "Domovská stránka teď zobrazuje poslední projekty a aktuální verzi sestavení."
+    ]
+  }
+}

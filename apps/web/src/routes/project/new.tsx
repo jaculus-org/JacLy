@@ -1,7 +1,6 @@
-import { getRequest } from '@jaculus/jacly/project';
 import { createFromBundle } from '@jaculus/project/creation';
 import type { JaculusProjectType } from '@jaculus/project/package';
-import { Registry, type RegistryListTemplate } from '@jaculus/project/registry';
+import type { RegistryListTemplate } from '@jaculus/project/registry';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BlocksIcon, Code2Icon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
@@ -10,6 +9,7 @@ import { Logger } from '@/core/components/logger';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
 import { loadPackageFromFile } from '@/project/services/load-package';
+import { createProjectRegistry, defaultRegisters } from '@/project/services/registry';
 import {
   Accordion,
   AccordionContent,
@@ -20,8 +20,24 @@ import { Button } from '@/ui/components/button';
 import { ProjectCard } from '@/ui/components/custom/project-card';
 import { Input } from '@/ui/components/input';
 
+interface NewProjectSearchParams {
+  type?: JaculusProjectType;
+  template?: string;
+}
+
 export const Route = createFileRoute('/project/new')({
   component: NewProject,
+  validateSearch: (search: Record<string, unknown>): NewProjectSearchParams => {
+    const type =
+      search.type === 'jacly' || search.type === 'code'
+        ? (search.type as JaculusProjectType)
+        : undefined;
+
+    return {
+      type,
+      template: typeof search.template === 'string' ? search.template : undefined,
+    };
+  },
 });
 
 interface JaculusProjectOptions {
@@ -31,14 +47,9 @@ interface JaculusProjectOptions {
   icon?: React.ReactNode;
 }
 
-const productionRegisters = ['https://registry.jaculus.org/'];
-
-const defaultRegisters = import.meta.env.DEV
-  ? ['http://127.0.0.1:3737/', ...productionRegisters]
-  : productionRegisters;
-
 function NewProject() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { projectManService: runtimeService, projectFsService } = Route.useRouteContext();
   const projectOptions = useMemo<JaculusProjectOptions[]>(
     () => [
@@ -58,7 +69,7 @@ function NewProject() {
     [],
   );
   const [projectName, setProjectName] = useState('');
-  const [projectType, setProjectType] = useState<JaculusProjectType>('jacly');
+  const [projectType, setProjectType] = useState<JaculusProjectType>(search.type ?? 'jacly');
 
   const [templates, setTemplates] = useState<RegistryListTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<RegistryListTemplate | null>(null);
@@ -71,24 +82,37 @@ function NewProject() {
   }, []);
 
   useEffect(() => {
+    if (!search.type || search.type === projectType) {
+      return;
+    }
+
+    setProjectType(search.type);
+  }, [projectType, search.type]);
+
+  useEffect(() => {
     (async () => {
       try {
-        const registry = new Registry(registers, getRequest, logger);
+        const registry = createProjectRegistry(registers);
         const loadedTemplates = await registry.listTemplates(projectType);
         setTemplates(loadedTemplates);
-        if (loadedTemplates.length > 0) {
-          setSelectedTemplate(loadedTemplates[0]);
-        } else {
-          setSelectedTemplate(null);
-        }
+        const preferredTemplate =
+          (search.template
+            ? loadedTemplates.find((template) => template.id === search.template)
+            : null) ??
+          loadedTemplates[0] ??
+          null;
+
+        setSelectedTemplate(preferredTemplate);
       } catch (error) {
         console.error('Failed to load templates from registry:', error);
+        setTemplates([]);
+        setSelectedTemplate(null);
         enqueueSnackbar(m.project_new_template_load_error(), {
           variant: 'error',
         });
       }
     })();
-  }, [projectType, registers]);
+  }, [projectType, registers, search.template]);
 
   async function handleProjectCreation() {
     if (!selectedTemplate) {
@@ -103,7 +127,7 @@ function NewProject() {
 
     setIsCreating(true);
     try {
-      const registry = new Registry(registers, getRequest, logger);
+      const registry = createProjectRegistry(registers);
       const versions = await registry.listVersions(selectedTemplate.id);
       const tgz = await registry.getPackageTgz(selectedTemplate.id, versions[0]);
 

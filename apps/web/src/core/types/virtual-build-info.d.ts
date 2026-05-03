@@ -1,5 +1,5 @@
 declare module 'virtual-build-info' {
-  interface BuildInfo {
+  export interface BuildInfo {
     version: string;
     buildTime: string;
     commitHash: string;

@@ -44,34 +44,33 @@
 :root {
   --radius: 0.625rem;
 
-  /* Light theme: neutral cool grey with subtle blue tint */
-  --background: oklch(0.97 0.01 250); /* soft off-white, slightly cool */
-  --foreground: oklch(0.2 0.03 252); /* dark neutral text */
+  /* Light theme: intentionally light blue instead of near-white */
+  --background: oklch(0.95 0.018 249);
+  --foreground: oklch(0.2 0.03 252);
 
-  --card: oklch(0.995 0.005 250); /* almost white card */
+  --card: oklch(0.985 0.015 248);
   --card-foreground: oklch(0.2 0.03 252);
 
-  --popover: oklch(0.99 0.008 250);
+  --popover: oklch(0.988 0.012 248);
   --popover-foreground: oklch(0.2 0.03 252);
 
-  /* Keep blue only for actions, not whole UI */
-  --primary: oklch(0.67 0.15 245); /* matches dark theme’s blue */
+  --primary: oklch(0.64 0.16 245);
   --primary-foreground: oklch(0.99 0.01 252);
 
-  --secondary: oklch(0.94 0.02 250);
+  --secondary: oklch(0.935 0.025 248);
   --secondary-foreground: oklch(0.25 0.03 252);
 
-  --muted: oklch(0.95 0.015 250);
-  --muted-foreground: oklch(0.5 0.02 252);
+  --muted: oklch(0.955 0.02 248);
+  --muted-foreground: oklch(0.49 0.025 252);
 
-  --accent: oklch(0.95 0.025 245); /* subtle highlight, not full blue panel */
+  --accent: oklch(0.95 0.035 244);
   --accent-foreground: oklch(0.22 0.03 252);
 
   --destructive: oklch(0.577 0.245 27.325);
 
-  --border: oklch(0.78 0.03 250); /* more visible grey border */
-  --input: oklch(0.67 0.15 245); /* white input background for contrast */
-  --ring: oklch(0.67 0.15 245); /* match primary for consistency */
+  --border: oklch(0.86 0.03 247);
+  --input: oklch(0.93 0.03 247);
+  --ring: oklch(0.64 0.16 245);
 
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -79,18 +78,17 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
 
-  /* Sidebar: same neutral base, blue only for active / primary */
-  --sidebar: oklch(0.96 0.015 250);
+  --sidebar: oklch(0.94 0.02 248);
   --sidebar-foreground: oklch(0.2 0.03 252);
 
-  --sidebar-primary: oklch(0.67 0.15 245);
+  --sidebar-primary: oklch(0.64 0.16 245);
   --sidebar-primary-foreground: oklch(0.99 0.01 252);
 
-  --sidebar-accent: oklch(0.95 0.025 245);
+  --sidebar-accent: oklch(0.95 0.035 244);
   --sidebar-accent-foreground: oklch(0.22 0.03 252);
 
-  --sidebar-border: oklch(0.78 0.03 250);
-  --sidebar-ring: oklch(0.67 0.15 245);
+  --sidebar-border: oklch(0.86 0.03 247);
+  --sidebar-ring: oklch(0.64 0.16 245);
 }
 
 [data-theme="dark"] {
@@ -133,5 +131,28 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(
+        circle at top left,
+        color-mix(in oklab, var(--primary) 12%, transparent),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at top right,
+        color-mix(in oklab, #67e8f9 10%, transparent),
+        transparent 24%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--background) 92%, white) 0%,
+        var(--background) 100%
+      );
+    background-attachment: fixed;
+  }
+
+  [data-theme="dark"] body {
+    background-image:
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 28%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, var(--background) 100%);
   }
 }

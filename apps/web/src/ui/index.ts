@@ -31,6 +31,7 @@ export * from './components/resizable';
 export * from './components/scroll-area';
 export * from './components/select';
 export * from './components/separator';
+export * from './components/skeleton';
 export * from './components/tabs';
 export * from './components/textarea';
 export * from './components/tooltip';

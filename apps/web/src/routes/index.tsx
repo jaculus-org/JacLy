@@ -1,109 +1,25 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { BlocksIcon, Code2Icon, ListIcon, PlusCircleIcon, ZapIcon } from 'lucide-react';
-import { m } from '@/core/paraglide/messages';
-import { Button } from '@/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/components/card';
+import { createFileRoute } from '@tanstack/react-router';
+import { Suspense, useMemo } from 'react';
+import { useBuildInfo } from '@/core';
+import { Home, loadHomeData } from '@/home';
 
 export const Route = createFileRoute('/')({
   component: Root,
 });
 
 function Root() {
-  const features = [
-    {
-      title: m.index_feature_visual_title(),
-      description: m.index_feature_visual_desc(),
-      icon: BlocksIcon,
-    },
-    {
-      title: m.index_feature_code_title(),
-      description: m.index_feature_code_desc(),
-      icon: Code2Icon,
-    },
-    {
-      title: m.index_feature_fast_title(),
-      description: m.index_feature_fast_desc(),
-      icon: ZapIcon,
-    },
-  ];
+  const routeContext = Route.useRouteContext();
+  const buildInfo = useBuildInfo();
+  const dataPromise = useMemo(
+    () => loadHomeData({ projectManService: routeContext.projectManService }),
+    [routeContext.projectManService],
+  );
 
   return (
-    <div className="py-12">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
-          {m.index_welcome_message()}
-        </h1>
-        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          {m.index_hero_subtitle()}
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/project/new">
-              <PlusCircleIcon className="h-5 w-5" />
-              {m.index_btn_create_project()}
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="gap-2">
-            <Link to="/project">
-              <ListIcon className="h-5 w-5" />
-              {m.index_btn_view_projects()}
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {features.map((feature) => {
-          const Icon = feature.icon;
-          return (
-            <Card
-              key={feature.title}
-              className="transition-all hover:shadow-lg hover:-translate-y-1"
-            >
-              <CardHeader>
-                <div className="mb-4 p-3 rounded-lg bg-primary/10 w-fit">
-                  <Icon className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-                <CardDescription className="text-base">{feature.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Getting Started Section */}
-      <Card className="border-2">
-        <CardHeader>
-          <CardTitle className="text-2xl">{m.index_get_started_title()}</CardTitle>
-          <CardDescription className="text-base">{m.index_get_started_subtitle()}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-4 p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors">
-            <div className="p-2 rounded-md bg-primary/10">
-              <BlocksIcon className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold mb-1">{m.index_blocks_title()}</h3>
-              <p className="text-sm text-muted-foreground">{m.index_blocks_desc()}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 p-4 rounded-lg bg-accent/50 hover:bg-accent transition-colors">
-            <div className="p-2 rounded-md bg-primary/10">
-              <Code2Icon className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold mb-1">{m.index_typescript_title()}</h3>
-              <p className="text-sm text-muted-foreground">{m.index_typescript_desc()}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Suspense fallback={<Home.Skeleton />}>
+      <Home.Provider dataPromise={dataPromise} buildInfo={buildInfo}>
+        <Home.Page />
+      </Home.Provider>
+    </Suspense>
   );
 }
