@@ -45,6 +45,7 @@
   "notfound_go_home": "Go Home",
   "notfound_go_back": "Go Back",
   "project_title": "Projects",
+  "project_subtitle": "Open recent work, rename projects, or start a new one from a template or import.",
   "project_provider_missing_package_json": "The 'package.json' file was not found. Please ensure it exists in your project and is valid.",
   "project_provider_load_failed": "Failed to load the project",
   "project_btn_create": "Create New Project",

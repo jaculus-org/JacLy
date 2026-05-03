@@ -18,6 +18,12 @@ export {
 } from './components/custom/collapsible-card';
 export { ErrorBoundary } from './components/custom/error-boundary';
 export { GeneralHeader } from './components/custom/general-header';
+export { PageHero } from './components/custom/page-hero';
+export {
+  ProjectBlock,
+  ProjectBlockCard,
+  ProjectBlockSkeleton,
+} from './components/custom/project-block';
 export { ProjectCard } from './components/custom/project-card';
 export { StatusCard } from './components/custom/status-card';
 export * from './components/dialog';

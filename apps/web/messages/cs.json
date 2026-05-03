@@ -45,6 +45,7 @@
   "notfound_go_home": "Domů",
   "notfound_go_back": "Zpět",
   "project_title": "Projekty",
+  "project_subtitle": "Otevřete poslední práci, přejmenujte projekty nebo začněte nový ze šablony či importu.",
   "project_btn_create": "Vytvořit nový projekt",
   "project_btn_import": "Importovat projekt",
   "project_delete": "Smazat projekt",
