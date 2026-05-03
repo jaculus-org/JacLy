@@ -5,7 +5,7 @@ import { Skeleton } from '@/ui/components/skeleton';
 export function ProjectIndexSkeleton() {
   return (
     <div className="space-y-8 py-8">
-      <Card className="overflow-hidden rounded-[2rem] border border-sky-200/80 bg-white/80 ring-0 dark:border-slate-800 dark:bg-[linear-gradient(180deg,rgba(17,29,58,0.96),rgba(14,23,46,0.92))]">
+      <Card className="overflow-hidden rounded-[2rem] border border-border bg-card ring-0">
         <CardContent className="space-y-6 px-6 py-8 sm:px-8 sm:py-10">
           <Skeleton className="h-14 w-48" />
           <Skeleton className="h-6 w-full max-w-2xl" />
