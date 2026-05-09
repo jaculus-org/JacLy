@@ -32,7 +32,11 @@ export function HomeHero() {
       }
       sideContent={
         <>
-          <div className="rounded-2xl border border-primary/20 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_76%,var(--primary)_24%),color-mix(in_oklab,var(--card)_90%,var(--secondary)_10%))] p-4 shadow-[0_12px_32px_-24px_rgba(15,23,42,0.12)] backdrop-blur dark:border-primary/25 dark:bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_78%,var(--primary)_22%),color-mix(in_oklab,var(--card)_88%,var(--secondary)_12%))] dark:shadow-[0_12px_32px_-24px_rgba(0,0,0,0.4)]">
+          <Link
+            to="/project/new"
+            search={{ type: 'jacly' }}
+            className="rounded-2xl border border-primary/20 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_76%,var(--primary)_24%),color-mix(in_oklab,var(--card)_90%,var(--secondary)_10%))] p-4 shadow-[0_12px_32px_-24px_rgba(15,23,42,0.12)] backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_42px_-24px_rgba(15,23,42,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 dark:border-primary/25 dark:bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_78%,var(--primary)_22%),color-mix(in_oklab,var(--card)_88%,var(--secondary)_12%))] dark:shadow-[0_12px_32px_-24px_rgba(0,0,0,0.4)] dark:hover:border-primary/45 dark:hover:shadow-[0_18px_42px_-24px_rgba(0,0,0,0.6)] dark:focus-visible:ring-primary/55"
+          >
             <div className="mb-3 flex items-center gap-3">
               <div className="rounded-xl bg-project-jacly-background p-2 text-project-jacly">
                 <BlocksIcon className="size-5" />
@@ -42,9 +46,13 @@ export function HomeHero() {
                 <p className="text-sm text-muted-foreground">{m.index_blocks_desc()}</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="rounded-2xl border border-primary/20 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_78%,var(--chart-2)_22%),color-mix(in_oklab,var(--card)_90%,var(--secondary)_10%))] p-4 shadow-[0_12px_32px_-24px_rgba(15,23,42,0.12)] backdrop-blur dark:border-primary/25 dark:bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_82%,var(--chart-2)_18%),color-mix(in_oklab,var(--card)_88%,var(--secondary)_12%))] dark:shadow-[0_12px_32px_-24px_rgba(0,0,0,0.4)]">
+          <Link
+            to="/project/new"
+            search={{ type: 'code' }}
+            className="rounded-2xl border border-primary/20 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_78%,var(--chart-2)_22%),color-mix(in_oklab,var(--card)_90%,var(--secondary)_10%))] p-4 shadow-[0_12px_32px_-24px_rgba(15,23,42,0.12)] backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_18px_42px_-24px_rgba(15,23,42,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 dark:border-primary/25 dark:bg-[linear-gradient(180deg,color-mix(in_oklab,var(--card)_82%,var(--chart-2)_18%),color-mix(in_oklab,var(--card)_88%,var(--secondary)_12%))] dark:shadow-[0_12px_32px_-24px_rgba(0,0,0,0.4)] dark:hover:border-primary/45 dark:hover:shadow-[0_18px_42px_-24px_rgba(0,0,0,0.6)] dark:focus-visible:ring-primary/55"
+          >
             <div className="mb-3 flex items-center gap-3">
               <div className="rounded-xl bg-project-code-background p-2 text-project-code">
                 <Code2Icon className="size-5" />
@@ -54,7 +62,7 @@ export function HomeHero() {
                 <p className="text-sm text-muted-foreground">{m.index_typescript_desc()}</p>
               </div>
             </div>
-          </div>
+          </Link>
         </>
       }
     />

@@ -342,7 +342,7 @@
   "installer_dialog_title": "Info",
   "installer_dialog_confirm": "Confirm",
   "editor_jacly_loading_header": "Loading Jacly Editor",
-  "project_panel_chart": "Chart",
+  "project_panel_chart": "Plotter",
   "keyvalue_component": "Key-Value",
   "keyvalue_sort_alpha_tooltip": "Sort alphabetically",
   "keyvalue_sort_time": "Time",
