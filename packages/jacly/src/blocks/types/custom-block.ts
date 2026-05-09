@@ -8,6 +8,7 @@ interface BlockExtension {
   nextStatement?: string | null;
 
   savedInstanceName?: string;
+  savedInstanceNames?: Record<string, string>;
   callbackVarInputName?: string;
 }
 

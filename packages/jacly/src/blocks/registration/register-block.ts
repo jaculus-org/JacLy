@@ -83,52 +83,60 @@ export function registerBlocklyBlock(
       }
 
       if (block.args0) {
-        block.args0.forEach((arg) => {
-          if (
+        const instanceArgs = block.args0.filter(
+          (arg): arg is Extract<(typeof block.args0)[number], { type: 'field_dropdown' }> =>
             arg.type === 'field_dropdown' &&
-            arg.instanceof &&
-            arg.options &&
-            arg.options.length === 1
-          ) {
-            const systemId = arg.instanceof;
-            const fieldName = arg.name;
+            !!(arg as { instanceof?: string }).instanceof &&
+            !!(arg as { options?: unknown[] }).options &&
+            (arg as { options?: unknown[] }).options!.length === 1,
+        );
 
-            const field = this.getField(fieldName);
-            if (field && field instanceof Blockly.FieldDropdown) {
-              const dropdownField = field as FieldDropdownWithMenuGenerator;
-              dropdownField.menuGenerator_ = getInstanceDropdownGenerator(
-                state,
-                systemId,
-              ) as Blockly.MenuGenerator & (() => Blockly.MenuGenerator);
+        for (const arg of instanceArgs) {
+          const systemId = arg.instanceof!;
+          const fieldName = arg.name;
 
-              const options = getInstanceDropdownGenerator(state, systemId).call(field) as [
-                string,
-                string,
-              ][];
-              if (options.length === 1 && options[0][1] !== 'INVALID') {
-                this.setFieldValue(options[0][1], fieldName);
-              }
+          const field = this.getField(fieldName);
+          if (field && field instanceof Blockly.FieldDropdown) {
+            const dropdownField = field as FieldDropdownWithMenuGenerator;
+            dropdownField.menuGenerator_ = getInstanceDropdownGenerator(
+              state,
+              systemId,
+            ) as Blockly.MenuGenerator & (() => Blockly.MenuGenerator);
+
+            const options = getInstanceDropdownGenerator(state, systemId).call(field) as [
+              string,
+              string,
+            ][];
+            if (options.length === 1 && options[0][1] !== 'INVALID') {
+              this.setFieldValue(options[0][1], fieldName);
             }
-
-            const existingOnChange = this.onchange;
-            this.onchange = function (this: BlockExtended, e: Blockly.Events.Abstract) {
-              if (existingOnChange) existingOnChange.call(this, e);
-              validateInstanceSelection.call(this, state, systemId, fieldName);
-            };
-
-            const baseSave = this.saveExtraState!.bind(this);
-            this.saveExtraState = function () {
-              return {
-                ...baseSave(),
-                instanceName: this.getFieldValue(fieldName),
-              };
-            };
-
-            this.loadExtraState = function (state: BlockExtraState) {
-              this.savedInstanceName = state.instanceName;
-            };
           }
-        });
+
+          const existingOnChange = this.onchange;
+          this.onchange = function (this: BlockExtended, e: Blockly.Events.Abstract) {
+            if (existingOnChange) existingOnChange.call(this, e);
+            validateInstanceSelection.call(this, state, systemId, fieldName);
+          };
+        }
+
+        if (instanceArgs.length > 0) {
+          const baseSave = this.saveExtraState!.bind(this);
+          this.saveExtraState = function (this: BlockExtended) {
+            const instanceNames: Record<string, string> = {};
+            for (const arg of instanceArgs) {
+              instanceNames[arg.name] = this.getFieldValue(arg.name);
+            }
+            return { ...baseSave(), instanceNames };
+          };
+
+          this.loadExtraState = function (this: BlockExtended, extraState: BlockExtraState) {
+            if (extraState.instanceNames) {
+              this.savedInstanceNames = extraState.instanceNames;
+            } else if (extraState.instanceName && instanceArgs.length === 1) {
+              this.savedInstanceNames = { [instanceArgs[0].name]: extraState.instanceName };
+            }
+          };
+        }
       }
     },
   };

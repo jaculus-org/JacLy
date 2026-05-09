@@ -22,10 +22,12 @@ export function getInstanceDropdownGenerator(
       if (!exists) options.push([currentValue, currentValue]);
     }
 
-    if (sourceBlock?.savedInstanceName) {
-      const saved = sourceBlock.savedInstanceName;
-      const exists = options.some((opt) => opt[1] === saved);
-      if (!exists && saved !== 'INVALID') options.push([saved, saved]);
+    const fieldName = this.name;
+    const savedByField = fieldName && sourceBlock?.savedInstanceNames?.[fieldName];
+    const savedFallback = savedByField || sourceBlock?.savedInstanceName;
+    if (savedFallback) {
+      const exists = options.some((opt) => opt[1] === savedFallback);
+      if (!exists && savedFallback !== 'INVALID') options.push([savedFallback, savedFallback]);
     }
 
     options.sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }));

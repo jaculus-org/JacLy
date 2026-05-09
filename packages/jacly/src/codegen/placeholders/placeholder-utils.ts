@@ -11,6 +11,7 @@ export type FieldDropdownWithMenuGenerator = Blockly.FieldDropdown & {
 
 export interface BlockExtraState {
   instanceName?: string;
+  instanceNames?: Record<string, string>;
 }
 
 export function getPlaceholderValue(
