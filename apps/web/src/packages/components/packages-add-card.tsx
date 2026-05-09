@@ -1,7 +1,8 @@
 'use client';
 
 import type { RegistryListProject } from '@jaculus/project/registry';
-import { Plus } from 'lucide-react';
+import { PackagePlus } from 'lucide-react';
+import { useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import { Card } from '@/ui/components/card';
@@ -23,6 +24,7 @@ import {
 import { useJacPackages } from '../state/packages-context';
 
 export function JacPackagesAddCard() {
+  const [packagePickerResetKey, setPackagePickerResetKey] = useState(0);
   const {
     state: {
       availableLibChoices,
@@ -34,19 +36,28 @@ export function JacPackagesAddCard() {
     actions: { selectLib, selectLibVersion, addLibrary },
   } = useJacPackages();
 
+  async function handleAddLibrary() {
+    await addLibrary();
+    setPackagePickerResetKey((key) => key + 1);
+  }
+
   return (
     <Card className="p-3">
-      <div className="mb-2 flex items-center gap-2">
-        <Plus className="h-4 w-4" />
-        <h3 className="font-semibold">{m.project_panel_pkg_add_title()}</h3>
+      <div className="mb-3 flex items-start gap-2">
+        <PackagePlus className="mt-0.5 h-5 w-5 text-muted-foreground" />
+        <div>
+          <h3 className="font-semibold">{m.project_panel_pkg_add_title()}</h3>
+          <p className="text-xs text-muted-foreground">{m.project_panel_pkg_add_help()}</p>
+        </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div>
           <label className="mb-1 block text-sm text-muted-foreground">
-            {m.project_panel_pkg_select()}
+            {m.project_panel_pkg_name()}
           </label>
           <Combobox
+            key={packagePickerResetKey}
             items={availableLibChoices}
             onValueChange={(value) => selectLib((value as RegistryListProject | null)?.id ?? null)}
             itemToStringLabel={(item: RegistryListProject) => item.id}
@@ -101,12 +112,12 @@ export function JacPackagesAddCard() {
         </div>
 
         <Button
-          onClick={addLibrary}
+          onClick={handleAddLibrary}
           disabled={isInstalling || !selectedLib || availableLibVersions.length === 0}
           className="w-full"
         >
-          <Plus />
-          {m.project_panel_pkg_add()}
+          <PackagePlus />
+          {m.project_panel_pkg_add_selected()}
         </Button>
       </div>
     </Card>

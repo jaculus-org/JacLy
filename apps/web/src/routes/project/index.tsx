@@ -3,7 +3,16 @@ import { packProjectAsTarGz } from '@jaculus/project/export';
 import { copyFolder, type FSInterface } from '@jaculus/project/fs';
 import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
 import { createFileRoute } from '@tanstack/react-router';
-import { Archive, CopyPlus, Download, Link2, MoreVertical, Pencil, Share2, Trash } from 'lucide-react';
+import {
+  Archive,
+  CopyPlus,
+  Download,
+  Link2,
+  MoreVertical,
+  Pencil,
+  Share2,
+  Trash,
+} from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { Suspense, use, useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
@@ -382,9 +391,7 @@ function ProjectIndexContent({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Duplicate project</DialogTitle>
-            <DialogDescription>
-              Create a copy named "{duplicateProjectName}"?
-            </DialogDescription>
+            <DialogDescription>Create a copy named "{duplicateProjectName}"?</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDuplicateDialogOpen(false)}>
