@@ -229,7 +229,6 @@ export function InstallerProvider({
         transport: newTransport,
         baudrate: state.baudrate,
         debugLogging: false,
-        romBaudrate: 115200,
       };
       const newEsploader = new ESPLoader(flashOptions);
 
@@ -255,7 +254,7 @@ export function InstallerProvider({
 
       terminal.writeLine(m.installer_msg_connected_terminal({ chipName }));
 
-      const flashSize = await newEsploader.getFlashSize();
+      const flashSize = await newEsploader.detectFlashSize();
       if (flashSize) {
         terminal.writeLine(
           m.installer_msg_flash_size({

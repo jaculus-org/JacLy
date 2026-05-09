@@ -305,8 +305,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(@types/react@19.2.14)(dexie@4.3.0)(react@19.2.4)
       esptool-js:
-        specifier: ^0.5.7
-        version: 0.5.7
+        specifier: ^0.6.0
+        version: 0.6.0
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
@@ -4608,8 +4608,8 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
-  esptool-js@0.5.7:
-    resolution: {integrity: sha512-k3pkXU9OTySCd58OUDjuJWNnFjM+QpPWAghxyWPm3zNfaLiP4ex2jNd7Rj0jWPu3/fgvwau236tetsTZrh4x5g==}
+  esptool-js@0.6.0:
+    resolution: {integrity: sha512-ZyuSBXvmS+4DRKM6GrDHfCscnq3YSNlRfM+Zw0DoS7uC3SdkyC262s/ji4MjDYVmMH8SE2BiYx3/dZ1J23Xiew==}
 
   esquery@1.6.0:
     resolution: {integrity: sha512-ca9pw9fomFcKPvFLXhBKUK90ZvGibiGOvRJNbjljY7s7uq/5YO4BOzcYtJqExdx99rF6aAcnRxHmcUHcz6sQsg==}
@@ -11971,7 +11971,7 @@ snapshots:
 
   esprima@4.0.1: {}
 
-  esptool-js@0.5.7:
+  esptool-js@0.6.0:
     dependencies:
       atob-lite: 2.0.0
       pako: 2.1.0

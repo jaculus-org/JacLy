@@ -116,7 +116,8 @@ export class ESP32Flasher {
     }
 
     // Prepare files for flashing
-    const fileArray: { data: string; address: number; fileName: string }[] = [];
+    const fileArray: { data: Uint8Array; address: number }[] = [];
+    const fileNames: string[] = [];
     const partitions = manifest.config.partitions;
 
     for (const partition of partitions) {
@@ -131,12 +132,9 @@ export class ESP32Flasher {
         throw new Error(`File not found: ${partition.file}`);
       }
 
-      const address = parseInt(partition.address, 10);
-      fileArray.push({
-        data: this.esploader.ui8ToBstr(fileData),
-        address,
-        fileName: partition.file,
-      });
+      const address = Number(partition.address);
+      fileArray.push({ data: fileData, address });
+      fileNames.push(partition.file);
 
       this.terminal.writeLine(`Prepared ${partition.file} (${fileData.length} bytes)`);
     }
@@ -148,7 +146,7 @@ export class ESP32Flasher {
       stage: 'flashing',
       fileIndex: 0,
       totalFiles: fileArray.length,
-      fileName: fileArray[0]?.fileName || '',
+      fileName: fileNames[0] || '',
       written: 0,
       total: fileArray[0]?.data.length || 0,
       percentage: 0,
@@ -161,18 +159,15 @@ export class ESP32Flasher {
       flashFreq: 'keep',
       eraseAll: false,
       compress: true,
-      reportProgress: (fileIndex: number, written: number) => {
-        const file = fileArray[fileIndex];
-        const percentage = (written / file.data.length) * 100;
-
+      reportProgress: (fileIndex: number, written: number, total: number) => {
         this.onProgress?.({
           stage: 'flashing',
           fileIndex,
           totalFiles: fileArray.length,
-          fileName: file.fileName,
+          fileName: fileNames[fileIndex] || '',
           written,
-          total: file.data.length,
-          percentage,
+          total,
+          percentage: (written / total) * 100,
         });
       },
     });
