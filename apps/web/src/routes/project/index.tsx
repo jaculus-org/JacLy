@@ -1,9 +1,9 @@
 import path from 'node:path';
 import { packProjectAsTarGz } from '@jaculus/project/export';
-import type { FSInterface } from '@jaculus/project/fs';
+import { copyFolder, type FSInterface } from '@jaculus/project/fs';
 import { loadPackageJson, savePackageJson } from '@jaculus/project/package';
 import { createFileRoute } from '@tanstack/react-router';
-import { Archive, Download, Link2, MoreVertical, Pencil, Share2, Trash } from 'lucide-react';
+import { Archive, CopyPlus, Download, Link2, MoreVertical, Pencil, Share2, Trash } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { Suspense, use, useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from '@/ui/components/dropdown-menu';
 import { Input } from '@/ui/components/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
 
 export const Route = createFileRoute('/project/')({
   component: ProjectIndexRoute,
@@ -58,6 +59,7 @@ interface ProjectIndexContentProps {
   dataPromise: Promise<IDbProject[]>;
   runtimeService: {
     listProjects: () => Promise<IDbProject[]>;
+    createProject: (name: string, type: IDbProject['type']) => Promise<IDbProject>;
     deleteProject: (projectId: string) => Promise<void>;
     renameProject: (projectId: string, nextName: string) => Promise<void>;
   };
@@ -78,6 +80,8 @@ function ProjectIndexContent({
   const [projects, setProjects] = useState(initialProjects);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [projectToDuplicate, setProjectToDuplicate] = useState<IDbProject | null>(null);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [projectToRename, setProjectToRename] = useState<{
     id: string;
@@ -98,6 +102,76 @@ function ProjectIndexContent({
     setRenameValue(projectName);
     setRenameError(null);
     setRenameDialogOpen(true);
+  }
+
+  function getDuplicateProjectName(projectName: string) {
+    const baseName = `${projectName} duplication`;
+    const projectNames = new Set(projects.map((project) => project.name));
+
+    if (!projectNames.has(baseName)) {
+      return baseName;
+    }
+
+    let index = 2;
+    let nextName = `${baseName} ${index}`;
+
+    while (projectNames.has(nextName)) {
+      index += 1;
+      nextName = `${baseName} ${index}`;
+    }
+
+    return nextName;
+  }
+
+  async function duplicateProject(project: IDbProject) {
+    const nextName = getDuplicateProjectName(project.name);
+    let duplicatedProjectId: string | null = null;
+
+    try {
+      const duplicatedProject = await runtimeService.createProject(nextName, project.type);
+      duplicatedProjectId = duplicatedProject.id;
+
+      await projectFsService.withMount(project.id, async (source) => {
+        await projectFsService.withMount(duplicatedProject.id, async (target) => {
+          await copyFolder(
+            source.fs as FSInterface,
+            source.projectPath,
+            target.fs as FSInterface,
+            target.projectPath,
+          );
+
+          const nextNamePackage = nextName.replace(/[^a-zA-Z0-9-_]/g, '-');
+
+          if (projectNamePatternJson.test(nextNamePackage)) {
+            const packageJsonPath = path.join(target.projectPath, 'package.json');
+            const pkgJson = await loadPackageJson(target.fs as FSInterface, packageJsonPath);
+            await savePackageJson(target.fs as FSInterface, packageJsonPath, {
+              ...pkgJson,
+              name: nextName,
+            });
+          }
+        });
+      });
+
+      await refreshProjects();
+      enqueueSnackbar(`Project duplicated as "${nextName}"`, { variant: 'success' });
+    } catch (error) {
+      console.error('Failed to duplicate project:', error);
+
+      if (duplicatedProjectId) {
+        await runtimeService.deleteProject(duplicatedProjectId);
+      }
+
+      enqueueSnackbar('Failed to duplicate project', { variant: 'error' });
+    }
+  }
+
+  async function confirmDuplicate() {
+    if (!projectToDuplicate) return;
+
+    await duplicateProject(projectToDuplicate);
+    setDuplicateDialogOpen(false);
+    setProjectToDuplicate(null);
   }
 
   async function confirmDelete() {
@@ -158,6 +232,10 @@ function ProjectIndexContent({
     }
   }
 
+  const duplicateProjectName = projectToDuplicate
+    ? getDuplicateProjectName(projectToDuplicate.name)
+    : '';
+
   return (
     <>
       <ProjectIndexPage
@@ -165,15 +243,21 @@ function ProjectIndexContent({
         renderAction={(project) => (
           <div className="flex items-center gap-1">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-accent hover:text-foreground"
-                >
-                  <Share2 className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:bg-accent hover:text-foreground"
+                      aria-label="Share project"
+                    >
+                      <Share2 className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Share project</TooltipContent>
+              </Tooltip>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={async () => {
@@ -224,16 +308,31 @@ function ProjectIndexContent({
             </DropdownMenu>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:bg-accent hover:text-foreground"
-                >
-                  <MoreVertical className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:bg-accent hover:text-foreground"
+                      aria-label="Project actions"
+                    >
+                      <MoreVertical className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Project actions</TooltipContent>
+              </Tooltip>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setProjectToDuplicate(project);
+                    setDuplicateDialogOpen(true);
+                  }}
+                >
+                  <CopyPlus className="mr-2 size-4" />
+                  Duplicate project
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => startRename(project.id, project.name)}>
                   <Pencil className="mr-2 size-4" />
                   {m.project_rename()}
@@ -267,6 +366,31 @@ function ProjectIndexContent({
             <Button variant="destructive" onClick={confirmDelete}>
               {m.project_delete_confirm()}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={duplicateDialogOpen}
+        onOpenChange={(open) => {
+          setDuplicateDialogOpen(open);
+          if (!open) {
+            setProjectToDuplicate(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Duplicate project</DialogTitle>
+            <DialogDescription>
+              Create a copy named "{duplicateProjectName}"?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDuplicateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmDuplicate}>Duplicate</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
