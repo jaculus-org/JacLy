@@ -2,7 +2,7 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "index_hero_title": "Webové vývojové prostředí pro platformu Jaculus",
   "index_hero_description": "JacLy je webové IDE pro tvorbu programů pro mikrokontrolérů ESP32. Vývoj může probíhat buď ve vizuálním blokovém editoru, nebo formou textového zápisu v jazyce TypeScript.",
-  "index_primary_cta": "Začít blokový projekt",
+  "index_primary_cta": "Začít nový projekt",
   "index_secondary_cta": "Otevřít poslední projekty",
   "index_template_section_title": "Doporučené šablony",
   "index_template_section_desc": "Vyberte si výchozí šablonu ze které bude projekt vycházet.",

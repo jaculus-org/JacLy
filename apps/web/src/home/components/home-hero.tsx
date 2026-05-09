@@ -12,7 +12,7 @@ export function HomeHero() {
       actions={
         <>
           <Button asChild size="lg" variant="cta">
-            <Link to="/project/new" search={{ type: 'jacly' }}>
+            <Link to="/project/new">
               <PlusCircleIcon className="size-4.5" />
               {m.index_primary_cta()}
             </Link>
