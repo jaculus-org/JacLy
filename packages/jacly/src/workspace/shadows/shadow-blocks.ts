@@ -1,4 +1,5 @@
-// Helpers for adding shadow blocks to value inputs
+// helpers for adding shadow blocks to inputs.
+// uses XML because connection.setShadowDom takes an XML element; no JSON-based setter exists.
 
 import * as Blockly from 'blockly/core';
 

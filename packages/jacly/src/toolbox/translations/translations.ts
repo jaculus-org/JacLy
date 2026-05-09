@@ -1,10 +1,13 @@
 import * as Blockly from 'blockly/core';
 import type { JaclyBlock, JaclyBlocksArgs, JaclyConfig } from '@/schema';
 
+// merged into Blockly.Msg so %{BKY_KEY} resolution works for both built-in and JacLy strings
 export function registerTranslations(translations: Record<string, string>): void {
   Object.assign(Blockly.Msg, translations);
 }
 
+// %T% = auto-key from context (block type + field -> e.g. MOTOR_CONSTRUCTOR_MESSAGE0).
+// plain strings pass through unchanged.
 export function t(prefix: string, key: string | null = null): string {
   if (key === '%T%' || key == null) {
     key = `%{BKY_${prefix.toUpperCase()}}`;
@@ -22,6 +25,7 @@ function tRegex(key: string, prefix: string): string {
   return key;
 }
 
+// mutates in place before registration so all downstream code sees translated strings directly
 export function localizeJaclyConfig(config: JaclyConfig): void {
   config.name = t(`${config.category}_name`, config.name);
   if (config.colour) config.colour = t(`${config.category}_colour`, config.colour);

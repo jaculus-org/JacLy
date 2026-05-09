@@ -4,6 +4,9 @@ import type { JaclyBlock, JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 import { cloneAndMergeInputs } from './input-merging';
 
+// alias = block referenced by type only, no full definition, reuses another package's registration.
+// inputs are merged per-occurrence (each category can override shadows independently).
+// color patch wraps Blockly.Blocks[type].init globally and only runs once per type.
 export function editInternalBlocks(
   state: EngineState,
   block: JaclyBlock,

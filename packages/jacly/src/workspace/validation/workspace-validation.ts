@@ -102,6 +102,10 @@ function replaceBlock(node: BlockState, hoisted: BlockState[], replaced: Set<str
   return node;
 }
 
+// three passes:
+// 1. restore unsupported_block placeholders whose packages are now loaded; enrich with current shadows
+// 2. collect still-missing types -> call onMissingPackage so the caller can prompt for install
+// 3. replace remaining unresolved blocks with placeholders; inline ones are hoisted to canvas
 export async function sanitizeWorkspaceState(
   json: object,
   onMissingPackage: (missingPackages: EngineMissingPackages) => Promise<void>,

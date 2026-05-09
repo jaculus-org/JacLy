@@ -3,6 +3,10 @@ import type { FieldDropdownExtended } from '@/blocks/types/custom-block';
 import type { EngineState } from '../../engine/engine-state';
 import { getInstanceTracker } from './instance-tracker';
 
+// menu generator re-runs on every open. two fallbacks stop the field losing its value:
+// currentValue   — keeps the current value visible during tracker rebuild cycles
+// savedInstanceNames[fieldName] — set by loadExtraState; deserialized blocks can arrive before
+//   their constructor exists, so we inject the saved name until the tracker catches up
 export function getInstanceDropdownGenerator(
   state: EngineState,
   systemId: string,

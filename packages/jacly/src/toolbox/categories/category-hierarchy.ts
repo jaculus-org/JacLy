@@ -1,5 +1,8 @@
 import type { ToolboxItemInfoSort } from '@/toolbox/types';
 
+// builds category tree from a flat list. top-level sorted by priority (undefined = last),
+// subcategories sorted alphabetically inside their parent.
+// parentCategory not found -> orphan -> goes into a synthetic "Other" at the end.
 export function buildCategoryHierarchy(items: ToolboxItemInfoSort[]): ToolboxItemInfoSort[] {
   const topLevelCategories: ToolboxItemInfoSort[] = [];
   const subcategoriesMap = new Map<string, ToolboxItemInfoSort[]>();

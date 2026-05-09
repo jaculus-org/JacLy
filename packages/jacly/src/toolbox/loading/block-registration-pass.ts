@@ -3,6 +3,8 @@ import { registerCodeGenerator } from '@/codegen/generators/register-code-genera
 import type { JaclyBlock, JaclyConfig } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 
+// full definition = has message0, args0, or code. alias = type only, defined elsewhere.
+// examples need registration too because they drop real blocks into the toolbox by type.
 export function isFullDefinition(item: Extract<JaclyBlock, { kind: 'block' }>): boolean {
   return item.message0 !== undefined || item.args0 !== undefined || item.code !== undefined;
 }

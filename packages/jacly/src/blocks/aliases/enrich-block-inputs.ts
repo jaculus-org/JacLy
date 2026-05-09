@@ -2,6 +2,8 @@ import type { InputNode, JaclyBlock } from '@/schema';
 import type { EngineState } from '../../engine/engine-state';
 import { cloneAndMergeInputs } from './input-merging';
 
+// pre-connected blocks may have their own registered shadow defaults that the toolbox entry didn't specify.
+// walks the whole tree and merges them in. cycle detection in case two types reference each other.
 export function enrichBlockInputs(state: EngineState, block: JaclyBlock): void {
   if (block.kind !== 'block') return;
 

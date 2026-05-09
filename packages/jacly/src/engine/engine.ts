@@ -27,6 +27,7 @@ export class JaclyEngine {
     registerPlaceholderBlock();
   }
 
+  // snapshot before writing so a failed rebuild can be rolled back atomically
   private snapshotBlocklyRegistrations(
     blockTypes: Iterable<string>,
   ): Map<string, { block?: unknown; generator?: unknown }> {
@@ -79,6 +80,7 @@ export class JaclyEngine {
       throw error;
     }
 
+    // drop types that existed in the old load but aren't in the new one
     for (const type of oldTypes) {
       if (!nextState.registeredBlockTypes.has(type)) {
         delete Blockly.Blocks[type];
@@ -86,6 +88,8 @@ export class JaclyEngine {
       }
     }
 
+    // clear collections but keep the object identity — instanceTrackers is a WeakMap keyed
+    // by workspace; swapping the whole state object would orphan those entries
     resetEngineState(previousState);
     this.state = nextState;
 

@@ -3,6 +3,7 @@ import { buildCategoryHeader } from '@/toolbox/categories/category-header';
 import type { ToolboxItemInfoSort } from '@/toolbox/types';
 import type { EngineState } from '../../engine/engine-state';
 
+// Blockly only supports single-line labels. translations can have \n -> split into multiple items.
 function expandLabel(
   item: Extract<JaclyBlock, { kind: 'label' }>,
 ): Extract<JaclyBlock, { kind: 'label' }>[] {
@@ -27,6 +28,7 @@ export function buildToolboxItem(
   state: EngineState,
   jaclyConfig: JaclyConfig,
 ): ToolboxItemInfoSort {
+  // filter after registration so they still exist in Blockly.Blocks for pre-connected use
   const contents = expandLabels(
     jaclyConfig.contents!.filter((item) => {
       if (item.kind === 'block') return item.hideInToolbox !== true;

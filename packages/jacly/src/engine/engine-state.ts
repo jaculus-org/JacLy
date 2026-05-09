@@ -11,15 +11,22 @@ export interface VirtualInstanceDef {
 
 export interface EngineState {
   registeredBlockTypes: Set<string>;
+  // separate from registeredBlockTypes — color patch from alias usage is a one-time global
+  // mutation on Blockly.Blocks, not tied to full registration
   editedInternalBlockTypes: Set<string>;
+  // default shadow/input definitions per block type, merged into alias occurrences
   blockInputs: Map<string, JaclyBlockKindBlock['inputs']>;
+  // import lines emitted at the top of generated code, keyed by block type
   blockImports: Map<string, Set<string>>;
   constructorBlockTypesBySystem: Map<string, Set<string>>;
   virtualDefsByProviderBlockType: Map<string, VirtualInstanceDef[]>;
+  // WeakMap -> entries are GC'd when a workspace is destroyed
   instanceTrackers: WeakMap<Blockly.Workspace, InstanceTracker>;
+  // docs button URLs, registered as workspace callbacks on attach
   docsCallbacks: Map<string, string>;
   expandedExamples: Set<string>;
   categoryExamplesItems: Map<string, ToolboxItemInfoSort[]>;
+  // snapshot before hierarchy/examples mutation; used as stable base for the examples toggle
   flatCategoryItems: ToolboxItemInfoSort[];
 }
 

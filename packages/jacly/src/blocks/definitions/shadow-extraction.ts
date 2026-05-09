@@ -1,5 +1,7 @@
 import type { JaclyBlockKindBlock } from '@/schema';
 
+// args0 lets you write shadow/block inline for convenience, but Blockly expects them in inputs.
+// moves them there before registration; inputs is also stored in blockInputs for alias inheritance.
 export function processInputsForRegistration(
   block: JaclyBlockKindBlock,
   inputs: NonNullable<JaclyBlockKindBlock['inputs']>,

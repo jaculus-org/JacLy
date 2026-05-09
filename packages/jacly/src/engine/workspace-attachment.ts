@@ -7,6 +7,7 @@ import { registerDocsCallbacks } from '@/toolbox/categories/category-header';
 import { registerWorkspaceChangeListener } from '@/workspace/rules/workspace-rules';
 import type { EngineState } from './engine-state';
 
+// virtual providers are also tracked because their name is part of derived labels like "robutek2_0.leftMotor"
 function isTrackedInstanceBlockType(state: EngineState, blockType: string): boolean {
   return (
     getTrackedConstructorBlockTypes(state).has(blockType) ||
@@ -36,6 +37,7 @@ function registerInstanceTrackerListener(
         const block = workspace.getBlockById(blockEvent.blockId);
         if (!block) return;
 
+        // BLOCK_CHANGE fires on every keystroke, only care about the name field
         const changeEvent = event as Blockly.Events.BlockChange;
         if (
           event.type === Blockly.Events.BLOCK_CHANGE &&

@@ -42,6 +42,9 @@ function selectConditionalCode(
   return block.code || null;
 }
 
+// output blocks return [code, Order], statement blocks return a string — Blockly's API contract.
+// constructor blocks strip the const/let/var because the name is already declared globally at
+// the top of the file; the in-place code becomes a bare assignment.
 export function registerCodeGenerator(state: EngineState, block: JaclyBlock): void {
   if (block.kind !== 'block' || (!block.code && !block.codeConditionals)) return;
 

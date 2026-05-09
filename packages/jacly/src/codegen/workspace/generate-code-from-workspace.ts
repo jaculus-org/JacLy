@@ -9,6 +9,8 @@ import { collectImports } from '@/codegen/imports/collect-workspace-imports';
 import { collectWorkspaceWarnings } from '@/codegen/warnings/collect-workspace-warnings';
 import type { EngineState } from '../../engine/engine-state';
 
+// constructor names need to be accessible across all event handlers and async scopes.
+// Blockly can't emit top-level declarations itself, so we prepend them manually.
 function collectGlobalConstructorDeclarations(
   state: EngineState,
   workspace: WorkspaceSvg,

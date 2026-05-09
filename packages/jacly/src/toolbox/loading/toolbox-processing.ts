@@ -120,6 +120,8 @@ export function prepareToolboxConfig(
   }
 }
 
+// two-pass: register everything first, then build toolbox items.
+// alias resolution and input enrichment both require the target type to already exist.
 export function buildToolboxFromParsedConfigs(
   state: EngineState,
   parsedConfigs: ParsedToolboxConfig[],

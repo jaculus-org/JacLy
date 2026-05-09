@@ -31,6 +31,7 @@ function includeHeader(config: JaclyConfig, header: FlyoutItem[], state: EngineS
     const docsUrl = config.docs.startsWith('http')
       ? config.docs
       : `${defaultGithubDocs}${config.docs}`;
+    // Blockly buttons work via callback key, not direct URLs. key is registered on workspace attach.
     state.docsCallbacks.set(callbackKey, docsUrl);
     header.push({
       kind: 'button',

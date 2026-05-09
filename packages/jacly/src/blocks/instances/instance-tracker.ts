@@ -6,6 +6,10 @@ import {
   isUsableConstructedName,
 } from './constructor-name-utils';
 
+// point-in-time snapshot, not reactive — call rebuild() before reading after any workspace change.
+
+// stores provider block ID, not name -> renaming the provider propagates automatically
+// (resolveVirtualConnection reads the current name from the live block each time)
 interface VirtualBinding {
   providerBlockId: string;
   connectionTemplate: string;
@@ -49,6 +53,7 @@ export function createInstanceTracker(
     instanceNamesBySystem = new Map();
     virtualBindingsBySystem = new Map();
 
+    // owners stored as array (not Set) so duplicates are detectable -> getOptions excludes ambiguous names
     for (const [systemId, constructorBlockTypes] of state.constructorBlockTypesBySystem) {
       const instanceNames = new Map<string, string[]>();
 
@@ -66,6 +71,7 @@ export function createInstanceTracker(
       instanceNamesBySystem.set(systemId, instanceNames);
     }
 
+    // virtual instances: label is "robutek2_0.leftMotor" — the dot-path used in generated code
     for (const [providerBlockType, virtualDefs] of state.virtualDefsByProviderBlockType) {
       for (const providerBlock of workspace.getBlocksByType(providerBlockType, false)) {
         if (!providerBlock.isEnabled()) continue;
@@ -106,6 +112,7 @@ export function createInstanceTracker(
       const instanceNames = instanceNamesBySystem.get(systemId);
       if (instanceNames) {
         for (const [instanceName, owners] of instanceNames) {
+          // more than one owner -> name is ambiguous, exclude until user renames one
           if (owners.length === 1) options.add(instanceName);
         }
       }

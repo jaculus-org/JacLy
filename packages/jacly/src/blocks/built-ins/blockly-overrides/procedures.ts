@@ -9,7 +9,8 @@
  */
 
 // Former goog.module ID: Blockly.JavaScript.procedures
-// Adapted from Blockly's built-in procedure generator with async/await support
+// adapted with async/await. all defs become async function so await inside user functions works,
+// call sites use await so the caller doesn't get an unresolved Promise.
 
 import type { Block } from 'blockly/core';
 import { type JavascriptGenerator, javascriptGenerator as jsg, Order } from 'blockly/javascript';

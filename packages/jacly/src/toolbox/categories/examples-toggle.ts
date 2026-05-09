@@ -9,6 +9,7 @@ export function examplesCallbackKey(category: string): string {
   return `${EXAMPLES_CALLBACK_PREFIX}${category}`;
 }
 
+// injects examples into categories per current toggle state. used at build time and on each toggle.
 export function rebuildToolboxWithExamples(
   state: EngineState,
   flatItems?: ToolboxItemInfoSort[],
@@ -80,6 +81,7 @@ export function registerExamplesCallbacks(
       const selectedItem = toolbox.getSelectedItem();
       if (!selectedItem) return;
 
+      // flatCategoryItems is the pre-hierarchy snapshot; always start from there, not the mutated state
       const baseItem = state.flatCategoryItems.find(
         (item) => item.kind === 'category' && (item as any).category === category,
       );
@@ -91,6 +93,7 @@ export function registerExamplesCallbacks(
         (baseItem.contents ?? []) as ToolboxItemInfoSort[],
       );
 
+      // update only the open flyout, no full rebuild needed
       (selectedItem as Blockly.ToolboxCategory).updateFlyoutContents(newContents);
       toolbox.refreshSelection();
     });

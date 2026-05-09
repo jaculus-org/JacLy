@@ -51,7 +51,7 @@ export function autoCloseToolboxOnCreate(
   for (const item of toolbox.getToolboxItems()) {
     const collapsible = item as Blockly.CollapsibleToolboxCategory;
     if (typeof collapsible.isCollapsible === 'function' && collapsible.isCollapsible()) {
-      // close only categories with own blocks (4 blocks are default header)
+      // first 4 items are always the header (title, description, docs, separator)
       const contents = collapsible.getContents();
       const hasOwnBlocks = Array.isArray(contents) && contents.length > 4;
       if (hasOwnBlocks) {
@@ -71,6 +71,8 @@ export function processWorkspaceBlocks(workspace: WorkspaceSvgExtended) {
   });
 }
 
+// blocks not inside an entry-point or procedure are disabled -> appear grayed out, no code emitted.
+// procedures are valid roots so user-defined functions work outside events.
 function applyOutsideEntryRule(block: BlockSvgExtended): void {
   const rootBlock = block.getRootBlock();
 

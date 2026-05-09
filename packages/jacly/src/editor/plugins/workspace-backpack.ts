@@ -13,6 +13,11 @@ interface AttachedBackpack {
   listener: (event: Blockly.Events.Abstract) => void;
 }
 
+// backpack is cross-tab: localStorage storage event fires in every OTHER tab on change.
+// syncingSharedContents: prevents echo loop when pushing an incoming snapshot to sibling workspaces.
+// hidden contents: blocks from packages not available in current project survive in the snapshot
+// but are filtered from the visible backpack so Blockly doesn't try to deserialize unknown types.
+// they're re-merged on save so they come back when switching projects.
 const attachedBackpacks = new Map<Blockly.WorkspaceSvg, AttachedBackpack>();
 
 let currentSnapshot: BackpackSnapshot = {

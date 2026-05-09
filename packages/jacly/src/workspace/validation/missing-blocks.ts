@@ -12,6 +12,7 @@ export function collectMissingBlockTypes(blocks: BlockState[]): Map<string, Bloc
 
   function collectMissing(node: BlockState): void {
     if (node.type === 'unsupported_block') {
+      // unsupported_block itself is registered — the missing type lives in its originalState
       const originalState = node.extraState?.originalState as BlockState | undefined;
       if (originalState && !isRegistered(originalState.type)) {
         addMissing(originalState);
@@ -36,6 +37,8 @@ export function collectMissingBlockTypes(blocks: BlockState[]): Map<string, Bloc
   return missingByType;
 }
 
+// groups by package (from extraState.package saved when the block was first created)
+// so the caller can show "install X" rather than a list of raw block types
 export function groupMissingPackages(
   missingByType: Map<string, BlockState[]>,
 ): EngineMissingPackages {

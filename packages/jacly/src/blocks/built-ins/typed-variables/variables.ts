@@ -116,6 +116,8 @@ Blockly.Blocks[BLOCK_SET] = {
   },
 };
 
+// Blockly emits var by default; patch to let because Jaculus runs closer to strict mode
+// and var has different scoping inside async callbacks.
 const _originalJsgInit = jsg.init.bind(jsg);
 jsg.init = function (workspace: Blockly.Workspace) {
   _originalJsgInit(workspace);

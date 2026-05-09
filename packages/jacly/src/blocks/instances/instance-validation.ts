@@ -2,6 +2,8 @@ import type { BlockExtended } from '@/blocks/types/custom-block';
 import type { EngineState } from '../../engine/engine-state';
 import { getInstanceTracker } from './instance-tracker';
 
+// runs on every change, sets a warning if the selected instance is gone or ambiguous.
+// INVALID means no constructor exists yet, not a user error -> no warning shown.
 export function validateInstanceSelection(
   this: BlockExtended,
   state: EngineState,
@@ -13,6 +15,7 @@ export function validateInstanceSelection(
   const selectedName = this.getFieldValue(fieldName);
   if (!selectedName) return;
   if (selectedName === 'INVALID') {
+    // no constructor exists yet; dropdown shows placeholder, nothing to warn about
     this.setWarningText(null);
     return;
   }

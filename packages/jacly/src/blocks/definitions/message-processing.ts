@@ -1,5 +1,8 @@
 import type { JaclyBlockKindBlock } from '@/schema';
 
+// JacLy uses named $[ARG_NAME] placeholders; Blockly needs positional %1, %2 etc.
+// translates in place. also seeds instanceof dropdowns with a dummy option so Blockly
+// doesn't crash before the real menu generator runs.
 export function processArgsForRegistration(block: JaclyBlockKindBlock) {
   if (block.args0 && block.args0.length > 0 && block.message0) {
     let argIndex = 1;

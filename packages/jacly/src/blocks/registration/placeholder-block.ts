@@ -1,6 +1,8 @@
 import { Blocks } from 'blockly/core';
 import type { BlockExtended } from '@/blocks/types/custom-block';
 
+// placeholder for blocks whose package isn't installed. disabled so codegen skips it.
+// originalState keeps the full block JSON so it can be fully restored if the package is later added.
 let registered = false;
 
 interface PlaceholderExtraState {

@@ -4,6 +4,12 @@ import { javascriptGenerator as jsg, Order } from 'blockly/javascript';
 import type { BlockSvgExtended, WorkspaceSvgExtended } from '@/blocks/types/custom-block';
 import type { JaclyBlockKindBlock, JaclyConfig } from '@/schema';
 
+// callback variables: read-only blocks that expose scoped variables (e.g. encoder tick count)
+// inside a callback body. separate from the instance system, no tracker or dropdowns.
+// each getter is auto-connected in its slot; dragging it out spawns a clone in place (drag-to-copy).
+
+// injects a value input per callback var into args0, just before the statement input.
+// getter block is pre-connected as default so it appears on first use.
 export function registerCallbackVarSlots(
   block: JaclyBlockKindBlock,
   inputsEdit: NonNullable<JaclyBlockKindBlock['inputs']>,
@@ -66,6 +72,7 @@ export function registerCallbackVarGetters(
           const moveEvent = event as Blockly.Events.BlockMove;
           if (moveEvent.blockId !== this.id) return;
 
+          // disconnected from parent but not reconnected elsewhere -> spawn a clone in the old slot
           if (moveEvent.oldParentId && !moveEvent.newParentId) {
             const workspace = this.workspace as WorkspaceSvgExtended;
             const oldParent = workspace.getBlockById(moveEvent.oldParentId);

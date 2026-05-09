@@ -10,6 +10,11 @@ import {
 } from './constructor-name-utils';
 import { getInstanceTracker } from './instance-tracker';
 
+// mixed into every constructor block, fires on every workspace event:
+// 1. resolve _? placeholder -> next available index (return early so next event sees the real name)
+// 2. validate name, push warning bubble
+// 3. rebuild tracker so downstream dropdowns update immediately
+// tracker rebuild is intentional — it's a plain snapshot, not reactive.
 export function getConstructorMixin(state: EngineState, constructType: string) {
   return {
     onchange(this: BlockExtended, _e: Blockly.Events.Abstract) {

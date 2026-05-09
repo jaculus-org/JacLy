@@ -5,6 +5,7 @@ export function isRegistered(type: string): boolean {
   return !!Blockly.Blocks[type];
 }
 
+// x/y only for top-level canvas blocks; inline blocks have no position
 export function makePlaceholder(original: BlockState, x?: number, y?: number): BlockState {
   const extra: UnsupportedBlockExtraState = { originalState: original };
   return {

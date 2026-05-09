@@ -560,7 +560,7 @@ This syntax automatically manages variable naming and populates instance dropdow
   ],
   "constructs": "keyValue",
   "tooltip": "Initialize a Key Value Storage namespace",
-  "code": "const $[CONSTRUCTED_VAR_NAME] = keyvalue.open($[NAMESPACE]);",
+  "code": "$[CONSTRUCTED_VAR_NAME] = keyvalue.open($[NAMESPACE]);",
   "previousStatement": null,
   "nextStatement": null
 }
@@ -631,7 +631,7 @@ When a class extends or wraps other objects (e.g. `Robutek extends DifferentialD
       "connection": "$[CONSTRUCTED_VAR_NAME].rightMotor"
     }
   ],
-  "code": "const $[CONSTRUCTED_VAR_NAME] = createRobutek(\"V2\");",
+  "code": "$[CONSTRUCTED_VAR_NAME] = createRobutek(\"V2\");",
   "previousStatement": null,
   "nextStatement": null
 }

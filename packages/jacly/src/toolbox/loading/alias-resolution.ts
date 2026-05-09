@@ -5,6 +5,9 @@ import { JaclyBlockLoadError } from '@/toolbox/errors';
 import type { EngineState } from '../../engine/engine-state';
 import { isFullDefinition } from './block-registration-pass';
 
+// alias blocks have only a type, no definition — they borrow from another package and can override
+// color/shadows for this category. error if the type isn't registered: better to fail at load than
+// silently show an empty slot.
 export function resolveAliases(
   state: EngineState,
   fileKey: string,

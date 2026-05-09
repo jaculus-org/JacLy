@@ -7,6 +7,7 @@ export function getConstructedName(block: Blockly.Block): string {
   return (block.getFieldValue('CONSTRUCTED_VAR_NAME') || '').trim();
 }
 
+// _? suffix = unresolved placeholder from the toolbox definition, auto-replaced with next index on first event
 export function isPlaceholderConstructedName(name: string): boolean {
   return name.endsWith('_?');
 }
@@ -15,6 +16,7 @@ export function isValidConstructedName(name: string): boolean {
   return IDENTIFIER_PATTERN.test(name);
 }
 
+// placeholder and invalid names are invisible to dropdowns until corrected
 export function isUsableConstructedName(name: string): boolean {
   return name.length > 0 && !isPlaceholderConstructedName(name) && isValidConstructedName(name);
 }
@@ -46,6 +48,7 @@ export function getAllConstructorBlocks(
   return blocks;
 }
 
+// scans for highest existing index (motor_0, motor_2 -> returns motor_3). index only goes up, never reused.
 export function getNextConstructedName(
   state: EngineState,
   workspace: Blockly.Workspace,
