@@ -1,7 +1,7 @@
 import { createFromBundle } from '@jaculus/project/creation';
 import type { JaculusProjectType } from '@jaculus/project/package';
 import type { RegistryListTemplate } from '@jaculus/project/registry';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { BlocksIcon, CheckCircle, Code2Icon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect, useMemo, useState } from 'react';
@@ -43,9 +43,10 @@ export const Route = createFileRoute('/project/new')({
 });
 
 function NewProject() {
-  const navigate = useNavigate();
+  const navigate = Route.useNavigate();
   const search = Route.useSearch();
   const { projectManService: runtimeService, projectFsService } = Route.useRouteContext();
+  const projectType = search.type ?? 'jacly';
 
   const projectOptions = useMemo(
     () => [
@@ -68,27 +69,23 @@ function NewProject() {
   );
 
   const [projectName, setProjectName] = useState('');
-  const [projectType, setProjectType] = useState<JaculusProjectType>(search.type ?? 'jacly');
 
   const [templates, setTemplates] = useState<RegistryListTemplate[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<RegistryListTemplate | null>(null);
   const [registers, setRegisters] = useState<string[]>(defaultRegisters);
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [templatesError, setTemplatesError] = useState(false);
 
   const [isCreating, setIsCreating] = useState(false);
+  const selectedTemplate = useMemo(
+    () => templates.find((template) => template.id === search.template) ?? null,
+    [search.template, templates],
+  );
+  const showInitialTemplateLoading = templatesLoading && templates.length === 0;
+  const showTemplateRefresh = templatesLoading && templates.length > 0;
 
   useEffect(() => {
     logger.clear();
   }, []);
-
-  useEffect(() => {
-    if (!search.type || search.type === projectType) {
-      return;
-    }
-
-    setProjectType(search.type);
-  }, [projectType, search.type]);
 
   useEffect(() => {
     let cancelled = false;
@@ -101,20 +98,11 @@ function NewProject() {
         const loadedTemplates = await registry.listTemplates(projectType);
         if (cancelled) return;
         setTemplates(loadedTemplates);
-        const preferredTemplate =
-          (search.template
-            ? loadedTemplates.find((template) => template.id === search.template)
-            : null) ??
-          loadedTemplates[0] ??
-          null;
-
-        setSelectedTemplate(preferredTemplate);
         setTemplatesLoading(false);
       } catch (error) {
         if (cancelled) return;
         console.error('Failed to load templates from registry:', error);
         setTemplates([]);
-        setSelectedTemplate(null);
         setTemplatesLoading(false);
         setTemplatesError(true);
         enqueueSnackbar(m.project_new_template_load_error(), {
@@ -126,7 +114,30 @@ function NewProject() {
     return () => {
       cancelled = true;
     };
-  }, [projectType, registers, search.template]);
+  }, [projectType, registers]);
+
+  useEffect(() => {
+    if (templatesLoading || templatesError) {
+      return;
+    }
+
+    const templateExists = templates.some((template) => template.id === search.template);
+    const nextTemplate = templateExists ? search.template : templates[0]?.id;
+
+    if (search.template === nextTemplate) {
+      return;
+    }
+
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        type: projectType,
+        template: nextTemplate,
+      }),
+      replace: true,
+      resetScroll: false,
+    });
+  }, [navigate, projectType, search.template, templates, templatesError, templatesLoading]);
 
   async function handleProjectCreation() {
     if (!selectedTemplate) {
@@ -190,7 +201,20 @@ function NewProject() {
               <button
                 key={option.type}
                 type="button"
-                onClick={() => setProjectType(option.type)}
+                onClick={() => {
+                  if (option.type === projectType) {
+                    return;
+                  }
+
+                  navigate({
+                    search: (prev) => ({
+                      ...prev,
+                      type: option.type,
+                      template: undefined,
+                    }),
+                    resetScroll: false,
+                  });
+                }}
                 className={`group relative rounded-xl border p-5 text-left transition-all duration-200 ${
                   isSelected
                     ? 'border-primary/60 bg-primary/8 shadow-[0_8px_28px_-16px_rgba(37,150,228,0.25)]'
@@ -218,7 +242,7 @@ function NewProject() {
       </ProjectFormSection>
 
       <ProjectFormSection title={m.project_new_template_title()}>
-        {templatesLoading ? (
+        {showInitialTemplateLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="rounded-xl border border-border bg-card/50 p-4">
@@ -238,14 +262,27 @@ function NewProject() {
             <p className="text-sm text-muted-foreground">{m.project_new_template_loading()}</p>
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div
+            className={`grid gap-3 sm:grid-cols-2 ${
+              showTemplateRefresh ? 'pointer-events-none opacity-60' : ''
+            }`}
+          >
             {templates.map((template) => (
               <TemplateOptionCard
                 key={template.id}
                 title={template.id}
                 description={template.description}
-                isSelected={selectedTemplate === template}
-                onSelect={() => setSelectedTemplate(template)}
+                isSelected={search.template === template.id}
+                onSelect={() =>
+                  navigate({
+                    search: (prev) => ({
+                      ...prev,
+                      type: projectType,
+                      template: template.id,
+                    }),
+                    resetScroll: false,
+                  })
+                }
                 badge={
                   <Badge
                     variant="outline"
