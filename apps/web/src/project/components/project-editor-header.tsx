@@ -27,7 +27,7 @@ export function ProjectEditorHeader() {
                 >
                   <img
                     src="/favicon/favicon.svg"
-                    alt="JacLy"
+                    alt="JacLy logo"
                     className="inline-block mr-2 mb-1 h-5 w-5 p-0 m-0 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:brightness-110"
                   />
                   JacLy
