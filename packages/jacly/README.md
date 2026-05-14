@@ -131,6 +131,7 @@ See [`engine.ts`](./src/engine/engine.ts).
 - [`tests/mocha/codegen-and-instances.test.ts`](./tests/mocha/codegen-and-instances.test.ts)
 
 ```bash
+pnpm --filter @jaculus/jacly build
 pnpm --dir packages/jacly type-check
 pnpm --dir packages/jacly test:mocha
 ```
@@ -141,3 +142,7 @@ pnpm --dir packages/jacly test:mocha
 - Engine workspace listeners must be attached and detached symmetrically.
 - The instance tracker is a snapshot, not a live view — always call `rebuild()` after any change that affects constructor names.
 - When adding new `.jacly.json` features, update both the schema (`src/schema/index.ts`) and tests.
+
+## License
+
+Everything in this repository, unless otherwise noted, is licensed under the MIT License. See [../../LICENSE](../../LICENSE).
