@@ -6,9 +6,10 @@ packages:
 
 ignoredBuiltDependencies:
   - '@playwright/browser-chromium'
-  - esbuild
 
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@serialport/bindings-cpp'
-  - '@tailwindcss/oxide'
+allowBuilds:
+  '@parcel/watcher': true
+  '@serialport/bindings-cpp': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  msw: true

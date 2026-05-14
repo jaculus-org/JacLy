@@ -1,4 +1,3 @@
-import { Writable } from 'node:stream';
 import type { Logger } from '@jaculus/common';
 import type { LoggerEntry, LogLevel } from '@/core/components/logger/types';
 
@@ -75,13 +74,15 @@ export class LoggerBusService implements Logger {
     this.emit();
   }
 
-  createWritable(level: LogLevel): Writable {
-    return new Writable({
+  createWritable(level: LogLevel): {
+    write: (chunk: { toString(): string }, encoding: string, callback: () => void) => void;
+  } {
+    return {
       write: (chunk, _encoding, callback) => {
         this.append(level, chunk.toString());
         callback();
       },
-    });
+    };
   }
 
   private emit(): void {

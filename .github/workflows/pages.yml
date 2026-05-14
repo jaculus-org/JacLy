@@ -33,12 +33,6 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
 
-      - name: Build Jaculus-tools
-        run: cd ../Jaculus-tools && pnpm install --frozen-lockfile && pnpm -r build
-
-      # - name: Build wokwi-cli
-      #   run: cd ../wokwi-cli && pnpm install --frozen-lockfile && pnpm -r build
-
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -47,6 +41,12 @@ jobs:
           cache-dependency-path: |
             pnpm-lock.yaml
             **/pnpm-lock.yaml
+
+      - name: Build Jaculus-tools
+        run: cd ../Jaculus-tools && pnpm install --frozen-lockfile && pnpm -r build
+
+      # - name: Build wokwi-cli
+      #   run: cd ../wokwi-cli && pnpm install --frozen-lockfile && pnpm -r build
 
       - name: Setup Turborepo cache
         uses: actions/cache@v4

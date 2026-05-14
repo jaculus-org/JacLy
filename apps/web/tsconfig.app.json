@@ -7,7 +7,6 @@
     "module": "ESNext",
     "types": ["vite/client", "w3c-web-serial", "web-bluetooth"],
     "skipLibCheck": true,
-    "baseUrl": ".",
     "allowJs": true,
     "paths": {
       "@/*": ["./src/*"]

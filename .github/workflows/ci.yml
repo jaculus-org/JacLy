@@ -21,6 +21,11 @@ jobs:
       # - name: Checkout wokwi-cli
       #   run: git clone https://github.com/JakubAndrysek/wokwi-cli.git --branch monorepo-separation ../wokwi-cli
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
 
@@ -29,11 +34,6 @@ jobs:
 
       # - name: Build wokwi-cli
       #   run: cd ../wokwi-cli && pnpm install --frozen-lockfile && pnpm -r build
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24.x
 
       - name: Get pnpm store directory
         shell: bash
@@ -99,6 +99,11 @@ jobs:
       - name: Checkout wokwi-cli
         run: git clone https://github.com/JakubAndrysek/wokwi-cli.git --branch monorepo-separation ../wokwi-cli
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
 
@@ -107,11 +112,6 @@ jobs:
 
       - name: Build wokwi-cli
         run: cd ../wokwi-cli && pnpm install --frozen-lockfile && pnpm -r build
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24.x
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ExternalLink, GitCommit, Github, Package, Tag, Timer } from 'lucide-react';
+import { ExternalLink, GitCommit, Link, Package, Tag, Timer } from 'lucide-react';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { m } from '@/core/paraglide/messages';
 import { fetchReleaseSummary } from '@/core/services/release-summary';
@@ -70,7 +70,7 @@ function AboutPage() {
             rel="noopener noreferrer"
             className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            <Github className="size-4" />
+            <Link className="size-4" />
             {buildInfo.repository}
             <ExternalLink className="size-3" />
           </a>

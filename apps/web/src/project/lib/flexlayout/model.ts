@@ -227,14 +227,14 @@ function findTargetTabset(model: FlexLayout.Model): FlexLayout.Node | undefined 
     }
   }
 
-  model.getRoot().getChildren().forEach(searchNode);
+  model.getRootRow().getChildren().forEach(searchNode);
   return found;
 }
 
 // add a new tab to the center of the layout
 function addTabToModel(model: FlexLayout.Model, tabNode: FlexLayout.IJsonTabNode): void {
   const tabset = findTargetTabset(model);
-  const targetId = tabset ? tabset.getId() : model.getRoot().getId();
+  const targetId = tabset ? tabset.getId() : model.getRootRow().getId();
   model.doAction(
     FlexLayout.Actions.addNode(
       applyPanelDefinitionToTab(tabNode),
@@ -273,7 +273,7 @@ export function controlPanel(model: FlexLayout.Model, type: PanelType, action: P
         const tabNode = node as FlexLayout.TabNode;
         const currentSize = tabNode.getRect()?.height ?? 0;
         if (currentSize === 0) {
-          model.doAction(FlexLayout.Actions.updateNodeAttributes(node.getId(), { size: 100 }));
+          model.doAction(FlexLayout.Actions.updateNodeAttributes(parent!.getId(), { weight: 100 }));
         }
         model.doAction(FlexLayout.Actions.selectTab(node.getId()));
       }
@@ -287,7 +287,7 @@ export function controlPanel(model: FlexLayout.Model, type: PanelType, action: P
           }),
         );
       } else {
-        model.doAction(FlexLayout.Actions.updateNodeAttributes(node.getId(), { size: 0 }));
+        model.doAction(FlexLayout.Actions.updateNodeAttributes(parent!.getId(), { weight: 0 }));
       }
       break;
     case 'toggle':
