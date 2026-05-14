@@ -143,6 +143,12 @@ export function JaclyEditor({
     onGeneratedCode(engine.generateCode(workspace));
   }, [engine, onGeneratedCode, onJsonChange, sanitizedJson]);
 
+  useEffect(() => {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    workspace.setTheme(getBlocklyTheme(theme));
+  }, [theme]);
+
   if (editorError) throw editorError;
   if (!messagesLoaded || !toolboxConfiguration || !sanitizedJson) {
     return <JaclyLoading />;
@@ -150,7 +156,6 @@ export function JaclyEditor({
 
   return (
     <BlocklyWorkspace
-      key={theme}
       toolboxConfiguration={toolboxConfiguration}
       workspaceConfiguration={{
         theme: getBlocklyTheme(theme),
