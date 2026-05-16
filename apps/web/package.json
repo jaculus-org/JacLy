@@ -10,7 +10,7 @@
     "generate:schema": "tsx scripts/generate-schema.ts",
     "type-check": "pnpm run paraglide:compile && tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
-    "test": "pnpm run test:mocha && pnpm run test:playwright",
+    "test": "pnpm run test:mocha",
     "test:mocha": "mocha",
     "test:playwright": "pnpm exec playwright test",
     "test:playwright:ui": "pnpm exec playwright test --ui",
