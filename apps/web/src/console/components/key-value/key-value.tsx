@@ -7,7 +7,7 @@ import { ButtonGroup } from '@/ui/components/button-group';
 import { Card } from '@/ui/components/card';
 import { Separator } from '@/ui/components/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
-import { useConsole } from '../../state/console-context';
+import { useConsole } from '../../console/console-context';
 
 type SortMode = 'alpha' | 'time';
 

@@ -1,4 +1,4 @@
-import { Console as ConsoleComponent } from '../console';
+import { Console as ConsoleComponent } from './console';
 
 export function ConsolePanel() {
   return <ConsoleComponent />;

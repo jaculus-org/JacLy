@@ -105,7 +105,6 @@ export function ConsoleProvider({
     [entries, channel, streamBusService],
   );
 
-  // TODO: do I need to memoize this? Is React compiler smart enough to not re-render it incorrectly?
   const value = useMemo<ConsoleContextValue>(
     () => ({
       state: {
