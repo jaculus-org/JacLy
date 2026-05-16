@@ -18,7 +18,7 @@ test.describe('project new page', () => {
     });
   });
 
-  test('fills name, selects first template, and creates project', async ({ page }) => {
+  test('fills name, selects template, creates project, and opens editor', async ({ page }) => {
     await page.goto('/project/new?type=jacly');
 
     await expect(page.getByRole('heading', { name: /new project/i })).toBeVisible({
@@ -32,9 +32,7 @@ test.describe('project new page', () => {
     const firstTemplate = page
       .locator('#root')
       .getByRole('button')
-      .filter({
-        hasText: /template-/,
-      })
+      .filter({ hasText: /template-/ })
       .first();
     await expect(firstTemplate).toBeVisible({ timeout: 15000 });
     await firstTemplate.click();
@@ -43,8 +41,22 @@ test.describe('project new page', () => {
     await expect(createBtn).toBeEnabled({ timeout: 5000 });
     await createBtn.click();
 
-    await expect(
-      page.getByRole('button', { name: /creating/i }).or(page.locator('.blocklyMainBackground')),
-    ).toBeAttached({ timeout: 30000 });
+    await expect(page.getByRole('button', { name: /creating/i })).toBeAttached({
+      timeout: 10000,
+    });
+
+    await expect(page).toHaveURL(/\/project\//, { timeout: 30000 });
+
+    await expect(page.getByRole('link', { name: 'Projects', exact: true })).not.toBeAttached({
+      timeout: 5000,
+    });
+
+    await page.locator('svg.lucide-loader-2').waitFor({ state: 'hidden', timeout: 30000 });
+
+    await expect(page.locator('.blocklyMainBackground')).toBeVisible({ timeout: 15000 });
+
+    await expect(page.getByRole('button', { name: /test-playwright-project/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Toggle theme' })).toBeVisible();
+    await expect(page.getByText('File Explorer').first()).toBeVisible();
   });
 });
