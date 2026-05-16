@@ -1,5 +1,5 @@
 import type { ChartDataset } from 'chart.js';
-import type { KeyValueHistoryMap, ParsedValue } from '../types/key-value-types';
+import type { KeyValueHistoryMap, ParsedValue } from '../key-value/key-value-types';
 
 export const DATASET_COLORS = [
   '#2563eb',

@@ -1,15 +1,4 @@
-import type { KeyValueMap } from '../types/key-value-types';
-
-// Default parser.
-// Format:
-//   key: value [; key: value]*
-//   key = a-zA-Z0-9_ (can be string or number, but starts with a letter)
-//   value = number (can be float)
-//
-// Example:
-//   temperature: 23.5; humidity: 60.2
-//
-// Returns all valid entries it can recognize on each line and ignores the rest.
+import type { KeyValueMap } from './key-value-types';
 
 const KEY_VALUE_PAIR_PATTERN =
   /(?:^|;)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*(-?\d+(?:\.\d*)?)\s*(?=;|$)/g;

@@ -8,7 +8,7 @@ import type { ConsoleType } from '../types/types';
 import { ConsoleInput } from './console-input';
 import { ConsoleOutput } from './console-output';
 import { ConsoleToolbar } from './console-toolbar';
-import { KeyValueDisplay } from '../components/key-value/key-value';
+import { KeyValueDisplay } from '../key-value/key-value';
 
 interface ConsoleProps {
   displayKeyValue?: boolean;

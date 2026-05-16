@@ -1,10 +1,10 @@
-export { KeyValueDisplay } from './components/key-value/key-value';
+export { KeyValueDisplay } from './key-value/key-value';
 export { ConsolePanel } from './console/console-panel';
 export { ChartPanel } from './plotter/plotter-panel';
 export { ConsoleBusService } from './services/console-bus-service';
 export { ConsoleTelemetryService } from './services/console-telemetry-service';
-export { cloneHistoryMap } from './services/key-value-history';
-export { parseKeyValue } from './services/kv-parser';
+export { cloneHistoryMap } from './key-value/key-value-history';
+export { parseKeyValue } from './key-value/key-value-parser';
 export type { ConsoleContextValue } from './console/console-context';
 export { useConsole } from './console/console-context';
 export type { ConsoleProviderProps } from './console/console-provider';
@@ -24,7 +24,7 @@ export type {
   KeyValueHistoryMap,
   KeyValueMap,
   ParsedValue,
-} from './types/key-value-types';
+} from './key-value/key-value-types';
 export type { AddToConsole, ConsoleEntry, ConsoleType } from './types/types';
 
 import { ConsoleInput } from './console/console-input';

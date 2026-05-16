@@ -7,7 +7,7 @@ import { ButtonGroup } from '@/ui/components/button-group';
 import { Card } from '@/ui/components/card';
 import { Separator } from '@/ui/components/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
-import { useConsole } from '../../console/console-context';
+import { useConsole } from '../console/console-context';
 
 type SortMode = 'alpha' | 'time';
 
@@ -21,7 +21,6 @@ export function KeyValueDisplay() {
     if (sortBy === 'alpha') {
       return all.sort(([a], [b]) => a.localeCompare(b));
     }
-    // time: newest first
     return all.sort(([, a], [, b]) => b.timestamp - a.timestamp);
   }, [state.keyValueEntries, sortBy]);
 

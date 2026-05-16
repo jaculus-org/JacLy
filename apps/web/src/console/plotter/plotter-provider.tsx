@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { cloneHistoryMap } from '../services/key-value-history';
-import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
+import { cloneHistoryMap } from '../key-value/key-value-history';
+import type { KeyValueHistoryMap, KeyValueMap } from '../key-value/key-value-types';
 import { useConsole } from '../console/console-context';
 import { ConsolePlotterContext, type ConsolePlotterContextValue } from './plotter-context';
 
