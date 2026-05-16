@@ -4,11 +4,11 @@ import { debounce } from '@jaculus/jacly/utils';
 import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
-import { useActiveProject } from '../../../state/active-project-context';
-import { useProjectEditor } from '../../../state/project-editor-context';
-import { buildFileTree, loadDirectoryChildren } from '../tree/helpers';
-import type { FileSystemItem } from '../types';
+import { useActiveProject } from '../../state/active-project-context';
+import { useProjectEditor } from '../../state/project-editor-context';
 import { FileExplorerContext } from './file-explorer-context';
+import { buildFileTree, loadDirectoryChildren } from './tree/helpers';
+import type { FileSystemItem } from './types';
 
 export function FileExplorerProvider({ children }: { children: ReactNode }) {
   const {

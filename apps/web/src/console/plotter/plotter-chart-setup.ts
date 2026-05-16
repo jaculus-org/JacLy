@@ -1,3 +1,4 @@
+import { RealTimeScale, StreamingPlugin } from '@aziham/chartjs-plugin-streaming';
 import {
   Chart,
   Filler,
@@ -8,7 +9,6 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { RealTimeScale, StreamingPlugin } from '@aziham/chartjs-plugin-streaming';
 
 Chart.register(
   Filler,

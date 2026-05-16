@@ -1,5 +1,5 @@
-import { ConsolePlotterProvider } from './plotter-provider';
 import { ConsolePlotterChart } from './plotter-chart';
+import { ConsolePlotterProvider } from './plotter-provider';
 import { ConsolePlotterToolbar } from './plotter-toolbar';
 
 export function ChartPanel() {

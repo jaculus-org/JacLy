@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { ContextMenuContent, ContextMenuItem } from '@/ui/components/context-menu';
-import { useJacFileExplorer } from './state/context';
+import { useJacFileExplorer } from './file-explorer-context';
 import type { FileSystemItem } from './types';
 
 export function FileExplorerNodeMenu({ item }: { item: FileSystemItem }) {

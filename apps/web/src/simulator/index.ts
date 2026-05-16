@@ -6,15 +6,15 @@ export {
   type WokwiSimulatorState,
 } from '@jaculus/wokwi';
 export {
-  WokwiSimulatorRoot,
   WokwiSimulatorEmbed,
   WokwiSimulatorLoading,
+  WokwiSimulatorRoot,
   WokwiSimulatorView,
 } from './components';
 export { WokwiPanel } from './components/panels/wokwi-panel';
 export { WokwiSimulatorProvider } from './state/simulator-provider';
 
-import { WokwiSimulatorRoot, WokwiSimulatorEmbed, WokwiSimulatorView } from './components';
+import { WokwiSimulatorEmbed, WokwiSimulatorRoot, WokwiSimulatorView } from './components';
 import { WokwiSimulatorProvider } from './state/simulator-provider';
 
 export const WokwiSimulator = Object.assign(WokwiSimulatorRoot, {

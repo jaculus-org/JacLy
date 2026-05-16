@@ -5,15 +5,14 @@ import 'chartjs-adapter-luxon';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { useConsolePlotter } from './plotter-context';
 import { cloneHistoryMap } from '../key-value/key-value-history';
 import {
-  DATASET_COLORS,
-  STREAMING_DELAY_MS,
   type PausedChartSnapshot,
   type PlotterChart,
+  STREAMING_DELAY_MS,
   syncDatasets,
 } from './plotter-chart-config';
+import { useConsolePlotter } from './plotter-context';
 import './plotter-chart-setup';
 
 export const ConsolePlotterChart = memo(function ConsolePlotterChart() {

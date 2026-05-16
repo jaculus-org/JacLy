@@ -1,4 +1,4 @@
-import type { ChartDataset } from 'chart.js';
+import type { Chart, ChartDataset, Point } from 'chart.js';
 import type { KeyValueHistoryMap, ParsedValue } from '../key-value/key-value-types';
 
 export const DATASET_COLORS = [
@@ -14,7 +14,7 @@ export const DATASET_COLORS = [
 
 export const STREAMING_DELAY_MS = 100;
 
-export type PlotterChart = Chart<'line', (number | { x: number; y: number } | null)[], unknown>;
+export type PlotterChart = Chart<'line', (number | Point | null)[], unknown>;
 export type PlotterDataset = ChartDataset<'line', { x: number; y: number }[]>;
 
 export interface PausedChartSnapshot {

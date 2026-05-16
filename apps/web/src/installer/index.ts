@@ -1,8 +1,3 @@
-export { InstallerControls } from './installer-controls';
-export { InstallerDialog } from './installer-dialog';
-export { InstallerLayout } from './installer-layout';
-export { InstallerPanel } from './installer-panel';
-export { InstallerProgress } from './installer-progress';
 export {
   type InstallerActions,
   InstallerContext,
@@ -12,6 +7,11 @@ export {
   type InstallerState,
   useInstaller,
 } from './installer-context';
+export { InstallerControls } from './installer-controls';
+export { InstallerDialog } from './installer-dialog';
+export { InstallerLayout } from './installer-layout';
+export { InstallerPanel } from './installer-panel';
+export { InstallerProgress } from './installer-progress';
 export { baudrates, InstallerProvider } from './installer-provider';
 
 import { InstallerControls } from './installer-controls';

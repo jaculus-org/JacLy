@@ -1,7 +1,7 @@
 import type { JacDevice } from '@jaculus/device';
 import { useCallback, useState } from 'react';
+import type { DeviceStatusInfo } from '../device-control/device-control-context';
 import { restart, start, status, stop, version } from '../services/device-operations';
-import type { DeviceStatusInfo } from '../state/device-control-context';
 import { useLoadingState } from './use-loading';
 
 export function useProgramControl(device: JacDevice | null) {

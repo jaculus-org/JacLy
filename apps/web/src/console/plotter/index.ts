@@ -1,11 +1,11 @@
 export { ConsolePlotterChart } from './plotter-chart';
 export {
-  ConsolePlotterContext,
-  useConsolePlotter,
   type ConsolePlotterActions,
+  ConsolePlotterContext,
   type ConsolePlotterContextValue,
   type ConsolePlotterMeta,
   type ConsolePlotterState,
+  useConsolePlotter,
 } from './plotter-context';
 export { ChartPanel } from './plotter-panel';
 export type { ConsolePlotterProviderProps } from './plotter-provider';

@@ -14,13 +14,13 @@ import {
   SelectValue,
 } from '@/ui/components/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
+import { useJacDevice } from '../device-context';
 import {
   connectDevice,
   getAvailableConnectionTypes,
   UnknownConnectionTypeError,
 } from '../services/connection';
 import { testConnection, uploadCode } from '../services/device-operations';
-import { useJacDevice } from '../device-context';
 import type { ConnectionInfo, ConnectionType } from '../types/connection';
 
 export function ConnectionSelector() {

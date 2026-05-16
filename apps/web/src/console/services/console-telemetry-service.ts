@@ -1,6 +1,6 @@
+import { parseKeyValue } from '../key-value/key-value-parser';
 import type { KeyValueHistoryMap, KeyValueMap, ParsedValue } from '../key-value/key-value-types';
 import type { ConsoleEntry } from '../types/types';
-import { parseKeyValue } from '../key-value/key-value-parser';
 
 export interface ConsoleTelemetrySnapshot {
   historyEntries: KeyValueHistoryMap;

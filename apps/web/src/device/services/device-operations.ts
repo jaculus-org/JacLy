@@ -1,8 +1,8 @@
 import type { JacDevice, UploaderProgressCallback } from '@jaculus/device';
 import type { ProjectBundle } from '@jaculus/project';
 import { enqueueSnackbar } from 'notistack';
-import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core';
+import { m } from '@/core/paraglide/messages';
 
 async function withLockedDevice<T>(
   device: JacDevice,

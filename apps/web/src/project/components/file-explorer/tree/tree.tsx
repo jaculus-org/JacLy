@@ -1,8 +1,8 @@
 'use client';
 
 import { m } from '@/core/paraglide/messages';
+import { useJacFileExplorer } from '../file-explorer-context';
 import { FileExplorerNodeMenu } from '../node-menu';
-import { useJacFileExplorer } from '../state/context';
 import { FileExplorerTreeNode } from './node';
 
 export function FileExplorerTree() {

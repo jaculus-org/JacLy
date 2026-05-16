@@ -1,4 +1,4 @@
-import { Trash2Icon, UploadIcon, FileArchiveIcon } from 'lucide-react';
+import { FileArchiveIcon, Trash2Icon, UploadIcon } from 'lucide-react';
 import { useRef } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { useProjectImport } from './project-import-context';
@@ -100,9 +100,7 @@ export function ProjectImportFileDrop() {
             <UploadIcon className="size-6" />
           </div>
           <p className="font-medium text-foreground">{m.project_import_click_hint()}</p>
-          <p className="text-sm text-muted-foreground">
-            {m.project_import_supported_formats()}
-          </p>
+          <p className="text-sm text-muted-foreground">{m.project_import_supported_formats()}</p>
         </div>
       )}
     </div>

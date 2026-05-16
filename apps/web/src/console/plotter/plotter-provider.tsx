@@ -1,7 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useConsole } from '../console/console-context';
 import { cloneHistoryMap } from '../key-value/key-value-history';
 import type { KeyValueHistoryMap, KeyValueMap } from '../key-value/key-value-types';
-import { useConsole } from '../console/console-context';
 import { ConsolePlotterContext, type ConsolePlotterContextValue } from './plotter-context';
 
 interface PausedSnapshot {

@@ -1,11 +1,11 @@
 export { Console } from './console';
 export {
-  ConsoleContext,
-  useConsole,
   type ConsoleActions,
+  ConsoleContext,
   type ConsoleContextValue,
   type ConsoleMeta,
   type ConsoleState,
+  useConsole,
 } from './console-context';
 export { ConsoleInput } from './console-input';
 export { ConsoleOutput } from './console-output';

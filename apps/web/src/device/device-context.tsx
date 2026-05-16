@@ -4,7 +4,7 @@ import type { Project } from '@jaculus/project';
 import type { PackageJson } from '@jaculus/project/package';
 import type { Registry } from '@jaculus/project/registry';
 import { createContext, useContext } from 'react';
-import type { ConnectionStatus, ConnectionType } from '../types/connection';
+import type { ConnectionStatus, ConnectionType } from './types/connection';
 
 export interface JacDeviceState {
   jacProject: Project | null;

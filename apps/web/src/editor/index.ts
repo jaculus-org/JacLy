@@ -1,10 +1,10 @@
 export { CodeEditor } from './code/code-editor';
-export { JaclyEditorComponent } from './jacly/jacly';
-export { EditorJaclyDisplay } from './jacly/jacly-display';
 export { CodePanel } from './code/code-panel';
 export { GeneratedCode } from './code/generated-code-panel';
-export { JaclyEditorPanel } from './jacly/jacly-panel';
-export { inferLanguageFromPath } from './services/language';
+export { JaclyEditorComponent } from './jacly/jacly';
 export { useEditorJacly } from './jacly/jacly-context';
+export { EditorJaclyDisplay } from './jacly/jacly-display';
+export { JaclyEditorPanel } from './jacly/jacly-panel';
 export { EditorJaclyProvider } from './jacly/jacly-provider';
 export { jaclySaveCoordinator } from './jacly/jacly-save-coordinator';
+export { inferLanguageFromPath } from './services/language';

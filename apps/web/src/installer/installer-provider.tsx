@@ -11,12 +11,12 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { logger } from '@/core';
 import { m } from '@/core/paraglide/messages';
 import { executeWithTimeout, TimeoutError } from '@/ui/lib/timeout';
-import { ESP32Flasher } from './services/flasher';
 import {
   InstallerContext,
   type InstallerSourceTab,
   type InstallerState,
 } from './installer-context';
+import { ESP32Flasher } from './services/flasher';
 
 interface ChipWithPsram {
   getPsramCap?(loader: ESPLoader): Promise<number>;

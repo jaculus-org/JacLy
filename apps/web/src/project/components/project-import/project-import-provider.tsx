@@ -8,7 +8,7 @@ import {
 import { getRouteApi } from '@tanstack/react-router';
 import { toUint8Array } from 'js-base64';
 import { enqueueSnackbar } from 'notistack';
-import { type ReactNode, useCallback, useEffect, useRef } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '@/core';
 import { m } from '@/core/paraglide/messages';
 import { generateNanoId } from '@/ui/lib/nanoid';
@@ -26,13 +26,12 @@ export function ProjectImportProvider({ children }: { children: ReactNode }) {
   const auto = search.auto ?? false;
   const { projectManService: runtimeService, projectFsService } = routeApi.useRouteContext();
 
-  const [projectName, setProjectName] = React.useState(`imported-project-${generateNanoId(5)}`);
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [packageUrl, setPackageUrl] = React.useState(initialUrl);
-  const [activeTab, setActiveTab] = React.useState<'file' | 'url'>(initialUrl ? 'url' : 'file');
-  const [isImporting, setIsImporting] = React.useState(false);
-  const [dragOver, setDragOver] = React.useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [projectName, setProjectName] = useState(`imported-project-${generateNanoId(5)}`);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [packageUrl, setPackageUrl] = useState(initialUrl);
+  const [activeTab, setActiveTab] = useState<'file' | 'url'>(initialUrl ? 'url' : 'file');
+  const [isImporting, setIsImporting] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const autoImportTriggered = useRef(false);
 
   useEffect(() => {

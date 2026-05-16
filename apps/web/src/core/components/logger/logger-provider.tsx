@@ -1,7 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { LoggerContext, type LoggerContextValue } from './logger-context';
 import type { LoggerBusService } from './logger-service';
 import type { LoggerEntry } from './logger-types';
-import { LoggerContext, type LoggerContextValue } from './logger-context';
 
 export interface LoggerProviderProps {
   loggerBusService: LoggerBusService;

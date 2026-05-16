@@ -1,4 +1,11 @@
 export {
+  type JacDeviceActions,
+  type JacDeviceContextValue,
+  type JacDeviceMeta,
+  type JacDeviceState,
+  useJacDevice,
+} from './device-context';
+export {
   Build,
   BuildFlash,
   ConnectedDevice,
@@ -6,12 +13,18 @@ export {
   ConsoleSelector,
   ControlSection,
   InfoSection,
+  type JacDeviceControlActions,
+  type JacDeviceControlContextValue,
+  type JacDeviceControlMeta,
   JacDeviceControlPanel,
+  JacDeviceControlProvider,
+  type JacDeviceControlState,
+  useJacDeviceControl,
   WifiModal,
+  type WifiModalMode,
   WifiSection,
 } from './device-control';
-export { type JacDeviceControlActions, type JacDeviceControlContextValue, type JacDeviceControlMeta, type JacDeviceControlState, useJacDeviceControl, type WifiModalMode } from './device-control';
-export { JacDeviceControlProvider } from './device-control';
+export { JacDeviceProvider } from './device-provider';
 export { DevicePanel } from './panels/device-panel';
 export { DeviceDisconnected } from './panels/disconnected';
 export { compileProject } from './services/compilation';
@@ -46,19 +59,16 @@ export {
   uploadCode,
   version,
 } from './services/device-operations';
-export {
-  type JacDeviceActions,
-  type JacDeviceContextValue,
-  type JacDeviceMeta,
-  type JacDeviceState,
-  useJacDevice,
-} from './device-context';
-export { JacDeviceProvider } from './device-provider';
 export type { ConnectionStatus, ConnectionType } from './types/connection';
 export type { JacStream } from './types/stream';
 
-import { JacDeviceControlPanel, ControlSection, InfoSection, WifiSection } from './device-control';
-import { JacDeviceControlProvider } from './device-control';
+import {
+  ControlSection,
+  InfoSection,
+  JacDeviceControlPanel,
+  JacDeviceControlProvider,
+  WifiSection,
+} from './device-control';
 import { JacDeviceProvider } from './device-provider';
 
 export const JacDevice = {

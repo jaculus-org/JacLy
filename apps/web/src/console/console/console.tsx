@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { sendToDeviceStr, useJacDevice } from '@/device';
 import { Card } from '@/ui/components/card';
-import { useConsole } from './console-context';
+import { KeyValueDisplay } from '../key-value/key-value';
 import type { ConsoleType } from '../types/types';
+import { useConsole } from './console-context';
 import { ConsoleInput } from './console-input';
 import { ConsoleOutput } from './console-output';
 import { ConsoleToolbar } from './console-toolbar';
-import { KeyValueDisplay } from '../key-value/key-value';
 
 interface ConsoleProps {
   displayKeyValue?: boolean;

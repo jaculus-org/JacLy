@@ -1,7 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { KeyValueHistoryMap, KeyValueMap } from '../key-value/key-value-types';
 import type { ConsoleBusService } from '../services/console-bus-service';
 import { ConsoleTelemetryService } from '../services/console-telemetry-service';
-import type { KeyValueHistoryMap, KeyValueMap } from '../types/key-value-types';
 import type { AddToConsole, ConsoleEntry, ConsoleType } from '../types/types';
 import { ConsoleContext, type ConsoleContextValue } from './console-context';
 

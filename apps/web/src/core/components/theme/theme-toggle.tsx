@@ -1,5 +1,4 @@
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTheme } from './theme-context';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import {
@@ -9,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/ui/components/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
+import { useTheme } from './theme-context';
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();

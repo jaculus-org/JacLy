@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import type { FileSystemItem } from '../types';
+import type { FileSystemItem } from './types';
 
 export interface FileExplorerState {
   fileTree: FileSystemItem[];

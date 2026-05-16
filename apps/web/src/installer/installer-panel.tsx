@@ -1,9 +1,9 @@
 import { Logger } from '@/core';
-import { InstallerProvider } from './installer-provider';
 import { InstallerControls } from './installer-controls';
 import { InstallerDialog } from './installer-dialog';
 import { InstallerLayout } from './installer-layout';
 import { InstallerProgress } from './installer-progress';
+import { InstallerProvider } from './installer-provider';
 
 export function InstallerPanel() {
   return (

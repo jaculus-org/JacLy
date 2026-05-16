@@ -5,9 +5,9 @@ import { m } from '@/core/paraglide/messages';
 import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
+import { useJacDevice } from '../device-context';
 import { compileProject } from '../services/compilation';
 import { uploadCode } from '../services/device-operations';
-import { useJacDevice } from '../device-context';
 
 export function BuildFlash() {
   const {

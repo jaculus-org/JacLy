@@ -6,8 +6,8 @@ import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
-import { compileProject } from '../services/compilation';
 import { useJacDevice } from '../device-context';
+import { compileProject } from '../services/compilation';
 
 export function Build() {
   const {

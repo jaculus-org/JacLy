@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { HouseIcon } from 'lucide-react';
 import { LocaleSelector } from '@/core/components/locale';
-import { ThemeToggle } from '@/core/components/theme/components/theme-toggle';
+import { ThemeToggle } from '@/core/components/theme';
 import { m } from '@/core/paraglide/messages';
 import { ConnectedDevice, ConnectionSelector } from '@/device';
 import { Badge } from '@/ui/components/badge';

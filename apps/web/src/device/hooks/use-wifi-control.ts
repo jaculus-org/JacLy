@@ -1,5 +1,6 @@
 import type { JacDevice } from '@jaculus/device';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { WifiModalMode } from '../device-control/device-control-context';
 import {
   addWifiNetwork,
   setWifiMode as applyWifiMode,
@@ -10,7 +11,6 @@ import {
   setWifiApPassword,
   setWifiApSsid,
 } from '../services/device-operations';
-import type { WifiModalMode } from '../state/device-control-context';
 import { useLoadingState } from './use-loading';
 
 export function useWifiControl(device: JacDevice | null) {

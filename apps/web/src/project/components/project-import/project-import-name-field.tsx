@@ -1,6 +1,6 @@
 import { m } from '@/core/paraglide/messages';
-import { Input } from '@/ui/components/input';
 import { ProjectFormSection } from '@/ui';
+import { Input } from '@/ui/components/input';
 import { useProjectImport } from './project-import-context';
 
 export function ProjectImportNameField() {
