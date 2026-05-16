@@ -51,7 +51,7 @@
     "dexie-react-hooks": "^4.4.0",
     "esptool-js": "^0.6.0",
     "fflate": "^0.8.2",
-    "flexlayout-react": "^0.9.1",
+    "flexlayout-react": "^0.8.19",
     "js-base64": "^3.7.8",
     "lucide-react": "^1.14.0",
     "marked": "^18.0.3",

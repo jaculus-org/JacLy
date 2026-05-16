@@ -135,8 +135,8 @@ importers:
         specifier: ^0.8.2
         version: 0.8.3
       flexlayout-react:
-        specifier: ^0.9.1
-        version: 0.9.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: ^0.8.19
+        version: 0.8.19(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       js-base64:
         specifier: ^3.7.8
         version: 3.7.8
@@ -4501,8 +4501,8 @@ packages:
   flatted@3.4.2:
     resolution: {integrity: sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==}
 
-  flexlayout-react@0.9.1:
-    resolution: {integrity: sha512-sB/93gKvDUBcukvxeNsu88ziobdsBfZQCDk9tTaxZOruaefpCpjpkSjhrhgoomWmTrSz8xnpHj8QcUaRf0Begg==}
+  flexlayout-react@0.8.19:
+    resolution: {integrity: sha512-OC8PvAZ7ElYutiSQhLbuycpzxXdIQuyREozWGu8Wx3+6G4r3ctBMUiSYEVKICgiW1wLOPwvZOSpOFqddG3eoVg==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -9539,7 +9539,7 @@ snapshots:
   '@serialport/binding-mock@10.2.2':
     dependencies:
       '@serialport/bindings-interface': 1.2.2
-      debug: 4.4.0
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -11284,7 +11284,7 @@ snapshots:
 
   flatted@3.4.2: {}
 
-  flexlayout-react@0.9.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  flexlayout-react@0.8.19(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)

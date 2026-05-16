@@ -227,14 +227,14 @@ function findTargetTabset(model: FlexLayout.Model): FlexLayout.Node | undefined 
     }
   }
 
-  model.getRootRow().getChildren().forEach(searchNode);
+  model.getRoot().getChildren().forEach(searchNode);
   return found;
 }
 
 // add a new tab to the center of the layout
 function addTabToModel(model: FlexLayout.Model, tabNode: FlexLayout.IJsonTabNode): void {
   const tabset = findTargetTabset(model);
-  const targetId = tabset ? tabset.getId() : model.getRootRow().getId();
+  const targetId = tabset ? tabset.getId() : model.getRoot().getId();
   model.doAction(
     FlexLayout.Actions.addNode(
       applyPanelDefinitionToTab(tabNode),
