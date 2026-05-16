@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
-import { jaclySaveCoordinator } from '../../src/editor/state/jacly-save-coordinator';
+import { jaclySaveCoordinator } from '../../src/editor/jacly/jacly-save-coordinator';
 
 const expect = chai.expect;
 

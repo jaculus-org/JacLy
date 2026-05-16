@@ -1,4 +1,4 @@
-import { EditorJaclyProvider } from '../../state/jacly-provider';
+import { EditorJaclyProvider } from './jacly-provider';
 import { EditorJaclyDisplay } from './jacly-display';
 
 export function JaclyEditorComponent() {

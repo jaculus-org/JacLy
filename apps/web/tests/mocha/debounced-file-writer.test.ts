@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
-import { createLatestFileWriter } from '../../src/editor/state/latest-file-writer';
+import { createLatestFileWriter } from '../../src/editor/jacly/latest-file-writer';
 
 const expect = chai.expect;
 

@@ -3,13 +3,11 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/core/components/theme';
 import { m } from '@/core/paraglide/messages';
 import { useActiveProject } from '@/project';
-import { inferLanguageFromPath } from '../../services/language';
+import { inferLanguageFromPath } from '../services/language';
 
 interface CodeEditorRWProps {
   readonly filePath: string;
   readonly readOnly?: boolean;
-  // readonly ifNotExists: 'create' | 'loading' | 'error';
-  // readonly loadingMessage?: string;
 }
 
 export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
@@ -42,21 +40,7 @@ export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
 
   if (loading) {
     return <div>{m.editor_loading()}</div>;
-    // return <div>{loadingMessage ?? m.editor_loading()}</div>;
   }
-
-  // if (!fileExists && ifNotExists === 'error') {
-  //   return (
-  //     <div className="h-full w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-  //       <div className="text-center">
-  //         <p className="text-red-600 dark:text-red-400 text-sm mb-2">
-  //           {m.editor_error_title()}
-  //         </p>
-  //         <p className="text-slate-600 dark:text-slate-400 text-xs">{error}</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <Editor

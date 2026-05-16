@@ -3,7 +3,7 @@ import { Editor } from '@monaco-editor/react';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/core';
 import { useActiveProject } from '@/project';
-import { inferLanguageFromPath } from '../../services/language';
+import { inferLanguageFromPath } from '../services/language';
 
 interface CodeEditorReadProps {
   readonly filePath: string;

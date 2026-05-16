@@ -5,8 +5,6 @@ import { CodeEditorRW } from './code-editor-rw';
 interface CodeEditorProps {
   readonly filePath: string;
   readonly readOnly?: boolean;
-  // readonly ifNotExists: 'create' | 'loading' | 'error';
-  // readonly loadingMessage?: string;
 }
 
 export function CodeEditor({ filePath, readOnly = false }: CodeEditorProps) {
@@ -16,7 +14,6 @@ export function CodeEditor({ filePath, readOnly = false }: CodeEditorProps) {
 
   if (isReadOnly) {
     return <CodeEditorRead filePath={filePath} />;
-  } else {
-    return <CodeEditorRW filePath={filePath} />;
   }
+  return <CodeEditorRW filePath={filePath} />;
 }
