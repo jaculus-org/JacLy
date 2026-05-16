@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Card } from '@/ui/components/card';
 import { cn } from '@/ui/lib/cn';
-import type { LoggerEntry } from '../types';
-import { getLogLevelColor } from '../types';
+import type { LoggerEntry } from './logger-types';
+import { getLogLevelColor } from './logger-types';
 
 interface LoggerOutputProps {
   entries: LoggerEntry[];

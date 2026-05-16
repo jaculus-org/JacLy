@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import type { LoggerBusService } from '@/core/services/logger-service';
-import type { LoggerEntry } from '../components/logger/types';
+import type { LoggerBusService } from './logger-service';
+import type { LoggerEntry } from './logger-types';
 import { LoggerContext, type LoggerContextValue } from './logger-context';
 
 export interface LoggerProviderProps {

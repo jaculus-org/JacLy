@@ -1,6 +1,6 @@
 import { getRequest } from '@jaculus/jacly/project';
 import { Registry } from '@jaculus/project/registry';
-import { logger } from '@/core/services/logger-service';
+import { logger } from '@/core';
 
 const productionRegisters = ['https://registry.jaculus.org/'];
 

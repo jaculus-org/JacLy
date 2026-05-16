@@ -12,7 +12,7 @@ import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { m } from '@/core/paraglide/messages';
-import { logger } from '@/core/services/logger-service';
+import { logger } from '@/core';
 import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useKeyboardShortcut } from '@/project';
 import { restart, uploadCode } from '../services/device-operations';

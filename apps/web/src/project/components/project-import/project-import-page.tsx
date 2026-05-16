@@ -12,7 +12,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Logger } from '@/core/components/logger';
 import { m } from '@/core/paraglide/messages';
-import { logger } from '@/core/services/logger-service';
+import { logger } from '@/core';
 import { FormPageLayout, ProjectFormSection } from '@/ui';
 import { Button } from '@/ui/components/button';
 import { Input } from '@/ui/components/input';

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
-import { useLogger } from '../../../state/logger-context';
-import { LOG_LEVEL_ORDER, type LogLevel, type LogOrderType } from '../types';
+import { useLogger } from './logger-context';
+import { LOG_LEVEL_ORDER, type LogLevel, type LogOrderType } from './logger-types';
 import { LoggerOutput } from './logger-output';
 import { LoggerToolbar } from './logger-toolbar';
 

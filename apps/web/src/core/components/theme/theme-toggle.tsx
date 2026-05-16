@@ -1,5 +1,5 @@
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTheme } from '@/core/components/theme';
+import { useTheme } from './theme-context';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import {

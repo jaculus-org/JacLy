@@ -1,5 +1,5 @@
 import type { Logger } from '@jaculus/common';
-import type { LoggerEntry, LogLevel } from '@/core/components/logger/types';
+import type { LoggerEntry, LogLevel } from './logger-types';
 
 type LoggerListener = (entries: LoggerEntry[]) => void;
 

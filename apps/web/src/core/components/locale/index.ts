@@ -1,1 +1,1 @@
-export { LocaleSelector } from './components/locale-selector';
+export { LocaleSelector } from './locale-selector';

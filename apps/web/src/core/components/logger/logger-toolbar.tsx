@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/ui/components/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
-import { LOG_LEVELS, type LoggerEntry, type LogLevel } from '../types';
+import { LOG_LEVELS, type LoggerEntry, type LogLevel } from './logger-types';
 
 interface LoggerToolbarProps {
   filteredEntries: LoggerEntry[];

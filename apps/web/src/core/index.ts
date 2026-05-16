@@ -5,8 +5,14 @@ export {
   LOG_LEVEL_ORDER,
   LOG_LEVELS,
   Logger,
+  LoggerBusService,
   LoggerLogs,
+  logger,
 } from './components/logger';
+export type { LoggerContextValue } from './components/logger';
+export { useLogger } from './components/logger';
+export type { LoggerProviderProps } from './components/logger';
+export { LoggerProvider } from './components/logger';
 export {
   PwaInstall,
   PwaInstallButton,
@@ -19,12 +25,7 @@ export { AppDB, db } from './db/db';
 export { ProjectRepository } from './db/project-repository';
 export { useBuildInfo } from './hooks/use-build-info';
 export { useSettings } from './hooks/use-settings';
-export { LoggerBusService, logger } from './services/logger-service';
-export type { LoggerContextValue } from './state/logger-context';
-export { useLogger } from './state/logger-context';
-export type { LoggerProviderProps } from './state/logger-provider';
-export { LoggerProvider } from './state/logger-provider';
-export { useTheme } from './state/theme-context';
+export { useTheme } from './components/theme';
 export type { IDbProject } from './types/project';
 export type { ISettings } from './types/settings';
 export { defaultSettings } from './types/settings';

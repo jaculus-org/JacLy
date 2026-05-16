@@ -1,5 +1,5 @@
 import { compileProjectPath } from '@jaculus/project/compiler';
-import { logger } from '@/core/services/logger-service';
+import { logger } from '@/core';
 
 export async function compileProject(
   projectPath: string,
