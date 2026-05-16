@@ -1,117 +1,20 @@
 import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
 import { Card } from '@/ui/components/card';
-import { cloneHistoryMap } from '../../services/key-value-history';
-import type { KeyValueHistoryMap, ParsedValue } from '../../types/key-value-types';
 import 'chartjs-adapter-luxon';
-import { RealTimeScale, StreamingPlugin } from '@aziham/chartjs-plugin-streaming';
-import {
-  Chart,
-  type ChartData,
-  type ChartDataset,
-  type ChartOptions,
-  Filler,
-  Legend,
-  LinearScale,
-  LineController,
-  LineElement,
-  type Point,
-  PointElement,
-  Tooltip,
-} from 'chart.js';
+import type { ChartData, ChartOptions } from 'chart.js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { useConsolePlotter } from '../../state/plotter-context';
-
-Chart.register(
-  Filler,
-  Legend,
-  LineController,
-  LineElement,
-  LinearScale,
-  PointElement,
-  RealTimeScale,
-  StreamingPlugin,
-  Tooltip,
-);
-
-const DATASET_COLORS = [
-  '#2563eb',
-  '#16a34a',
-  '#ea580c',
-  '#7c3aed',
-  '#dc2626',
-  '#0891b2',
-  '#ca8a04',
-  '#db2777',
-];
-const STREAMING_DELAY_MS = 100;
-type PlotterChart = Chart<'line', (number | Point | null)[], unknown>;
-type PlotterDataset = ChartDataset<'line', { x: number; y: number }[]>;
-
-interface PausedChartSnapshot {
-  history: KeyValueHistoryMap;
-  pausedAt: number | null;
-}
-
-function toFillColor(color: string): string {
-  return `${color}22`;
-}
-
-function createDataset(key: string, color: string, points: ParsedValue[]): PlotterDataset {
-  return {
-    label: key,
-    data: points.map((point) => ({
-      x: point.timestamp,
-      y: point.value,
-    })),
-    borderColor: color,
-    backgroundColor: toFillColor(color),
-    fill: true,
-    borderWidth: 2,
-    cubicInterpolationMode: 'monotone' as const,
-    pointRadius: 0,
-    tension: 0.28,
-  };
-}
-
-function getChartWindow(durationMs: number, pausedAt: number | null, isPaused: boolean) {
-  const end = (isPaused ? (pausedAt ?? Date.now()) : Date.now()) - STREAMING_DELAY_MS;
-  return {
-    end,
-    start: end - durationMs,
-  };
-}
-
-function getVisiblePoints(
-  history: KeyValueHistoryMap,
-  key: string,
-  durationMs: number,
-  pausedAt: number | null,
-  isPaused: boolean,
-) {
-  const chartWindow = getChartWindow(durationMs, pausedAt, isPaused);
-  return (history[key] ?? []).filter(
-    (point) => point.timestamp >= chartWindow.start && point.timestamp <= chartWindow.end,
-  );
-}
-
-function syncDatasets(
-  chart: PlotterChart,
-  history: KeyValueHistoryMap,
-  selectedKeys: string[],
-  durationMs: number,
-  pausedAt: number | null,
-  isPaused: boolean,
-) {
-  chart.data.datasets = selectedKeys.map((key, index) =>
-    createDataset(
-      key,
-      DATASET_COLORS[index % DATASET_COLORS.length],
-      getVisiblePoints(history, key, durationMs, pausedAt, isPaused),
-    ),
-  );
-}
+import { useConsolePlotter } from './plotter-context';
+import { cloneHistoryMap } from '../services/key-value-history';
+import {
+  DATASET_COLORS,
+  STREAMING_DELAY_MS,
+  type PausedChartSnapshot,
+  type PlotterChart,
+  syncDatasets,
+} from './plotter-chart-config';
+import './plotter-chart-setup';
 
 export const ConsolePlotterChart = memo(function ConsolePlotterChart() {
   const { state, meta } = useConsolePlotter();

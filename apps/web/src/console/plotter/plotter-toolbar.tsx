@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
 import { Card } from '@/ui/components/card';
-import { useConsolePlotter } from '../../state/plotter-context';
+import { useConsolePlotter } from './plotter-context';
 
 function formatValue(value: number): string {
   if (Number.isInteger(value)) {

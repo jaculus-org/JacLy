@@ -1,6 +1,6 @@
-import { ConsolePlotterProvider } from '../../state/plotter-provider';
-import { ConsolePlotterChart } from '../plotter/plotter-chart';
-import { ConsolePlotterToolbar } from '../plotter/plotter-toolbar';
+import { ConsolePlotterProvider } from './plotter-provider';
+import { ConsolePlotterChart } from './plotter-chart';
+import { ConsolePlotterToolbar } from './plotter-toolbar';
 
 export function ChartPanel() {
   return (
