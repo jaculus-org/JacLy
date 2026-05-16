@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/select';
-import { useJacDeviceControl } from '../../state/device-control-context';
+import { useJacDeviceControl } from './device-control-context';
 import { WifiModal } from './wifi-modal';
 
 export function WifiSection() {

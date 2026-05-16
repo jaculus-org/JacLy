@@ -3,7 +3,7 @@ import { m } from '@/core/paraglide/messages';
 import { useProjectEditor } from '@/project';
 import { Button } from '@/ui/components/button';
 import { ButtonGroup } from '@/ui/components/button-group';
-import { useJacDevice } from '../../state/device-context';
+import { useJacDevice } from '../device-context';
 
 export function ConsoleSelector() {
   const {

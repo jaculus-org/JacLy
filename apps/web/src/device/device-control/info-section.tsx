@@ -4,7 +4,7 @@ import { Badge } from '@/ui/components/badge';
 import { Card } from '@/ui/components/card';
 import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
 import { Separator } from '@/ui/components/separator';
-import { useJacDeviceControl } from '../../state/device-control-context';
+import { useJacDeviceControl } from './device-control-context';
 
 export function InfoSection() {
   const { state, actions } = useJacDeviceControl();

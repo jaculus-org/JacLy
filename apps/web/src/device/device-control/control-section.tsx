@@ -2,7 +2,7 @@ import { Power, RotateCw } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';
 import { CollapsibleCard } from '@/ui/components/custom/collapsible-card';
-import { useJacDeviceControl } from '../../state/device-control-context';
+import { useJacDeviceControl } from './device-control-context';
 
 export function ControlSection() {
   const { state, actions } = useJacDeviceControl();

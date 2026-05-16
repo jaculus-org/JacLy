@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect } from 'react';
 import { useProgramControl } from '../hooks/use-program-control';
 import { useWifiControl } from '../hooks/use-wifi-control';
-import { useJacDevice } from './device-context';
+import { useJacDevice } from '../device-context';
 import {
   JacDeviceControlContext,
   type JacDeviceControlContextValue,

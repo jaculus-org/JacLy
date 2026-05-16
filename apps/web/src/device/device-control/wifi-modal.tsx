@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
 } from '@/ui/components/alert-dialog';
 import { Input } from '@/ui/components/input';
-import { useJacDeviceControl } from '../../state/device-control-context';
+import { useJacDeviceControl } from './device-control-context';
 
 export function WifiModal() {
   const { state, actions } = useJacDeviceControl();

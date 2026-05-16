@@ -18,10 +18,10 @@ import {
   connectDevice,
   getAvailableConnectionTypes,
   UnknownConnectionTypeError,
-} from '../../services/connection';
-import { testConnection, uploadCode } from '../../services/device-operations';
-import { useJacDevice } from '../../state/device-context';
-import type { ConnectionInfo, ConnectionType } from '../../types/connection';
+} from '../services/connection';
+import { testConnection, uploadCode } from '../services/device-operations';
+import { useJacDevice } from '../device-context';
+import type { ConnectionInfo, ConnectionType } from '../types/connection';
 
 export function ConnectionSelector() {
   const [availableConnections, setAvailableConnections] = useState<ConnectionInfo[]>([]);

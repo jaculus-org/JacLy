@@ -1,5 +1,5 @@
-import { Build } from '../controls/build';
-import { BuildFlash } from '../controls/build-flash';
+import { Build } from './build';
+import { BuildFlash } from './build-flash';
 
 export function ConnectedDevice() {
   return (

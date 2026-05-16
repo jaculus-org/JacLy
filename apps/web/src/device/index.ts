@@ -4,14 +4,16 @@ export {
   ConnectedDevice,
   ConnectionSelector,
   ConsoleSelector,
-} from './components/controls';
-export { JacDeviceControlPanel } from './components/panels/device-control-panel';
-export { DevicePanel } from './components/panels/device-panel';
-export { DeviceDisconnected } from './components/panels/disconnected';
-export { ControlSection } from './components/sections/control-section';
-export { InfoSection } from './components/sections/info-section';
-export { WifiModal } from './components/sections/wifi-modal';
-export { WifiSection } from './components/sections/wifi-section';
+  ControlSection,
+  InfoSection,
+  JacDeviceControlPanel,
+  WifiModal,
+  WifiSection,
+} from './device-control';
+export { type JacDeviceControlActions, type JacDeviceControlContextValue, type JacDeviceControlMeta, type JacDeviceControlState, useJacDeviceControl, type WifiModalMode } from './device-control';
+export { JacDeviceControlProvider } from './device-control';
+export { DevicePanel } from './panels/device-panel';
+export { DeviceDisconnected } from './panels/disconnected';
 export { compileProject } from './services/compilation';
 export {
   connectDevice,
@@ -50,27 +52,14 @@ export {
   type JacDeviceMeta,
   type JacDeviceState,
   useJacDevice,
-} from './state/device-context';
-export {
-  type DeviceStatusInfo,
-  type JacDeviceControlActions,
-  type JacDeviceControlContextValue,
-  type JacDeviceControlMeta,
-  type JacDeviceControlState,
-  useJacDeviceControl,
-  type WifiModalMode,
-} from './state/device-control-context';
-export { JacDeviceControlProvider } from './state/device-control-provider';
-export { JacDeviceProvider } from './state/device-provider';
+} from './device-context';
+export { JacDeviceProvider } from './device-provider';
 export type { ConnectionStatus, ConnectionType } from './types/connection';
 export type { JacStream } from './types/stream';
 
-import { JacDeviceControlPanel } from './components/panels/device-control-panel';
-import { ControlSection } from './components/sections/control-section';
-import { InfoSection } from './components/sections/info-section';
-import { WifiSection } from './components/sections/wifi-section';
-import { JacDeviceControlProvider } from './state/device-control-provider';
-import { JacDeviceProvider } from './state/device-provider';
+import { JacDeviceControlPanel, ControlSection, InfoSection, WifiSection } from './device-control';
+import { JacDeviceControlProvider } from './device-control';
+import { JacDeviceProvider } from './device-provider';
 
 export const JacDevice = {
   Provider: JacDeviceProvider,

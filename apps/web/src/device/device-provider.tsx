@@ -15,8 +15,8 @@ import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core';
 import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useKeyboardShortcut } from '@/project';
-import { restart, uploadCode } from '../services/device-operations';
-import type { ConnectionStatus, ConnectionType } from '../types/connection';
+import { restart, uploadCode } from './services/device-operations';
+import type { ConnectionStatus, ConnectionType } from './types/connection';
 import {
   type JacDeviceActions,
   JacDeviceContext,
