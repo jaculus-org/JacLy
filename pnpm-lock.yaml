@@ -267,7 +267,7 @@ importers:
         version: 10.52.0(react@19.2.6)
       '@tailwindcss/vite':
         specifier: ^4.3.0
-        version: 4.3.0(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        version: 4.3.0(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
       '@tanstack/react-router':
         specifier: ^1.169.2
         version: 1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -356,8 +356,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       vite:
-        specifier: ^7.3.1
-        version: 7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+        specifier: ^7.3.3
+        version: 7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
       workbox-window:
         specifier: ^7.4.1
         version: 7.4.1
@@ -376,7 +376,7 @@ importers:
         version: 0.5.19(tailwindcss@4.3.0)
       '@tanstack/router-plugin':
         specifier: ^1.167.35
-        version: 1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        version: 1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -390,8 +390,8 @@ importers:
         specifier: ^0.0.21
         version: 0.0.21
       '@vitejs/plugin-react':
-        specifier: ^5.1.4
-        version: 5.1.4(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        specifier: ^5.2.0
+        version: 5.2.0(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
       chai:
         specifier: ^6.2.2
         version: 6.2.2
@@ -406,10 +406,10 @@ importers:
         version: 6.0.3
       vite-plugin-node-polyfills:
         specifier: ^0.25.0
-        version: 0.25.0(rollup@2.80.0)(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        version: 0.25.0(rollup@2.80.0)(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
       vite-plugin-pwa:
         specifier: ^1.3.0
-        version: 1.3.0(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))(workbox-build@7.4.0(@types/babel__core@7.20.5))(workbox-window@7.4.1)
+        version: 1.3.0(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))(workbox-build@7.4.0(@types/babel__core@7.20.5))(workbox-window@7.4.1)
 
   extensions/vscode:
     devDependencies:
@@ -474,20 +474,20 @@ importers:
   packages/jacly:
     dependencies:
       '@blockly/field-angle':
-        specifier: ^6.0.8
-        version: 6.0.8(blockly@12.4.1)
+        specifier: ^6.0.9
+        version: 6.0.9(blockly@12.4.1)
       '@blockly/field-colour':
-        specifier: ^6.0.11
-        version: 6.0.11(blockly@12.4.1)
+        specifier: ^6.0.12
+        version: 6.0.12(blockly@12.4.1)
       '@blockly/field-slider':
+        specifier: ^8.0.9
+        version: 8.0.9(blockly@12.4.1)
+      '@blockly/plugin-cross-tab-copy-paste':
         specifier: ^8.0.8
         version: 8.0.8(blockly@12.4.1)
-      '@blockly/plugin-cross-tab-copy-paste':
-        specifier: ^8.0.7
-        version: 8.0.7(blockly@12.4.1)
       '@blockly/workspace-backpack':
-        specifier: ^7.0.10
-        version: 7.0.10(blockly@12.4.1)
+        specifier: ^7.0.11
+        version: 7.0.11(blockly@12.4.1)
       '@jaculus/common':
         specifier: workspace:*
         version: link:../../../Jaculus-tools/packages/common
@@ -499,13 +499,13 @@ importers:
         version: link:../../../Jaculus-tools/packages/project
       '@kuband/react-blockly':
         specifier: ^10.0.1
-        version: 10.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 10.0.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       blockly:
         specifier: ^12.4.1
         version: 12.4.1
       lucide-react:
         specifier: ^0.577.0
-        version: 0.577.0(react@19.2.4)
+        version: 0.577.0(react@19.2.6)
       lucide-static:
         specifier: ^0.577.0
         version: 0.577.0
@@ -533,7 +533,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vitejs/plugin-react':
         specifier: ^5.1.4
-        version: 5.1.4(vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        version: 5.1.4(vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
       chai:
         specifier: ^6.2.2
         version: 6.2.2
@@ -541,14 +541,14 @@ importers:
         specifier: ^11.7.5
         version: 11.7.5
       react:
-        specifier: ^19.2.4
-        version: 19.2.4
+        specifier: ^19.2.6
+        version: 19.2.6
       react-dom:
-        specifier: ^19.2.4
-        version: 19.2.4(react@19.2.4)
+        specifier: ^19.2.6
+        version: 19.2.6(react@19.2.6)
       tsc-alias:
-        specifier: ^1.8.16
-        version: 1.8.16
+        specifier: ^1.8.17
+        version: 1.8.17
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -556,14 +556,14 @@ importers:
         specifier: ~5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.3.1
-        version: 7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+        specifier: ^7.3.3
+        version: 7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
       vite-plugin-dts:
         specifier: ^4.5.4
-        version: 4.5.4(@types/node@25.4.0)(rollup@4.46.2)(typescript@5.9.3)(vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        version: 4.5.4(@types/node@25.4.0)(rollup@4.46.2)(typescript@5.9.3)(vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
       vite-plugin-lib-inject-css:
         specifier: ^2.2.2
-        version: 2.2.2(vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
+        version: 2.2.2(vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))
 
   packages/jaculus-wokwi:
     dependencies:
@@ -1300,38 +1300,38 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@blockly/field-angle@6.0.8':
-    resolution: {integrity: sha512-i4Cj70xDkPHdUz/RM8/i90fRWuLr9uDSrR3tE3YSnQWL+nbljqQ5yRsBfoSKvnpodgBO1Tp7zN9V6EO/aXt2Eg==}
+  '@blockly/field-angle@6.0.9':
+    resolution: {integrity: sha512-7cjOoOG7Ol8k2VIWuLkaDSnN5PGcG56PwzHbqrv0dWMWUVHZbyC4tPo8hWL+5I3X6ebvF5GU1VkX6pmwXyg9OQ==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       blockly: ^12.0.0
 
-  '@blockly/field-colour@6.0.11':
-    resolution: {integrity: sha512-UUTwH3DMt1RslKWQIGAlN5cvGynoQ9mpWPKJGI4erG92wAQWKsLAh5ldVsv9TxO2EfNwpSmQ0/5JqTdSMMqdfA==}
+  '@blockly/field-colour@6.0.12':
+    resolution: {integrity: sha512-sZUlMtn1Bnj3/inayhZAMJ1ZUxFfR8eISBWPgOvWMBlnUIeCWXJDc76a6JVEcZhnjHFjDI+ihOXYdrp5cedShA==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       blockly: ^12.0.0
 
-  '@blockly/field-grid-dropdown@6.0.9':
-    resolution: {integrity: sha512-YuPdS7ZhJKoVagPxbEwUPr5Gq14SnqNk6XD064mYGiH1OYO7LrtljESXG6cnnvQjhKkitiRjZ1ye20MzG3I6FQ==}
+  '@blockly/field-grid-dropdown@6.0.10':
+    resolution: {integrity: sha512-b54xLznsFb5OyAfpFYCFX52M7vRc9dITbLzTBIsETuXfVX8R4TFj3z0+QbJ1znlqNhr5+dgrfDfkUEm8+8zbxg==}
     engines: {node: '>=8.17.0'}
     peerDependencies:
       blockly: ^12.0.0
 
-  '@blockly/field-slider@8.0.8':
-    resolution: {integrity: sha512-uG/Vq9eS17TvrRZZyvIEbknDcniwmLRVCP8FpgWmet4pwpCNrqERPTxP4/FQXRzbuHb/r+YeGjhRbXY367xfWw==}
+  '@blockly/field-slider@8.0.9':
+    resolution: {integrity: sha512-qEWZFyt8m7KI/RzY+hPUO/CORBtgHT7gvVn8FAaHIYHOe6sO+fQ82ik3eH6yz49llkqwGby7djTnSPiZ4fhNSw==}
     engines: {node: '>=8.0.0'}
     peerDependencies:
       blockly: ^12.0.0
 
-  '@blockly/plugin-cross-tab-copy-paste@8.0.7':
-    resolution: {integrity: sha512-+TDKrcqK/Dzh1l+kbhO0MtVldVf/DuQSqVX0lo0Dn/zAwdmnYpfzv/0cg76ZMAs982XbBWOQtsV7mZzVMZS/eQ==}
+  '@blockly/plugin-cross-tab-copy-paste@8.0.8':
+    resolution: {integrity: sha512-1ZPDaZHx+9nbtk+9bfLJmg97OzVQhVE67OwZMOCqnCV6CF/BNHGsrTJsMMyC9xNOkusI+HVOkAX6vB+M9Its6g==}
     engines: {node: '>=8.17.0'}
     peerDependencies:
       blockly: ^12.1.0
 
-  '@blockly/workspace-backpack@7.0.10':
-    resolution: {integrity: sha512-059e+bw10PMgxbQXnJhfnYAlP6PvSWxq4ImSZn5R1jL1K52IkVTb25QemGRNcQvfBpxamxAl1QMqbIStEnsdrw==}
+  '@blockly/workspace-backpack@7.0.11':
+    resolution: {integrity: sha512-VKxkk7SEIWkqEwZ8OueuDipw4+28dNKM16/JJRN8Vwhmjdt5uU/rWNB+3L0qD+woIAdUFbHYw/oA3quFGID6XQ==}
     engines: {node: '>=8.17.0'}
     peerDependencies:
       blockly: ^12.0.0
@@ -3465,6 +3465,12 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
+
+  '@vitejs/plugin-react@5.2.0':
+    resolution: {integrity: sha512-YmKkfhOAi3wsB1PhJq5Scj3GXMn3WvtQ/JC0xoopuHoXSdmtdStOpFrYaT1kie2YgFBcIe64ROzMYRjCrYOdYw==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    peerDependencies:
+      vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
   '@volar/language-core@2.4.28':
     resolution: {integrity: sha512-w4qhIJ8ZSitgLAkVay6AbcnC7gP3glYM3fYwKV3srj8m494E3xtrCv6E+bWviiK/8hs6e6t1ij1s2Endql7vzQ==}
@@ -6015,11 +6021,6 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
-  react-dom@19.2.4:
-    resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
-    peerDependencies:
-      react: ^19.2.4
-
   react-dom@19.2.6:
     resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
     peerDependencies:
@@ -6653,8 +6654,8 @@ packages:
   ts-morph@26.0.0:
     resolution: {integrity: sha512-ztMO++owQnz8c/gIENcM9XfCEzgoGphTv+nKpYNM1bgsdOVC/jRZuEBf6N+mLLDNg68Kl+GgUZfOySaRiG1/Ug==}
 
-  tsc-alias@1.8.16:
-    resolution: {integrity: sha512-QjCyu55NFyRSBAl6+MTFwplpFcnm2Pq01rR/uxfqJoLMm6X3O14KEGtaSDZpJYaE1bJBGDjD0eSuiIWPe2T58g==}
+  tsc-alias@1.8.17:
+    resolution: {integrity: sha512-EIduCZHqbNwPm8BZYfq1aD7BQ697A4h6uSGMOFQfYGoQwfrYFTKwYfy9Bv42YxHkduVBcn9Zx0DkX111DKskyg==}
     engines: {node: '>=16.20.2'}
     hasBin: true
 
@@ -6902,6 +6903,46 @@ packages:
 
   vite@7.3.1:
     resolution: {integrity: sha512-w+N7Hifpc3gRjZ63vYBXA56dvvRlNWRczTdmCBBa+CotUzAPf5b7YMdMR/8CQoeYE5LX3W4wj6RYTgonm1b9DA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^20.19.0 || >=22.12.0
+      jiti: '>=1.21.0'
+      less: ^4.0.0
+      lightningcss: ^1.21.0
+      sass: ^1.70.0
+      sass-embedded: ^1.70.0
+      stylus: '>=0.54.8'
+      sugarss: ^5.0.0
+      terser: ^5.16.0
+      tsx: ^4.8.1
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      jiti:
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+      tsx:
+        optional: true
+      yaml:
+        optional: true
+
+  vite@7.3.3:
+    resolution: {integrity: sha512-/4XH147Ui7OGTjg3HbdWe5arnZQSbfuRzdr9Ec7TQi5I7R+ir0Rlc9GIvD4v0XZurELqA035KVXJXpR61xhiTA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -8027,28 +8068,28 @@ snapshots:
   '@biomejs/cli-win32-x64@2.4.15':
     optional: true
 
-  '@blockly/field-angle@6.0.8(blockly@12.4.1)':
+  '@blockly/field-angle@6.0.9(blockly@12.4.1)':
     dependencies:
       blockly: 12.4.1
 
-  '@blockly/field-colour@6.0.11(blockly@12.4.1)':
+  '@blockly/field-colour@6.0.12(blockly@12.4.1)':
     dependencies:
-      '@blockly/field-grid-dropdown': 6.0.9(blockly@12.4.1)
+      '@blockly/field-grid-dropdown': 6.0.10(blockly@12.4.1)
       blockly: 12.4.1
 
-  '@blockly/field-grid-dropdown@6.0.9(blockly@12.4.1)':
-    dependencies:
-      blockly: 12.4.1
-
-  '@blockly/field-slider@8.0.8(blockly@12.4.1)':
+  '@blockly/field-grid-dropdown@6.0.10(blockly@12.4.1)':
     dependencies:
       blockly: 12.4.1
 
-  '@blockly/plugin-cross-tab-copy-paste@8.0.7(blockly@12.4.1)':
+  '@blockly/field-slider@8.0.9(blockly@12.4.1)':
     dependencies:
       blockly: 12.4.1
 
-  '@blockly/workspace-backpack@7.0.10(blockly@12.4.1)':
+  '@blockly/plugin-cross-tab-copy-paste@8.0.8(blockly@12.4.1)':
+    dependencies:
+      blockly: 12.4.1
+
+  '@blockly/workspace-backpack@7.0.11(blockly@12.4.1)':
     dependencies:
       blockly: 12.4.1
 
@@ -8584,12 +8625,12 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@kuband/react-blockly@10.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@kuband/react-blockly@10.0.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       blockly: 12.4.1
       prop-types: 15.8.1
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
       typescript: 5.9.3
     transitivePeerDependencies:
       - bufferutil
@@ -9883,12 +9924,12 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 4.3.0
 
-  '@tailwindcss/vite@4.3.0(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
+  '@tailwindcss/vite@4.3.0(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
     dependencies:
       '@tailwindcss/node': 4.3.0
       '@tailwindcss/oxide': 4.3.0
       tailwindcss: 4.3.0
-      vite: 7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+      vite: 7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
 
   '@tanstack/history@1.161.6': {}
 
@@ -9947,7 +9988,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-plugin@1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
+  '@tanstack/router-plugin@1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.29.0)
@@ -9964,7 +10005,7 @@ snapshots:
       zod: 3.25.76
     optionalDependencies:
       '@tanstack/react-router': 1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      vite: 7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+      vite: 7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -10208,18 +10249,6 @@ snapshots:
       '@typescript-eslint/types': 8.51.0
       eslint-visitor-keys: 4.2.1
 
-  '@vitejs/plugin-react@5.1.4(vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
-    dependencies:
-      '@babel/core': 7.29.0
-      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
-      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.29.0)
-      '@rolldown/pluginutils': 1.0.0-rc.3
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.18.0
-      vite: 7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
-    transitivePeerDependencies:
-      - supports-color
-
   '@vitejs/plugin-react@5.1.4(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
     dependencies:
       '@babel/core': 7.29.0
@@ -10229,6 +10258,30 @@ snapshots:
       '@types/babel__core': 7.20.5
       react-refresh: 0.18.0
       vite: 7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitejs/plugin-react@5.1.4(vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.29.0)
+      '@rolldown/pluginutils': 1.0.0-rc.3
+      '@types/babel__core': 7.20.5
+      react-refresh: 0.18.0
+      vite: 7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitejs/plugin-react@5.2.0(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.29.0)
+      '@rolldown/pluginutils': 1.0.0-rc.3
+      '@types/babel__core': 7.20.5
+      react-refresh: 0.18.0
+      vite: 7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -12377,9 +12430,9 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
-  lucide-react@0.577.0(react@19.2.4):
+  lucide-react@0.577.0(react@19.2.6):
     dependencies:
-      react: 19.2.4
+      react: 19.2.6
 
   lucide-react@1.14.0(react@19.2.6):
     dependencies:
@@ -13051,11 +13104,6 @@ snapshots:
       loose-envify: 1.4.0
       react: 18.3.1
       scheduler: 0.23.2
-
-  react-dom@19.2.4(react@19.2.4):
-    dependencies:
-      react: 19.2.4
-      scheduler: 0.27.0
 
   react-dom@19.2.6(react@19.2.6):
     dependencies:
@@ -13811,7 +13859,7 @@ snapshots:
       '@ts-morph/common': 0.27.0
       code-block-writer: 13.0.3
 
-  tsc-alias@1.8.16:
+  tsc-alias@1.8.17:
     dependencies:
       chokidar: 3.6.0
       commander: 9.5.0
@@ -14034,7 +14082,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite-plugin-dts@4.5.4(@types/node@25.4.0)(rollup@4.46.2)(typescript@5.9.3)(vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)):
+  vite-plugin-dts@4.5.4(@types/node@25.4.0)(rollup@4.46.2)(typescript@5.9.3)(vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)):
     dependencies:
       '@microsoft/api-extractor': 7.58.1(@types/node@25.4.0)
       '@rollup/pluginutils': 5.3.0(rollup@4.46.2)
@@ -14047,7 +14095,7 @@ snapshots:
       magic-string: 0.30.21
       typescript: 5.9.3
     optionalDependencies:
-      vite: 7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+      vite: 7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
@@ -14072,33 +14120,49 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-lib-inject-css@2.2.2(vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)):
+  vite-plugin-lib-inject-css@2.2.2(vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)):
     dependencies:
       '@ast-grep/napi': 0.36.3
       magic-string: 0.30.21
       picocolors: 1.1.1
-      vite: 7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+      vite: 7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
 
-  vite-plugin-node-polyfills@0.25.0(rollup@2.80.0)(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)):
+  vite-plugin-node-polyfills@0.25.0(rollup@2.80.0)(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@2.80.0)
       node-stdlib-browser: 1.3.1
-      vite: 7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+      vite: 7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-pwa@1.3.0(vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))(workbox-build@7.4.0(@types/babel__core@7.20.5))(workbox-window@7.4.1):
+  vite-plugin-pwa@1.3.0(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0))(workbox-build@7.4.0(@types/babel__core@7.20.5))(workbox-window@7.4.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       pretty-bytes: 6.1.1
       tinyglobby: 0.2.15
-      vite: 7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
+      vite: 7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0)
       workbox-build: 7.4.0(@types/babel__core@7.20.5)
       workbox-window: 7.4.1
     transitivePeerDependencies:
       - supports-color
 
-  vite@7.3.1(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0):
+  vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0):
+    dependencies:
+      esbuild: 0.27.2
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
+      postcss: 8.5.14
+      rollup: 4.46.2
+      tinyglobby: 0.2.16
+    optionalDependencies:
+      '@types/node': 25.6.2
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      lightningcss: 1.32.0
+      terser: 5.46.2
+      tsx: 4.21.0
+
+  vite@7.3.3(@types/node@25.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0):
     dependencies:
       esbuild: 0.27.2
       fdir: 6.5.0(picomatch@4.0.4)
@@ -14114,7 +14178,7 @@ snapshots:
       terser: 5.46.2
       tsx: 4.21.0
 
-  vite@7.3.1(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0):
+  vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.46.2)(tsx@4.21.0):
     dependencies:
       esbuild: 0.27.2
       fdir: 6.5.0(picomatch@4.0.4)

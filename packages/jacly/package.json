@@ -74,11 +74,11 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@blockly/field-angle": "^6.0.8",
-    "@blockly/field-colour": "^6.0.11",
-    "@blockly/field-slider": "^8.0.8",
-    "@blockly/plugin-cross-tab-copy-paste": "^8.0.7",
-    "@blockly/workspace-backpack": "^7.0.10",
+    "@blockly/field-angle": "^6.0.9",
+    "@blockly/field-colour": "^6.0.12",
+    "@blockly/field-slider": "^8.0.9",
+    "@blockly/plugin-cross-tab-copy-paste": "^8.0.8",
+    "@blockly/workspace-backpack": "^7.0.11",
     "@jaculus/common": "workspace:*",
     "@jaculus/device": "workspace:*",
     "@jaculus/project": "workspace:*",
@@ -98,12 +98,12 @@
     "@vitejs/plugin-react": "^5.1.4",
     "chai": "^6.2.2",
     "mocha": "^11.7.5",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "tsc-alias": "^1.8.16",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "tsc-alias": "^1.8.17",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^7.3.3",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-lib-inject-css": "^2.2.2"
   }
