@@ -4,16 +4,6 @@ import { packageEventsService } from '../../src/packages/services/package-events
 
 const expect = chai.expect;
 
-function resetSingleton() {
-  while (true) {
-    try {
-      packageEventsService.notifyPackagesChanged();
-    } catch {
-      break;
-    }
-  }
-}
-
 describe('packageEventsService', () => {
   const listeners: Array<() => void> = [];
 
