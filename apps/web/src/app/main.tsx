@@ -9,13 +9,29 @@ import '@/app/index.css';
 import Hotjar from '@hotjar/browser';
 import * as Sentry from '@sentry/react';
 
-function openLinksInNewTab() {
-  Array.from(document.getElementsByTagName('a')).forEach((link) => {
-    if (link.getAttribute('href') && link.hostname !== location.hostname) {
-      link.target = '_blank';
-      link.rel = 'noopener';
-    }
-  });
+// Capture-phase click delegation: tag external links right before the
+// browser handles the navigation. Avoids a body-wide MutationObserver
+// scanning every <a> on every DOM change.
+function installExternalLinkHandler() {
+  document.addEventListener(
+    'click',
+    (event) => {
+      const anchor = (event.target as HTMLElement | null)?.closest('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+      try {
+        const url = new URL(href, location.href);
+        if (url.hostname && url.hostname !== location.hostname) {
+          anchor.target = '_blank';
+          anchor.rel = 'noopener';
+        }
+      } catch {
+        // unparseable href (e.g. "javascript:..." or malformed) — ignore
+      }
+    },
+    { capture: true },
+  );
 }
 
 const siteId = 6691272;
@@ -41,11 +57,7 @@ async function bootstrap() {
     </StrictMode>,
   );
 
-  openLinksInNewTab();
-  const observer = new MutationObserver(() => {
-    openLinksInNewTab();
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+  installExternalLinkHandler();
 }
 
 bootstrap();

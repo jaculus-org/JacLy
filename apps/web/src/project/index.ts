@@ -8,12 +8,20 @@ export { PanelWrapper } from './components/panel-wrapper';
 export { ErrorPanel } from './components/panels/error-panel';
 export { LogsPanel } from './components/panels/logs-panel';
 export { ProjectEditorHeader } from './components/project-editor-header';
+export { ProjectImportPage } from './components/project-import/project-import-page';
+export {
+  ProjectIndexContainer,
+  type ProjectIndexContainerProps,
+  type ProjectIndexFsService,
+  type ProjectIndexRuntimeService,
+} from './components/project-index/project-index-container';
 export { ProjectIndexHeader } from './components/project-index/project-index-header';
 export { ProjectIndexPage } from './components/project-index/project-index-page';
 export { ProjectIndexSkeleton } from './components/project-index/project-index-skeleton';
 export { ProjectLoadError } from './components/project-load-error';
 export { ProjectLoadingIndicator } from './components/project-loading';
 export { ProjectNameEditor } from './components/project-name-editor';
+export { ProjectNew, ProjectNewPage } from './components/project-new';
 export { useKeyboardShortcut } from './hooks/use-keyboard-shortcut';
 export {
   defaultBorderLayout,
