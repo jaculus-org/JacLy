@@ -8,7 +8,7 @@ import { useActiveProject } from '../../../state/active-project-context';
 import { useProjectEditor } from '../../../state/project-editor-context';
 import { buildFileTree, loadDirectoryChildren } from '../tree/helpers';
 import type { FileSystemItem } from '../types';
-import { FileExplorerContext } from './context';
+import { FileExplorerContext } from './file-explorer-context';
 
 export function FileExplorerProvider({ children }: { children: ReactNode }) {
   const {

@@ -1,10 +1,10 @@
-export { FileExplorerPanel } from './panel';
+export { FileExplorerPanel } from './file-explorer-panel';
 export type {
   FileExplorerActions,
   FileExplorerContextValue,
   FileExplorerMeta,
   FileExplorerState,
-} from './state/context';
-export { useJacFileExplorer } from './state/context';
-export { FileExplorerProvider } from './state/provider';
+} from './file-explorer-context';
+export { useJacFileExplorer } from './file-explorer-context';
+export { FileExplorerProvider } from './file-explorer-provider';
 export type { FileSystemItem, FileTreeNodeProps } from './types';
