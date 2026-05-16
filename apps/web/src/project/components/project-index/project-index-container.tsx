@@ -117,7 +117,7 @@ function ProjectIndexContent({
   }
 
   function getDuplicateProjectName(projectName: string) {
-    const baseName = `${projectName} duplication`;
+    const baseName = `${projectName}-duplication`;
     const projectNames = new Set(projects.map((project) => project.name));
 
     if (!projectNames.has(baseName)) {
@@ -125,11 +125,11 @@ function ProjectIndexContent({
     }
 
     let index = 2;
-    let nextName = `${baseName} ${index}`;
+    let nextName = `${baseName}-${index}`;
 
     while (projectNames.has(nextName)) {
       index += 1;
-      nextName = `${baseName} ${index}`;
+      nextName = `${baseName}-${index}`;
     }
 
     return nextName;
