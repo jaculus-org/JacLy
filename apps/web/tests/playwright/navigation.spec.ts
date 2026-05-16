@@ -4,10 +4,10 @@ test.describe('navigation', () => {
   test('navigates between pages via header links', async ({ page }) => {
     await page.goto('/');
 
-    await page.getByRole('link', { name: 'Projects' }).click();
+    await page.getByRole('link', { name: 'Projects', exact: true }).click();
     await expect(page).toHaveURL(/\/project$/);
 
-    await page.getByRole('link', { name: 'Docs' }).click();
+    await page.getByRole('link', { name: 'Docs', exact: true }).click();
     await expect(page).toHaveURL(/\/docs$/);
 
     await page.getByRole('link', { name: 'JacLy logo JacLy' }).click();
