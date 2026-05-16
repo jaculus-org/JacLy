@@ -26,7 +26,7 @@
     "@commitlint/cli": "^21.0.0",
     "@commitlint/config-conventional": "^21.0.0",
     "@commitlint/types": "^21.0.0",
-    "@jaculus/project": "^0.1.0",
+    "@jaculus/project": "^0.1.2",
     "@obsidize/tar-browserify": "^6.3.2",
     "@types/node": "^25.6.2",
     "@types/pako": "^2.0.4",

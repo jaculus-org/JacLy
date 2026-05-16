@@ -2,7 +2,7 @@ packages:
   - apps/*
   - packages/*
   - extensions/*
-  - ../Jaculus-tools/packages/*
+  # - ../Jaculus-tools/packages/*
 
 ignoredBuiltDependencies:
   - '@playwright/browser-chromium'
@@ -13,3 +13,9 @@ allowBuilds:
   '@tailwindcss/oxide': true
   esbuild: true
   msw: true
+
+minimumReleaseAgeExclude:
+- '@jaculus/common'
+- '@jaculus/device'
+- '@jaculus/firmware'
+- '@jaculus/project'

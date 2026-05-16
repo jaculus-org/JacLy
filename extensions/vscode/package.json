@@ -70,9 +70,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@jaculus/common": "workspace:*",
+    "@jaculus/common": "^0.1.0",
     "@jaculus/jacly": "workspace:*",
-    "@jaculus/project": "workspace:*",
+    "@jaculus/project": "^0.1.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/react": "^18.2.79",
