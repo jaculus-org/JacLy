@@ -16,7 +16,7 @@ import {
 import { Badge } from '@/ui/components/badge';
 import { Button } from '@/ui/components/button';
 import { Card } from '@/ui/components/card';
-import { useJacPackages } from '../state/packages-context';
+import { useJacPackages } from './packages-context';
 
 export function JacPackagesInstalledCard() {
   const {

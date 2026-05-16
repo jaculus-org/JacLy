@@ -1,5 +1,5 @@
 import { Logger } from '@/core';
-import { InstallerProvider } from '../state/installer-provider';
+import { InstallerProvider } from './installer-provider';
 import { InstallerControls } from './installer-controls';
 import { InstallerDialog } from './installer-dialog';
 import { InstallerLayout } from './installer-layout';

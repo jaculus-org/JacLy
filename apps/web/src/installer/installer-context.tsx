@@ -1,6 +1,6 @@
 import type { BoardsIndex, BoardVariant, BoardVersion } from '@jaculus/firmware/boards';
 import { createContext, useContext } from 'react';
-import type { FlashProgress } from '../services/flasher';
+import type { FlashProgress } from './services/flasher';
 
 export type InstallerSourceTab = 'online' | 'url' | 'file';
 

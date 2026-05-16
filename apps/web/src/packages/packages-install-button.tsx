@@ -3,7 +3,7 @@
 import { RefreshCw } from 'lucide-react';
 import { m } from '@/core/paraglide/messages';
 import { Button } from '@/ui/components/button';
-import { useJacPackages } from '../state/packages-context';
+import { useJacPackages } from './packages-context';
 
 export function JacPackagesInstallButton() {
   const {

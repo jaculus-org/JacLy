@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { useProjectEditor } from '@/project';
 import { Separator } from '@/ui/components/separator';
-import { useJacPackages } from '../state/packages-context';
+import { useJacPackages } from './packages-context';
 import { JacPackagesAddCard } from './packages-add-card';
 import { JacPackagesErrorCard } from './packages-error-card';
 import { JacPackagesInstallButton } from './packages-install-button';

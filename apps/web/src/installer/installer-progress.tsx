@@ -1,7 +1,7 @@
 import { m } from '@/core/paraglide/messages';
 import { Field, FieldLabel } from '@/ui/components/field';
 import { Progress } from '@/ui/components/progress';
-import { useInstaller } from '../state/installer-context';
+import { useInstaller } from './installer-context';
 
 export function InstallerProgress() {
   const { state } = useInstaller();

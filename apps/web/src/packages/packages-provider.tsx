@@ -12,7 +12,7 @@ import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
 import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useProjectEditor } from '@/project';
-import { packageEventsService } from '../services/package-events-service';
+import { packageEventsService } from './services/package-events-service';
 import type { LoadStatus } from './packages-context';
 import { JacPackagesContext } from './packages-context';
 

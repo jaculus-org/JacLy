@@ -14,7 +14,7 @@ import {
 } from '@/ui/components/select';
 import { Separator } from '@/ui/components/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
-import { type InstallerSourceTab, useInstaller } from '../state/installer-context';
+import { type InstallerSourceTab, useInstaller } from './installer-context';
 
 export function InstallerControls() {
   const { state, actions, meta } = useInstaller();

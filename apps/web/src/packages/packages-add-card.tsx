@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/ui/components/select';
-import { useJacPackages } from '../state/packages-context';
+import { useJacPackages } from './packages-context';
 
 export function JacPackagesAddCard() {
   const [packagePickerResetKey, setPackagePickerResetKey] = useState(0);

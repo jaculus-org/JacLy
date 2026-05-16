@@ -1,8 +1,8 @@
-export { InstallerControls } from './components/installer-controls';
-export { InstallerDialog } from './components/installer-dialog';
-export { InstallerLayout } from './components/installer-layout';
-export { InstallerPanel } from './components/installer-panel';
-export { InstallerProgress } from './components/installer-progress';
+export { InstallerControls } from './installer-controls';
+export { InstallerDialog } from './installer-dialog';
+export { InstallerLayout } from './installer-layout';
+export { InstallerPanel } from './installer-panel';
+export { InstallerProgress } from './installer-progress';
 export {
   type InstallerActions,
   InstallerContext,
@@ -11,14 +11,14 @@ export {
   type InstallerSourceTab,
   type InstallerState,
   useInstaller,
-} from './state/installer-context';
-export { baudrates, InstallerProvider } from './state/installer-provider';
+} from './installer-context';
+export { baudrates, InstallerProvider } from './installer-provider';
 
-import { InstallerControls } from './components/installer-controls';
-import { InstallerDialog } from './components/installer-dialog';
-import { InstallerLayout } from './components/installer-layout';
-import { InstallerProgress } from './components/installer-progress';
-import { InstallerProvider } from './state/installer-provider';
+import { InstallerControls } from './installer-controls';
+import { InstallerDialog } from './installer-dialog';
+import { InstallerLayout } from './installer-layout';
+import { InstallerProgress } from './installer-progress';
+import { InstallerProvider } from './installer-provider';
 
 export const Installer = {
   Provider: InstallerProvider,
