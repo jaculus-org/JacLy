@@ -6,8 +6,8 @@ import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
-import { loadPackageFromFile } from '@/project/services/load-package';
-import { createProjectRegistry, defaultRegisters } from '@/project/services/registry';
+import { loadPackageFromFile } from '../../services/load-package';
+import { createProjectRegistry, defaultRegisters } from '../../services/registry';
 import { ProjectNewContext } from './project-new-context';
 
 const routeApi = getRouteApi('/project/new');

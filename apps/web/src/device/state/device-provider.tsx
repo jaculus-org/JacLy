@@ -13,9 +13,8 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { useBuildInfo } from '@/core/hooks/use-build-info';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
-import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
-import { useActiveProject } from '@/project';
-import { useKeyboardShortcut } from '@/project/hooks/use-keyboard-shortcut';
+import { jaclySaveCoordinator } from '@/editor';
+import { useActiveProject, useKeyboardShortcut } from '@/project';
 import { restart, uploadCode } from '../services/device-operations';
 import type { ConnectionStatus, ConnectionType } from '../types/connection';
 import {

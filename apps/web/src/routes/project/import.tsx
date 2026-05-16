@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ProjectImportPage } from '@/project/components/project-import/project-import-page';
+import { ProjectImportPage } from '@/project';
 
 interface ImportSearchParams {
   url?: string;

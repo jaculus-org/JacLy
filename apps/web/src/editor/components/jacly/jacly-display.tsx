@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 import { logger } from '@/core';
 import { useTheme } from '@/core/components/theme';
 import { getLocale } from '@/core/paraglide/runtime';
-import { useJacPackages } from '@/packages/state/packages-context';
-import { useProjectEditor } from '@/project/state/project-editor-context';
+import { useJacPackages } from '@/packages';
+import { useProjectEditor } from '@/project';
 import { useEditorJacly } from '../../state/jacly-context';
 import { JaclyEditorLoading } from './jacly-editor-loading';
 

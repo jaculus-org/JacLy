@@ -65,6 +65,10 @@ export {
   unmountProject,
 } from './services/project-fs-service';
 export { ProjectManagementService } from './services/project-runtime-service';
+export {
+  createProjectRegistry,
+  defaultRegisters,
+} from './services/registry';
 export { loadPackageUri } from './services/request';
 export {
   type ActiveProjectActions,

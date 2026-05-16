@@ -16,13 +16,6 @@ import { enqueueSnackbar } from 'notistack';
 import { Suspense, use, useMemo, useState } from 'react';
 import { m } from '@/core/paraglide/messages';
 import type { IDbProject } from '@/core/types/project';
-import { ProjectIndexPage } from '@/project/components/project-index/project-index-page';
-import { ProjectIndexSkeleton } from '@/project/components/project-index/project-index-skeleton';
-import {
-  buildPackageImportUrl,
-  downloadProjectAsTarGz,
-  downloadProjectAsZip,
-} from '@/project/services/download';
 import { Button } from '@/ui/components/button';
 import {
   Dialog,
@@ -40,6 +33,13 @@ import {
 } from '@/ui/components/dropdown-menu';
 import { Input } from '@/ui/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/ui/components/tooltip';
+import {
+  buildPackageImportUrl,
+  downloadProjectAsTarGz,
+  downloadProjectAsZip,
+} from '../../services/download';
+import { ProjectIndexPage } from './project-index-page';
+import { ProjectIndexSkeleton } from './project-index-skeleton';
 
 export interface ProjectIndexRuntimeService {
   listProjects: () => Promise<IDbProject[]>;

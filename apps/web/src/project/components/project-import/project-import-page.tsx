@@ -13,12 +13,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Logger } from '@/core/components/logger';
 import { m } from '@/core/paraglide/messages';
 import { logger } from '@/core/services/logger-service';
-import { loadPackageFromFile } from '@/project/services/load-package';
 import { FormPageLayout, ProjectFormSection } from '@/ui';
 import { Button } from '@/ui/components/button';
 import { Input } from '@/ui/components/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/components/tabs';
 import { generateNanoId } from '@/ui/lib/nanoid';
+import { loadPackageFromFile } from '../../services/load-package';
 
 const routeApi = getRouteApi('/project/import');
 

@@ -5,7 +5,7 @@ import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { m } from '@/core/paraglide/messages';
 import { getLocale } from '@/core/paraglide/runtime';
 import { useJacDevice } from '@/device';
-import { packageEventsService } from '@/packages/services/package-events-service';
+import { packageEventsService } from '@/packages';
 import { useActiveProject } from '@/project';
 import { AUTOSAVE_INTERVAL_MS, writeAutosaveBackup, writeStartupBackup } from './jacly-backup';
 import { EditorJaclyContext } from './jacly-context';

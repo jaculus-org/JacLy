@@ -1,4 +1,4 @@
-import { JaclyFiles } from '@/project/types/jacly-files';
+import { JaclyFiles } from '@/project';
 import { CodeEditorRead } from './code-editor-read';
 import { CodeEditorRW } from './code-editor-rw';
 

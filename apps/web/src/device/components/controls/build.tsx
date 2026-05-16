@@ -2,7 +2,7 @@ import { HammerIcon } from 'lucide-react';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 import { m } from '@/core/paraglide/messages';
-import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
+import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { ButtonGroup } from '@/ui/components/button-group';
 import { ButtonLoading } from '@/ui/components/custom/button-loading';

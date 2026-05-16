@@ -10,7 +10,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import { logger } from '@/core';
 import { m } from '@/core/paraglide/messages';
 import { useJacDevice } from '@/device';
-import { jaclySaveCoordinator } from '@/editor/state/jacly-save-coordinator';
+import { jaclySaveCoordinator } from '@/editor';
 import { useActiveProject, useProjectEditor } from '@/project';
 import { packageEventsService } from '../services/package-events-service';
 import type { LoadStatus } from './packages-context';

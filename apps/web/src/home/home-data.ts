@@ -3,7 +3,7 @@ import type { RegistryListTemplate } from '@jaculus/project/registry';
 import { buildInfo } from 'virtual-build-info';
 import { fetchReleaseSummary } from '@/core/services/release-summary';
 import type { IDbProject } from '@/core/types/project';
-import { createProjectRegistry } from '@/project/services/registry';
+import { createProjectRegistry } from '@/project';
 import type { HomeReleaseSummary } from './home-context';
 
 const featuredTemplateCount = 3;

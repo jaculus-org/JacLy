@@ -7,3 +7,4 @@ export { JaclyEditorPanel } from './components/panels/jacly-panel';
 export { inferLanguageFromPath } from './services/language';
 export { useEditorJacly } from './state/jacly-context';
 export { EditorJaclyProvider } from './state/jacly-provider';
+export { jaclySaveCoordinator } from './state/jacly-save-coordinator';
