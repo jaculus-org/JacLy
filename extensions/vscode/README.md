@@ -32,4 +32,4 @@ Initial release.
 
 ## License
 
-Everything in this repository, unless otherwise noted, is licensed under the MIT License. See [../../LICENSE](../../LICENSE).
+Everything in this repository, unless otherwise noted, is licensed under the MIT License.
