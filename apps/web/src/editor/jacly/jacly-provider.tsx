@@ -19,8 +19,6 @@ import { ensureParentDir, readOrCreateJsonFile } from './jacly-files';
 import { JaclyRecoveryDialog } from './jacly-recovery-dialog';
 import { jaclySaveCoordinator } from './jacly-save-coordinator';
 
-const FILE_RELOAD_DELAY_MS = 50;
-
 export function EditorJaclyProvider({ children }: { children: ReactNode }) {
   const {
     state: { fs, fsp, projectPath },
@@ -88,39 +86,7 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    let reloadTimer: ReturnType<typeof setTimeout> | undefined;
-    let watcher: ReturnType<typeof fs.watch> | undefined;
     const jsonPath = getFileName('JACLY_INDEX');
-
-    const clearReloadTimer = () => {
-      if (!reloadTimer) return;
-      clearTimeout(reloadTimer);
-      reloadTimer = undefined;
-    };
-
-    const reloadJsonFromDisk = async () => {
-      try {
-        const content = await fsp.readFile(jsonPath, 'utf-8');
-        if (content === latestJsonContentRef.current) {
-          return;
-        }
-        const parsed = JSON.parse(content) as object;
-        latestJsonContentRef.current = JSON.stringify(parsed, null, 2);
-        if (!cancelled) {
-          setInitialJson(parsed);
-        }
-      } catch (error) {
-        console.error('Failed to reload Jacly JSON from disk:', error);
-        enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
-      }
-    };
-
-    const scheduleReload = () => {
-      clearReloadTimer();
-      reloadTimer = setTimeout(() => {
-        void reloadJsonFromDisk();
-      }, FILE_RELOAD_DELAY_MS);
-    };
 
     async function load() {
       if (!jacProject) {
@@ -148,10 +114,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
             setCorruptJsonContent(corruptContent);
             setRecoveryCandidate(candidate);
           }
-          watcher = fs.watch(jsonPath, (eventType) => {
-            if (cancelled) return;
-            if (eventType === 'rename' || eventType === 'change') scheduleReload();
-          });
           return;
         }
         const serialized = JSON.stringify(jsonData, null, 2);
@@ -162,12 +124,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
         void writeStartupBackup(fsp, projectPath, jsonPath, serialized).catch((err) =>
           console.error('Failed to create startup backup:', err),
         );
-        watcher = fs.watch(jsonPath, (eventType) => {
-          if (cancelled) return;
-          if (eventType === 'rename' || eventType === 'change') {
-            scheduleReload();
-          }
-        });
       } catch (error) {
         console.error('Failed to load editor data:', error);
         enqueueSnackbar(m.editor_jacly_load_error(), { variant: 'error' });
@@ -182,8 +138,6 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
 
     return () => {
       cancelled = true;
-      clearReloadTimer();
-      watcher?.close();
     };
   }, [fs, fsp, projectPath, getFileName, jacProject]);
 
