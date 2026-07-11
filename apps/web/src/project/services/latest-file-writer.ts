@@ -3,18 +3,22 @@ type WriteFileFn = (path: string, content: string, encoding: BufferEncoding) => 
 export interface LatestFileWriter {
   schedule: (content: string) => void;
   flushPending: () => Promise<void>;
+  isPending: () => boolean;
   dispose: () => Promise<void>;
 }
 
 export function createLatestFileWriter({
   writeFile,
   filePath,
+  onError,
 }: {
   writeFile: WriteFileFn;
   filePath: string;
+  onError?: (error: unknown) => void;
 }): LatestFileWriter {
   let pendingContent: string | null = null;
   let activeWrite: Promise<void> | null = null;
+  let writeError: unknown = null;
 
   const flushLoop = async () => {
     while (pendingContent != null) {
@@ -24,33 +28,36 @@ export function createLatestFileWriter({
     }
   };
 
-  const ensureFlush = () => {
+  const ensureFlush = (): Promise<void> => {
     if (activeWrite) {
       return activeWrite;
     }
 
-    activeWrite = (async () => {
-      try {
-        await flushLoop();
-      } finally {
+    activeWrite = flushLoop()
+      .then(() => {
+        writeError = null;
+      })
+      .catch((error) => {
+        writeError = error;
+        throw error;
+      })
+      .finally(() => {
         activeWrite = null;
-        if (pendingContent != null) {
-          await ensureFlush();
-        }
-      }
-    })();
+      });
 
     return activeWrite;
   };
 
   const schedule = (content: string) => {
     pendingContent = content;
-    void ensureFlush();
+    void ensureFlush().catch((error) => onError?.(error));
   };
 
   const flushPending = async () => {
-    if (pendingContent == null && !activeWrite) return;
-    await ensureFlush();
+    while (pendingContent != null || activeWrite) {
+      await ensureFlush();
+    }
+    if (writeError) throw writeError;
   };
 
   const dispose = async () => {
@@ -60,6 +67,7 @@ export function createLatestFileWriter({
   return {
     schedule,
     flushPending,
+    isPending: () => pendingContent != null || activeWrite != null,
     dispose,
   };
 }

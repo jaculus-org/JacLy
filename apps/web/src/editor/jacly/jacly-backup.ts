@@ -1,4 +1,5 @@
 import { basename, extname, join } from 'node:path';
+import { durableWriteFile } from '@/project';
 import type { ProjectFsPromises } from './jacly-files';
 
 export const AUTOSAVE_INTERVAL_MS = 5 * 60 * 1000;
@@ -19,7 +20,7 @@ async function writeBackupFile(
   projectPath: string,
   jaclyPath: string,
   content: string,
-  prefix: 'S' | 'A',
+  prefix: 'S' | 'A' | 'C',
 ): Promise<void> {
   const name = basename(jaclyPath, extname(jaclyPath));
   const ext = extname(jaclyPath);
@@ -28,7 +29,16 @@ async function writeBackupFile(
   await fsp.mkdir(backupDir, { recursive: true });
 
   const fileName = `${name}-${prefix}-${formatTimestamp(new Date())}${ext}`;
-  await fsp.writeFile(join(backupDir, fileName), content, 'utf-8');
+  await durableWriteFile(fsp, join(backupDir, fileName), content);
+}
+
+export async function preserveCorruptIndex(
+  fsp: ProjectFsPromises,
+  projectPath: string,
+  jaclyPath: string,
+  content: string,
+): Promise<void> {
+  await writeBackupFile(fsp, projectPath, jaclyPath, content, 'C');
 }
 
 async function pruneAutosaveBackups(

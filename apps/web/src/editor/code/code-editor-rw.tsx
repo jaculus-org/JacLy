@@ -20,6 +20,7 @@ export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
   const fullPath = `${projectPath}/${filePath}`;
 
   useEffect(() => {
+    setLoading(true);
     async function loadFile() {
       if (!monacoService) return;
       await monacoService.requestFile(filePath);
@@ -29,14 +30,9 @@ export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
     loadFile();
 
     return () => {
-      monacoService?.closeFile(filePath);
+      void monacoService?.closeFile(filePath);
     };
-  }, [fullPath]);
-
-  function handleEditorChange(value: string | undefined) {
-    if (value === undefined) return;
-    monacoService?.updateFile(filePath, value);
-  }
+  }, [filePath, monacoService]);
 
   if (loading) {
     return <div>{m.editor_loading()}</div>;
@@ -53,7 +49,6 @@ export function CodeEditorRW({ filePath }: CodeEditorRWProps) {
         automaticLayout: true,
         fixedOverflowWidgets: true,
       }}
-      onChange={handleEditorChange}
     />
   );
 }

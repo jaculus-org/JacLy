@@ -48,6 +48,8 @@ export async function mountProject(projectId: string): Promise<ProjectFsInterfac
       backend: IndexedDB,
       storeName: getStoreName(projectId),
     });
+    // ZenFS otherwise persists file data before its inode size, which can corrupt interrupted writes.
+    backend.attributes.set('sync', undefined);
     mount(mountPath, backend);
   } catch (error) {
     if (error instanceof Error && error.message.includes('already in use')) {
