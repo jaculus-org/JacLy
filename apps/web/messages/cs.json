@@ -198,6 +198,7 @@
   "editor_error_title": "Chyba při načítání souboru",
   "project_download_no_files": "V projektu nebyly nalezeny žádné soubory ke stažení",
   "project_layout_load_error": "Nepodařilo se načíst nastavení rozložení, používá se výchozí",
+  "project_save_before_leave_error": "Projektové soubory se nepodařilo uložit. Navigace byla zastavena, aby se změny neztratily.",
   "project_provider_load_failed": "Nepodařilo se načíst projekt",
   "project_panel_pkg_load_error": "Nepodařilo se načíst knihovny",
   "project_panel_pkg_versions_error": "Nepodařilo se načíst verze knihovny",

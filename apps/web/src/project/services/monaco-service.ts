@@ -171,6 +171,10 @@ export class MonacoService {
     await Promise.all(Array.from(this.writers.values(), (writer) => writer.flushPending()));
   }
 
+  hasPendingWrites() {
+    return Array.from(this.writers.values(), (writer) => writer.isPending()).some(Boolean);
+  }
+
   async dispose() {
     await Promise.all(Array.from(this.openedFiles, (filePath) => this.closeFile(filePath)));
   }

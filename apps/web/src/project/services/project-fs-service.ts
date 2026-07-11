@@ -3,6 +3,7 @@ import { Zip } from '@zenfs/archives';
 import { configure, fs, mount, mounts, resolveMountConfig, umount } from '@zenfs/core';
 import { IndexedDB } from '@zenfs/dom';
 import { enqueueSnackbar } from 'notistack';
+import { DeferredUnmountCoordinator } from './deferred-unmount';
 
 export interface ProjectFsInterface {
   fs: FSInterface;
@@ -115,22 +116,36 @@ export async function renameProject(oldProjectId: string, newProjectId: string):
 
 // Wrap the filesystem operations so providers can depend on an instance.
 export class ProjectFsService {
+  private deferredUnmounts = new DeferredUnmountCoordinator();
+
   isMounted = isMounted;
-  mount = mountProject;
-  unmount = unmountProject;
   rename = renameProject;
+
+  async mount(projectId: string): Promise<ProjectFsInterface> {
+    this.deferredUnmounts.cancel(projectId);
+    return mountProject(projectId);
+  }
+
+  unmount(projectId: string): void {
+    this.deferredUnmounts.cancel(projectId);
+    unmountProject(projectId);
+  }
+
+  unmountAfter(projectId: string, pendingWork: Promise<unknown>): void {
+    this.deferredUnmounts.schedule(projectId, pendingWork, () => unmountProject(projectId));
+  }
 
   async withMount<T>(
     projectId: string,
     action: (fsInterface: ProjectFsInterface) => Promise<T>,
   ): Promise<T> {
     const wasMounted = isMounted(projectId);
-    const fsInterface = await mountProject(projectId);
+    const fsInterface = await this.mount(projectId);
     try {
       return await action(fsInterface);
     } finally {
       if (!wasMounted) {
-        unmountProject(projectId);
+        this.unmount(projectId);
       }
     }
   }

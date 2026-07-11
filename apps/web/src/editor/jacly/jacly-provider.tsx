@@ -66,12 +66,15 @@ export function EditorJaclyProvider({ children }: { children: ReactNode }) {
       },
     });
 
-    const unregisterFlush = jaclySaveCoordinator.registerFlushCallback(async () => {
-      await Promise.all([
-        jsonWriterRef.current?.flushPending(),
-        codeWriterRef.current?.flushPending(),
-      ]);
-    });
+    const unregisterFlush = jaclySaveCoordinator.registerFlushCallback(
+      async () => {
+        await Promise.all([
+          jsonWriterRef.current?.flushPending(),
+          codeWriterRef.current?.flushPending(),
+        ]);
+      },
+      () => Boolean(jsonWriterRef.current?.isPending() || codeWriterRef.current?.isPending()),
+    );
 
     return () => {
       unregisterFlush();
