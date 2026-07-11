@@ -50,6 +50,11 @@ export {
   packProjectAsTarGz,
   packProjectAsZip,
 } from './services/download';
+export { durableWriteFile } from './services/durable-file-write';
+export {
+  createLatestFileWriter,
+  type LatestFileWriter,
+} from './services/latest-file-writer';
 export {
   loadPackageFromBytes,
   loadPackageFromFile,

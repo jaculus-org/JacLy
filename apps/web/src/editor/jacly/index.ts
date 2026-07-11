@@ -1,5 +1,12 @@
 export { JaclyEditorComponent } from './jacly';
-export { AUTOSAVE_INTERVAL_MS, writeAutosaveBackup, writeStartupBackup } from './jacly-backup';
+export {
+  AUTOSAVE_INTERVAL_MS,
+  preserveCorruptIndex,
+  writeAutosaveBackup,
+  writeStartupBackup,
+} from './jacly-backup';
+export type { JaclyBackupCandidate } from './jacly-backup-recovery';
+export { findNewestValidBackup } from './jacly-backup-recovery';
 export type {
   EditorJaclyActions,
   EditorJaclyContextValue,
@@ -17,4 +24,3 @@ export {
 export { JaclyEditorPanel } from './jacly-panel';
 export { EditorJaclyProvider } from './jacly-provider';
 export { jaclySaveCoordinator } from './jacly-save-coordinator';
-export { createLatestFileWriter, type LatestFileWriter } from './latest-file-writer';

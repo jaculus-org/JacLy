@@ -22,6 +22,7 @@ interface ActiveProjectProviderProps {
   dbProject: IDbProject;
   projectFsService: ProjectFsService;
   projectManService: ProjectManagementService;
+  flushPendingWrites?: () => Promise<void>;
   children: ReactNode;
 }
 
@@ -33,6 +34,7 @@ export function ActiveProjectProvider({
   dbProject: project,
   projectFsService,
   projectManService,
+  flushPendingWrites,
   children,
 }: ActiveProjectProviderProps) {
   const monaco = useMonaco();
@@ -69,13 +71,17 @@ export function ActiveProjectProvider({
     return () => {
       projectManService.touchProject(project.id);
       mounted = false;
-      projectFsService.unmount(project.id);
       tsService?.dispose();
-      service?.dispose();
+      const pendingCleanup = Promise.all([flushPendingWrites?.(), service?.dispose()]).catch(
+        (cleanupError) => {
+          console.error('Failed to flush project files before unmount:', cleanupError);
+        },
+      );
+      projectFsService.unmountAfter(project.id, pendingCleanup);
       setMonacoService(null);
       setError(null);
     };
-  }, [project.id, projectFsService, projectManService, monaco]);
+  }, [project.id, projectFsService, projectManService, monaco, flushPendingWrites]);
 
   const getFileName = useCallback(
     (fileType: keyof typeof JaclyFiles) => {
@@ -118,7 +124,7 @@ export function ActiveProjectProvider({
       error,
       monacoService,
     };
-  }, [fsInterface, currentProject, error]);
+  }, [fsInterface, currentProject, error, monacoService]);
 
   const actions = useMemo<ActiveProjectActions>(
     () => ({

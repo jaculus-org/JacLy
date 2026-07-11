@@ -1,18 +1,23 @@
 type FlushCallback = () => Promise<void>;
+type PendingCallback = () => boolean;
 
 class JaclySaveCoordinator {
-  private callbacks = new Set<FlushCallback>();
+  private callbacks = new Map<FlushCallback, PendingCallback>();
 
-  registerFlushCallback(callback: FlushCallback): () => void {
-    this.callbacks.add(callback);
+  registerFlushCallback(callback: FlushCallback, isPending: PendingCallback): () => void {
+    this.callbacks.set(callback, isPending);
     return () => {
       this.callbacks.delete(callback);
     };
   }
 
   async flushPendingWrites(): Promise<void> {
-    const callbacks = [...this.callbacks];
+    const callbacks = [...this.callbacks.keys()];
     await Promise.all(callbacks.map((callback) => callback()));
+  }
+
+  hasPendingWrites(): boolean {
+    return [...this.callbacks.values()].some((isPending) => isPending());
   }
 }
 

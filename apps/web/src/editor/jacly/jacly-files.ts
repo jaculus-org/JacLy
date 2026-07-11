@@ -16,6 +16,7 @@ export async function readOrCreateJsonFile(
   fs: ProjectFs,
   fsp: ProjectFsPromises,
   filePath: string,
+  createFile: (path: string, content: string) => Promise<void>,
 ): Promise<object> {
   await ensureParentDir(fsp, filePath);
 
@@ -23,6 +24,6 @@ export async function readOrCreateJsonFile(
     return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   }
 
-  await fsp.writeFile(filePath, '{}', 'utf-8');
+  await createFile(filePath, '{}');
   return {};
 }

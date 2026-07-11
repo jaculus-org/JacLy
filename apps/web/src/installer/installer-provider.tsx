@@ -5,7 +5,13 @@ import {
   getBoardVersions,
 } from '@jaculus/firmware/boards';
 import { getRequest } from '@jaculus/jacly/project';
-import { ESPLoader, type IEspLoaderTerminal, type LoaderOptions, Transport } from 'esptool-js';
+import {
+  ESPLoader,
+  type FlashSizeValues,
+  type IEspLoaderTerminal,
+  type LoaderOptions,
+  Transport,
+} from 'esptool-js';
 import { enqueueSnackbar } from 'notistack';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { logger } from '@/core';
@@ -266,7 +272,7 @@ export function InstallerProvider({
       const newFlasher = new ESP32Flasher(terminal, (progress) => {
         setState((prev) => ({ ...prev, flashProgress: progress }));
       });
-      await newFlasher.setup(newEsploader);
+      await newFlasher.setup(newEsploader, flashSize as FlashSizeValues);
       flasherRef.current = newFlasher;
 
       changeChip(chipName);

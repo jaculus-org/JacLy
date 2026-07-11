@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
-import { createLatestFileWriter } from '../../src/editor/jacly/latest-file-writer';
+import { createLatestFileWriter } from '../../src/project/services/latest-file-writer';
 
 const expect = chai.expect;
 
@@ -79,5 +79,28 @@ describe('createLatestFileWriter', () => {
 
     expect(writes).to.deep.equal(['one', 'three']);
     await writer.dispose();
+  });
+
+  it('reports asynchronous write failures and rejects later flushes', async () => {
+    const errors: unknown[] = [];
+    const writer = createLatestFileWriter({
+      filePath: '/tmp/test.json',
+      writeFile: async () => {
+        throw new Error('disk failed');
+      },
+      onError: (error) => errors.push(error),
+    });
+
+    writer.schedule('content');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errors).to.have.length(1);
+    let error: unknown;
+    try {
+      await writer.flushPending();
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).to.be.an('error').with.property('message', 'disk failed');
   });
 });
