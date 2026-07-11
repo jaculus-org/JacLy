@@ -1,6 +1,6 @@
 import { type Manifest, parseManifest } from '@jaculus/firmware/manifest';
 import { Archive } from '@obsidize/tar-browserify';
-import type { ESPLoader, IEspLoaderTerminal } from 'esptool-js';
+import type { ESPLoader, FlashSizeValues, IEspLoaderTerminal } from 'esptool-js';
 import pako from 'pako';
 
 export interface FlashProgress {
@@ -16,6 +16,7 @@ export interface FlashProgress {
 // Downloads, extracts, and flashes firmware to ESP32 family devices.
 export class ESP32Flasher {
   private esploader: ESPLoader | null = null;
+  private flashSize: FlashSizeValues = '4MB';
   private terminal: IEspLoaderTerminal;
   private onProgress?: (progress: FlashProgress) => void;
 
@@ -90,8 +91,11 @@ export class ESP32Flasher {
   }
 
   // Attaches an already-initialized ESPLoader instance.
-  async setup(esploader: ESPLoader): Promise<void> {
+  async setup(esploader: ESPLoader, flashSize?: FlashSizeValues): Promise<void> {
     this.esploader = esploader;
+    if (flashSize) {
+      this.flashSize = flashSize;
+    }
     this.terminal.writeLine(`Using ESPLoader for chip: ${this.esploader.chip.CHIP_NAME}`);
   }
 
@@ -154,7 +158,7 @@ export class ESP32Flasher {
 
     await this.esploader.writeFlash({
       fileArray,
-      flashSize: '4MB',
+      flashSize: this.flashSize,
       flashMode: 'keep',
       flashFreq: 'keep',
       eraseAll: false,
