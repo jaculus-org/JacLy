@@ -1,0 +1,164 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "basic_onStart",
+        "id": "N#c!0i;vxI:x1JWmcoX:",
+        "x": 70,
+        "y": -50,
+        "extraState": { "package": "basic" },
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "saturn_constructor",
+              "id": "GVpVx^1PEoj^2|u|D^ZF",
+              "extraState": { "package": "saturn" },
+              "fields": { "CONSTRUCTED_VAR_NAME": "saturn_0" },
+              "next": {
+                "block": {
+                  "type": "game_loop_constructor",
+                  "id": "[LOx3~V8uLTBIJAD_MyR",
+                  "extraState": {
+                    "package": "game-loop",
+                    "instanceNames": { "DISPLAY_INSTANCE": "saturn_0.display" }
+                  },
+                  "fields": {
+                    "CONSTRUCTED_VAR_NAME": "game_loop_0",
+                    "DISPLAY_INSTANCE": "saturn_0.display"
+                  },
+                  "next": {
+                    "block": {
+                      "type": "renderer_line_segment_constructor",
+                      "id": "Qz`J)m!Zi=QQ+^^2ImO6",
+                      "extraState": { "package": "@types/jaculus" },
+                      "fields": { "CONSTRUCTED_VAR_NAME": "shape_0" },
+                      "inputs": {
+                        "X": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "no=%WeIkOQo[7`Zc.;}x",
+                            "fields": { "NUM": 32 }
+                          }
+                        },
+                        "Y": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "fTy)BI,r/M?XpyJ*}QyP",
+                            "fields": { "NUM": 32 }
+                          }
+                        },
+                        "X2": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "|KhKSDqP{V4Tk:yPV(Wu",
+                            "fields": { "NUM": 48 }
+                          }
+                        },
+                        "Y2": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": "PeT?`kg;y7+Tt)G,fL*E",
+                            "fields": { "NUM": 48 }
+                          }
+                        },
+                        "COLOR": {
+                          "block": {
+                            "type": "dynamic_color_rgb",
+                            "id": "w}P$s|Svf/sZF6;H{h?S",
+                            "extraState": { "mode": "NAMES", "colorName": "red" },
+                            "fields": { "MODE": "NAMES", "COLOR_NAME": "red" }
+                          }
+                        },
+                        "Z": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": ";VMSUMNQ7kN{szxCV[}Q",
+                            "fields": { "NUM": 0 }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "game_loop_add_shape",
+                          "id": "Y{L9C7BW7}j@`xKi-Vzx",
+                          "extraState": {
+                            "package": "game-loop",
+                            "instanceNames": {
+                              "GAME_LOOP_INSTANCE": "game_loop_0",
+                              "SHAPE_INSTANCE": "shape_0"
+                            }
+                          },
+                          "fields": {
+                            "SHAPE_INSTANCE": "shape_0",
+                            "GAME_LOOP_INSTANCE": "game_loop_0"
+                          },
+                          "next": {
+                            "block": {
+                              "type": "basic_console_log",
+                              "id": "Q=;S5c)=|pVR)F*8=?wa",
+                              "extraState": { "package": "basic" },
+                              "fields": { "MODE": "log" },
+                              "inputs": {
+                                "TEXT": {
+                                  "shadow": {
+                                    "type": "text",
+                                    "id": "y#QG$7f_6[BO+eKGcMW|",
+                                    "fields": { "TEXT": "start" }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "game_loop_on_tick",
+        "id": "b/H(r^KNHpPb#f2A$K,D",
+        "x": 70,
+        "y": 410,
+        "extraState": {
+          "package": "game-loop",
+          "instanceNames": { "GAME_LOOP_INSTANCE": "game_loop_0" }
+        },
+        "fields": { "GAME_LOOP_INSTANCE": "game_loop_0" },
+        "inputs": {
+          "CALLBACK_VAR_delta": {
+            "block": {
+              "type": "game_loop_on_tick_delta",
+              "id": ".oQ;Zp,N-VpFzSv%9Bi{"
+            }
+          },
+          "CODE": {
+            "block": {
+              "type": "renderer_shape_rotate",
+              "id": "YZuz05pSa]8WetNc(]Y|",
+              "extraState": {
+                "package": "@types/jaculus",
+                "instanceNames": { "SHAPE_INSTANCE": "shape_0" }
+              },
+              "fields": { "SHAPE_INSTANCE": "shape_0" },
+              "inputs": {
+                "ANGLE": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "hJBc6z};vF4Wt`e_Utd2",
+                    "fields": { "NUM": 5 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

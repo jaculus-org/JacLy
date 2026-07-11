@@ -1,0 +1,41 @@
+{
+  "name": "@jaculus/jacly-renderer",
+  "description": "Content-addressed SVG and PNG renderer for JacLy workspaces",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/server/server/index.d.ts",
+      "import": "./dist/server/server/index.js",
+      "default": "./dist/server/server/index.js"
+    }
+  },
+  "bin": {
+    "jacly-renderer": "./dist/server/server/cli.js"
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "dev": "tsx src/server/cli.ts",
+    "start": "node dist/server/server/cli.js",
+    "type-check": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "clean-node": "pnpm clean && rm -rf node_modules"
+  },
+  "dependencies": {
+    "@jaculus/jacly": "workspace:*",
+    "blockly": "^12.4.1",
+    "playwright": "^1.60.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "tsx": "^4.21.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.3"
+  }
+}
